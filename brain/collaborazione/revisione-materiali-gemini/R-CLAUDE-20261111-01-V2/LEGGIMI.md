@@ -9,7 +9,8 @@ Revisore: Claude · Data: 11/11/2026 · Documento principale: [`CLAUDE_SECOND_RE
 | `verifiche/test_aggiuntivi_claude.py` | Test aggiuntivi: gruppo A (devono passare), gruppo B (documentano i difetti E-01…E-03) |
 | `output/` | Uscite delle verifiche del 11/11/2026 |
 | `output/simulations_v2_raw_RIPRODOTTO.sha256` | Impronta del JSON riprodotto (identico a quello di Gemini); il JSON non è conservato qui per non duplicare materiale di Gemini |
-| `MANIFEST_REVISIONE_CLAUDE.sha256` | Impronte dei file di questa cartella |
+| `MANIFEST_REVISIONE_CLAUDE.sha256` | Impronte dei file di questa cartella (al commit `3bbe137`) |
+| `ERRATA.md` | Errata corrige della revisione (il documento non è modificato) |
 
 ## Che cosa NON è qui
 - Nessun file di Gemini (motore, test, script, JSON, documento): restano nella consegna di Gemini, SHA-256 in `output/hash_ricevuti.txt`.
