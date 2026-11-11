@@ -1,0 +1,3 @@
+swing 1%, 60 giorni      senza slippage pass 0.6646 ML 0.2849 TO 0.0504 | con slippage pass 0.5601 ML 0.3716 TO 0.0550 | effetto -10.46 punti
+swing 1%, senza limite   senza slippage pass 0.7000 ML 0.2999 TO 0.0000 | con slippage pass 0.5935 ML 0.3925 TO 0.0000 | effetto -10.65 punti
+Slippage medio per perdita: 0.0625R senza tetto, 0.0602R con tetto 3R; E[R] netto: 0,150 -> 0.1139R

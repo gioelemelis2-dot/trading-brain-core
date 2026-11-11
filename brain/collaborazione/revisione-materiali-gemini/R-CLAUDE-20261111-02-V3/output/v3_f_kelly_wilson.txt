@@ -1,0 +1,6 @@
+(F) Var[R] netto 2.1600 (i costi spostano entrambi gli esiti: la varianza non cambia) · lordo 2.1600
+    f* con costi 0.4636% · senza costi 0.6182%  (risposta di Gemini: Var 2,233 e 0,448%)
+    C-10 (rischio 1%, senza costi, target +10%, stop -10%): rovina esatta 12.5739% · diffusione 13.5656%  (Gemini: 12,5739% / 13,5656%)
+(G) Wilson V3 vs formula indipendente: massima differenza 0.00e+00
+(H) filtro 1,2: z con errore sotto H0 (test score) 8.29 · con errore osservato (Wald) 9.04
+(H) filtro 0,70: z con errore sotto H0 (test score) 5.61 · con errore osservato (Wald) 5.97

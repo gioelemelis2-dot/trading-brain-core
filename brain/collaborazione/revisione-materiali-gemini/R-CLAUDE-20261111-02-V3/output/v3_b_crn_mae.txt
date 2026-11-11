@@ -1,0 +1,19 @@
+(B) Accoppiamento CRN: intraday 1%, 6 trade/giorno, 25 giorni, 10.000 sfide, seed 42
+  come V3 (generatori unici per il lotto)   : pass 0.4054 -> 0.3844 (-2.10 punti); sfide con esito diverso 5421; casi IMPOSSIBILI (passa solo col MAE) 2275; prima divergenza alla sfida 4
+  generatori riseminati per ogni sfida      : pass 0.4126 -> 0.3885 (-2.41 punti); sfide con esito diverso 319; casi IMPOSSIBILI (passa solo col MAE) 0; prima divergenza alla sfida 67
+
+(C1) Campionatore MAE di V3 contro la formula esatta (mu tarato per WR 0,40, R:R 2)
+  P(MAE <= -0.10) campionata 0.8569  esatta 0.8563  z +0.55
+  P(MAE <= -0.25) campionata 0.6663  esatta 0.6651  z +0.80
+  P(MAE <= -0.50) campionata 0.4001  esatta 0.3981  z +1.25
+  P(MAE <= -0.75) campionata 0.1811  esatta 0.1805  z +0.47
+  P(MAE <= -0.90) campionata 0.0680  esatta 0.0684  z -0.43
+  media campionata -0.4324  (esatta -0.4315)
+
+(C2) Il campionatore ignora win_rate e reward_to_risk dello scenario (deriva 0,09754 e barriere +2/-1 fisse)
+  Scenario WR 0,50, R:R 1 (moto browniano SENZA deriva, barriere +1/-1): P(MAE <= -0,5R | vincita) corretta = 0.3333
+  Il motore V3 campiona comunque dalla distribuzione per WR 0,40 / R:R 2: 0.4025
+  Lo scenario WR 0,50 R:R 1 con use_brownian_mae=True viene accettato senza avvisi: 'x'
+
+(E) Il test test_crn_stream_isolation di Gemini esegue davvero l'asserzione?
+  esiti: senza MAE 'timeout', con MAE 'timeout' -> asserzione eseguita: True

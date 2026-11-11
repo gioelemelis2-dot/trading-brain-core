@@ -2,7 +2,7 @@
 
 Leggere prima di iniziare. Regole in [`PROTOCOLLO-OPERATIVO.md`](PROTOCOLLO-OPERATIVO.md) §4 (provvisorio).
 
-Stato generale: **SVILUPPO SOSPESO** (D-12), tranne l'**audit architetturale** affidato a Claude (D-13, concluso il 11/11/2026, `audit/AUDIT-ARCH-20261111/`) · Fase: **in attesa della risposta di Antigravity alla seconda revisione** (`da-claude/CONTESTAZIONE_TECNICA_CLAUDE_PER_ANTIGRAVITY_V2.md`).
+Stato generale: **SVILUPPO SOSPESO** (D-12), tranne l'**audit architetturale** affidato a Claude (D-13, concluso il 11/11/2026, `audit/AUDIT-ARCH-20261111/`) · Fase: **revisione conclusiva della V3 consegnata** (`revisione-materiali-gemini/R-CLAUDE-20261111-02-V3/`), in attesa della valutazione dell'utente.
 
 **Versione di riferimento della revisione: commit `1b051df`** (le impronte in `pacchetto-per-gemini/MANIFEST.sha256` corrispondono a quel commit). I commit successivi toccano solo file di continuità e registro (`CONTINUITA.md`, `collaborazione/LOCK.md`, `governance/DECISIONI.md`, `governance/REGISTRO-MODIFICHE.md`).
 

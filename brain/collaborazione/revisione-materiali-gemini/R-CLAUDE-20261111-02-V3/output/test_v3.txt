@@ -1,0 +1,12 @@
+Verifica che lo slippage sia effettivamente campionato ed eseguito sui trade perdenti. ... ok
+test_c04_c06_brownian_mae_continuous (__main__.TestPropRiskV3.test_c04_c06_brownian_mae_continuous)
+Verifica che la distribuzione del MAE campioni valori conformi al moto browniano continuo. ... ok
+test_crn_stream_isolation (__main__.TestPropRiskV3.test_crn_stream_isolation)
+Verifica che abilitare il MAE non desincronizzi la sequenza degli esiti W/L. ... ok
+test_unlimited_days_ftmo_regime (__main__.TestPropRiskV3.test_unlimited_days_ftmo_regime)
+Verifica che max_days=None azzeri i timeout ed elevi il tasso di successo a rischio prudenziale. ... ok
+
+----------------------------------------------------------------------
+Ran 6 tests in 0.166s
+
+OK

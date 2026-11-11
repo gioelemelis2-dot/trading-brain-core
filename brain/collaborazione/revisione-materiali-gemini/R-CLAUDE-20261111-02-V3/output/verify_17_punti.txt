@@ -1,0 +1,31 @@
+=== RISULTATI VERIFICHE QUANTITATIVE SUI 17 PUNTI ===
+
+[C-01] Markov Initial State:
+  P(W|W) teorico: 0.7000 | Stazionario: 0.4000
+  Simulato V2 (biased): 0.7016 | Stazionario corretto: 0.3988
+
+[C-02] Markov Parameter Admissibility:
+  Min P(L|L) ammissibile per p=0.40: 0.3333
+  WR distorta con P(L|L)=0.20 e clipping: 0.4437 (atteso teorico: 0.4444)
+
+[C-04 / C-06] Brownian MAE:
+  P(MAE <= -0.5R | win) Browniano continuo esatto: 39.8106%
+  P(MAE <= -0.5R | win) Gaussiano V2: 0.2001%
+  Fattore di soppressione V2: 199.0x
+
+[C-08] CLT on Bernoulli Indicator:
+  Varianza indicatore: 0.2400 | SE su N=10k: 0.4899%
+
+[C-09] Kelly Fraction with Costs:
+  E[R_net]: 0.1500R | Var(R): 2.1600
+  f* con costi (rovina <= 5%): 0.4636%
+  f* senza costi: 0.6182%
+
+[C-10] Discrete Random Walk vs Diffusion:
+  Rovina discreta esatta: 12.5739%
+  Rovina diffusione continua: 13.5656%
+  Discreto < Diffusione? True
+
+[C-14] STR-002 Significance Test:
+  Filtro 1.2: N=345, z=8.29
+  Filtro 0.7: N=966, z=5.61
