@@ -10,7 +10,7 @@ Nasce dal **Manuale del Brain v1** (artifact del 23/09/2026), conservato intatto
 
 | Se vuoi… | Apri |
 |---|---|
-| Riprendere il lavoro esattamente dove si è fermato | [`CONTINUITA.md`](CONTINUITA.md) |
+| Riprendere il lavoro esattamente dove si è fermato | [`CONTINUITA.md`](CONTINUITA.md) · prompt di ripresa: [`PROMPT-RIPRESA.md`](PROMPT-RIPRESA.md) |
 | Capire cosa contiene davvero il manuale v1 e i suoi limiti | [`audit/01-DIAGNOSI.md`](audit/01-DIAGNOSI.md) |
 | Vedere quali affermazioni del v1 sono state verificate o corrette | [`audit/02-VERIFICA-AFFERMAZIONI.md`](audit/02-VERIFICA-AFFERMAZIONI.md) |
 | La matrice presente / superficiale / assente / da verificare | [`audit/03-MATRICE-LACUNE.md`](audit/03-MATRICE-LACUNE.md) |

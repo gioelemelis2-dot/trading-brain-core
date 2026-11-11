@@ -23,6 +23,9 @@ Se l'utente approva le proposte P-01…P-11: le esegue Antigravity in una V3.1 s
 - Contestazione, punto C-04: il rimando "(§3, C-05)" va corretto in "(§3, C-06)".
 - Registri: seconda revisione e stato dello Studio 01 nel `REGISTRO-CONOSCENZE.md`; Q-01…Q-07 in `DOMANDE-APERTE.md`; conteggio della bibliografia (audit I-02, I-03, I-06).
 
+## Ripresa dopo interruzioni
+Prompt pronto in [`PROMPT-RIPRESA.md`](PROMPT-RIPRESA.md). Regola: prima di un lavoro lungo, Claude programma un messaggio di ripresa con quel prompt; senza lavoro in corso non programma nulla.
+
 ## Convenzioni da mantenere
 - Lingua: italiano. Mai segnare una fonte come V senza averla letta; mai una padronanza senza cancello superato dichiarato dall'utente; mai dati simulati presentati come reali.
 - Branch di lavoro: `claude/vibrant-cannon-5uunho` del repository `l-Altro`, cartella `brain/` (migrazione sospesa).
