@@ -1,0 +1,1469 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#faf9f5;color:#141413}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Manuale del Brain</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..800&family=Source+Serif+4:ital,opsz,wght@0,8..60,400..700;1,8..60,400..600&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+<style>
+:root{
+  --ground:#F4F6F8; --paper:#FFFFFF; --ink:#141C28; --ink-2:#3A4556; --muted:#667085; --line:#DCE1E8; --line-2:#EBEEF2;
+  --accent:#1D5C7A; --accent-soft:#E3EEF4;
+  --bull:#1E8A5A; --bear:#C8413A;
+  --def:#2F5FB3; --def-bg:#EDF2FB;
+  --ex:#1E8A5A; --ex-bg:#EAF5EF;
+  --warn:#C8413A; --warn-bg:#FBEDEC;
+  --syn:#5B3FA8; --syn-bg:#F1EDFA;
+  --plus:#A8660C; --plus-bg:#FBF3E4;
+  --code-bg:#F0F3F6;
+  --m0:#3B4CB8; --m1:#1F7A8C; --m2:#2E8A57; --m3:#7A8B1F; --m4:#B8860B; --m5:#C4661F; --m6:#C8413A; --m7:#B03A73; --m8:#7A3FB0; --m9:#1D5C7A; --m10:#5A6576;
+  --serif:"Source Serif 4", Georgia, "Times New Roman", serif;
+  --sans:"Archivo", "Helvetica Neue", Arial, sans-serif;
+  --mono:"IBM Plex Mono", ui-monospace, Menlo, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    color-scheme:dark;
+    --ground:#0F141B; --paper:#161D27; --ink:#E8ECF2; --ink-2:#C3CAD5; --muted:#8B96A8; --line:#2A3441; --line-2:#212A36;
+    --accent:#6DB3D4; --accent-soft:#1A2C38;
+    --bull:#4CC08A; --bear:#EE6B63;
+    --def:#7EA3EB; --def-bg:#18233A; --ex:#4CC08A; --ex-bg:#132A20; --warn:#EE6B63; --warn-bg:#331B1B;
+    --syn:#A78CF0; --syn-bg:#221B38; --plus:#E0A24A; --plus-bg:#2E2414; --code-bg:#1C2530;
+    --m0:#8A97F0; --m1:#5EC2D4; --m2:#63C58D; --m3:#B7C95A; --m4:#E0B84A; --m5:#EE9A5A; --m6:#EE6B63; --m7:#E07AAE; --m8:#B48AF0; --m9:#6DB3D4; --m10:#9AA5B6;
+  }
+}
+:root[data-theme="dark"]{
+    color-scheme:dark;
+    --ground:#0F141B; --paper:#161D27; --ink:#E8ECF2; --ink-2:#C3CAD5; --muted:#8B96A8; --line:#2A3441; --line-2:#212A36;
+    --accent:#6DB3D4; --accent-soft:#1A2C38;
+    --bull:#4CC08A; --bear:#EE6B63;
+    --def:#7EA3EB; --def-bg:#18233A; --ex:#4CC08A; --ex-bg:#132A20; --warn:#EE6B63; --warn-bg:#331B1B;
+    --syn:#A78CF0; --syn-bg:#221B38; --plus:#E0A24A; --plus-bg:#2E2414; --code-bg:#1C2530;
+    --m0:#8A97F0; --m1:#5EC2D4; --m2:#63C58D; --m3:#B7C95A; --m4:#E0B84A; --m5:#EE9A5A; --m6:#EE6B63; --m7:#E07AAE; --m8:#B48AF0; --m9:#6DB3D4; --m10:#9AA5B6;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;scroll-padding-top:24px}
+@media (prefers-reduced-motion: reduce){html{scroll-behavior:auto}}
+body{background:var(--ground);color:var(--ink);font-family:var(--serif);font-size:18px;line-height:1.62;-webkit-font-smoothing:antialiased}
+a{color:var(--accent)}
+.layout{display:grid;grid-template-columns:300px minmax(0,1fr);min-height:100vh}
+/* ---------- sidebar ---------- */
+.side{position:sticky;top:0;height:100vh;overflow-y:auto;border-right:1px solid var(--line);background:var(--paper);padding:28px 20px 40px;font-family:var(--sans)}
+.brand{font-stretch:75%;font-weight:800;font-size:26px;letter-spacing:-.01em;line-height:1;margin:0 0 4px;color:var(--ink)}
+.brand small{display:block;font-stretch:100%;font-weight:500;font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-top:8px}
+.overall{margin:20px 0 22px}
+.overall .bar{height:6px;background:var(--line-2);border-radius:3px;overflow:hidden}
+.overall .bar i{display:block;height:100%;background:var(--accent);width:0;transition:width .3s}
+.overall p{font-size:12.5px;color:var(--muted);margin:6px 0 0;font-variant-numeric:tabular-nums}
+.nav{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:2px}
+.nav a{display:grid;grid-template-columns:30px 1fr auto;align-items:center;gap:8px;padding:7px 8px;border-radius:6px;text-decoration:none;color:var(--ink-2);font-size:14px;line-height:1.25}
+.nav a:hover{background:var(--line-2)}
+.nav a.on{background:var(--accent-soft);color:var(--ink)}
+.nav .num{font-stretch:70%;font-weight:800;font-size:18px;color:var(--mc);font-variant-numeric:tabular-nums}
+.nav .pct{font-size:11px;color:var(--muted);font-variant-numeric:tabular-nums}
+.nav a.done .pct{color:var(--bull);font-weight:700}
+.nav .soon{opacity:.45}
+.nav-sub{list-style:none;margin:2px 0 6px 38px;padding:0;display:none}
+.nav a.on + .nav-sub{display:block}
+.nav-sub a{display:block;padding:3px 6px;font-size:12.5px;color:var(--muted);grid-template-columns:none}
+.nav-sub a.read{color:var(--bull)}
+.side-foot{margin-top:24px;padding-top:16px;border-top:1px solid var(--line);font-size:12px;color:var(--muted)}
+.side-foot button{font:inherit;font-size:12px;background:none;border:1px solid var(--line);color:var(--muted);padding:4px 10px;border-radius:5px;cursor:pointer}
+.menu-btn{display:none}
+/* ---------- main ---------- */
+main{padding-inline:clamp(16px,5vw,64px);padding-block:40px 120px;min-width:0}
+.col{max-width:760px;margin:0 auto}
+h1,h2,h3,h4{font-family:var(--sans);color:var(--ink);text-wrap:balance;margin:0}
+.eyebrow{font-family:var(--sans);font-size:12px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+p{margin:0 0 1em}
+strong{font-weight:650}
+ul,ol{padding-left:1.3em;margin:0 0 1em}
+li{margin:.2em 0}
+code{font-family:var(--mono);font-size:.84em;background:var(--code-bg);padding:.08em .35em;border-radius:4px}
+/* cover */
+.cover{padding:32px 0 36px;border-bottom:1px solid var(--line);margin-bottom:40px}
+.cover h1{font-stretch:72%;font-weight:800;font-size:clamp(44px,8vw,82px);line-height:.92;letter-spacing:-.02em;margin:10px 0 18px}
+.cover h1 span{color:var(--accent)}
+.cover .lede{font-size:21px;color:var(--ink-2);max-width:40em}
+.disclaimer{font-family:var(--sans);font-size:13px;color:var(--muted);margin-top:18px}
+/* path map */
+.path{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:10px;margin:22px 0 8px}
+.path a{display:block;text-decoration:none;color:var(--ink);background:var(--paper);border:1px solid var(--line);border-top:4px solid var(--mc);border-radius:6px;padding:12px 14px 12px;font-family:var(--sans)}
+.path a:hover{border-color:var(--mc)}
+.path b{display:block;font-stretch:70%;font-weight:800;font-size:28px;line-height:1;color:var(--mc);font-variant-numeric:tabular-nums}
+.path span{display:block;font-size:14px;font-weight:600;margin-top:6px;line-height:1.25}
+.path em{display:block;font-style:normal;font-size:12px;color:var(--muted);margin-top:4px}
+.path .later{opacity:.55}
+.phases{display:flex;flex-wrap:wrap;gap:6px 14px;font-family:var(--sans);font-size:12.5px;color:var(--muted);margin:14px 0 0}
+.phases i{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:6px;vertical-align:-1px}
+/* how-to */
+.how{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px;margin:18px 0}
+.how div{background:var(--paper);border:1px solid var(--line);border-radius:6px;padding:14px 16px;font-size:16px}
+.how h4{font-size:13px;letter-spacing:.06em;text-transform:uppercase;margin-bottom:6px}
+.chip{display:inline-block;font-family:var(--sans);font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;padding:2px 7px;border-radius:4px;vertical-align:2px}
+.chip.def{background:var(--def-bg);color:var(--def)} .chip.ex{background:var(--ex-bg);color:var(--ex)} .chip.warn{background:var(--warn-bg);color:var(--warn)} .chip.syn{background:var(--syn-bg);color:var(--syn)} .chip.plus{background:var(--plus-bg);color:var(--plus)}
+/* mantra */
+.mantra{background:var(--ink);color:var(--ground);border-radius:8px;padding:26px 28px;margin:30px 0 0}
+.mantra .eyebrow{color:inherit;opacity:.65}
+.mantra ol{list-style:none;padding:0;margin:14px 0 0;display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:10px 26px;counter-reset:m}
+.mantra li{counter-increment:m;font-family:var(--sans);font-size:16px;font-weight:600;line-height:1.3;display:grid;grid-template-columns:26px 1fr}
+.mantra li::before{content:counter(m);font-stretch:70%;font-weight:800;font-size:20px;opacity:.5}
+/* module */
+.module{margin-top:90px;scroll-margin-top:20px}
+.mod-head{border-top:6px solid var(--mc);padding-top:20px;margin-bottom:28px}
+.mod-head .no{font-family:var(--sans);font-stretch:62%;font-weight:800;font-size:96px;line-height:.8;color:var(--mc);font-variant-numeric:tabular-nums}
+.mod-head h2{font-stretch:78%;font-weight:800;font-size:clamp(32px,5vw,46px);line-height:1;letter-spacing:-.01em;margin:10px 0 14px}
+.mod-meta{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:1px;background:var(--line);border:1px solid var(--line);border-radius:6px;overflow:hidden;font-family:var(--sans);font-size:14px;margin:18px 0}
+.mod-meta div{background:var(--paper);padding:10px 14px}
+.mod-meta b{display:block;font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);font-weight:600;margin-bottom:3px}
+.goal{font-size:20px;color:var(--ink-2)}
+/* unit & lesson */
+.unit{margin-top:56px}
+.unit-head{display:flex;align-items:baseline;gap:12px;border-bottom:2px solid var(--mc);padding-bottom:8px;margin-bottom:6px}
+.unit-head .u{font-family:var(--sans);font-stretch:70%;font-weight:800;font-size:22px;color:var(--mc);font-variant-numeric:tabular-nums}
+.unit-head h3{font-stretch:85%;font-weight:750;font-size:26px}
+.unit-intro{font-size:16px;color:var(--muted);font-style:italic;margin:6px 0 0}
+.lesson{margin-top:38px;scroll-margin-top:20px}
+.lesson-head{display:flex;justify-content:space-between;align-items:flex-start;gap:14px;margin-bottom:12px}
+.lesson-head h4{font-size:21px;font-weight:700;line-height:1.25}
+.lesson-head h4 small{display:block;font-size:12px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--mc);margin-bottom:4px}
+.mark{flex:none;font-family:var(--sans);font-size:12px;font-weight:600;border:1px solid var(--line);background:var(--paper);color:var(--muted);border-radius:20px;padding:5px 12px;cursor:pointer;white-space:nowrap}
+.mark:hover{border-color:var(--bull);color:var(--bull)}
+.mark[aria-pressed="true"]{background:var(--bull);border-color:var(--bull);color:#fff}
+.mark:focus-visible,.path a:focus-visible,.nav a:focus-visible,summary:focus-visible,.check input:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+/* boxes */
+.box{border-left:4px solid var(--c);background:var(--bg);border-radius:0 6px 6px 0;padding:14px 18px 4px;margin:18px 0}
+.box > .lbl{display:block;font-family:var(--sans);font-size:11.5px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--c);margin-bottom:6px}
+.box.def{--c:var(--def);--bg:var(--def-bg)}
+.box.ex{--c:var(--ex);--bg:var(--ex-bg)}
+.box.warn{--c:var(--warn);--bg:var(--warn-bg)}
+.box.syn{--c:var(--syn);--bg:var(--syn-bg)}
+.box.plus{--c:var(--plus);--bg:var(--plus-bg)}
+.box p:last-child,.box ul:last-child,.box ol:last-child{margin-bottom:10px}
+.box.def > p:first-of-type{font-size:19px}
+.formula{font-family:var(--mono);font-size:15px;background:var(--code-bg);border-radius:6px;padding:12px 16px;margin:12px 0 16px;overflow-x:auto;white-space:pre;line-height:1.55;color:var(--ink)}
+.box .formula{background:var(--paper)}
+.num-bull{color:var(--bull);font-weight:650} .num-bear{color:var(--bear);font-weight:650}
+/* tables */
+.tbl{overflow-x:auto;margin:14px 0 20px;border:1px solid var(--line);border-radius:6px;background:var(--paper)}
+table{border-collapse:collapse;width:100%;font-family:var(--sans);font-size:14.5px;line-height:1.4}
+th{text-align:left;font-size:11.5px;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);font-weight:600;padding:10px 12px;border-bottom:1px solid var(--line);background:var(--line-2)}
+td{padding:9px 12px;border-bottom:1px solid var(--line-2);vertical-align:top}
+tr:last-child td{border-bottom:0}
+td.n,th.n{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+/* checklist, flashcards, gate */
+.closing{margin-top:56px;display:grid;gap:18px}
+.panel{background:var(--paper);border:1px solid var(--line);border-radius:8px;padding:20px 22px}
+.panel h3{font-size:18px;font-weight:750;margin-bottom:12px;display:flex;align-items:center;gap:10px}
+.check{list-style:none;padding:0;margin:0;display:grid;gap:8px}
+.check label{display:grid;grid-template-columns:22px 1fr;gap:10px;align-items:start;cursor:pointer;font-size:16.5px;line-height:1.45}
+.check input{width:18px;height:18px;margin-top:3px;accent-color:var(--bull)}
+.check input:checked + span{color:var(--muted);text-decoration:line-through;text-decoration-color:var(--line)}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:10px}
+details.card{border:1px solid var(--line);border-radius:6px;background:var(--ground);font-size:16px}
+details.card summary{cursor:pointer;padding:12px 14px;font-family:var(--sans);font-weight:600;font-size:15px;line-height:1.35;list-style:none}
+details.card summary::-webkit-details-marker{display:none}
+details.card summary::after{content:"Mostra risposta";display:block;font-size:11px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-top:6px}
+details.card[open] summary::after{content:"Nascondi"}
+details.card[open]{background:var(--paper);border-color:var(--syn)}
+details.card div{padding:0 14px 12px;color:var(--ink-2)}
+.gate{background:var(--mc);color:#fff;border-radius:8px;padding:22px 24px}
+:root[data-theme="dark"] .gate{color:#0F141B}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .gate{color:#0F141B}}
+.gate .eyebrow{color:inherit;opacity:.8}
+.gate p{margin:.4em 0 0;font-size:18px;font-family:var(--sans);font-weight:600;line-height:1.4}
+.next{font-family:var(--sans);font-size:14px;margin-top:10px}
+.next a{color:inherit;font-weight:700}
+.soon-block{margin-top:90px;border:2px dashed var(--line);border-radius:10px;padding:26px;font-family:var(--sans);color:var(--muted)}
+.soon-block h2{font-size:22px;color:var(--ink-2);margin-bottom:8px}
+.src{font-family:var(--sans);font-size:12.5px;color:var(--muted);margin-top:8px}
+/* mobile */
+@media (max-width: 900px){
+  .layout{display:block}
+  .side{position:fixed;inset:0 auto 0 0;width:min(320px,86vw);z-index:20;transform:translateX(-102%);transition:transform .25s,visibility .25s;visibility:hidden;padding-top:calc(28px + env(safe-area-inset-top,0px))}
+  .side.open{transform:none;visibility:visible;box-shadow:0 0 40px rgba(0,0,0,.25)}
+  .menu-btn{display:flex;align-items:center;gap:8px;position:sticky;top:env(safe-area-inset-top,0px);z-index:10;margin:0 0 0 auto;font-family:var(--sans);font-weight:600;font-size:14px;background:var(--ink);color:var(--ground);border:0;border-radius:20px;padding:9px 16px;cursor:pointer}
+  main{padding-block:16px 100px}
+  body{font-size:17px}
+  .mod-head .no{font-size:72px}
+}
+</style>
+
+<div class="layout">
+<aside class="side" id="side" aria-label="Indice del manuale">
+  <p class="brand">Brain<small>Manuale di studio · trading</small></p>
+  <div class="overall"><div class="bar"><i id="ovbar"></i></div><p id="ovtxt">0 lezioni studiate</p></div>
+  <ul class="nav" id="nav"></ul>
+  <div class="side-foot">
+    <p>I progressi restano salvati in questo browser.</p>
+    <button type="button" id="reset">Azzera progressi</button> <span id="reset-confirm" hidden><button type="button" id="reset-yes">Conferma</button></span>
+  </div>
+</aside>
+<main>
+<button class="menu-btn" id="menu" type="button" aria-controls="side" aria-expanded="false">☰ Indice</button>
+<div class="col">
+<script type="application/json" id="plan">[
+{"id":"m0","n":0,"t":"Fondamenta mentali e statistiche"},
+{"id":"m1","n":1,"t":"Come funzionano i mercati"},
+{"id":"m2","n":2,"t":"Macro, politica monetaria e flussi"},
+{"id":"m3","n":3,"t":"Analisi tecnica"},
+{"id":"m4","n":4,"t":"Lettura avanzata del prezzo"},
+{"id":"m5","n":5,"t":"Analisi fondamentale e dati"},
+{"id":"m6","n":6,"t":"Sistema operativo e rischio"},
+{"id":"m7","n":7,"t":"Strategie e playbook"},
+{"id":"m8","n":8,"t":"Validazione, ricerca, automazione"},
+{"id":"m9","n":9,"t":"Operare davvero"},
+{"id":"m10","n":10,"t":"Formazione di supporto"}
+]</script>
+
+<header class="cover">
+  <p class="eyebrow">Il tuo vault Obsidian, riscritto per essere studiato</p>
+  <h1>Dal pensiero statistico<br>al <span>primo trade reale</span></h1>
+  <p class="lede">Un percorso unico e in ordine: si parte da come si ragiona, si passa per i mercati, il contesto e la lettura del prezzo, e si arriva a un sistema operativo misurato sui dati. Ogni modulo si chiude con un <strong>cancello</strong>: finché non lo superi, non si va avanti.</p>
+  <p class="disclaimer">Metodo di studio e disciplina personale. Non è consulenza finanziaria.</p>
+</header>
+
+<section aria-labelledby="percorso">
+  <p class="eyebrow" id="percorso">Il percorso</p>
+  <div class="path">
+    <a href="#m0" style="--mc:var(--m0)"><b>0</b><span>Fondamenta mentali e statistiche</span><em>Pensare in aspettativa</em></a>
+    <a href="#m1" style="--mc:var(--m1)"><b>1</b><span>Come funzionano i mercati</span><em>Mercati, strumenti, orizzonti</em></a>
+    <a href="#m2" style="--mc:var(--m2)"><b>2</b><span>Macro, politica monetaria e flussi</span><em>Che partita si gioca</em></a>
+    <a href="#m3" style="--mc:var(--m3)"><b>3</b><span>Analisi tecnica</span><em>Struttura e livelli, oggettivi</em></a>
+    <a href="#m4" style="--mc:var(--m4)"><b>4</b><span>Lettura avanzata del prezzo</span><em>Asta, order flow, pattern misurati</em></a>
+    <a href="#m5" style="--mc:var(--m5)"><b>5</b><span>Analisi fondamentale e dati</span><em>Il perché di un movimento</em></a>
+    <a href="#m6" style="--mc:var(--m6)"><b>6</b><span>Sistema operativo e rischio</span><em>Esiti limitati e prevedibili</em></a>
+    <a href="#m7" style="--mc:var(--m7)"><b>7</b><span>Strategie e playbook</span><em>Il repertorio, passo passo</em></a>
+    <a href="#m8" style="--mc:var(--m8)"><b>8</b><span>Validazione, ricerca, automazione</span><em>Da ipotesi a strategia</em></a>
+    <a href="#m9" style="--mc:var(--m9)"><b>9</b><span>Operare davvero</span><em>Broker, prop firm, capitale reale</em></a>
+    <a href="#m10" style="--mc:var(--m10)"><b>10</b><span>Formazione di supporto</span><em>In parallelo: magistrale e libri</em></a>
+  </div>
+  <div class="phases">
+    <span><i style="background:var(--m0)"></i>Fondamenta · 0</span>
+    <span><i style="background:var(--m1)"></i>Contesto · 1–2</span>
+    <span><i style="background:var(--m3)"></i>Analisi · 3–5</span>
+    <span><i style="background:var(--m6)"></i>Operatività · 6–7</span>
+    <span><i style="background:var(--m8)"></i>Validazione e reale · 8–9</span>
+  </div>
+</section>
+
+<section aria-labelledby="come" style="margin-top:44px">
+  <p class="eyebrow" id="come">Come si usa questo manuale</p>
+  <div class="how">
+    <div><h4>Un modulo alla volta</h4>Parti dal Modulo 0 e vai in ordine. Una sessione di studio copre un'unità: meglio 3–4 sessioni corte a settimana che una lunga.</div>
+    <div><h4>Testati, non rileggere</h4>Alla fine di ogni modulo ci sono flashcard e una checklist. Rispondi a voce prima di aprire la risposta: è lì che si impara.</div>
+    <div><h4>Il cancello è reale</h4>Se non superi il cancello, la sessione dopo resta sullo stesso modulo. Il Modulo 10 procede in parallelo a tutti gli altri.</div>
+  </div>
+  <p style="font-size:16px;color:var(--ink-2)">I riquadri hanno sempre lo stesso significato:
+    <span class="chip def">Definizione</span> il concetto in una frase ·
+    <span class="chip ex">Esempio</span> numeri concreti ·
+    <span class="chip warn">Errori tipici</span> dove si sbaglia ·
+    <span class="chip syn">Sintesi</span> la versione da ripetere a memoria ·
+    <span class="chip plus">Oltre il vault</span> contenuti aggiunti per completare la formazione.</p>
+</section>
+
+<div class="mantra">
+  <p class="eyebrow">Il mantra · si rilegge a ogni sessione</p>
+  <ol>
+    <li>Decido prima, eseguo dopo.</li>
+    <li>Il singolo trade non conta.</li>
+    <li>Prima il rischio, poi il resto.</li>
+    <li>Fuori dalle regole si sta fermi.</li>
+    <li>Valuto il processo, non il risultato.</li>
+    <li>Senza dato non c'è verità.</li>
+    <li>Il mercato non mi deve nulla.</li>
+  </ol>
+</div>
+
+<section class="module" id="m0" style="--mc:var(--m0)">
+<header class="mod-head">
+  <div class="no">0</div>
+  <h2>Fondamenta mentali e statistiche</h2>
+  <p class="goal">Interiorizzare <em>come si ragiona</em> prima di operare: onestà sull'obiettivo, pensiero in aspettativa e probabilità, e la consapevolezza che il nemico numero uno è dentro di te.</p>
+  <div class="mod-meta">
+    <div><b>Prerequisiti</b>Nessuno</div>
+    <div><b>Durata</b>1–2 settimane</div>
+    <div><b>Quando tornarci</b>A ogni drawdown</div>
+  </div>
+</header>
+
+<!-- ============ UNITÀ 0.1 ============ -->
+<div class="unit">
+  <div class="unit-head"><span class="u">0.1</span><h3>L'onestà sull'obiettivo</h3></div>
+  <p class="unit-intro">Prima di imparare qualsiasi tecnica, bisogna sapere contro che cosa si gioca. Questa unità mette i numeri sul tavolo.</p>
+
+  <article class="lesson" id="m0-verdetto" data-short="Il verdetto onesto">
+    <div class="lesson-head"><h4><small>Lezione 1</small>Il verdetto onesto: battere il mercato è possibile, ma raro</h4></div>
+    <div class="box def"><span class="lbl">Definizione</span>
+      <p>Battere il mercato in modo statistico è <strong>possibile ma raro e difficile</strong>. L'obiettivo realistico è una piccola aspettativa positiva che si compone nel tempo, non la ricchezza rapida.</p>
+    </div>
+    <p>Sei prove, messe insieme, portano a questa conclusione:</p>
+    <ol>
+      <li><strong>La base rate è contro di te.</strong> La grande maggioranza dei trader retail perde. Tra i day trader studiati con rigore, circa l'<strong>1%</strong> è profittevole in modo persistente al netto dei costi.</li>
+      <li><strong>La skill esiste e persiste.</strong> Non è tutto fortuna: chi è bravo tende a restarlo. Ma sono pochissimi.</li>
+      <li><strong>Gli edge accademici in gran parte non replicano</strong> (dal 65 all'82% fallisce un test serio) e quelli che replicano si indeboliscono dopo la pubblicazione.</li>
+      <li><strong>Ciò che sopravvive</strong> (trend, momentum, value, quality, low-vol, carry) paga premi modesti, con drawdown che durano anni.</li>
+      <li><strong>La teoria</strong> (Grossman-Stiglitz) dice che un piccolo edge <em>deve</em> esistere per ripagare chi fa analisi. Quindi non è zero.</li>
+      <li><strong>Il retail ha una nicchia</strong>: pazienza, orizzonte lungo, flessibilità.</li>
+    </ol>
+    <h4 style="font-size:16px;margin:20px 0 8px">Gli studi che contano</h4>
+    <div class="tbl"><table>
+      <thead><tr><th>Studio</th><th>Campione</th><th>Risultato chiave</th></tr></thead>
+      <tbody>
+        <tr><td>Barber, Lee, Liu, Odean (2014)</td><td>Tutti i day trader di Taiwan, 1992–2006</td><td>Meno dell'1% batte il mercato netto di costi in modo affidabile. I top 500 fanno circa +37,9 bps/giorno, i peggiori −28,9.</td></tr>
+        <tr><td>Chague, De-Losso, Giovannetti (2020)</td><td>Tutti i nuovi day trader su futures in Brasile, 2013–2015</td><td>Tra chi ha insistito oltre 300 giorni, il <strong>97% ha perso</strong>. Solo l'1,1% ha guadagnato più del salario minimo. Nessun segno di apprendimento con l'esperienza.</td></tr>
+        <tr><td>Barber, Odean (2000)</td><td>Investitori individuali USA</td><td>Il quintile più attivo sottoperforma di circa 6,5% l'anno, soprattutto per costi e cattivo timing.</td></tr>
+        <tr><td>Disclosure ESMA</td><td>Conti CFD retail nell'UE</td><td>Tra il 70 e l'80% dei conti perde denaro.</td></tr>
+      </tbody>
+    </table></div>
+    <div class="box syn"><span class="lbl">Sintesi da ripetere</span>
+      <p>Non "posso battere il mercato", né "è impossibile". La frase giusta è: <strong>"Posso provare a costruire una piccola aspettativa positiva, misurarla onestamente e proteggerla con il rischio. Probabilmente non ci riuscirò, e se ci riesco il premio sarà modesto."</strong></p>
+    </div>
+    <p>Da qui discende tutto il resto del percorso: rischio prima di tutto (un edge piccolo si cancella con un solo errore di size), costi sotto controllo, backtest trattati con lo scetticismo di un paper, e la capacità di capire <em>presto</em> se un edge non c'è, per smettere a basso costo.</p>
+  </article>
+
+  <article class="lesson" id="m0-retail" data-short="Perché i retail perdono">
+    <div class="lesson-head"><h4><small>Lezione 2</small>Perché i retail perdono, e come ci si protegge</h4></div>
+    <div class="box def"><span class="lbl">Definizione</span>
+      <p>Non c'è una causa unica. Le perdite dei retail sono la somma di <strong>nessun edge reale + costi da overtrading + rischio gestito male + errori di comportamento</strong> in esecuzione.</p>
+    </div>
+    <p>Le cause, in ordine di peso per chi inizia:</p>
+    <div class="tbl"><table>
+      <thead><tr><th>Causa</th><th>Cosa succede</th><th>La difesa</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Nessun edge</strong><br><span class="num-bear">peso altissimo</span></td><td>Si opera sul rumore. Un sistema senza aspettativa netta positiva perde per costruzione.</td><td>Validare prima di rischiare; criteri di abbandono decisi a freddo.</td></tr>
+        <tr><td><strong>Costi e overtrading</strong><br><span class="num-bear">alto</span></td><td>Spread, commissioni, slippage e tasse erodono tutto. L'overtrading nasce da noia, FOMO e voglia di rivincita.</td><td>Costi dentro ogni calcolo di aspettativa, bassa rotazione, tetto al numero di trade.</td></tr>
+        <tr><td><strong>Rischio gestito male</strong><br><span class="num-bear">alto</span></td><td>Size troppo grande, stop allargati, mediare al ribasso. Un giorno fuori controllo cancella mesi.</td><td>Rischio fisso e piccolo, stop mai allargati, mai mediare.</td></tr>
+        <tr><td><strong>Emozioni in esecuzione</strong><br>alto</td><td>Disposition effect, overconfidence, recency: si misurano nei dati reali dei conti.</td><td>Regole meccaniche, checklist, attrito, voto di aderenza.</td></tr>
+        <tr><td><strong>Campione troppo piccolo</strong><br>medio</td><td>Si cambia strategia dopo 10 trade, o si alza la size dopo una serie fortunata.</td><td>Numero minimo di trade scritto nel piano.</td></tr>
+        <tr><td><strong>Decadimento dell'edge</strong><br>basso all'inizio</td><td>Colpisce solo chi un edge ce l'aveva davvero.</td><td>Monitorare l'aspettativa ogni mese e ri-testare.</td></tr>
+      </tbody>
+    </table></div>
+    <p>A queste si aggiungono tre cause strutturali: il gioco di breve periodo è <strong>a somma negativa</strong> dopo i costi, spesso si usano <strong>orizzonti e strumenti sbagliati</strong> per la propria situazione (scalping con costi da retail, CFD tenuti a lungo), e manca un <strong>ciclo di apprendimento</strong> (niente journal, stessi errori ripetuti).</p>
+    <div class="box ex"><span class="lbl">Esempio</span>
+      <p>Lo studio brasiliano è il dato più eloquente: dopo più di 300 giorni di day trading <strong>non si vede alcun miglioramento</strong>. Se il problema fosse solo imparare, la curva salirebbe. Non sale: per molti l'edge non c'è e non arriva.</p>
+    </div>
+    <div class="box syn"><span class="lbl">Sintesi da ripetere</span>
+      <p>Perdere è il <strong>default statistico</strong>. Ci si protegge invertendo uno per uno i meccanismi che producono la perdita. La prima protezione: <strong>non rischiare denaro finché un edge non è misurato</strong>, e smettere presto se non c'è.</p>
+    </div>
+  </article>
+
+  <article class="lesson" id="m0-evidenza" data-short="Replication crisis e fattori">
+    <div class="lesson-head"><h4><small>Lezione 3</small>La replication crisis, i fattori che sopravvivono e perché un edge può esistere</h4></div>
+    <div class="box def"><span class="lbl">Definizione</span>
+      <p>Gran parte delle "anomalie" pubblicate nelle riviste accademiche <strong>non sopravvive</strong> a un test rigoroso: sono in buona parte il prodotto di tanti tentativi e di test multipli non corretti.</p>
+    </div>
+    <div class="tbl"><table>
+      <thead><tr><th>Studio</th><th>Cosa ha trovato</th></tr></thead>
+      <tbody>
+        <tr><td>Hou, Xue, Zhang (2020)</td><td>Ritestate <strong>452 anomalie</strong>: il 65% non supera nemmeno |t| &gt; 1,96; con la soglia corretta per test multipli (|t| &gt; 2,78) fallisce l'<strong>82%</strong>.</td></tr>
+        <tr><td>Harvey, Liu, Zhu (2016)</td><td>Su 316 fattori pubblicati (il "factor zoo"), tra il 27 e il 53% sono false scoperte. Proposta: per un nuovo fattore serve <strong>t &gt; 3</strong>.</td></tr>
+        <tr><td>McLean, Pontiff (2016)</td><td>Dopo la pubblicazione i rendimenti di un'anomalia calano del <strong>26%</strong> rispetto all'in-sample, e del 58% rispetto al periodo pre-pubblicazione fuori campione. Una parte è overfitting, una parte è arbitraggio.</td></tr>
+      </tbody>
+    </table></div>
+    <p><strong>Perché succede:</strong> p-hacking (provare molte varianti e riportare la migliore), HARKing (costruire l'ipotesi dopo aver visto i risultati), test multipli non corretti (su 1000 strategie casuali, circa 50 risultano "significative" al 5% per puro caso), incentivi a pubblicare risultati positivi.</p>
+
+    <h4 style="font-size:16px;margin:22px 0 8px">Cosa forse sopravvive</h4>
+    <div class="tbl"><table>
+      <thead><tr><th>Fattore</th><th>A favore</th><th>Il prezzo da pagare</th></tr></thead>
+      <tbody>
+        <tr><td>Trend-following</td><td>Un secolo di dati su 67 mercati (Hurst, Ooi, Pedersen 2017)</td><td>Decennio debole 2011–2019; perdite ripetute nei range</td></tr>
+        <tr><td>Momentum cross-sezionale</td><td>Robusto da Jegadeesh-Titman (1993), internazionale</td><td>Crolli violenti nei rimbalzi dopo i minimi (2009)</td></tr>
+        <tr><td>Value</td><td>Decenni di dati, Fama-French</td><td>2017–2020 disastroso</td></tr>
+        <tr><td>Quality</td><td>Novy-Marx (2013), fattore RMW</td><td>Più recente, meno verificato fuori campione</td></tr>
+        <tr><td>Low volatility</td><td>Frazzini-Pedersen (2014)</td><td>Serve leva per rendere; è affollato</td></tr>
+        <tr><td>Carry</td><td>Koijen et al. (2018), su più asset</td><td>"Raccogli monetine davanti a un rullo": code negative brutali</td></tr>
+      </tbody>
+    </table></div>
+    <p>I più credibili hanno in comune tre cose: una spiegazione che è insieme comportamentale e di rischio, funzionano su molti mercati, e richiedono di reggere drawdown pluriennali.</p>
+    <p>Anche un'anomalia che replica può non essere tradabile: <strong>costi di transazione</strong> (dopo costi realistici molte anomalie ad alta rotazione non hanno alpha), <strong>gamba short</strong> impossibile per il retail, <strong>capacità</strong> limitata, <strong>affollamento</strong>, dipendenza dal regime.</p>
+
+    <h4 style="font-size:16px;margin:22px 0 8px">Il paradosso di Grossman-Stiglitz (1980)</h4>
+    <p>Raccogliere informazione costa. Se i prezzi riflettessero già tutto, nessuno sarebbe pagato per farlo, quindi nessuno lo farebbe, e allora i prezzi non rifletterebbero l'informazione. Contraddizione. All'equilibrio i prezzi sono <em>quasi</em> efficienti: resta appena l'inefficienza che serve a ripagare chi analizza. Andrew Lo (<em>Adaptive Markets</em>, 2017) aggiunge che l'efficienza cambia col contesto: gli edge nascono, maturano, decadono, a volte tornano.</p>
+    <div class="box ex"><span class="lbl">Esempio · le 5 domande su ogni edge</span>
+      <ol>
+        <li>Ha una <strong>spiegazione economica</strong>? Chi perde, e perché non smette?</li>
+        <li>Regge <strong>fuori campione</strong>, su altri mercati e periodi?</li>
+        <li>È positivo <strong>al netto di costi realistici</strong>?</li>
+        <li>Ha <strong>capacità</strong> per la tua size? (Per il retail di solito sì.)</li>
+        <li>C'è spazio perché <strong>non sia già stato arbitrato</strong>?</li>
+      </ol>
+      <p>Se anche una sola risposta è "no", si scarta.</p>
+    </div>
+    <div class="box syn"><span class="lbl">Sintesi da ripetere</span>
+      <p>Tratta <strong>ogni backtest, anche il tuo, con lo scetticismo di un paper</strong>. L'edge esiste perché è il compenso per un lavoro reale (analisi, disciplina, sopportazione del rischio): è piccolo, condizionato e va ri-testato.</p>
+    </div>
+  </article>
+
+  <article class="lesson" id="m0-scientifico" data-short="Il metodo scientifico">
+    <div class="lesson-head"><h4><small>Lezione 4</small>Il metodo scientifico applicato al proprio trading</h4></div>
+    <div class="box def"><span class="lbl">Definizione</span>
+      <p>Ogni strategia è un'<strong>ipotesi da confutare</strong>, non da confermare. Le si chiede lo stesso rigore che si chiederebbe a un paper.</p>
+    </div>
+    <p>Il protocollo in sette passi:</p>
+    <ol>
+      <li><strong>Pre-registra l'ipotesi</strong> prima di guardare i risultati: quale edge, perché esiste, win rate e R:R attesi, quando non dovrebbe funzionare, criterio numerico di successo. Poi non cambiarlo.</li>
+      <li><strong>Separa in-sample e out-of-sample.</strong> Tieni da parte dati che non guardi durante la messa a punto. Li guardi una volta sola, alla fine.</li>
+      <li><strong>Correggi per i test multipli.</strong> Se hai provato 20 varianti, la migliore è "significativa" per caso: alza l'asticella.</li>
+      <li><strong>Replica</strong> su un altro mercato e un altro periodo.</li>
+      <li><strong>Revisione avversariale</strong>: prova a smontarla. Costi non contati? Informazione dal futuro? Dipendenza dal regime?</li>
+      <li><strong>Criteri di abbandono decisi a freddo</strong>: "se dopo N trade reali l'aspettativa netta è ≤ 0, scarto".</li>
+      <li><strong>Scetticismo verso i risultati positivi.</strong> Un backtest che "funziona benissimo" è un segnale d'allarme.</li>
+    </ol>
+    <div class="box warn"><span class="lbl">Errori tipici</span>
+      <ul>
+        <li>Guardare i dati di verifica, correggere le regole, e poi riguardarli: sono "bruciati".</li>
+        <li>Scrivere l'ipotesi dopo aver visto il grafico (HARKing).</li>
+        <li>Festeggiare la migliore di 50 varianti senza chiedersi quante ne hai provate.</li>
+      </ul>
+    </div>
+    <div class="box syn"><span class="lbl">Sintesi da ripetere</span>
+      <p>Il cervello è fatto per trovare pattern e confermarli. Il metodo scientifico è l'attrito che impedisce di ingannare la persona più facile da ingannare: <strong>te stesso</strong>.</p>
+    </div>
+  </article>
+</div>
+
+<!-- ============ UNITÀ 0.2 ============ -->
+<div class="unit">
+  <div class="unit-head"><span class="u">0.2</span><h3>Il modello mentale</h3></div>
+  <p class="unit-intro">Cosa credere del mercato e di se stessi. Tutto il resto del manuale è l'applicazione operativa di queste idee.</p>
+
+  <article class="lesson" id="m0-casuale" data-short="Mercato quasi-casuale">
+    <div class="lesson-head"><h4><small>Lezione 5</small>Il mercato come sistema quasi-casuale</h4></div>
+    <div class="box def"><span class="lbl">Definizione</span>
+      <p>Nel breve periodo il prezzo si comporta quasi come una <strong>passeggiata aleatoria con deriva</strong>: molto rumore, edge reali piccoli, condizionati e deperibili.</p>
+    </div>
+    <p>Molti "pattern" sono <strong>pareidolia</strong>: li vediamo perché il cervello cerca forme, come i volti nelle nuvole. Gli edge veri esistono solo in un contesto preciso (un orario, un regime, uno strumento) e si consumano man mano che vengono sfruttati.</p>
+    <p>Conseguenze pratiche: scetticismo di default verso chi promette win rate alti o certezze; nessun setup operativo senza backtest e campione adeguato; ri-validazione periodica; semplicità, perché aggiungere indicatori per "spiegare" il rumore è overfitting.</p>
+    <div class="box ex"><span class="lbl">Esempio · il filtro critico</span>
+      <p>Davanti a qualsiasi teoria (Elliott, Wyckoff, Smart Money Concepts…) si fa una sola domanda: <em>"Si traduce in una regola testabile con un edge misurabile?"</em>. Se no, è cultura, non operatività.</p>
+    </div>
+    <div class="box warn"><span class="lbl">Errori tipici</span>
+      <ul><li>Ottimizzare i parametri finché il passato è perfetto.</li><li>Scambiare una striscia fortunata per abilità.</li><li>Cercare la strategia "definitiva" invece di gestire un edge modesto.</li></ul>
+    </div>
+  </article>
+
+  <article class="lesson" id="m0-probabilita" data-short="Pensare in probabilità">
+    <div class="lesson-head"><h4><small>Lezione 6</small>Pensare in probabilità</h4></div>
+    <div class="box def"><span class="lbl">Definizione</span>
+      <p>Il singolo trade è incerto; la serie di trade, se c'è un edge, è prevedibile. Quindi non ci si lega a nessun esito singolo.</p>
+    </div>
+    <p>Ogni trade è <strong>un'estrazione</strong> da una distribuzione. Se hai un edge, la distribuzione ha aspettativa positiva, ma non sai quali trade vinceranno. È la logica del casinò: nessuna mano è sicura, il risultato del mese sì. Mark Douglas (<em>Trading in the Zone</em>) la riassume così: <strong>"qualsiasi cosa può succedere"</strong>, e per guadagnare non serve sapere cosa succederà dopo.</p>
+    <div class="box ex"><span class="lbl">Esempio</span>
+      <p>Hai un setup che vince il 45% delle volte con vincita media 2R. Prendi uno stop pieno: <span class="num-bear">−1R</span>. Seguiva il piano? Allora non è un errore, è il <strong>costo previsto</strong> del fare business, come l'affitto di un negozio. La domanda giusta non è "funzionerà?" ma "qual è la mia aspettativa qui?".</p>
+    </div>
+    <div class="box warn"><span class="lbl">Errori tipici</span>
+      <ul><li>Trattare un trade "ad alta convinzione" come una certezza e sovradimensionarlo.</li><li>Vivere ogni perdita come un fallimento personale.</li><li>Contare i "se avessi tenuto": esiste solo ciò che è nel journal.</li></ul>
+    </div>
+  </article>
+
+  <article class="lesson" id="m0-processo" data-short="Processo batte risultato">
+    <div class="lesson-head"><h4><small>Lezione 7</small>Processo batte risultato</h4></div>
+    <div class="box def"><span class="lbl">Definizione</span>
+      <p>Su campioni piccoli l'esito è rumore: si valuta la <strong>qualità della decisione</strong>, non il profitto del singolo trade.</p>
+    </div>
+    <div class="tbl"><table>
+      <thead><tr><th></th><th>Esito positivo</th><th>Esito negativo</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Processo corretto</strong></td><td class="num-bull">Meritato: ripetere</td><td>Sfortuna: ripetere identico</td></tr>
+        <tr><td><strong>Processo sbagliato</strong></td><td class="num-bear">Pericoloso: premia l'errore</td><td>Giusta punizione: correggere</td></tr>
+      </tbody>
+    </table></div>
+    <p>Il trade più pericoloso della carriera è <strong>un vincente che ha rotto le regole</strong>: insegna al cervello che rompere le regole paga. Per questo nel journal il campo che conta di più è il <strong>voto di aderenza</strong>, non il P/L. In review si misura la correlazione tra aderenza e risultato: se seguendo le regole i numeri migliorano, il processo ha un edge.</p>
+    <div class="box plus"><span class="lbl">Oltre il vault</span>
+      <p>Annie Duke (<em>Thinking in Bets</em>) chiama "resulting" l'errore di giudicare una decisione dal suo esito. Il rimedio che propone è chiedersi: <em>"Con le informazioni che avevo allora, rifarei la stessa scelta?"</em>. Se sì, la decisione era buona, qualunque sia stato il risultato.</p>
+    </div>
+  </article>
+
+  <article class="lesson" id="m0-regole" data-short="Le 10 regole">
+    <div class="lesson-head"><h4><small>Lezione 8</small>Principi guida e le 10 regole non negoziabili</h4></div>
+    <p><strong>Cosa credo del mercato:</strong> è competitivo e quasi efficiente; nessuno lo prevede in modo affidabile; gli edge sono piccoli e si manifestano solo su molti trade. <strong>Cosa credo di me:</strong> il mio avversario sono le mie emozioni; il bisogno di avere ragione mi costa denaro; sotto stress decido male, quindi decido prima, quando sono lucido.</p>
+    <p>Le regole che non si discutono mai durante la sessione. Si cambiano solo per iscritto, in review:</p>
+    <ol>
+      <li><strong>Rischio per trade fisso e piccolo.</strong> Mai aumentarlo per recuperare.</li>
+      <li><strong>Stop deciso prima dell'ingresso</strong> e inserito subito. Non si allarga mai.</li>
+      <li><strong>Nessun ingresso senza checklist pre-trade.</strong></li>
+      <li><strong>Solo i setup scritti</strong> nelle regole di ingaggio. Fuori dalle regole si sta fermi.</li>
+      <li><strong>Rispetto il kill switch.</strong> Raggiunto il limite di perdita giornaliera, chiudo la piattaforma.</li>
+      <li><strong>Un solo rischio per fattore correlato</strong> alla volta.</li>
+      <li><strong>Ogni trade nel journal</strong> entro fine giornata, con stato emotivo e voto di aderenza.</li>
+      <li><strong>Non opero nelle condizioni proibite</strong>: news ad alto impatto, stanchezza, tilt, noia.</li>
+      <li><strong>Non modifico le regole durante la sessione.</strong></li>
+      <li><strong>Se non so perché sono in un trade, esco.</strong></li>
+    </ol>
+    <div class="box syn"><span class="lbl">Sintesi da ripetere</span>
+      <p>Non prevedo il mercato: gestisco probabilità e rischio. L'unica cosa che controllo davvero è la <strong>coerenza del mio processo</strong>. Ciò che non è scritto non esiste e verrà rinegoziato dall'emozione.</p>
+    </div>
+  </article>
+</div>
+
+<!-- ============ UNITÀ 0.3 ============ -->
+<div class="unit">
+  <div class="unit-head"><span class="u">0.3</span><h3>L'ancora statistica</h3></div>
+  <p class="unit-intro">I numeri che trasformano un'opinione in una misura. Si studiano in quest'ordine, perché ognuno usa il precedente.</p>
+
+  <article class="lesson" id="m0-edge" data-short="Edge">
+    <div class="lesson-head"><h4><small>Lezione 9</small>Edge</h4></div>
+    <div class="box def"><span class="lbl">Definizione</span>
+      <p>Un edge è un <strong>motivo strutturale e ripetibile</strong> per cui la tua aspettativa è positiva, al netto dei costi.</p>
+    </div>
+    <p>Non è un indicatore né un pattern "che funziona": è un'<strong>asimmetria persistente</strong> tra il prezzo e la probabilità reale. Se non sai spiegare <em>chi c'è dall'altra parte e perché perde</em>, probabilmente non hai un edge.</p>
+    <div class="tbl"><table>
+      <thead><tr><th>Fonte</th><th>Esempio</th><th>Realistico per un retail?</th></tr></thead>
+      <tbody>
+        <tr><td>Comportamentale</td><td>Sfruttare vendite di panico, FOMO, chiusure forzate altrui</td><td class="num-bull">Sì, la più accessibile</td></tr>
+        <tr><td>Statistico condizionato</td><td>Setup con base rate favorevole in un contesto preciso</td><td class="num-bull">Sì, se validato</td></tr>
+        <tr><td>Strutturale</td><td>Orari, aperture, rollover, scadenze</td><td>In parte</td></tr>
+        <tr><td>Esecuzione e costi</td><td>Costi bassi, niente slippage inutile</td><td class="num-bull">Sì (perdita evitata)</td></tr>
+        <tr><td>Informativo</td><td>Sapere prima degli altri</td><td class="num-bear">Quasi mai</td></tr>
+      </tbody>
+    </table></div>
+    <p><strong>Un edge vero</strong> ha: un campione ampio con aspettativa positiva, positiva al netto dei costi, una spiegazione causale plausibile, e robustezza (non si rompe cambiando di poco i parametri). Gli edge si affollano e si consumano: vanno ri-testati ogni mese.</p>
+    <div class="box warn"><span class="lbl">Errori tipici</span>
+      <ul><li>Scambiare una serie fortunata per un edge.</li><li>Un "edge" senza spiegazione del perché.</li><li>Calcolare l'aspettativa al lordo dei costi.</li></ul>
+    </div>
+    <div class="box syn"><span class="lbl">Sintesi da ripetere</span><p>Senza edge, nessun risk management ti salva: <strong>ritarda solo la perdita</strong>.</p></div>
+  </article>
+
+  <article class="lesson" id="m0-aspettativa" data-short="Aspettativa">
+    <div class="lesson-head"><h4><small>Lezione 10</small>Aspettativa</h4></div>
+    <div class="box def"><span class="lbl">Definizione</span>
+      <p>Quanto ti aspetti di guadagnare o perdere <strong>in media per trade</strong>, ripetendolo molte volte.</p>
+    </div>
+    <div class="formula">E    = (P_vincita × vincita_media) − (P_perdita × perdita_media)
+E[R] = P_vincita × R_medio_vincente − P_perdita × 1      (in multipli di rischio)</div>
+    <div class="box ex"><span class="lbl">Esempio · due sistemi</span>
+      <p><strong>Sistema A</strong>: vince il 40%, vincita media 2R, perdita 1R.<br>
+      <code>E = 0,40 × 2 − 0,60 × 1 = +0,20R</code> per trade → su 100 trade circa <span class="num-bull">+20R</span>. Win rate basso, sistema ottimo.</p>
+      <p><strong>Sistema B</strong>: vince il 60%, vincita media 0,5R, perdita 1R.<br>
+      <code>E = 0,60 × 0,5 − 0,40 × 1 = −0,10R</code> per trade. <span class="num-bear">Vinci spesso e perdi denaro.</span></p>
+    </div>
+    <p><strong>Aspettativa netta.</strong> Sottrai spread, commissioni e slippage a ogni trade: un +0,20R lordo con 0,15R di costi diventa <strong>+0,05R</strong>. È questo il numero che conta.</p>
+    <p><strong>Cosa massimizzare.</strong> Non l'aspettativa da sola, ma <code>E × numero di trade</code>. Un +0,05R su 500 trade l'anno (+25R) batte un +0,3R su 20 trade (+6R), a patto che quei 500 trade siano indipendenti e i costi siano già contati.</p>
+    <div class="box warn"><span class="lbl">Errori tipici</span>
+      <ul><li>Guardare solo il win rate.</li><li>Ignorare i costi.</li><li>Calcolare l'aspettativa su 15 trade.</li></ul>
+    </div>
+  </article>
+
+  <article class="lesson" id="m0-r" data-short="R-multiplo">
+    <div class="lesson-head"><h4><small>Lezione 11</small>R-multiplo</h4></div>
+    <div class="box def"><span class="lbl">Definizione</span>
+      <p><strong>1R è la perdita che subiresti se lo stop iniziale venisse colpito.</strong> Ogni trade si misura in multipli di R, non in euro.</p>
+    </div>
+    <div class="formula">R in euro   = |prezzo di entrata − prezzo dello stop| × size
+Risultato R = P/L in euro ÷ R in euro</div>
+    <div class="box ex"><span class="lbl">Esempio</span>
+      <p>Entri a 100, stop a 98, size 50 pezzi → 1R = 2 × 50 = <strong>100 €</strong>. Esci a 106 con +300 € → 300 ÷ 100 = <span class="num-bull">+3R</span>. Se esci prima dello stop perdendo 50 € → <span class="num-bear">−0,5R</span>.</p>
+    </div>
+    <p><strong>Perché ragionare in R:</strong> rende confrontabili trade con size e conti diversi; toglie l'emozione dell'importo; permette di calcolare l'aspettativa e di costruire la distribuzione dei risultati; ogni trade si pianifica con un R atteso minimo (per esempio almeno 2R).</p>
+    <div class="box warn"><span class="lbl">Regola ferrea</span>
+      <p>Il denominatore è lo <strong>stop iniziale</strong>. Spostarlo a trade aperto per "migliorare" l'R falsa tutta la statistica.</p>
+    </div>
+  </article>
+
+  <article class="lesson" id="m0-winrate" data-short="Win rate e R:R">
+    <div class="lesson-head"><h4><small>Lezione 12</small>Win rate e rapporto rischio-rendimento</h4></div>
+    <div class="box def"><span class="lbl">Definizione</span>
+      <p>Win rate e R:R sono due facce della stessa moneta: conta solo la loro <strong>combinazione</strong> nell'aspettativa.</p>
+    </div>
+    <div class="formula">win rate di pareggio = 1 / (1 + R:R)</div>
+    <div class="tbl"><table>
+      <thead><tr><th>Rischio : rendimento</th><th class="n">Win rate minimo per non perdere</th></tr></thead>
+      <tbody>
+        <tr><td>1 : 0,5</td><td class="n">66,7%</td></tr>
+        <tr><td>1 : 1</td><td class="n">50,0%</td></tr>
+        <tr><td>1 : 1,5</td><td class="n">40,0%</td></tr>
+        <tr><td>1 : 2</td><td class="n">33,3%</td></tr>
+        <tr><td>1 : 3</td><td class="n">25,0%</td></tr>
+        <tr><td>1 : 5</td><td class="n">16,7%</td></tr>
+      </tbody>
+    </table></div>
+    <p>Con i costi queste soglie salgono un po', e vanno verificate sulle uscite reali, non sui target teorici.</p>
+    <div class="tbl"><table>
+      <thead><tr><th>Profilo</th><th>Il costo psicologico</th></tr></thead>
+      <tbody>
+        <tr><td>R:R alto, win rate basso</td><td>Perdite frequenti, strisce lunghe: serve tolleranza.</td></tr>
+        <tr><td>R:R basso, win rate alto</td><td>Perdite rare ma grandi: una sola può cancellarne dieci vincenti.</td></tr>
+      </tbody>
+    </table></div>
+    <div class="box syn"><span class="lbl">Sintesi da ripetere</span><p>Inseguire il win rate alto è una trappola psicologica, non un obiettivo. Scegli il profilo che <strong>reggi emotivamente</strong> e scrivilo nel trading plan.</p></div>
+  </article>
+
+  <article class="lesson" id="m0-varianza" data-short="Varianza e drawdown">
+    <div class="lesson-head"><h4><small>Lezione 13</small>Varianza, strisce di perdite e drawdown</h4></div>
+    <div class="box def"><span class="lbl">Definizione</span>
+      <p>Anche un sistema con edge positivo produce <strong>lunghe strisce di perdite</strong> e drawdown profondi. È statistica, non un guasto. Il <strong>drawdown</strong> è la distanza massima dal picco precedente dell'equity.</p>
+    </div>
+    <div class="formula">striscia massima attesa ≈ log(N) / log(1 / (1 − p))      p = win rate, N = numero di trade</div>
+    <div class="box plus"><span class="lbl">Oltre il vault · probabilità di una striscia in 100 trade</span>
+      <p>Simulazione su 40.000 serie da 100 trade ciascuna:</p>
+      <div class="tbl"><table>
+        <thead><tr><th>Win rate</th><th class="n">Almeno 6 perdite di fila</th><th class="n">Almeno 8</th><th class="n">Almeno 10</th></tr></thead>
+        <tbody>
+          <tr><td>50%</td><td class="n">54%</td><td class="n">17%</td><td class="n">—</td></tr>
+          <tr><td>40%</td><td class="n">87%</td><td class="n">49%</td><td class="n">20%</td></tr>
+          <tr><td>33%</td><td class="n">—</td><td class="n">—</td><td class="n">45%</td></tr>
+        </tbody>
+      </table></div>
+      <p>Con un win rate del 40%, in 100 trade è <strong>quasi certo</strong> (87%) vedere 6 perdite consecutive, ed è un lancio di moneta vederne 8.</p>
+    </div>
+    <div class="box plus"><span class="lbl">Oltre il vault · l'asimmetria del recupero</span>
+      <div class="tbl"><table>
+        <thead><tr><th class="n">Perdita</th><th class="n">Guadagno necessario per tornare in pari</th></tr></thead>
+        <tbody>
+          <tr><td class="n num-bear">−10%</td><td class="n">+11,1%</td></tr>
+          <tr><td class="n num-bear">−20%</td><td class="n">+25,0%</td></tr>
+          <tr><td class="n num-bear">−30%</td><td class="n">+42,9%</td></tr>
+          <tr><td class="n num-bear">−50%</td><td class="n">+100%</td></tr>
+          <tr><td class="n num-bear">−75%</td><td class="n">+300%</td></tr>
+        </tbody>
+      </table></div>
+      <p>Formula: <code>recupero = 1 / (1 − perdita) − 1</code>. Oltre il −30% il recupero diventa rapidamente irrealistico: ecco perché il rischio si limita <em>prima</em>.</p>
+    </div>
+    <p><strong>Cosa fare, in anticipo e non durante:</strong> una size che sopravvive a molte perdite di fila senza danni irreversibili; una soglia di drawdown scritta oltre la quale si dimezza la size o ci si ferma; distinguere la varianza sfavorevole da un edge rotto solo con campione ampio e spiegazione causale. Con rischio ≤ 1% per trade ed edge positivo, la rovina è praticamente esclusa.</p>
+    <div class="box warn"><span class="lbl">Errori tipici</span>
+      <ul><li>Aumentare la size dopo le perdite per "recuperare".</li><li>Abbandonare il sistema nel punto di massimo drawdown, spesso subito prima della ripresa.</li><li>Non aver mai calcolato quante perdite di fila regge il conto.</li></ul>
+    </div>
+  </article>
+
+  <article class="lesson" id="m0-campione" data-short="Campione e grandi numeri">
+    <div class="lesson-head"><h4><small>Lezione 14</small>Dimensione del campione, legge dei grandi numeri, il singolo trade</h4></div>
+    <div class="box def"><span class="lbl">Definizione</span>
+      <p>Servono <strong>molti trade</strong> prima che i numeri dicano qualcosa. La <strong>legge dei grandi numeri</strong>: la media dei risultati converge all'aspettativa solo su grandi numeri, con lo stesso edge e trade indipendenti. Nel breve, scostamenti ampi sono normali.</p>
+    </div>
+    <div class="tbl"><table>
+      <thead><tr><th class="n">Numero di trade</th><th>Cosa puoi dire</th></tr></thead>
+      <tbody>
+        <tr><td class="n">meno di 30</td><td>Aneddoto</td></tr>
+        <tr><td class="n">30–100</td><td>Indizio</td></tr>
+        <tr><td class="n">100–300</td><td>Segnale</td></tr>
+        <tr><td class="n">oltre 300</td><td>Stima ragionevole, se l'edge è stabile</td></tr>
+      </tbody>
+    </table></div>
+    <p><strong>Quanto è incerto il win rate?</strong> Regola rapida: l'errore è circa <strong>± 1/√N</strong> (è l'intervallo al 95% quando p è vicino al 50%). Con 30 trade e 50% osservato, il vero valore sta tra circa 32% e 68%. Con 200 trade, tra 43% e 57%.</p>
+    <div class="box plus"><span class="lbl">Oltre il vault · quando un'aspettativa è "significativa"</span>
+      <div class="formula">t = E[R] / (deviazione standard degli R / √N)       serve t ≳ 2 (meglio 3)</div>
+      <p>Il Sistema A di prima (+0,20R, deviazione standard circa 1,47R) dà: con <strong>30 trade</strong> t = 0,75 (indistinguibile dal caso), con <strong>100</strong> t = 1,36, con <strong>300</strong> t = 2,36. Anche un edge buono richiede <strong>centinaia di trade</strong> prima di essere distinguibile dalla fortuna.</p>
+    </div>
+    <p><strong>Perché il singolo trade non conta.</strong> È un campione di dimensione 1: non dice nulla né sul sistema né su di te. Togliere peso al singolo esito <em>è</em> ciò che produce il distacco emotivo. Se un singolo trade ti fa male, la size è troppo alta. Dopo ogni trade la domanda è <strong>"ho seguito il piano?"</strong>, non "ho vinto?".</p>
+    <div class="box warn"><span class="lbl">Errori tipici</span>
+      <ul><li>"Questo setup non funziona più" dopo 4 perdite.</li><li>Fiducia cieca dopo 10 vincite.</li><li>Confondere la legge dei grandi numeri con la "legge dei piccoli numeri": dopo 5 perdite non "tocca" una vincita.</li><li>Aumentare la size per "accelerare" i risultati.</li></ul>
+    </div>
+  </article>
+
+  <article class="lesson" id="m0-ergodicita" data-short="Ergodicità">
+    <div class="lesson-head"><h4><small>Lezione 15</small>Ergodicità: media nel tempo e media d'insieme</h4></div>
+    <div class="box def"><span class="lbl">Definizione</span>
+      <p>La media su tanti conti in parallelo (media d'insieme) e ciò che succede a <strong>un solo conto nel tempo</strong> (media temporale) possono divergere. Succede quando la ricchezza si <strong>moltiplica</strong> invece di sommarsi e la rovina è definitiva.</p>
+    </div>
+    <div class="box ex"><span class="lbl">Esempio · il gioco di Peters (2019)</span>
+      <p>A ogni lancio di una moneta equa la ricchezza si moltiplica per 1,5 (testa) o per 0,6 (croce).</p>
+      <p><strong>Media d'insieme:</strong> <code>0,5 × 1,5 + 0,5 × 0,6 = 1,05</code> → <span class="num-bull">+5% a turno</span>. Sembra un ottimo gioco.</p>
+      <p><strong>Media temporale</strong> (un giocatore, tanti turni): <code>√(1,5 × 0,6) = √0,9 ≈ 0,949</code> → <span class="num-bear">−5% a turno</span>. Il singolo giocatore si rovina quasi certamente.</p>
+    </div>
+    <p>Un conto di trading è un processo moltiplicativo: ogni trade moltiplica l'equity per (1 + r). Con size troppo alta, la <strong>penalità della volatilità</strong> (circa σ²/2) mangia l'edge: puoi avere aspettativa positiva e comunque impoverirti.</p>
+    <div class="box plus"><span class="lbl">Oltre il vault · il variance drag in numeri</span>
+      <div class="formula">rendimento geometrico ≈ rendimento aritmetico − σ² / 2</div>
+      <p>Media aritmetica +10% annuo con volatilità 20% → crescita composta ≈ 10% − 2% = <strong>8%</strong>. Con volatilità 40% → 10% − 8% = <strong>2%</strong>. Stessa media, ricchezza finale molto diversa.</p>
+    </div>
+    <div class="box syn"><span class="lbl">Sintesi da ripetere</span>
+      <p>Per te conta la <strong>media temporale</strong>. È il fondamento di: frazione di Kelly invece di Kelly pieno, tetto al rischio di rovina, rischio piccolo e costante. Un −50% non si annulla con un +50%: serve un <strong>+100%</strong>.</p>
+    </div>
+  </article>
+
+  <article class="lesson" id="m0-montecarlo" data-short="Monte Carlo">
+    <div class="lesson-head"><h4><small>Lezione 16</small>Simulazione Monte Carlo della equity curve</h4></div>
+    <div class="box def"><span class="lbl">Definizione</span>
+      <p>Rimescolare o ricampionare i risultati dei trade migliaia di volte per vedere <strong>quante equity curve diverse</strong> lo stesso edge avrebbe potuto produrre.</p>
+    </div>
+    <p>Una singola curva, di backtest o reale, è <strong>un solo percorso</strong> tra i tanti possibili. Procedura:</p>
+    <ol>
+      <li>Prendi la lista dei risultati in R.</li>
+      <li>Ricampiona N trade con reinserimento: ottieni una nuova curva.</li>
+      <li>Ripeti 5.000–10.000 volte.</li>
+      <li>Guarda la distribuzione di drawdown massimo, rendimento totale, tempo di recupero, probabilità di rovina.</li>
+    </ol>
+    <p>Il drawdown massimo "realistico" che emerge è quasi sempre <strong>peggiore</strong> di quello del singolo backtest: la soglia di allarme si dimensiona su questo. Se poche curve sono ottime e la maggioranza mediocre, l'edge dipende da pochi trade ed è fragile.</p>
+    <div class="box warn"><span class="lbl">Limiti</span>
+      <p>Il metodo assume trade indipendenti e una distribuzione stabile. Se ci sono autocorrelazione o cambi di regime, il rischio vero è maggiore. Varianti: ricampionare a blocchi, o simulare da un modello.</p>
+    </div>
+  </article>
+
+  <article class="lesson" id="m0-descrittiva" data-short="Statistica descrittiva">
+    <div class="lesson-head"><h4><small>Lezione 17</small>Statistica descrittiva e base rate dei prezzi</h4></div>
+    <div class="box def"><span class="lbl">Definizione</span>
+      <p>Contare cosa è successo in passato su un campione ampio è esattamente il modo in cui si costruiscono le <strong>base rate</strong> e le probabilità condizionate su cui poggia un edge.</p>
+    </div>
+    <p>Dal tuo vault, calcolato su 10 anni di dati giornalieri (settembre 2016 – settembre 2026):</p>
+    <div class="tbl"><table>
+      <thead><tr><th></th><th class="n">S&amp;P 500</th><th class="n">Nasdaq 100</th><th class="n">Bitcoin</th></tr></thead>
+      <tbody>
+        <tr><td>Rendimento giornaliero medio / dev. std</td><td class="n">+0,06% / 1,14%</td><td class="n">+0,08% / 1,44%</td><td class="n">+0,20% / 3,49%</td></tr>
+        <tr><td>Curtosi in eccesso</td><td class="n">+15,8</td><td class="n">+7,6</td><td class="n">+8,1</td></tr>
+        <tr><td>Giorni oltre ±3σ rispetto alla normale</td><td class="n num-bear">5,2×</td><td class="n num-bear">4,6×</td><td class="n num-bear">6,2×</td></tr>
+        <tr><td>Range giornaliero mediano</td><td class="n">0,88%</td><td class="n">1,21%</td><td class="n">3,49%</td></tr>
+        <tr><td>P(giorno positivo)</td><td class="n">54,7%</td><td class="n">56,4%</td><td class="n">52,3%</td></tr>
+        <tr><td>P(positivo | 3 giorni positivi)</td><td class="n">51,3%</td><td class="n">57,4%</td><td class="n">51,2%</td></tr>
+        <tr><td>P(positivo | 3 giorni negativi)</td><td class="n num-bull">58,4%</td><td class="n num-bull">64,4%</td><td class="n num-bull">58,3%</td></tr>
+      </tbody>
+    </table></div>
+    <p><strong>Come si leggono:</strong></p>
+    <ul>
+      <li><strong>Code grasse.</strong> Gli eventi a ±3σ capitano 4–6 volte più spesso di quanto direbbe la distribuzione normale. Il rischio non si dimensiona mai sulla normale.</li>
+      <li><strong>Leggera mean reversion</strong> nel decennio: dopo 3 cali la probabilità di salita è più alta che dopo 3 rialzi. Ma il campione condizionato è piccolo: è un indizio, non una prova.</li>
+      <li>Il <strong>range mediano</strong> dà un riferimento per gli stop: sull'S&amp;P uno stop sotto lo 0,3–0,4% è dentro il rumore giornaliero.</li>
+    </ul>
+    <div class="box ex"><span class="lbl">Esempio · i gap non "si chiudono sempre"</span>
+      <p>Sull'S&amp;P 500, misurando il gap di apertura in multipli del range mediano: i gap piccoli (sotto 0,25×) si chiudono in giornata il <span class="num-bull">72%</span> delle volte, quelli grandi (oltre 1×) solo il <span class="num-bear">23%</span>. I gap grandi tendono a <strong>continuare</strong>: sono più un segnale di forza che di inversione.</p>
+    </div>
+    <div class="box warn"><span class="lbl">Descrittivo non vuol dire predittivo</span>
+      <ul>
+        <li><strong>Non stazionarietà:</strong> il decennio è stato in gran parte rialzista. Con il prezzo sotto la media a 200 giorni, P(su | 3 giù) scende da circa 65% a circa 47%.</li>
+        <li><strong>Probabilità non è edge:</strong> un 58% di giorni positivi non serve se il movimento medio non copre i costi.</li>
+        <li>Le probabilità <strong>non hanno memoria</strong>: 3 cali di fila non obbligano a un rimbalzo.</li>
+      </ul>
+    </div>
+  </article>
+
+  <article class="lesson" id="m0-test" data-short="Test statistici">
+    <div class="lesson-head"><h4><small>Lezione 18 · approfondimento</small>Test statistici e serie storiche</h4></div>
+    <div class="box def"><span class="lbl">Definizione</span>
+      <p>Il <strong>p-value</strong> è la probabilità di osservare un risultato così estremo <em>se l'ipotesi nulla fosse vera</em> (nessun effetto). Non è la probabilità che l'ipotesi nulla sia vera.</p>
+    </div>
+    <div class="tbl"><table>
+      <thead><tr><th>Domanda</th><th>Test</th></tr></thead>
+      <tbody>
+        <tr><td>L'aspettativa è diversa da zero?</td><td>t-test a un campione; con code grasse, bootstrap</td></tr>
+        <tr><td>Due strategie hanno media diversa?</td><td>t-test di Welch; senza normalità Mann-Whitney</td></tr>
+        <tr><td>Il win rate è diverso dal 50%?</td><td>Test binomiale</td></tr>
+        <tr><td>Setup ed esito sono associati?</td><td>χ² di indipendenza (Fisher se pochi casi)</td></tr>
+        <tr><td>L'edge sopravvive rimescolando i dati?</td><td>Test di permutazione</td></tr>
+        <tr><td>Quale drawdown aspettarsi?</td><td>Bootstrap / Monte Carlo</td></tr>
+        <tr><td>La serie è stazionaria? Due serie sono cointegrate?</td><td>ADF e KPSS; Engle-Granger, Johansen</td></tr>
+        <tr><td>Lo Sharpe è reale dato quante varianti ho provato?</td><td>Deflated Sharpe Ratio, PBO</td></tr>
+      </tbody>
+    </table></div>
+    <p><strong>Test multipli.</strong> Con k ipotesi, la probabilità di almeno un falso positivo è circa <code>1 − (1 − α)^k</code>: con 20 test al 5% è già il 64%. Correzioni: <strong>Bonferroni</strong> (soglia α/k, molto severa), <strong>Benjamini-Hochberg</strong> (controlla la quota di false scoperte), la regola di Harvey-Liu-Zhu <strong>t &gt; 3</strong>. Regola d'oro: conta e dichiara quante varianti hai provato.</p>
+    <p><strong>Serie storiche in breve.</strong> I prezzi sono quasi una passeggiata aleatoria (non stazionari), quindi si lavora sui rendimenti. I rendimenti hanno poca autocorrelazione; la <strong>volatilità invece si raggruppa</strong> (volatility clustering) e si modella con GARCH(1,1): <code>σ²ₜ = ω + α·ε²ₜ₋₁ + β·σ²ₜ₋₁</code>. Il variance ratio test di Lo-MacKinlay dice se prevale il trend (VR &gt; 1) o la mean reversion (VR &lt; 1).</p>
+    <div class="box warn"><span class="lbl">Errori tipici</span>
+      <ul><li>Leggere il p-value come "probabilità che sia vero".</li><li>Provare 50 varianti e festeggiare la migliore a p &lt; 0,05.</li><li>Ignorare la dimensione dell'effetto: un edge "significativo" di 0,5 punti base non copre i costi.</li></ul>
+    </div>
+  </article>
+</div>
+
+<!-- ============ UNITÀ 0.4 ============ -->
+<div class="unit">
+  <div class="unit-head"><span class="u">0.4</span><h3>Il fattore umano</h3></div>
+  <p class="unit-intro">Il vantaggio decisivo e il punto di rottura più comune. Qui si impara a riconoscere il nemico e a disinnescarlo con la struttura, non con la forza di volontà.</p>
+
+  <article class="lesson" id="m0-cervello" data-short="Il cervello sotto rischio">
+    <div class="lesson-head"><h4><small>Lezione 19</small>Il cervello sotto rischio</h4></div>
+    <div class="box def"><span class="lbl">Definizione</span>
+      <p>Sotto rischio e con soldi in gioco, i circuiti veloci della paura e della ricompensa prendono il sopravvento sulla <strong>corteccia prefrontale</strong>, la parte che rispetta le regole. Succede in modo <strong>prevedibile</strong>, quindi si può prevenire.</p>
+    </div>
+    <div class="tbl"><table>
+      <thead><tr><th>Sistema</th><th>Cosa fa nel trading</th><th>Effetto tipico</th></tr></thead>
+      <tbody>
+        <tr><td>Amigdala</td><td>Reagisce a una candela contro prima che tu "capisca"</td><td>Chiusura in panico, stop non rispettato</td></tr>
+        <tr><td>Dopamina</td><td>Si attiva sull'attesa e sulla sorpresa, non sul guadagno in sé</td><td>"Ancora uno", overtrading</td></tr>
+        <tr><td>Corteccia prefrontale</td><td>Regole, pianificazione, freno agli impulsi</td><td>È la prima a cedere con stress e poco sonno</td></tr>
+        <tr><td>Insula</td><td>Segnala il dolore della perdita</td><td>Con poco sonno si attenua: si rischia di più</td></tr>
+        <tr><td>Cortisolo</td><td>Sale nei drawdown lunghi</td><td>Visione a tunnel, paralisi</td></tr>
+        <tr><td>Testosterone</td><td>Sale dopo una serie di vincite ("winner effect", Coates)</td><td>Overconfidence proprio quando andrebbe ridotto il rischio</td></tr>
+      </tbody>
+    </table></div>
+    <div class="box plus"><span class="lbl">Oltre il vault · Prospect theory</span>
+      <p>Kahneman e Tversky (1979, 1992) hanno misurato che una perdita pesa circa <strong>2,25 volte</strong> un guadagno della stessa entità (coefficiente λ). Inoltre la curva del valore è <strong>concava sui guadagni</strong> (si preferisce il guadagno sicuro: si chiudono presto i vincenti) e <strong>convessa sulle perdite</strong> (si preferisce scommettere per evitare la perdita certa: si tengono i perdenti). È la radice teorica di loss aversion e disposition effect.</p>
+      <p>Kahneman distingue anche il <strong>Sistema 1</strong> (veloce, automatico, emotivo) dal <strong>Sistema 2</strong> (lento, deliberato). Le regole scritte e le checklist sono un modo per far decidere il Sistema 2 in anticipo, quando il Sistema 1 non è sotto pressione.</p>
+    </div>
+    <p><strong>Cosa se ne fa un trader.</strong> Non "controllarsi di più", ma cambiare le condizioni: decidere a freddo ed eseguire a caldo; mettere attrito prima dell'impulso; abbassare l'attivazione con 60–90 secondi di respiro lento (espirazione più lunga); proteggere la corteccia prefrontale con sonno e pause; ridurre il rischio dopo le vincite; registrare lo stato del corpo nel diario emotivo.</p>
+  </article>
+
+  <article class="lesson" id="m0-bias" data-short="Il catalogo dei bias">
+    <div class="lesson-head"><h4><small>Lezione 20</small>Il catalogo dei bias che costano denaro</h4></div>
+    <div class="box def"><span class="lbl">Definizione</span>
+      <p>Un <strong>bias cognitivo</strong> è un errore sistematico di giudizio: non capita a caso, ma sempre nella stessa direzione. Per questo si può prevedere e contrastare con regole.</p>
+    </div>
+    <div class="tbl"><table>
+      <thead><tr><th>Bias</th><th>Come si manifesta</th><th>Contromisura</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Loss aversion</strong></td><td>La perdita pesa circa il doppio: chiudo presto i vincenti, tengo i perdenti, sposto lo stop</td><td>Uscite meccaniche decise prima; ragionare in R</td></tr>
+        <tr><td><strong>Disposition effect</strong></td><td>+0,5R sui vincenti, −2R sui perdenti: "è una perdita di carta finché non chiudo"</td><td>Target e stop dalla scheda; in review confronta R medio vincenti e perdenti</td></tr>
+        <tr><td><strong>Overconfidence</strong></td><td>Dopo 3–4 vincite alzo la size e salto la checklist</td><td>Size invariata dopo una vincita, checklist sempre</td></tr>
+        <tr><td><strong>Bias di conferma</strong></td><td>Ho deciso "long" e cerco solo i grafici che mi danno ragione</td><td>Scrivere l'invalidazione prima di entrare; "cosa dovrei vedere per non entrare?"</td></tr>
+        <tr><td><strong>Recency bias</strong></td><td>"Il setup non funziona più" dopo 3 perdite</td><td>Numero minimo di trade prima di giudicare; metriche sempre con la numerosità accanto</td></tr>
+        <tr><td><strong>Gambler's fallacy</strong></td><td>"Ho perso 4 volte, la quinta va bene di sicuro"</td><td>Rischio fisso; kill switch dopo X perdite</td></tr>
+        <tr><td><strong>Sunk cost</strong></td><td>Medio al ribasso; resto su una strategia perché "ci ho messo mesi"</td><td>Conta solo l'aspettativa da qui in avanti; vietato mediare</td></tr>
+        <tr><td><strong>Ancoraggio</strong></td><td>"Esco quando torna al mio prezzo di carico"</td><td>Stop e target ancorati a struttura e volatilità, non al prezzo pagato</td></tr>
+        <tr><td><strong>Hindsight</strong></td><td>"Era ovvio che saliva": riscrivo la storia</td><td>Tesi e probabilità scritte prima; confronto col previsto</td></tr>
+        <tr><td><strong>Effetto gregge</strong></td><td>Entro perché il titolo è ovunque sui social</td><td>Ogni trade ha una tua tesi e un tuo livello; il consenso estremo è semmai un segnale contrario</td></tr>
+        <tr><td><strong>Overtrading da noia</strong></td><td>Opero per stimolazione, non perché c'è un setup</td><td>Tetto di trade al giorno; "nessun setup" è una giornata riuscita</td></tr>
+      </tbody>
+    </table></div>
+    <div class="box ex"><span class="lbl">Esempio · riconoscere il disposition effect nei tuoi dati</span>
+      <p>Nel journal di un mese: 22 vincenti con R medio <span class="num-bull">+0,6R</span>, 18 perdenti con R medio <span class="num-bear">−1,4R</span>. Stop previsto a 1R, eppure le perdite sono più grandi: significa che lo stop è stato spostato o ignorato. Aspettativa: 0,55 × 0,6 − 0,45 × 1,4 = <span class="num-bear">−0,30R</span>, pur vincendo più della metà delle volte.</p>
+    </div>
+    <p>Stanchezza, tilt, euforia e fretta <strong>amplificano</strong> tutti i bias. Dopo ogni trade sbagliato si annota quale bias era in gioco; in review settimanale si cerca quello ricorrente.</p>
+  </article>
+
+  <article class="lesson" id="m0-tilt" data-short="Tilt e anti-impulso">
+    <div class="lesson-head"><h4><small>Lezione 21</small>Tilt, recupero e regole anti-impulso</h4></div>
+    <div class="box def"><span class="lbl">Definizione</span>
+      <p>Il <strong>tilt</strong> è lo stato di alterazione emotiva in cui smetti di seguire il processo. Va riconosciuto presto e interrotto per regola, non per volontà.</p>
+    </div>
+    <p><strong>Segnali:</strong> voglia di rientrare subito dopo una perdita, size non pianificata, checklist saltata, timeframe che non usi di solito, battito accelerato, la sensazione che "il mercato ce l'ha con me".</p>
+    <p><strong>Protocollo meccanico:</strong></p>
+    <ol>
+      <li>Alla prima avvisaglia: mani lontane dalla tastiera.</li>
+      <li>10–15 minuti fuori dallo schermo: respiro, camminata.</li>
+      <li>Rileggi il mantra.</li>
+      <li>Se sei ancora attivato, chiudi per la giornata, qualunque sia il P/L.</li>
+      <li>Se hai toccato il kill switch, lo stop non si discute.</li>
+    </ol>
+    <p><strong>Rientro il giorno dopo:</strong> size dimezzata finché non completi 5 trade con aderenza ≥ 4 su 5.</p>
+    <p><strong>Regole anti-impulso</strong> (rendere scomoda l'azione impulsiva): nessun ordine senza checklist; dire il trade ad alta voce in una frase (setup, entrata, stop, perché); timer di 60–90 secondi tra "vedo il setup" e "clicco"; ordini limite invece che a mercato; pausa obbligata dopo una perdita; piattaforma chiusa fuori orario.</p>
+    <div class="box syn"><span class="lbl">Sintesi da ripetere</span><p>L'impulso è veloce, la ragione è lenta. L'attrito dà alla ragione il tempo di arrivare. Non serve più disciplina: serve <strong>meno occasione</strong>.</p></div>
+  </article>
+
+  <article class="lesson" id="m0-corpo" data-short="Sonno e corpo">
+    <div class="lesson-head"><h4><small>Lezione 22</small>Sonno, corpo e decisione</h4></div>
+    <div class="box def"><span class="lbl">Definizione</span>
+      <p>La disciplina è anche <strong>fisiologica</strong>: sonno, movimento, alimentazione e respiro decidono quanto funziona la parte del cervello che rispetta le regole.</p>
+    </div>
+    <p><strong>Il sonno è il fattore singolo più importante.</strong> Anche una sola notte scarsa sposta la strategia da "difendersi dalle perdite" a "inseguire i guadagni" (Venkatraman et al., 2011), attenua il segnale di dolore della perdita e peggiora l'uso del feedback negativo. È il profilo esatto del tilt.</p>
+    <div class="box ex"><span class="lbl">Esempio · la regola pratica</span>
+      <p>Meno di 6–7 ore o sonno frammentato → <strong>size ridotta o nessun nuovo trade</strong>, al massimo gestione delle posizioni aperte. Le ore di sonno si annotano nel diario emotivo e si confrontano con l'aderenza: spesso la correlazione è evidente in poche settimane.</p>
+    </div>
+    <ul>
+      <li><strong>Movimento:</strong> l'esercizio aerobico migliora funzioni esecutive e umore; una camminata prima della sessione abbassa l'attivazione.</li>
+      <li><strong>Alimentazione:</strong> pasti pesanti portano cali di vigilanza; zuccheri rapidi portano irritabilità. Acqua a portata di mano.</li>
+      <li><strong>Caffeina</strong> utile al mattino, controproducente dopo metà giornata. <strong>Alcol</strong> la sera frammenta il sonno profondo.</li>
+      <li><strong>Respiro:</strong> 5–6 respiri al minuto con espirazione lunga per 60–90 secondi prima di una decisione.</li>
+    </ul>
+  </article>
+
+  <article class="lesson" id="m0-vita" data-short="Trading e patrimonio">
+    <div class="lesson-head"><h4><small>Lezione 23</small>Il trading nella vita finanziaria</h4></div>
+    <div class="box def"><span class="lbl">Definizione</span>
+      <p>Il trading è <strong>una voce</strong> del patrimonio, non il centro. Regge solo se il resto della vita finanziaria è già in ordine.</p>
+    </div>
+    <div class="tbl"><table>
+      <thead><tr><th>Prima del primo trade</th><th>Regola</th></tr></thead>
+      <tbody>
+        <tr><td>Fondo d'emergenza</td><td>6–12 mesi di spese, liquido, intoccabile. Non è capitale di trading.</td></tr>
+        <tr><td>Debiti ad alto interesse</td><td>Estinti prima: nessuna strategia batte il 10–20% garantito che paghi al creditore.</td></tr>
+        <tr><td>Reddito e spese</td><td>Si fa trading con il surplus, mai con soldi che servono a vivere.</td></tr>
+        <tr><td>Lungo periodo</td><td>Un piano di accumulo diversificato a basso costo è il motore; il trading è il turbo, opzionale.</td></tr>
+      </tbody>
+    </table></div>
+    <p><strong>Capitale di rischio</strong>: solo la quota che puoi perdere del tutto senza cambiare tenore di vita, obiettivi o sonno (spesso non oltre il 5–10% del patrimonio investibile), in un conto separato. Non si ricarica il conto dopo una perdita con soldi di altre voci: è la spia numero uno di un problema.</p>
+    <p><strong>Aspettative realistiche:</strong> con capitale piccolo anche un edge reale rende poco in valore assoluto. Il trading come reddito principale ha senso solo dopo 12+ mesi netti positivi e con un cuscinetto che copre 1–2 anni di spese.</p>
+  </article>
+
+  <article class="lesson" id="m0-imparare" data-short="Come si impara">
+    <div class="lesson-head"><h4><small>Lezione 24</small>Come si impara davvero: learning science</h4></div>
+    <div class="box def"><span class="lbl">Definizione</span>
+      <p>Guardare grafici per ore è esposizione passiva. Si impara con la <strong>pratica deliberata</strong> (Ericsson): obiettivo specifico, al limite delle proprie capacità, feedback immediato, ripetizione con correzione.</p>
+    </div>
+    <div class="tbl"><table>
+      <thead><tr><th>Tecnica</th><th>Nel trading</th></tr></thead>
+      <tbody>
+        <tr><td>Recupero attivo</td><td>Flashcard e quiz invece di rileggere</td></tr>
+        <tr><td>Ripasso spaziato</td><td>Rivedere dopo 1 giorno, 1 settimana, 1 mese</td></tr>
+        <tr><td>Interleaving</td><td>Alternare argomenti e setup diversi nella stessa sessione</td></tr>
+        <tr><td>Chunking</td><td>Trasformare "barra + livello + contesto + trigger" in un unico riconoscimento automatico</td></tr>
+        <tr><td>Elaborazione</td><td>Spiegare a voce perché un setup funziona</td></tr>
+        <tr><td>Replay</td><td>Ripercorrere sessioni passate barra per barra: centinaia di occasioni in poche ore, senza rischio</td></tr>
+      </tbody>
+    </table></div>
+    <div class="formula">Studio → Backtest → Replay → Demo / micro-live → Journal → Review → di nuovo Studio</div>
+    <div class="box warn"><span class="lbl">Errori tipici</span>
+      <ul><li>Scambiare ore davanti allo schermo per pratica.</li><li>Rileggere invece di testarsi (illusione di competenza).</li><li>Cambiare argomento prima di aver automatizzato il precedente.</li></ul>
+    </div>
+  </article>
+</div>
+
+<div class="closing">
+  <div class="panel">
+    <h3>Checklist di padronanza</h3>
+    <ul class="check">
+      <li><label><input type="checkbox" id="c-m0-1"><span>So spiegare in una frase perché battere il mercato è possibile ma raro.</span></label></li>
+      <li><label><input type="checkbox" id="c-m0-2"><span>Calcolo a memoria l'aspettativa in R di una serie di trade.</span></label></li>
+      <li><label><input type="checkbox" id="c-m0-3"><span>So dire perché un +50% non annulla un −50% (media geometrica, ergodicità).</span></label></li>
+      <li><label><input type="checkbox" id="c-m0-4"><span>So stimare quanti trade servono prima di giudicare un edge.</span></label></li>
+      <li><label><input type="checkbox" id="c-m0-5"><span>Riconosco almeno 8 bias da un esempio e ne cito la contromisura.</span></label></li>
+      <li><label><input type="checkbox" id="c-m0-6"><span>So cosa cambia nelle mie decisioni dopo una notte di sonno scarso.</span></label></li>
+      <li><label><input type="checkbox" id="c-m0-7"><span>Ho definito quanta parte del mio patrimonio è capitale di rischio.</span></label></li>
+    </ul>
+  </div>
+  <div class="panel">
+    <h3>Flashcard · rispondi a voce, poi controlla</h3>
+    <div class="cards">
+      <details class="card"><summary>Formula dell'aspettativa in R?</summary><div>E[R] = P(vincita) × R medio vincente − P(perdita) × 1. Si calcola al netto dei costi.</div></details>
+      <details class="card"><summary>Win rate 40%, vincita media 2R: che aspettativa?</summary><div>0,4 × 2 − 0,6 × 1 = +0,20R per trade.</div></details>
+      <details class="card"><summary>Win rate di pareggio con R:R 1:3?</summary><div>1 / (1 + 3) = 25%.</div></details>
+      <details class="card"><summary>Cos'è 1R?</summary><div>La perdita che subisci se viene colpito lo stop iniziale. Non si ricalcola spostando lo stop.</div></details>
+      <details class="card"><summary>Errore sul win rate con 100 trade?</summary><div>Circa ±1/√100 = ±10 punti percentuali.</div></details>
+      <details class="card"><summary>Dopo −50% quanto serve per tornare in pari?</summary><div>+100%. Formula: 1/(1 − perdita) − 1.</div></details>
+      <details class="card"><summary>Media d'insieme vs media temporale nel gioco 1,5 / 0,6?</summary><div>Insieme +5% a turno; nel tempo √0,9 ≈ 0,949, cioè −5% a turno. Per il tuo conto conta la seconda.</div></details>
+      <details class="card"><summary>Il trade più pericoloso della carriera?</summary><div>Un vincente che ha rotto le regole: insegna che rompere le regole paga.</div></details>
+      <details class="card"><summary>Contromisura al disposition effect?</summary><div>Stop e target dalla scheda, mai spostati; in review confrontare l'R medio di vincenti e perdenti.</div></details>
+      <details class="card"><summary>Cosa dice Grossman-Stiglitz?</summary><div>I mercati non possono essere perfettamente efficienti: resta un'inefficienza che ripaga chi analizza. L'edge esiste ma è piccolo e competitivo.</div></details>
+      <details class="card"><summary>Quanti test falliscono le 452 anomalie di Hou-Xue-Zhang?</summary><div>65% con |t| &gt; 1,96; 82% con la soglia corretta per test multipli.</div></details>
+      <details class="card"><summary>Regola sul sonno?</summary><div>Meno di 6–7 ore o sonno frammentato: size ridotta o nessun nuovo trade.</div></details>
+    </div>
+  </div>
+  <div class="gate">
+    <p class="eyebrow">Cancello per il Modulo 1</p>
+    <p>Superi le flashcard senza errori e sai spiegare a voce, senza note, aspettativa, R-multiplo, legge dei grandi numeri e 5 bias con la loro contromisura.</p>
+    <p class="next">Poi → <a href="#m1">Modulo 1 · Come funzionano i mercati</a></p>
+  </div>
+</div>
+</section>
+
+<section class="module" id="m1" style="--mc:var(--m1)">
+<header class="mod-head">
+  <div class="no">1</div>
+  <h2>Come funzionano i mercati</h2>
+  <p class="goal">Conoscere il terreno di gioco: i mercati e cosa li muove, gli strumenti con cui entrarci e i loro costi, gli orizzonti temporali e come si forma davvero un prezzo.</p>
+  <div class="mod-meta">
+    <div><b>Prerequisiti</b>Modulo 0</div>
+    <div><b>Durata</b>2–3 settimane</div>
+    <div><b>Risultato</b>Scegliere lo strumento giusto per un'idea</div>
+  </div>
+</header>
+
+<!-- ============ UNITÀ 1.1 ============ -->
+<div class="unit">
+  <div class="unit-head"><span class="u">1.1</span><h3>I mercati e i loro motori</h3></div>
+  <p class="unit-intro">Ogni mercato ha i suoi orari, i suoi partecipanti e i suoi driver. Qui si costruisce la mappa.</p>
+
+  <article class="lesson" id="m1-forex" data-short="Forex e valute">
+    <div class="lesson-head"><h4><small>Lezione 1</small>Il Forex e le valute maggiori</h4></div>
+    <div class="box def"><span class="lbl">Definizione</span>
+      <p>Il Forex è un mercato <strong>over-the-counter</strong> (decentralizzato, senza una borsa unica) dove le valute si scambiano in coppia, aperto 24 ore dalla domenica sera al venerdì sera.</p>
+    </div>
+    <ul>
+      <li><strong>Coppia:</strong> EUR/USD = quanti dollari (valuta quotata) per 1 euro (valuta base). Comprare la coppia significa long euro e short dollaro.</li>
+      <li><strong>Pip:</strong> la quarta cifra decimale (0,0001), la seconda sulle coppie con lo yen (0,01).</li>
+      <li><strong>Lotto:</strong> standard 100.000 unità di valuta base, mini 10.000, micro 1.000.</li>
+      <li><strong>Spread:</strong> differenza tra prezzo denaro e lettera, cioè il costo d'ingresso. Si allarga sulle news e nelle ore morte.</li>
+      <li><strong>Swap:</strong> interesse pagato o incassato per tenere la posizione di notte, legato al differenziale dei tassi.</li>
+    </ul>
+    <div class="box plus"><span class="lbl">Oltre il vault · dal rischio ai lotti</span>
+      <p>Su EUR/USD un pip vale <strong>10 $ per lotto standard</strong>, 1 $ per mini, 0,10 $ per micro. Vuoi rischiare 100 $ con uno stop di 20 pip: 100 ÷ 20 = <strong>5 $ a pip</strong> → 0,5 lotti standard (5 mini). La leva non si sceglie: è la <em>conseguenza</em> della size calcolata dal rischio.</p>
+    </div>
+    <div class="tbl"><table>
+      <thead><tr><th>Sessione (ora italiana)</th><th>Orario</th><th>Caratteristiche</th></tr></thead>
+      <tbody>
+        <tr><td>Sydney / Tokyo</td><td>~23:00–08:00</td><td>JPY, AUD, NZD più attivi; range stretti</td></tr>
+        <tr><td><strong>Londra</strong></td><td>~09:00–17:30</td><td>La più liquida; apertura molto volatile</td></tr>
+        <tr><td><strong>New York</strong></td><td>~14:30–22:00</td><td>Dati USA; l'overlap con Londra (14:30–17:30) è il picco di volume</td></tr>
+      </tbody>
+    </table></div>
+    <h4 style="font-size:16px;margin:20px 0 8px">Cosa muove ogni valuta</h4>
+    <div class="tbl"><table>
+      <thead><tr><th>Valuta</th><th>Driver principali</th><th>Carattere</th></tr></thead>
+      <tbody>
+        <tr><td>USD</td><td>Tassi Fed, valuta di riserva, liquidità globale</td><td>Rifugio nelle crisi di liquidità</td></tr>
+        <tr><td>EUR</td><td>Tassi BCE, economia dell'eurozona, spread periferici</td><td>Ciclica, sensibile all'energia</td></tr>
+        <tr><td>JPY</td><td>Tassi BoJ, chiusura dei carry trade, rimpatrio di capitali</td><td>Rifugio: si rafforza nel risk-off</td></tr>
+        <tr><td>GBP</td><td>Tassi BoE, politica UK</td><td>Volatile</td></tr>
+        <tr><td>CHF</td><td>Neutralità, interventi della SNB</td><td>Rifugio classico</td></tr>
+        <tr><td>AUD / NZD</td><td>Ferro, rame, Cina; prodotti agricoli</td><td>Cicliche, risk-on</td></tr>
+        <tr><td>CAD</td><td>Petrolio, economia USA</td><td>Legata al greggio</td></tr>
+      </tbody>
+    </table></div>
+    <div class="box syn"><span class="lbl">Sintesi da ripetere</span>
+      <p>Nel <strong>risk-off</strong> tendono a salire USD, JPY e CHF contro AUD, NZD ed emergenti; nel <strong>risk-on</strong> il contrario. Nel medio periodo il driver di fondo è il <strong>differenziale dei tassi attesi</strong>.</p>
+    </div>
+  </article>
+
+  <article class="lesson" id="m1-indici" data-short="Indici azionari">
+    <div class="lesson-head"><h4><small>Lezione 2</small>Gli indici azionari</h4></div>
+    <div class="box def"><span class="lbl">Definizione</span>
+      <p>Un indice è un <strong>paniere</strong> che riassume un mercato azionario. Si opera tramite future, CFD o ETF e riflette utili attesi, tassi e sentiment.</p>
+    </div>
+    <div class="tbl"><table>
+      <thead><tr><th>Indice</th><th>Cosa rappresenta</th><th>Sensibilità</th></tr></thead>
+      <tbody>
+        <tr><td>S&amp;P 500</td><td>500 grandi società USA</td><td>Barometro del rischio globale</td></tr>
+        <tr><td>Nasdaq 100</td><td>Tecnologia e crescita USA</td><td>Molto sensibile ai tassi</td></tr>
+        <tr><td>Dow Jones</td><td>30 blue chip, pesate per prezzo</td><td>Più "value"</td></tr>
+        <tr><td>DAX 40</td><td>Grandi società tedesche</td><td>Export, euro, energia</td></tr>
+        <tr><td>FTSE MIB</td><td>Large cap italiane</td><td>Banche, spread BTP-Bund</td></tr>
+        <tr><td>Nikkei 225</td><td>Azionario giapponese</td><td>Inverso allo yen</td></tr>
+      </tbody>
+    </table></div>
+    <p><strong>Cosa li muove:</strong> utili attesi e revisioni degli analisti; tassi (rendimenti su → multipli giù, soprattutto per i titoli growth); propensione al rischio; concentrazione (pochi mega-cap possono guidare tutto l'indice).</p>
+    <div class="box ex"><span class="lbl">Esempio · perché i tassi pesano sul Nasdaq</span>
+      <p>Il valore di un'azione è la somma dei flussi futuri scontati. Un'azienda growth ha gran parte dei flussi lontano nel tempo: se il tasso di sconto sale dal 4% al 5%, 100 € incassati fra 10 anni passano da un valore di oggi di 67,6 € a <strong>61,4 €</strong> (<span class="num-bear">−9%</span>). Gli stessi 100 € incassati fra un anno perdono meno dell'1%. Per questo il Nasdaq ha "duration alta".</p>
+    </div>
+    <p><strong>Note operative:</strong> la sessione cash USA apre alle 15:30 italiane ed è molto volatile; i future girano quasi 24 ore; i gap di apertura sono frequenti, attenzione agli stop overnight.</p>
+  </article>
+
+  <article class="lesson" id="m1-bond" data-short="Obbligazioni e curva">
+    <div class="lesson-head"><h4><small>Lezione 3</small>Obbligazioni e curva dei rendimenti</h4></div>
+    <div class="box def"><span class="lbl">Definizione</span>
+      <p>Prezzo e rendimento di un'obbligazione si muovono in <strong>senso opposto</strong>. La <strong>curva dei rendimenti</strong> è il grafico del rendimento per scadenza (da 3 mesi a 30 anni) e racconta la fase del ciclo.</p>
+    </div>
+    <p>Anche chi non opera bond deve guardarli: i rendimenti guidano valute, titoli growth e oro. I Treasury USA sono il bene "privo di rischio" globale e si comprano nel risk-off.</p>
+    <div class="tbl"><table>
+      <thead><tr><th>Forma della curva</th><th>Cosa racconta</th></tr></thead>
+      <tbody>
+        <tr><td>Inclinata positiva (lunghi &gt; brevi)</td><td>Normale, fase di espansione</td></tr>
+        <tr><td>Piatta</td><td>Fine ciclo, incertezza</td></tr>
+        <tr><td>Invertita (brevi &gt; lunghi)</td><td>Storicamente anticipa le recessioni, con anticipo variabile da mesi ad anni</td></tr>
+      </tbody>
+    </table></div>
+    <p><strong>Spread da osservare:</strong> 2 anni – 10 anni USA (barometro di recessione); spread di credito high yield contro governativi (si allargano nello stress); BTP-Bund (rischio periferico).</p>
+    <div class="box plus"><span class="lbl">Oltre il vault · duration in una riga</span>
+      <p>La <strong>duration modificata</strong> dice di quanto varia il prezzo per ogni punto di rendimento: <code>ΔP/P ≈ −Duration × Δy</code>. Un BTP con duration 8 perde circa l'<strong>8%</strong> se i rendimenti salgono di 1 punto. Si approfondisce nel Modulo 10 (Fixed income).</p>
+    </div>
+  </article>
+
+  <article class="lesson" id="m1-commodity" data-short="Materie prime">
+    <div class="lesson-head"><h4><small>Lezione 4</small>Le materie prime</h4></div>
+    <div class="box def"><span class="lbl">Definizione</span>
+      <p>Asset reali il cui prezzo dipende da <strong>domanda e offerta fisica</strong>, dal dollaro e dai tassi reali. Alcune fanno da rifugio, altre da barometro della crescita.</p>
+    </div>
+    <div class="tbl"><table>
+      <thead><tr><th>Materia prima</th><th>Driver</th><th>Nota</th></tr></thead>
+      <tbody>
+        <tr><td>Oro</td><td>Tassi reali (inverso), dollaro, domanda rifugio, banche centrali</td><td>Non rende nulla: brilla quando i tassi reali scendono</td></tr>
+        <tr><td>Petrolio (WTI, Brent)</td><td>Domanda globale, OPEC+, scorte, geopolitica</td><td>Guida CAD e NOK; gli shock alimentano l'inflazione</td></tr>
+        <tr><td>Gas naturale</td><td>Stagione, scorte, meteo</td><td>Volatilissimo, molto locale</td></tr>
+        <tr><td>Rame</td><td>Crescita globale, Cina, transizione energetica</td><td>"Dottor Rame", barometro del ciclo</td></tr>
+        <tr><td>Agricole</td><td>Raccolti, meteo</td><td>Guidate dall'offerta</td></tr>
+      </tbody>
+    </table></div>
+    <div class="box ex"><span class="lbl">Esempio · contango e backwardation</span>
+      <p><strong>Contango:</strong> il future a 1 mese costa 80, quello a 2 mesi 81. Alla scadenza chi rinnova la posizione vende a ~80 e ricompra a 81: <span class="num-bear">perde circa 1,2% al mese</span> anche se lo spot resta fermo. <strong>Backwardation:</strong> il contrario, il rinnovo rende. Per questo un ETC su petrolio può perdere valore mentre il petrolio sta fermo.</p>
+    </div>
+  </article>
+
+  <article class="lesson" id="m1-vol" data-short="Cripto e volatilità">
+    <div class="lesson-head"><h4><small>Lezione 5</small>Criptovalute come mercato, e la volatilità come asset</h4></div>
+    <p><strong>Le cripto come mercato</strong> si scambiano 24/7/365: niente gap classici, ma movimenti violenti di notte e nel weekend. La volatilità è molto superiore a valute e indici, la liquidità è frammentata tra molti exchange (slippage e "wick" estremi), la correlazione col Nasdaq è spesso positiva ma variabile, e le altcoin amplificano i movimenti del Bitcoin. Rischi non di prezzo: custodia, controparte, regolamentazione, liquidazioni a cascata sui derivati.</p>
+    <div class="box def"><span class="lbl">Definizione · volatilità come asset</span>
+      <p>La volatilità si compra e si vende (future VIX, opzioni, prodotti quotati). <strong>Venderla</strong> rende di solito un piccolo premio costante, con un raro rischio di coda enorme.</p>
+    </div>
+    <ul>
+      <li><strong>VIX</strong>: volatilità implicita a 30 giorni sull'S&amp;P 500. È un indice, non si compra direttamente: si operano i suoi future.</li>
+      <li><strong>Struttura a termine</strong>: nei mercati calmi è in contango (chi è short guadagna col passare del tempo); nello stress va in backwardation.</li>
+      <li><strong>Variance risk premium</strong>: la volatilità implicita è in media più alta di quella poi realizzata. Chi vende opzioni incassa questa differenza, come chi vende un'assicurazione.</li>
+    </ul>
+    <div class="box warn"><span class="lbl">Il caso Volmageddon · 5 febbraio 2018</span>
+      <p>Dopo un 2017 calmissimo molti erano short volatilità tramite prodotti come XIV. In due ore il VIX sale del <span class="num-bear">115%</span> (da ~17 a ~37); XIV perde il <span class="num-bear">96% in una seduta</span> e viene chiuso. Le strategie short-vol funzionano finché non smettono, e il crollo è non lineare.</p>
+    </div>
+    <p><strong>Usi legittimi:</strong> assicurazione di portafoglio (comprare put o call sul VIX, pagando un costo); segnale di regime (VIX alto e curva in backwardation = prudenza); vendita di premio solo con rischio definito e size che regge un raddoppio del VIX.</p>
+  </article>
+
+  <article class="lesson" id="m1-correlazioni" data-short="Correlazioni">
+    <div class="lesson-head"><h4><small>Lezione 6</small>Le correlazioni tra asset class</h4></div>
+    <div class="box def"><span class="lbl">Definizione</span>
+      <p>La <strong>correlazione</strong> misura quanto due strumenti si muovono insieme, da −1 (opposti) a +1 (identici). Serve a confermare un'idea e a non raddoppiare lo stesso rischio, ma <strong>non è stabile</strong>.</p>
+    </div>
+    <div class="tbl"><table>
+      <thead><tr><th>Coppia</th><th>Relazione tipica</th></tr></thead>
+      <tbody>
+        <tr><td>Azioni ↔ credito high yield</td><td class="num-bull">Positiva forte</td></tr>
+        <tr><td>Azioni ↔ Treasury</td><td>Negativa nel risk-off, variabile</td></tr>
+        <tr><td>Dollaro ↔ materie prime</td><td class="num-bear">Negativa</td></tr>
+        <tr><td>Oro ↔ tassi reali</td><td class="num-bear">Negativa</td></tr>
+        <tr><td>AUD/JPY ↔ azioni</td><td class="num-bull">Positiva (termometro del sentiment)</td></tr>
+        <tr><td>Bitcoin ↔ Nasdaq</td><td>Positiva variabile</td></tr>
+        <tr><td>Petrolio ↔ CAD</td><td class="num-bull">Positiva</td></tr>
+      </tbody>
+    </table></div>
+    <div class="box warn"><span class="lbl">Errori tipici</span>
+      <ul>
+        <li>Pensarsi diversificati con long EUR/USD e long GBP/USD: sono quasi lo stesso trade (short dollaro).</li>
+        <li>Dimenticare che nelle crisi le correlazioni di rischio vanno verso +1: scende tutto insieme.</li>
+        <li>Prendere le correlazioni dal manuale invece di misurarle sul proprio timeframe.</li>
+      </ul>
+    </div>
+  </article>
+</div>
+
+<!-- ============ UNITÀ 1.2 ============ -->
+<div class="unit">
+  <div class="unit-head"><span class="u">1.2</span><h3>Gli strumenti: il "contenitore" del trade</h3></div>
+  <p class="unit-intro">La stessa idea può essere eseguita con strumenti diversi. Cambiano leva, scadenza, costi di detenzione, controparte e tasse.</p>
+
+  <article class="lesson" id="m1-azioni" data-short="Azioni ed ETF">
+    <div class="lesson-head"><h4><small>Lezione 7</small>Azioni ed ETF</h4></div>
+    <div class="box def"><span class="lbl">Definizione</span>
+      <p>L'<strong>azione</strong> è una quota di proprietà di un'azienda comprata a pronti: niente leva strutturale, niente scadenza. L'<strong>ETF</strong> è un fondo quotato che replica un indice o una strategia e si compra come un'azione.</p>
+    </div>
+    <p><strong>Azioni:</strong> regolamento T+1/T+2, dividendi, split. Lo short richiede di prendere a prestito il titolo (costo del prestito, rischio di richiamo, dividendi a carico). Adatte da swing in su.</p>
+    <div class="tbl"><table>
+      <thead><tr><th>Tipo</th><th>Cos'è</th><th>Rischio specifico</th></tr></thead>
+      <tbody>
+        <tr><td>ETF fisico</td><td>Compra davvero i titoli dell'indice</td><td>Basso</td></tr>
+        <tr><td>ETF sintetico</td><td>Replica tramite swap con una controparte</td><td>Controparte</td></tr>
+        <tr><td>ETC</td><td>Su materie prime (fisico o su future)</td><td>Roll e contango se su future</td></tr>
+        <tr><td>ETN</td><td>Nota di debito non garantita</td><td>Emittente pieno</td></tr>
+      </tbody>
+    </table></div>
+    <p><strong>Cosa guardare in un ETF:</strong> TER (costo annuo), tracking difference, metodo di replica, domicilio, dimensione e liquidità. Gli <strong>ETF a leva o inversi</strong> si ribilanciano ogni giorno e perdono valore nei mercati laterali: sono per orizzonti brevissimi.</p>
+    <div class="box ex"><span class="lbl">Esempio · il decadimento di un ETF a leva 2×</span>
+      <p>L'indice fa +10% e poi −9,09%: torna a 100. L'ETF 2× fa +20% e poi −18,18%: 100 → 120 → <span class="num-bear">98,2</span>. Indice fermo, ETF in perdita.</p>
+    </div>
+  </article>
+
+  <article class="lesson" id="m1-futures" data-short="Futures">
+    <div class="lesson-head"><h4><small>Lezione 8</small>I futures</h4></div>
+    <div class="box def"><span class="lbl">Definizione</span>
+      <p>Contratti <strong>standardizzati e quotati</strong> per comprare o vendere un sottostante a una data futura, con regolazione giornaliera di guadagni e perdite (mark-to-market).</p>
+    </div>
+    <ul>
+      <li><strong>Margine iniziale e di mantenimento:</strong> se il conto scende sotto soglia arriva la margin call.</li>
+      <li><strong>Leva implicita alta:</strong> il rischio si calcola sempre sul valore nozionale.</li>
+      <li><strong>Scadenze e roll:</strong> prima della scadenza si passa al contratto successivo.</li>
+      <li><strong>Controparte quasi nulla:</strong> c'è una cassa di compensazione (CCP) in mezzo.</li>
+    </ul>
+    <div class="box plus"><span class="lbl">Oltre il vault · quanto vale un punto</span>
+      <div class="tbl"><table>
+        <thead><tr><th>Contratto</th><th class="n">Valore di 1 punto</th><th>Versione micro</th></tr></thead>
+        <tbody>
+          <tr><td>ES (S&amp;P 500)</td><td class="n">50 $</td><td>MES: 5 $</td></tr>
+          <tr><td>NQ (Nasdaq 100)</td><td class="n">20 $</td><td>MNQ: 2 $</td></tr>
+        </tbody>
+      </table></div>
+      <p>Con l'S&amp;P a 6.000, un ES vale nozionalmente 300.000 $. Uno stop di 10 punti su un MES costa 50 $; sullo stesso stop, un ES costa 500 $. I micro permettono di dimensionare con precisione anche con conti piccoli.</p>
+    </div>
+    <p><strong>Pro:</strong> costi bassi, liquidità enorme, book trasparente, nessun conflitto con il broker. <strong>Contro:</strong> leva pericolosa se non dimensionata. Ideali per day trading e swing su indici, materie prime, tassi.</p>
+  </article>
+
+  <article class="lesson" id="m1-opzioni" data-short="Opzioni">
+    <div class="lesson-head"><h4><small>Lezione 9</small>Le opzioni: il minimo indispensabile</h4></div>
+    <div class="box def"><span class="lbl">Definizione</span>
+      <p>Un'opzione è il <strong>diritto, non l'obbligo</strong>, di comprare (call) o vendere (put) un sottostante a un prezzo fissato (strike) entro una data. Chi compra paga un premio; chi vende lo incassa e si assume l'obbligo.</p>
+    </div>
+    <div class="box ex"><span class="lbl">Esempio · il payoff di una call</span>
+      <p>Compri una call strike 100 pagando 3. A scadenza il sottostante è a 110: guadagni 110 − 100 − 3 = <span class="num-bull">+7</span>. Se è a 95 l'opzione scade senza valore: perdi il premio, <span class="num-bear">−3</span>, e non di più. Pareggio a 103.</p>
+    </div>
+    <div class="tbl"><table>
+      <thead><tr><th>Greca</th><th>Cosa misura</th></tr></thead>
+      <tbody>
+        <tr><td>Delta</td><td>Quanto varia l'opzione per 1 punto di sottostante (esposizione direzionale)</td></tr>
+        <tr><td>Theta</td><td>Quanto perde ogni giorno per il passare del tempo (a favore di chi vende)</td></tr>
+        <tr><td>Vega</td><td>Sensibilità alla volatilità implicita</td></tr>
+        <tr><td>Gamma</td><td>Quanto cambia il delta: è il rischio di chi vende</td></tr>
+      </tbody>
+    </table></div>
+    <p><strong>A cosa servono:</strong> copertura (put protettiva), rendimento (covered call), direzione con rischio definito (spread verticali), volatilità (straddle prima di un evento). Regola generale: comprare opzioni con volatilità implicita bassa, venderle con volatilità alta.</p>
+    <div class="box warn"><span class="lbl">Errori tipici</span><p>Vendere opzioni "nude" significa tante piccole vincite e code enormi, lo stesso profilo del carry trade e dello short volatility.</p></div>
+  </article>
+
+  <article class="lesson" id="m1-cfd" data-short="CFD, FX spot, perpetual">
+    <div class="lesson-head"><h4><small>Lezione 10</small>CFD, Forex spot e derivati cripto</h4></div>
+    <div class="box def"><span class="lbl">Definizione</span>
+      <p>Il <strong>CFD</strong> è un contratto bilaterale con il broker che paga la differenza di prezzo del sottostante. Non si possiede nulla: la controparte è il broker.</p>
+    </div>
+    <p><strong>CFD:</strong> leva alta, stop-out automatico, spread spesso più larghi del sottostante, <strong>costo di finanziamento overnight</strong> che erode le posizioni tenute a lungo. Alcuni broker sono market maker sul tuo ordine (conflitto d'interesse). Nell'UE: leva limitata per il retail e protezione dal saldo negativo. Adatti a swing e day trading, non al lungo periodo. L'alternativa più pulita sono i micro-futures.</p>
+    <p><strong>Forex spot:</strong> la posizione viene rinnovata ogni sera con addebito o accredito dello swap. Esistono anche forward (cambio fissato per una data futura), NDF e FX swap. Non c'è un volume centralizzato: si usa il tick volume come approssimazione.</p>
+    <p><strong>Cripto:</strong> spot (possiedi il token, rischio custodia), futures con scadenza, e <strong>perpetual</strong> senza scadenza, tenuti vicini allo spot dal <strong>funding rate</strong>: un pagamento periodico tra long e short. Funding molto positivo = i long pagano = sentiment euforico. Attenzione alle liquidazioni a cascata.</p>
+  </article>
+
+  <article class="lesson" id="m1-confronto" data-short="Confronto strumenti">
+    <div class="lesson-head"><h4><small>Lezione 11</small>Il confronto: quale strumento per quale idea</h4></div>
+    <div class="tbl"><table>
+      <thead><tr><th>Strumento</th><th>Leva</th><th>Scadenza</th><th>Costo di detenzione</th><th>Controparte</th><th>Adatto a</th></tr></thead>
+      <tbody>
+        <tr><td>Azioni</td><td>no</td><td>no</td><td>no</td><td>bassa</td><td>swing → lungo periodo</td></tr>
+        <tr><td>ETF</td><td>no</td><td>no</td><td>TER basso</td><td>bassa (ETN alta)</td><td>lungo periodo</td></tr>
+        <tr><td>Futures</td><td>alta</td><td>sì</td><td>roll</td><td>quasi nulla</td><td>day/swing su indici e commodity</td></tr>
+        <tr><td>Opzioni</td><td>non lineare</td><td>sì</td><td>theta</td><td>quasi nulla</td><td>copertura, rischio definito</td></tr>
+        <tr><td>CFD</td><td>alta</td><td>no</td><td class="num-bear">finanziamento</td><td class="num-bear">alta</td><td>swing/day multi-mercato</td></tr>
+        <tr><td>FX spot</td><td>alta</td><td>no</td><td>swap</td><td>media</td><td>day/swing FX</td></tr>
+        <tr><td>Certificati</td><td>varia</td><td>sì</td><td>costi impliciti</td><td class="num-bear">emittente</td><td>payoff specifici</td></tr>
+        <tr><td>Obbligazioni</td><td>no</td><td>sì</td><td>no</td><td>emittente</td><td>reddito, difesa</td></tr>
+      </tbody>
+    </table></div>
+    <div class="box syn"><span class="lbl">Sintesi da ripetere</span>
+      <ul>
+        <li>Posizione <strong>tenuta a lungo</strong> → evita CFD e FX spot (costo notturno): meglio azioni, ETF, futures.</li>
+        <li><strong>Capitale piccolo</strong> → micro-futures prima dei CFD.</li>
+        <li><strong>Rischio di controparte</strong> → preferisci mercati regolamentati con cassa di compensazione.</li>
+      </ul>
+    </div>
+  </article>
+
+  <article class="lesson" id="m1-ordini" data-short="Tipi di ordine">
+    <div class="lesson-head"><h4><small>Lezione 12</small>I tipi di ordine</h4></div>
+    <div class="box def"><span class="lbl">Definizione</span>
+      <p>L'ordine è lo strumento con cui l'idea diventa esecuzione. La scelta influenza <strong>costo</strong>, <strong>certezza di esecuzione</strong> e disciplina.</p>
+    </div>
+    <div class="tbl"><table>
+      <thead><tr><th>Ordine</th><th>Cosa fa</th><th>Compromesso</th></tr></thead>
+      <tbody>
+        <tr><td>Market</td><td>Esegue subito al miglior prezzo disponibile</td><td>Esecuzione certa, ma paghi spread e slippage</td></tr>
+        <tr><td>Limit</td><td>Esegue solo al tuo prezzo o meglio</td><td>Prezzo migliore, ma può non eseguire</td></tr>
+        <tr><td>Stop</td><td>Diventa market quando il prezzo tocca il livello</td><td>Per stop loss e breakout; slippage sui gap</td></tr>
+        <tr><td>Stop-limit</td><td>Diventa limit al livello</td><td>Evita slippage estremo, ma rischia di non uscire</td></tr>
+        <tr><td>Trailing stop</td><td>Stop che segue il prezzo a distanza fissa</td><td>Automatizza la gestione</td></tr>
+        <tr><td>OCO / Bracket</td><td>Entrata + stop + target insieme; uno annulla l'altro</td><td>Ideale per lo swing</td></tr>
+      </tbody>
+    </table></div>
+    <div class="box syn"><span class="lbl">Regole pratiche</span>
+      <ul>
+        <li>Lo stop loss è <strong>sempre un ordine reale</strong>, mai mentale.</li>
+        <li>In entrata preferisci il <strong>limit</strong>: ti costringe a scegliere il prezzo.</li>
+        <li>Su news e gap gli stop market possono eseguire molto lontano dal livello.</li>
+      </ul>
+    </div>
+  </article>
+
+  <article class="lesson" id="m1-costi" data-short="Costi e tasse">
+    <div class="lesson-head"><h4><small>Lezione 13</small>Costi di trading e fiscalità in Italia</h4></div>
+    <div class="box def"><span class="lbl">Definizione</span>
+      <p>Costi e tasse sono una <strong>perdita certa</strong> che si sottrae a ogni edge. L'aspettativa si calcola sempre al netto di spread, commissioni, slippage, finanziamento, roll e TER.</p>
+    </div>
+    <div class="box ex"><span class="lbl">Esempio · perché lo scalping è così difficile</span>
+      <p>Scalping su EUR/USD con stop di 5 pip. Spread 0,8 pip + commissione equivalente a 0,6 pip = 1,4 pip a trade, cioè <span class="num-bear">0,28R</span>. Un edge lordo di +0,2R diventa <span class="num-bear">−0,08R</span>. Lo stesso costo su uno swing con stop di 50 pip vale 0,03R: trascurabile.</p>
+    </div>
+    <h4 style="font-size:16px;margin:20px 0 8px">Il quadro fiscale italiano (indicativo, da verificare ogni anno)</h4>
+    <div class="tbl"><table>
+      <thead><tr><th>Categoria</th><th>Cosa ci rientra</th><th>Compensabile con le minus?</th></tr></thead>
+      <tbody>
+        <tr><td>Redditi di capitale</td><td>Dividendi, cedole, guadagni su ETF e fondi armonizzati</td><td class="num-bear">No</td></tr>
+        <tr><td>Redditi diversi</td><td>Plus e minus su azioni, obbligazioni, ETC/ETN, futures, opzioni, CFD, forex, certificati</td><td class="num-bull">Sì</td></tr>
+      </tbody>
+    </table></div>
+    <ul>
+      <li><strong>Aliquote:</strong> 26% sulla maggior parte delle rendite; 12,5% su titoli di Stato italiani e white list. Cripto: dal 2026 l'aliquota prevista è salita al <strong>33%</strong> (da verificare con un commercialista per l'anno in corso).</li>
+      <li><strong>Minusvalenze:</strong> si usano entro 4 anni, solo contro redditi diversi. Chi guadagna con ETF e perde con i CFD accumula minus che non riesce a compensare.</li>
+      <li><strong>Regime amministrato</strong> (broker italiano): il broker calcola e versa. <strong>Dichiarativo</strong> (broker estero, exchange cripto): fai tutto tu, con quadri RT e RW e l'IVAFE sui conti esteri. Se non scegli, sei in dichiarativo.</li>
+      <li><strong>Bollo:</strong> 0,2% annuo sul controvalore dei titoli.</li>
+    </ul>
+    <p class="src">Non è consulenza fiscale: è una mappa per parlare con un professionista senza partire da zero.</p>
+  </article>
+</div>
+
+<!-- ============ UNITÀ 1.3 ============ -->
+<div class="unit">
+  <div class="unit-head"><span class="u">1.3</span><h3>Le criptovalute dalle fondamenta</h3></div>
+  <p class="unit-intro">Cosa c'è davvero sotto, letto dai documenti originali, e cosa è solido, cosa è limite, cosa è marketing.</p>
+
+  <article class="lesson" id="m1-bitcoin" data-short="Bitcoin ed Ethereum">
+    <div class="lesson-head"><h4><small>Lezione 14</small>Bitcoin ed Ethereum: i whitepaper</h4></div>
+    <div class="box def"><span class="lbl">Definizione · Bitcoin (Nakamoto, 2008)</span>
+      <p>Contante elettronico <strong>senza una terza parte fidata</strong>, reso possibile dalla proof-of-work e dalla regola della catena più lunga.</p>
+    </div>
+    <ol>
+      <li><strong>Il problema:</strong> il commercio online dipende da intermediari. Serve fiducia basata su prova crittografica.</li>
+      <li><strong>La moneta</strong> è una catena di firme digitali. Da sola non impedisce la doppia spesa.</li>
+      <li><strong>Timestamp e catena:</strong> ogni blocco contiene l'hash del precedente, quindi rinforza tutti quelli prima.</li>
+      <li><strong>Proof-of-work:</strong> trovare un hash sotto una soglia costa calcolo. Il consenso è la catena con più lavoro: modificare un blocco passato richiede rifare tutto il lavoro successivo.</li>
+      <li><strong>Incentivo:</strong> chi mina riceve nuove monete e commissioni. Emissione decrescente (halving) fino a <strong>21 milioni</strong>. Attaccare rende meno che rispettare le regole.</li>
+      <li><strong>Sicurezza probabilistica:</strong> la probabilità che un attaccante in minoranza raggiunga la catena onesta cala esponenzialmente con i blocchi di conferma.</li>
+    </ol>
+    <div class="box def"><span class="lbl">Definizione · Ethereum (Buterin, 2013)</span>
+      <p>Una blockchain con un linguaggio <strong>Turing-completo</strong> integrato, per eseguire contratti arbitrari: una "macchina a stati" mondiale.</p>
+    </div>
+    <p>Modello a conti (non UTXO): conti controllati da chiavi (EOA) e conti controllati da codice (contratti). Ogni operazione consuma <strong>gas</strong>, che impedisce loop infiniti e attacchi. Casi d'uso: token, derivati con oracoli, DAO. Consenso nato in proof-of-work, passato a <strong>proof-of-stake</strong> con The Merge (2022). Limiti riconosciuti dallo stesso paper: scalabilità, costo computazionale, complessità.</p>
+  </article>
+
+  <article class="lesson" id="m1-stablecoin" data-short="Stablecoin e sintesi">
+    <div class="lesson-head"><h4><small>Lezione 15</small>Stablecoin, limiti e potenzialità</h4></div>
+    <div class="tbl"><table>
+      <thead><tr><th>Modello</th><th>Esempi</th><th>Come tiene il valore</th><th>Come si rompe</th></tr></thead>
+      <tbody>
+        <tr><td>Garantito in valuta</td><td>USDT, USDC</td><td>Riserve 1:1 in dollari e titoli</td><td>Qualità e trasparenza delle riserve, controparte</td></tr>
+        <tr><td>Garantito in cripto</td><td>DAI</td><td>Collaterale superiore al 100%, liquidazioni automatiche</td><td>Cascate di liquidazione nei crolli</td></tr>
+        <tr><td>Algoritmico</td><td>UST/Terra</td><td>Arbitraggio con un token gemello</td><td>Spirale di morte: <span class="num-bear">crollo di maggio 2022</span></td></tr>
+      </tbody>
+    </table></div>
+    <p>Tenere liquidità in stablecoin significa assumersi il rischio dell'emittente, non "essere in cash".</p>
+    <div class="tbl"><table>
+      <thead><tr><th class="num-bull">Solido</th><th class="num-bear">Limite</th><th>Marketing</th></tr></thead>
+      <tbody>
+        <tr><td>Scarsità verificabile e regole trasparenti</td><td>Throughput limitato del layer base</td><td>Token senza uso reale</td></tr>
+        <tr><td>Regolamento senza permesso, resistente alla censura</td><td>Custodia senza rete: chiave persa = fondi persi</td><td>Rendimenti "garantiti" da staking</td></tr>
+        <tr><td>Programmabilità del regolamento</td><td>Controparte su exchange e stablecoin</td><td>"Segui le balene"</td></tr>
+        <tr><td>Mercato globale 24/7</td><td>Volatilità estrema, regolamentazione in evoluzione</td><td>Narrazioni che cambiano ogni ciclo</td></tr>
+      </tbody>
+    </table></div>
+    <div class="box syn"><span class="lbl">Sintesi da ripetere</span>
+      <p>La cripto è un <strong>asset speculativo con una tesi</strong> (scarsità, opzione su un sistema alternativo), non un flusso di cassa. Size ridotta, rischio per trade più basso del solito, e nei periodi di stress la liquidità esce da qui per prima.</p>
+    </div>
+  </article>
+</div>
+
+<!-- ============ UNITÀ 1.4 ============ -->
+<div class="unit">
+  <div class="unit-head"><span class="u">1.4</span><h3>Gli orizzonti temporali</h3></div>
+  <p class="unit-intro">L'orizzonte non è "quanto tengo un trade": decide costi, fonte dell'edge, dati, psicologia e strumenti.</p>
+
+  <article class="lesson" id="m1-orizzonti" data-short="Come cambia tutto">
+    <div class="lesson-head"><h4><small>Lezione 16</small>Come cambia tutto con l'orizzonte</h4></div>
+    <div class="tbl"><table>
+      <thead><tr><th></th><th>Scalping</th><th>Day trading</th><th>Swing</th><th>Position</th><th>Investire</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Durata</strong></td><td>secondi–minuti</td><td>minuti–ore</td><td>giorni–settimane</td><td>settimane–mesi</td><td>anni</td></tr>
+        <tr><td><strong>Trade al mese</strong></td><td>centinaia</td><td>decine</td><td>~10</td><td>pochi</td><td>~0</td></tr>
+        <tr><td><strong>Peso dei costi</strong></td><td class="num-bear">enorme</td><td class="num-bear">alto</td><td>medio</td><td class="num-bull">basso</td><td class="num-bull">trascurabile</td></tr>
+        <tr><td><strong>Fonte dell'edge</strong></td><td>microstruttura, velocità</td><td>livelli intraday, sessioni, news</td><td>struttura, pullback</td><td>trend macro, regime</td><td>premio al rischio, composizione</td></tr>
+        <tr><td><strong>Psicologia critica</strong></td><td>reazione, tilt rapido</td><td>noia, disciplina oraria</td><td>pazienza nell'attesa</td><td>reggere il rumore</td><td>non agire</td></tr>
+        <tr><td><strong>Tempo richiesto</strong></td><td>tutto il giorno</td><td>ore fisse</td><td>30–60 min al giorno</td><td>poche ore a settimana</td><td>poche ore al mese</td></tr>
+      </tbody>
+    </table></div>
+    <p><strong>Scalping:</strong> centinaia di trade, R:R spesso sotto 1, i costi dominano; serve esecuzione veloce e lettura del book. <strong>Day trading:</strong> niente rischio overnight; il nemico è la noia tra un setup e l'altro. <strong>Swing:</strong> costi leggeri, si accettano i gap del weekend, il difficile è non toccare un trade che "non fa niente". <strong>Position:</strong> il campione cresce lentamente, stop ampi e size piccola. <strong>Lungo periodo:</strong> l'edge è strutturale (premio per il rischio azionario), il nemico è agire nei crolli e nelle bolle.</p>
+    <div class="box syn"><span class="lbl">Sintesi da ripetere</span>
+      <p>L'orizzonte giusto è quello compatibile con <strong>il tempo che hai, i costi del tuo broker e la tua psicologia</strong>, non quello che promette di più. Si scrive nel trading plan.</p>
+    </div>
+    <div class="box warn"><span class="lbl">Errori tipici</span>
+      <ul><li>Scalping con costi da retail e connessione lenta.</li><li>Trasformare uno swing perdente in "investimento di lungo periodo".</li><li>Saltare da un orizzonte all'altro in base all'ultimo esito.</li></ul>
+    </div>
+  </article>
+
+  <article class="lesson" id="m1-mtf" data-short="Multi-timeframe">
+    <div class="lesson-head"><h4><small>Lezione 17</small>L'analisi multi-timeframe</h4></div>
+    <div class="box def"><span class="lbl">Definizione</span>
+      <p>Guardare lo stesso mercato su <strong>tre scale temporali</strong> (con rapporto circa 1:4–1:6) e operare solo quando sono allineate: contesto, setup, trigger.</p>
+    </div>
+    <div class="tbl"><table>
+      <thead><tr><th>Ruolo</th><th>Esempio swing</th><th>Domanda</th></tr></thead>
+      <tbody>
+        <tr><td>Contesto</td><td>Giornaliero / 4 ore</td><td>Che direzione e che regime?</td></tr>
+        <tr><td>Setup</td><td>1 ora / 15 minuti</td><td>C'è una zona o un pattern operativo?</td></tr>
+        <tr><td>Trigger</td><td>15 / 5 minuti</td><td>C'è l'innesco preciso?</td></tr>
+      </tbody>
+    </table></div>
+    <p>Si opera <strong>nella direzione del contesto</strong>. Il vantaggio: meno falsi segnali (il rumore di un timeframe è struttura su quello sopra) e R:R migliore (entrata fine sul timeframe basso, target su quello alto).</p>
+    <div class="box warn"><span class="lbl">Errori tipici</span><p><strong>Timeframe hopping</strong>: cambiare scala finché una conferma la tua idea. È bias di conferma travestito da analisi.</p></div>
+  </article>
+</div>
+
+<!-- ============ UNITÀ 1.5 ============ -->
+<div class="unit">
+  <div class="unit-head"><span class="u">1.5</span><h3>Come si scambia davvero</h3></div>
+  <p class="unit-intro">La microstruttura in versione essenziale: chi mette il prezzo, perché lo spread si allarga, cosa significa liquidità.</p>
+
+  <article class="lesson" id="m1-micro" data-short="Microstruttura">
+    <div class="lesson-head"><h4><small>Lezione 18</small>Microstruttura e market making</h4></div>
+    <div class="box def"><span class="lbl">Definizione</span>
+      <p>La <strong>microstruttura</strong> studia come si forma il prezzo: regole di negoziazione, ordini, spread e liquidità. Il <strong>market maker</strong> quota in continuazione un prezzo di acquisto e uno di vendita e guadagna lo spread, rischiando di restare con inventario dal lato sbagliato.</p>
+    </div>
+    <p>Lo spread ha tre componenti: costi di gestione dell'ordine, costo di tenere l'inventario, e <strong>selezione avversa</strong>, cioè il rischio di scambiare con qualcuno più informato. Per questo lo spread si allarga con la volatilità, attorno alle news e quando il market maker teme flusso "tossico".</p>
+    <div class="box ex"><span class="lbl">Esempio · scomporre lo spread</span>
+      <p>Spread quotato 4 centesimi. Compri a mercato pagando 2 centesimi sopra il prezzo medio (spread effettivo 4). Dopo 5 minuti il prezzo medio si è mosso di 1,5 centesimi nella tua direzione. Il guadagno reale del market maker (spread realizzato) è 2 × (2 − 1,5) = <strong>1 centesimo</strong>; gli altri <strong>3</strong> sono selezione avversa: li ha persi contro chi era informato.</p>
+    </div>
+    <p><strong>Liquidità</strong> ha tre dimensioni: spread stretto, profondità del book, capacità di riassorbire un grosso ordine. Più volume non significa sempre più liquidità: conta la profondità nel momento in cui serve, e la liquidità evapora proprio nei momenti di stress. Il modello di Kyle la riassume così: il prezzo si muove in proporzione al flusso netto di ordini, <code>ΔP = λ · flusso</code>.</p>
+    <div class="box syn"><span class="lbl">Cosa se ne fa un retail</span>
+      <ul><li>Usare ordini limit dove possibile: paghi meno spread.</li><li>Evitare i momenti in cui i market maker allargano (news, aperture, ore morte).</li><li>Sapere che lo stop su un livello ovvio sarà eseguito proprio quando la liquidità è peggiore.</li></ul>
+    </div>
+  </article>
+</div>
+
+<div class="closing">
+  <div class="panel">
+    <h3>Checklist di padronanza</h3>
+    <ul class="check">
+      <li><label><input type="checkbox" id="c-m1-1"><span>So nominare i driver principali di USD, EUR, JPY, AUD e CAD.</span></label></li>
+      <li><label><input type="checkbox" id="c-m1-2"><span>Spiego cosa racconta una curva dei rendimenti invertita.</span></label></li>
+      <li><label><input type="checkbox" id="c-m1-3"><span>So calcolare la size in lotti o contratti partendo dal rischio in euro.</span></label></li>
+      <li><label><input type="checkbox" id="c-m1-4"><span>Per un'idea di trade scelgo lo strumento giustificando leva, costo di detenzione e controparte.</span></label></li>
+      <li><label><input type="checkbox" id="c-m1-5"><span>Conosco la differenza tra market, limit, stop e stop-limit e quando usarli.</span></label></li>
+      <li><label><input type="checkbox" id="c-m1-6"><span>So perché le minus dei CFD non si compensano con i guadagni degli ETF.</span></label></li>
+      <li><label><input type="checkbox" id="c-m1-7"><span>Ho scelto il mio orizzonte in base a tempo, costi e psicologia.</span></label></li>
+    </ul>
+  </div>
+  <div class="panel">
+    <h3>Flashcard · rispondi a voce, poi controlla</h3>
+    <div class="cards">
+      <details class="card"><summary>Quanto vale un pip su 1 lotto standard EUR/USD?</summary><div>10 dollari (1 $ per mini, 0,10 $ per micro).</div></details>
+      <details class="card"><summary>Quali valute salgono nel risk-off?</summary><div>USD, JPY, CHF, contro AUD, NZD ed emergenti.</div></details>
+      <details class="card"><summary>Cosa significa contango e perché costa?</summary><div>Future lontani più cari dei vicini: chi rinnova la posizione vende basso e ricompra alto, perdendo anche a spot fermo.</div></details>
+      <details class="card"><summary>Valore di un punto su ES e MES?</summary><div>50 $ e 5 $.</div></details>
+      <details class="card"><summary>Perché i CFD non vanno tenuti a lungo?</summary><div>Costo di finanziamento overnight che erode la posizione, più il rischio di controparte con il broker.</div></details>
+      <details class="card"><summary>Cos'è il funding rate di un perpetual?</summary><div>Pagamento periodico tra long e short che tiene il prezzo vicino allo spot. Molto positivo = long euforici.</div></details>
+      <details class="card"><summary>Cosa successe il 5 febbraio 2018?</summary><div>Volmageddon: VIX +115% in due ore, l'ETP short-vol XIV −96% in una seduta.</div></details>
+      <details class="card"><summary>Tre componenti dello spread?</summary><div>Costi di gestione dell'ordine, costo dell'inventario, selezione avversa.</div></details>
+      <details class="card"><summary>Tre ruoli del multi-timeframe?</summary><div>Contesto (direzione e regime), setup (zona o pattern), trigger (innesco preciso).</div></details>
+      <details class="card"><summary>Perché UST/Terra è crollato?</summary><div>Stablecoin algoritmica: quando il peg salta, il meccanismo di difesa distrugge valore sempre più in fretta (spirale riflessiva).</div></details>
+    </div>
+  </div>
+  <div class="gate">
+    <p class="eyebrow">Cancello per il Modulo 2</p>
+    <p>Per un'ipotesi di trade sai scrivere in quattro righe: <strong>strumento + orizzonte + costo totale + fiscalità</strong>, e giustificare ogni scelta.</p>
+    <p class="next">Poi → Modulo 2 · Macro, politica monetaria e flussi</p>
+  </div>
+</div>
+</section>
+
+<div class="soon-block" id="in-arrivo">
+  <h2>Moduli 2–10 in arrivo</h2>
+  <p>Il manuale si costruisce un modulo alla volta. I prossimi seguono lo stesso ordine del percorso: Macro, politica monetaria e flussi → Analisi tecnica → Lettura avanzata del prezzo → Analisi fondamentale e dati → Sistema operativo e rischio → Strategie e playbook → Validazione e automazione → Operare davvero, con la Formazione di supporto in parallelo.</p>
+</div>
+
+</div>
+</main>
+</div>
+
+<script>
+(function(){
+  const KEY='brain-manual-v1';
+  let st={};
+  try{st=JSON.parse(localStorage.getItem(KEY)||'{}')}catch(e){st={}}
+  const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(st))}catch(e){}};
+  const mods=[...document.querySelectorAll('section.module')];
+  const nav=document.getElementById('nav');
+  const planned=JSON.parse(document.getElementById('plan').textContent);
+  planned.forEach(p=>{
+    const li=document.createElement('li');
+    const sec=document.getElementById(p.id);
+    const a=document.createElement('a');
+    a.href='#'+p.id; a.style.setProperty('--mc','var(--m'+p.n+')');
+    a.innerHTML='<span class="num">'+p.n+'</span><span>'+p.t+'</span><span class="pct"></span>';
+    if(!sec){a.classList.add('soon');a.href='#in-arrivo';a.querySelector('.pct').textContent='presto'}
+    li.appendChild(a);
+    if(sec){
+      const sub=document.createElement('ul');sub.className='nav-sub';
+      sec.querySelectorAll('.lesson').forEach(l=>{
+        const s=document.createElement('li');const la=document.createElement('a');
+        la.href='#'+l.id;la.textContent=l.dataset.short||l.querySelector('h4').lastChild.textContent.trim();la.dataset.lid=l.id;
+        s.appendChild(la);sub.appendChild(s);
+      });
+      li.appendChild(sub);
+    }
+    nav.appendChild(li);
+  });
+  function refresh(){
+    let tot=0,done=0;
+    mods.forEach(m=>{
+      const ls=[...m.querySelectorAll('.lesson')];
+      const d=ls.filter(l=>st[l.id]).length;tot+=ls.length;done+=d;
+      const a=nav.querySelector('a[href="#'+m.id+'"]');
+      if(a){a.querySelector('.pct').textContent=d+'/'+ls.length;a.classList.toggle('done',d===ls.length&&ls.length>0)}
+    });
+    document.querySelectorAll('.lesson .mark').forEach(b=>{
+      const on=!!st[b.closest('.lesson').id];b.setAttribute('aria-pressed',on);b.textContent=on?'✓ Studiata':'Segna come studiata';
+    });
+    nav.querySelectorAll('.nav-sub a').forEach(a=>a.classList.toggle('read',!!st[a.dataset.lid]));
+    document.querySelectorAll('.check input').forEach(i=>{i.checked=!!st[i.id]});
+    document.getElementById('ovbar').style.width=(tot?done/tot*100:0)+'%';
+    document.getElementById('ovtxt').textContent=done+' di '+tot+' lezioni studiate';
+  }
+  document.querySelectorAll('.lesson').forEach(l=>{
+    const b=document.createElement('button');b.type='button';b.className='mark';
+    b.addEventListener('click',()=>{st[l.id]=!st[l.id];save();refresh()});
+    l.querySelector('.lesson-head').appendChild(b);
+  });
+  document.querySelectorAll('.check input').forEach(i=>i.addEventListener('change',()=>{st[i.id]=i.checked;save()}));
+  const r=document.getElementById('reset'),rc=document.getElementById('reset-confirm');
+  r.addEventListener('click',()=>{rc.hidden=!rc.hidden});
+  document.getElementById('reset-yes').addEventListener('click',()=>{st={};save();refresh();rc.hidden=true});
+  refresh();
+  // scrollspy
+  const links=[...nav.querySelectorAll(':scope > li > a')];
+  const io=new IntersectionObserver(es=>{es.forEach(e=>{if(e.isIntersecting){links.forEach(a=>a.classList.toggle('on',a.getAttribute('href')==='#'+e.target.id))}})},{rootMargin:'-30% 0px -60% 0px'});
+  mods.forEach(m=>io.observe(m));
+  // mobile
+  const side=document.getElementById('side'),menu=document.getElementById('menu');
+  menu.addEventListener('click',()=>{const o=side.classList.toggle('open');menu.setAttribute('aria-expanded',o)});
+  side.addEventListener('click',e=>{if(e.target.closest('a')&&window.innerWidth<=900){side.classList.remove('open');menu.setAttribute('aria-expanded','false')}});
+})();
+</script>
+
+</body></html>

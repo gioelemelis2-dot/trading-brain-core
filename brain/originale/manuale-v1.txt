@@ -1,0 +1,808 @@
+
+Manuale del Brain
+BrainManuale di studio · trading
+0 lezioni studiate
+I progressi restano salvati in questo browser.
+    Azzera progressi Conferma
+☰ Indice
+[
+{"id":"m0","n":0,"t":"Fondamenta mentali e statistiche"},
+{"id":"m1","n":1,"t":"Come funzionano i mercati"},
+{"id":"m2","n":2,"t":"Macro, politica monetaria e flussi"},
+{"id":"m3","n":3,"t":"Analisi tecnica"},
+{"id":"m4","n":4,"t":"Lettura avanzata del prezzo"},
+{"id":"m5","n":5,"t":"Analisi fondamentale e dati"},
+{"id":"m6","n":6,"t":"Sistema operativo e rischio"},
+{"id":"m7","n":7,"t":"Strategie e playbook"},
+{"id":"m8","n":8,"t":"Validazione, ricerca, automazione"},
+{"id":"m9","n":9,"t":"Operare davvero"},
+{"id":"m10","n":10,"t":"Formazione di supporto"}
+]
+Il tuo vault Obsidian, riscritto per essere studiato
+Dal pensiero statisticoal primo trade reale
+Un percorso unico e in ordine: si parte da come si ragiona, si passa per i mercati, il contesto e la lettura del prezzo, e si arriva a un sistema operativo misurato sui dati. Ogni modulo si chiude con un cancello: finché non lo superi, non si va avanti.
+Metodo di studio e disciplina personale. Non è consulenza finanziaria.
+Il percorso
+    0Fondamenta mentali e statistichePensare in aspettativa
+    1Come funzionano i mercatiMercati, strumenti, orizzonti
+    2Macro, politica monetaria e flussiChe partita si gioca
+    3Analisi tecnicaStruttura e livelli, oggettivi
+    4Lettura avanzata del prezzoAsta, order flow, pattern misurati
+    5Analisi fondamentale e datiIl perché di un movimento
+    6Sistema operativo e rischioEsiti limitati e prevedibili
+    7Strategie e playbookIl repertorio, passo passo
+    8Validazione, ricerca, automazioneDa ipotesi a strategia
+    9Operare davveroBroker, prop firm, capitale reale
+    10Formazione di supportoIn parallelo: magistrale e libri
+    Fondamenta · 0
+    Contesto · 1–2
+    Analisi · 3–5
+    Operatività · 6–7
+    Validazione e reale · 8–9
+Come si usa questo manuale
+Un modulo alla voltaParti dal Modulo 0 e vai in ordine. Una sessione di studio copre un'unità: meglio 3–4 sessioni corte a settimana che una lunga.
+Testati, non rileggereAlla fine di ogni modulo ci sono flashcard e una checklist. Rispondi a voce prima di aprire la risposta: è lì che si impara.
+Il cancello è realeSe non superi il cancello, la sessione dopo resta sullo stesso modulo. Il Modulo 10 procede in parallelo a tutti gli altri.
+I riquadri hanno sempre lo stesso significato:
+    Definizione il concetto in una frase ·
+    Esempio numeri concreti ·
+    Errori tipici dove si sbaglia ·
+    Sintesi la versione da ripetere a memoria ·
+    Oltre il vault contenuti aggiunti per completare la formazione.
+Il mantra · si rilegge a ogni sessione
+Decido prima, eseguo dopo.
+Il singolo trade non conta.
+Prima il rischio, poi il resto.
+Fuori dalle regole si sta fermi.
+Valuto il processo, non il risultato.
+Senza dato non c'è verità.
+Il mercato non mi deve nulla.
+0
+Fondamenta mentali e statistiche
+Interiorizzare come si ragiona prima di operare: onestà sull'obiettivo, pensiero in aspettativa e probabilità, e la consapevolezza che il nemico numero uno è dentro di te.
+PrerequisitiNessuno
+Durata1–2 settimane
+Quando tornarciA ogni drawdown
+0.1
+L'onestà sull'obiettivo
+Prima di imparare qualsiasi tecnica, bisogna sapere contro che cosa si gioca. Questa unità mette i numeri sul tavolo.
+Lezione 1Il verdetto onesto: battere il mercato è possibile, ma raro
+Definizione
+Battere il mercato in modo statistico è possibile ma raro e difficile. L'obiettivo realistico è una piccola aspettativa positiva che si compone nel tempo, non la ricchezza rapida.
+Sei prove, messe insieme, portano a questa conclusione:
+La base rate è contro di te. La grande maggioranza dei trader retail perde. Tra i day trader studiati con rigore, circa l'1% è profittevole in modo persistente al netto dei costi.
+La skill esiste e persiste. Non è tutto fortuna: chi è bravo tende a restarlo. Ma sono pochissimi.
+Gli edge accademici in gran parte non replicano (dal 65 all'82% fallisce un test serio) e quelli che replicano si indeboliscono dopo la pubblicazione.
+Ciò che sopravvive (trend, momentum, value, quality, low-vol, carry) paga premi modesti, con drawdown che durano anni.
+La teoria (Grossman-Stiglitz) dice che un piccolo edge deve esistere per ripagare chi fa analisi. Quindi non è zero.
+Il retail ha una nicchia: pazienza, orizzonte lungo, flessibilità.
+Gli studi che contano
+       | 
+ | Studio | Campione | Risultato chiave
+ | Barber, Lee, Liu, Odean (2014) | Tutti i day trader di Taiwan, 1992–2006 | Meno dell'1% batte il mercato netto di costi in modo affidabile. I top 500 fanno circa +37,9 bps/giorno, i peggiori −28,9.
+ | Chague, De-Losso, Giovannetti (2020) | Tutti i nuovi day trader su futures in Brasile, 2013–2015 | Tra chi ha insistito oltre 300 giorni, il 97% ha perso. Solo l'1,1% ha guadagnato più del salario minimo. Nessun segno di apprendimento con l'esperienza.
+ | Barber, Odean (2000) | Investitori individuali USA | Il quintile più attivo sottoperforma di circa 6,5% l'anno, soprattutto per costi e cattivo timing.
+ | Disclosure ESMA | Conti CFD retail nell'UE | Tra il 70 e l'80% dei conti perde denaro.
+Sintesi da ripetere
+Non "posso battere il mercato", né "è impossibile". La frase giusta è: "Posso provare a costruire una piccola aspettativa positiva, misurarla onestamente e proteggerla con il rischio. Probabilmente non ci riuscirò, e se ci riesco il premio sarà modesto."
+Da qui discende tutto il resto del percorso: rischio prima di tutto (un edge piccolo si cancella con un solo errore di size), costi sotto controllo, backtest trattati con lo scetticismo di un paper, e la capacità di capire presto se un edge non c'è, per smettere a basso costo.
+Lezione 2Perché i retail perdono, e come ci si protegge
+Definizione
+Non c'è una causa unica. Le perdite dei retail sono la somma di nessun edge reale + costi da overtrading + rischio gestito male + errori di comportamento in esecuzione.
+Le cause, in ordine di peso per chi inizia:
+       | 
+ | Causa | Cosa succede | La difesa
+ | Nessun edgepeso altissimo | Si opera sul rumore. Un sistema senza aspettativa netta positiva perde per costruzione. | Validare prima di rischiare; criteri di abbandono decisi a freddo.
+ | Costi e overtradingalto | Spread, commissioni, slippage e tasse erodono tutto. L'overtrading nasce da noia, FOMO e voglia di rivincita. | Costi dentro ogni calcolo di aspettativa, bassa rotazione, tetto al numero di trade.
+ | Rischio gestito malealto | Size troppo grande, stop allargati, mediare al ribasso. Un giorno fuori controllo cancella mesi. | Rischio fisso e piccolo, stop mai allargati, mai mediare.
+ | Emozioni in esecuzionealto | Disposition effect, overconfidence, recency: si misurano nei dati reali dei conti. | Regole meccaniche, checklist, attrito, voto di aderenza.
+ | Campione troppo piccolomedio | Si cambia strategia dopo 10 trade, o si alza la size dopo una serie fortunata. | Numero minimo di trade scritto nel piano.
+ | Decadimento dell'edgebasso all'inizio | Colpisce solo chi un edge ce l'aveva davvero. | Monitorare l'aspettativa ogni mese e ri-testare.
+A queste si aggiungono tre cause strutturali: il gioco di breve periodo è a somma negativa dopo i costi, spesso si usano orizzonti e strumenti sbagliati per la propria situazione (scalping con costi da retail, CFD tenuti a lungo), e manca un ciclo di apprendimento (niente journal, stessi errori ripetuti).
+Esempio
+Lo studio brasiliano è il dato più eloquente: dopo più di 300 giorni di day trading non si vede alcun miglioramento. Se il problema fosse solo imparare, la curva salirebbe. Non sale: per molti l'edge non c'è e non arriva.
+Sintesi da ripetere
+Perdere è il default statistico. Ci si protegge invertendo uno per uno i meccanismi che producono la perdita. La prima protezione: non rischiare denaro finché un edge non è misurato, e smettere presto se non c'è.
+Lezione 3La replication crisis, i fattori che sopravvivono e perché un edge può esistere
+Definizione
+Gran parte delle "anomalie" pubblicate nelle riviste accademiche non sopravvive a un test rigoroso: sono in buona parte il prodotto di tanti tentativi e di test multipli non corretti.
+       | 
+ | Studio | Cosa ha trovato
+ | Hou, Xue, Zhang (2020) | Ritestate 452 anomalie: il 65% non supera nemmeno |t| > 1,96; con la soglia corretta per test multipli (|t| > 2,78) fallisce l'82%.
+ | Harvey, Liu, Zhu (2016) | Su 316 fattori pubblicati (il "factor zoo"), tra il 27 e il 53% sono false scoperte. Proposta: per un nuovo fattore serve t > 3.
+ | McLean, Pontiff (2016) | Dopo la pubblicazione i rendimenti di un'anomalia calano del 26% rispetto all'in-sample, e del 58% rispetto al periodo pre-pubblicazione fuori campione. Una parte è overfitting, una parte è arbitraggio.
+Perché succede: p-hacking (provare molte varianti e riportare la migliore), HARKing (costruire l'ipotesi dopo aver visto i risultati), test multipli non corretti (su 1000 strategie casuali, circa 50 risultano "significative" al 5% per puro caso), incentivi a pubblicare risultati positivi.
+Cosa forse sopravvive
+       | 
+ | Fattore | A favore | Il prezzo da pagare
+ | Trend-following | Un secolo di dati su 67 mercati (Hurst, Ooi, Pedersen 2017) | Decennio debole 2011–2019; perdite ripetute nei range
+ | Momentum cross-sezionale | Robusto da Jegadeesh-Titman (1993), internazionale | Crolli violenti nei rimbalzi dopo i minimi (2009)
+ | Value | Decenni di dati, Fama-French | 2017–2020 disastroso
+ | Quality | Novy-Marx (2013), fattore RMW | Più recente, meno verificato fuori campione
+ | Low volatility | Frazzini-Pedersen (2014) | Serve leva per rendere; è affollato
+ | Carry | Koijen et al. (2018), su più asset | "Raccogli monetine davanti a un rullo": code negative brutali
+I più credibili hanno in comune tre cose: una spiegazione che è insieme comportamentale e di rischio, funzionano su molti mercati, e richiedono di reggere drawdown pluriennali.
+Anche un'anomalia che replica può non essere tradabile: costi di transazione (dopo costi realistici molte anomalie ad alta rotazione non hanno alpha), gamba short impossibile per il retail, capacità limitata, affollamento, dipendenza dal regime.
+Il paradosso di Grossman-Stiglitz (1980)
+Raccogliere informazione costa. Se i prezzi riflettessero già tutto, nessuno sarebbe pagato per farlo, quindi nessuno lo farebbe, e allora i prezzi non rifletterebbero l'informazione. Contraddizione. All'equilibrio i prezzi sono quasi efficienti: resta appena l'inefficienza che serve a ripagare chi analizza. Andrew Lo (Adaptive Markets, 2017) aggiunge che l'efficienza cambia col contesto: gli edge nascono, maturano, decadono, a volte tornano.
+Esempio · le 5 domande su ogni edge
+Ha una spiegazione economica? Chi perde, e perché non smette?
+Regge fuori campione, su altri mercati e periodi?
+È positivo al netto di costi realistici?
+Ha capacità per la tua size? (Per il retail di solito sì.)
+C'è spazio perché non sia già stato arbitrato?
+Se anche una sola risposta è "no", si scarta.
+Sintesi da ripetere
+Tratta ogni backtest, anche il tuo, con lo scetticismo di un paper. L'edge esiste perché è il compenso per un lavoro reale (analisi, disciplina, sopportazione del rischio): è piccolo, condizionato e va ri-testato.
+Lezione 4Il metodo scientifico applicato al proprio trading
+Definizione
+Ogni strategia è un'ipotesi da confutare, non da confermare. Le si chiede lo stesso rigore che si chiederebbe a un paper.
+Il protocollo in sette passi:
+Pre-registra l'ipotesi prima di guardare i risultati: quale edge, perché esiste, win rate e R:R attesi, quando non dovrebbe funzionare, criterio numerico di successo. Poi non cambiarlo.
+Separa in-sample e out-of-sample. Tieni da parte dati che non guardi durante la messa a punto. Li guardi una volta sola, alla fine.
+Correggi per i test multipli. Se hai provato 20 varianti, la migliore è "significativa" per caso: alza l'asticella.
+Replica su un altro mercato e un altro periodo.
+Revisione avversariale: prova a smontarla. Costi non contati? Informazione dal futuro? Dipendenza dal regime?
+Criteri di abbandono decisi a freddo: "se dopo N trade reali l'aspettativa netta è ≤ 0, scarto".
+Scetticismo verso i risultati positivi. Un backtest che "funziona benissimo" è un segnale d'allarme.
+Errori tipici
+Guardare i dati di verifica, correggere le regole, e poi riguardarli: sono "bruciati".
+Scrivere l'ipotesi dopo aver visto il grafico (HARKing).
+Festeggiare la migliore di 50 varianti senza chiedersi quante ne hai provate.
+Sintesi da ripetere
+Il cervello è fatto per trovare pattern e confermarli. Il metodo scientifico è l'attrito che impedisce di ingannare la persona più facile da ingannare: te stesso.
+0.2
+Il modello mentale
+Cosa credere del mercato e di se stessi. Tutto il resto del manuale è l'applicazione operativa di queste idee.
+Lezione 5Il mercato come sistema quasi-casuale
+Definizione
+Nel breve periodo il prezzo si comporta quasi come una passeggiata aleatoria con deriva: molto rumore, edge reali piccoli, condizionati e deperibili.
+Molti "pattern" sono pareidolia: li vediamo perché il cervello cerca forme, come i volti nelle nuvole. Gli edge veri esistono solo in un contesto preciso (un orario, un regime, uno strumento) e si consumano man mano che vengono sfruttati.
+Conseguenze pratiche: scetticismo di default verso chi promette win rate alti o certezze; nessun setup operativo senza backtest e campione adeguato; ri-validazione periodica; semplicità, perché aggiungere indicatori per "spiegare" il rumore è overfitting.
+Esempio · il filtro critico
+Davanti a qualsiasi teoria (Elliott, Wyckoff, Smart Money Concepts…) si fa una sola domanda: "Si traduce in una regola testabile con un edge misurabile?". Se no, è cultura, non operatività.
+Errori tipici
+Ottimizzare i parametri finché il passato è perfetto.
+Scambiare una striscia fortunata per abilità.
+Cercare la strategia "definitiva" invece di gestire un edge modesto.
+Lezione 6Pensare in probabilità
+Definizione
+Il singolo trade è incerto; la serie di trade, se c'è un edge, è prevedibile. Quindi non ci si lega a nessun esito singolo.
+Ogni trade è un'estrazione da una distribuzione. Se hai un edge, la distribuzione ha aspettativa positiva, ma non sai quali trade vinceranno. È la logica del casinò: nessuna mano è sicura, il risultato del mese sì. Mark Douglas (Trading in the Zone) la riassume così: "qualsiasi cosa può succedere", e per guadagnare non serve sapere cosa succederà dopo.
+Esempio
+Hai un setup che vince il 45% delle volte con vincita media 2R. Prendi uno stop pieno: −1R. Seguiva il piano? Allora non è un errore, è il costo previsto del fare business, come l'affitto di un negozio. La domanda giusta non è "funzionerà?" ma "qual è la mia aspettativa qui?".
+Errori tipici
+Trattare un trade "ad alta convinzione" come una certezza e sovradimensionarlo.
+Vivere ogni perdita come un fallimento personale.
+Contare i "se avessi tenuto": esiste solo ciò che è nel journal.
+Lezione 7Processo batte risultato
+Definizione
+Su campioni piccoli l'esito è rumore: si valuta la qualità della decisione, non il profitto del singolo trade.
+       | 
+ |  | Esito positivo | Esito negativo
+ | Processo corretto | Meritato: ripetere | Sfortuna: ripetere identico
+ | Processo sbagliato | Pericoloso: premia l'errore | Giusta punizione: correggere
+Il trade più pericoloso della carriera è un vincente che ha rotto le regole: insegna al cervello che rompere le regole paga. Per questo nel journal il campo che conta di più è il voto di aderenza, non il P/L. In review si misura la correlazione tra aderenza e risultato: se seguendo le regole i numeri migliorano, il processo ha un edge.
+Oltre il vault
+Annie Duke (Thinking in Bets) chiama "resulting" l'errore di giudicare una decisione dal suo esito. Il rimedio che propone è chiedersi: "Con le informazioni che avevo allora, rifarei la stessa scelta?". Se sì, la decisione era buona, qualunque sia stato il risultato.
+Lezione 8Principi guida e le 10 regole non negoziabili
+Cosa credo del mercato: è competitivo e quasi efficiente; nessuno lo prevede in modo affidabile; gli edge sono piccoli e si manifestano solo su molti trade. Cosa credo di me: il mio avversario sono le mie emozioni; il bisogno di avere ragione mi costa denaro; sotto stress decido male, quindi decido prima, quando sono lucido.
+Le regole che non si discutono mai durante la sessione. Si cambiano solo per iscritto, in review:
+Rischio per trade fisso e piccolo. Mai aumentarlo per recuperare.
+Stop deciso prima dell'ingresso e inserito subito. Non si allarga mai.
+Nessun ingresso senza checklist pre-trade.
+Solo i setup scritti nelle regole di ingaggio. Fuori dalle regole si sta fermi.
+Rispetto il kill switch. Raggiunto il limite di perdita giornaliera, chiudo la piattaforma.
+Un solo rischio per fattore correlato alla volta.
+Ogni trade nel journal entro fine giornata, con stato emotivo e voto di aderenza.
+Non opero nelle condizioni proibite: news ad alto impatto, stanchezza, tilt, noia.
+Non modifico le regole durante la sessione.
+Se non so perché sono in un trade, esco.
+Sintesi da ripetere
+Non prevedo il mercato: gestisco probabilità e rischio. L'unica cosa che controllo davvero è la coerenza del mio processo. Ciò che non è scritto non esiste e verrà rinegoziato dall'emozione.
+0.3
+L'ancora statistica
+I numeri che trasformano un'opinione in una misura. Si studiano in quest'ordine, perché ognuno usa il precedente.
+Lezione 9Edge
+Definizione
+Un edge è un motivo strutturale e ripetibile per cui la tua aspettativa è positiva, al netto dei costi.
+Non è un indicatore né un pattern "che funziona": è un'asimmetria persistente tra il prezzo e la probabilità reale. Se non sai spiegare chi c'è dall'altra parte e perché perde, probabilmente non hai un edge.
+       | 
+ | Fonte | Esempio | Realistico per un retail?
+ | Comportamentale | Sfruttare vendite di panico, FOMO, chiusure forzate altrui | Sì, la più accessibile
+ | Statistico condizionato | Setup con base rate favorevole in un contesto preciso | Sì, se validato
+ | Strutturale | Orari, aperture, rollover, scadenze | In parte
+ | Esecuzione e costi | Costi bassi, niente slippage inutile | Sì (perdita evitata)
+ | Informativo | Sapere prima degli altri | Quasi mai
+Un edge vero ha: un campione ampio con aspettativa positiva, positiva al netto dei costi, una spiegazione causale plausibile, e robustezza (non si rompe cambiando di poco i parametri). Gli edge si affollano e si consumano: vanno ri-testati ogni mese.
+Errori tipici
+Scambiare una serie fortunata per un edge.
+Un "edge" senza spiegazione del perché.
+Calcolare l'aspettativa al lordo dei costi.
+Sintesi da ripetere
+Senza edge, nessun risk management ti salva: ritarda solo la perdita.
+Lezione 10Aspettativa
+Definizione
+Quanto ti aspetti di guadagnare o perdere in media per trade, ripetendolo molte volte.
+E    = (P_vincita × vincita_media) − (P_perdita × perdita_media)
+E[R] = P_vincita × R_medio_vincente − P_perdita × 1      (in multipli di rischio)
+Esempio · due sistemi
+Sistema A: vince il 40%, vincita media 2R, perdita 1R.
+      E = 0,40 × 2 − 0,60 × 1 = +0,20R per trade → su 100 trade circa +20R. Win rate basso, sistema ottimo.
+Sistema B: vince il 60%, vincita media 0,5R, perdita 1R.
+      E = 0,60 × 0,5 − 0,40 × 1 = −0,10R per trade. Vinci spesso e perdi denaro.
+Aspettativa netta. Sottrai spread, commissioni e slippage a ogni trade: un +0,20R lordo con 0,15R di costi diventa +0,05R. È questo il numero che conta.
+Cosa massimizzare. Non l'aspettativa da sola, ma E × numero di trade. Un +0,05R su 500 trade l'anno (+25R) batte un +0,3R su 20 trade (+6R), a patto che quei 500 trade siano indipendenti e i costi siano già contati.
+Errori tipici
+Guardare solo il win rate.
+Ignorare i costi.
+Calcolare l'aspettativa su 15 trade.
+Lezione 11R-multiplo
+Definizione
+1R è la perdita che subiresti se lo stop iniziale venisse colpito. Ogni trade si misura in multipli di R, non in euro.
+R in euro   = |prezzo di entrata − prezzo dello stop| × size
+Risultato R = P/L in euro ÷ R in euro
+Esempio
+Entri a 100, stop a 98, size 50 pezzi → 1R = 2 × 50 = 100 €. Esci a 106 con +300 € → 300 ÷ 100 = +3R. Se esci prima dello stop perdendo 50 € → −0,5R.
+Perché ragionare in R: rende confrontabili trade con size e conti diversi; toglie l'emozione dell'importo; permette di calcolare l'aspettativa e di costruire la distribuzione dei risultati; ogni trade si pianifica con un R atteso minimo (per esempio almeno 2R).
+Regola ferrea
+Il denominatore è lo stop iniziale. Spostarlo a trade aperto per "migliorare" l'R falsa tutta la statistica.
+Lezione 12Win rate e rapporto rischio-rendimento
+Definizione
+Win rate e R:R sono due facce della stessa moneta: conta solo la loro combinazione nell'aspettativa.
+win rate di pareggio = 1 / (1 + R:R)
+       | 
+ | Rischio : rendimento | Win rate minimo per non perdere
+ | 1 : 0,5 | 66,7%
+ | 1 : 1 | 50,0%
+ | 1 : 1,5 | 40,0%
+ | 1 : 2 | 33,3%
+ | 1 : 3 | 25,0%
+ | 1 : 5 | 16,7%
+Con i costi queste soglie salgono un po', e vanno verificate sulle uscite reali, non sui target teorici.
+       | 
+ | Profilo | Il costo psicologico
+ | R:R alto, win rate basso | Perdite frequenti, strisce lunghe: serve tolleranza.
+ | R:R basso, win rate alto | Perdite rare ma grandi: una sola può cancellarne dieci vincenti.
+Sintesi da ripetere
+Inseguire il win rate alto è una trappola psicologica, non un obiettivo. Scegli il profilo che reggi emotivamente e scrivilo nel trading plan.
+Lezione 13Varianza, strisce di perdite e drawdown
+Definizione
+Anche un sistema con edge positivo produce lunghe strisce di perdite e drawdown profondi. È statistica, non un guasto. Il drawdown è la distanza massima dal picco precedente dell'equity.
+striscia massima attesa ≈ log(N) / log(1 / (1 − p))      p = win rate, N = numero di trade
+Oltre il vault · probabilità di una striscia in 100 trade
+Simulazione su 40.000 serie da 100 trade ciascuna:
+         | 
+ | Win rate | Almeno 6 perdite di fila | Almeno 8 | Almeno 10
+ | 50% | 54% | 17% | —
+ | 40% | 87% | 49% | 20%
+ | 33% | — | — | 45%
+Con un win rate del 40%, in 100 trade è quasi certo (87%) vedere 6 perdite consecutive, ed è un lancio di moneta vederne 8.
+Oltre il vault · l'asimmetria del recupero
+         | 
+ | Perdita | Guadagno necessario per tornare in pari
+ | −10% | +11,1%
+ | −20% | +25,0%
+ | −30% | +42,9%
+ | −50% | +100%
+ | −75% | +300%
+Formula: recupero = 1 / (1 − perdita) − 1. Oltre il −30% il recupero diventa rapidamente irrealistico: ecco perché il rischio si limita prima.
+Cosa fare, in anticipo e non durante: una size che sopravvive a molte perdite di fila senza danni irreversibili; una soglia di drawdown scritta oltre la quale si dimezza la size o ci si ferma; distinguere la varianza sfavorevole da un edge rotto solo con campione ampio e spiegazione causale. Con rischio ≤ 1% per trade ed edge positivo, la rovina è praticamente esclusa.
+Errori tipici
+Aumentare la size dopo le perdite per "recuperare".
+Abbandonare il sistema nel punto di massimo drawdown, spesso subito prima della ripresa.
+Non aver mai calcolato quante perdite di fila regge il conto.
+Lezione 14Dimensione del campione, legge dei grandi numeri, il singolo trade
+Definizione
+Servono molti trade prima che i numeri dicano qualcosa. La legge dei grandi numeri: la media dei risultati converge all'aspettativa solo su grandi numeri, con lo stesso edge e trade indipendenti. Nel breve, scostamenti ampi sono normali.
+       | 
+ | Numero di trade | Cosa puoi dire
+ | meno di 30 | Aneddoto
+ | 30–100 | Indizio
+ | 100–300 | Segnale
+ | oltre 300 | Stima ragionevole, se l'edge è stabile
+Quanto è incerto il win rate? Regola rapida: l'errore è circa ± 1/√N (è l'intervallo al 95% quando p è vicino al 50%). Con 30 trade e 50% osservato, il vero valore sta tra circa 32% e 68%. Con 200 trade, tra 43% e 57%.
+Oltre il vault · quando un'aspettativa è "significativa"
+t = E[R] / (deviazione standard degli R / √N)       serve t ≳ 2 (meglio 3)
+Il Sistema A di prima (+0,20R, deviazione standard circa 1,47R) dà: con 30 trade t = 0,75 (indistinguibile dal caso), con 100 t = 1,36, con 300 t = 2,36. Anche un edge buono richiede centinaia di trade prima di essere distinguibile dalla fortuna.
+Perché il singolo trade non conta. È un campione di dimensione 1: non dice nulla né sul sistema né su di te. Togliere peso al singolo esito è ciò che produce il distacco emotivo. Se un singolo trade ti fa male, la size è troppo alta. Dopo ogni trade la domanda è "ho seguito il piano?", non "ho vinto?".
+Errori tipici
+"Questo setup non funziona più" dopo 4 perdite.
+Fiducia cieca dopo 10 vincite.
+Confondere la legge dei grandi numeri con la "legge dei piccoli numeri": dopo 5 perdite non "tocca" una vincita.
+Aumentare la size per "accelerare" i risultati.
+Lezione 15Ergodicità: media nel tempo e media d'insieme
+Definizione
+La media su tanti conti in parallelo (media d'insieme) e ciò che succede a un solo conto nel tempo (media temporale) possono divergere. Succede quando la ricchezza si moltiplica invece di sommarsi e la rovina è definitiva.
+Esempio · il gioco di Peters (2019)
+A ogni lancio di una moneta equa la ricchezza si moltiplica per 1,5 (testa) o per 0,6 (croce).
+Media d'insieme: 0,5 × 1,5 + 0,5 × 0,6 = 1,05 → +5% a turno. Sembra un ottimo gioco.
+Media temporale (un giocatore, tanti turni): √(1,5 × 0,6) = √0,9 ≈ 0,949 → −5% a turno. Il singolo giocatore si rovina quasi certamente.
+Un conto di trading è un processo moltiplicativo: ogni trade moltiplica l'equity per (1 + r). Con size troppo alta, la penalità della volatilità (circa σ²/2) mangia l'edge: puoi avere aspettativa positiva e comunque impoverirti.
+Oltre il vault · il variance drag in numeri
+rendimento geometrico ≈ rendimento aritmetico − σ² / 2
+Media aritmetica +10% annuo con volatilità 20% → crescita composta ≈ 10% − 2% = 8%. Con volatilità 40% → 10% − 8% = 2%. Stessa media, ricchezza finale molto diversa.
+Sintesi da ripetere
+Per te conta la media temporale. È il fondamento di: frazione di Kelly invece di Kelly pieno, tetto al rischio di rovina, rischio piccolo e costante. Un −50% non si annulla con un +50%: serve un +100%.
+Lezione 16Simulazione Monte Carlo della equity curve
+Definizione
+Rimescolare o ricampionare i risultati dei trade migliaia di volte per vedere quante equity curve diverse lo stesso edge avrebbe potuto produrre.
+Una singola curva, di backtest o reale, è un solo percorso tra i tanti possibili. Procedura:
+Prendi la lista dei risultati in R.
+Ricampiona N trade con reinserimento: ottieni una nuova curva.
+Ripeti 5.000–10.000 volte.
+Guarda la distribuzione di drawdown massimo, rendimento totale, tempo di recupero, probabilità di rovina.
+Il drawdown massimo "realistico" che emerge è quasi sempre peggiore di quello del singolo backtest: la soglia di allarme si dimensiona su questo. Se poche curve sono ottime e la maggioranza mediocre, l'edge dipende da pochi trade ed è fragile.
+Limiti
+Il metodo assume trade indipendenti e una distribuzione stabile. Se ci sono autocorrelazione o cambi di regime, il rischio vero è maggiore. Varianti: ricampionare a blocchi, o simulare da un modello.
+Lezione 17Statistica descrittiva e base rate dei prezzi
+Definizione
+Contare cosa è successo in passato su un campione ampio è esattamente il modo in cui si costruiscono le base rate e le probabilità condizionate su cui poggia un edge.
+Dal tuo vault, calcolato su 10 anni di dati giornalieri (settembre 2016 – settembre 2026):
+       | 
+ |  | S&P 500 | Nasdaq 100 | Bitcoin
+ | Rendimento giornaliero medio / dev. std | +0,06% / 1,14% | +0,08% / 1,44% | +0,20% / 3,49%
+ | Curtosi in eccesso | +15,8 | +7,6 | +8,1
+ | Giorni oltre ±3σ rispetto alla normale | 5,2× | 4,6× | 6,2×
+ | Range giornaliero mediano | 0,88% | 1,21% | 3,49%
+ | P(giorno positivo) | 54,7% | 56,4% | 52,3%
+ | P(positivo | 3 giorni positivi) | 51,3% | 57,4% | 51,2%
+ | P(positivo | 3 giorni negativi) | 58,4% | 64,4% | 58,3%
+Come si leggono:
+Code grasse. Gli eventi a ±3σ capitano 4–6 volte più spesso di quanto direbbe la distribuzione normale. Il rischio non si dimensiona mai sulla normale.
+Leggera mean reversion nel decennio: dopo 3 cali la probabilità di salita è più alta che dopo 3 rialzi. Ma il campione condizionato è piccolo: è un indizio, non una prova.
+Il range mediano dà un riferimento per gli stop: sull'S&P uno stop sotto lo 0,3–0,4% è dentro il rumore giornaliero.
+Esempio · i gap non "si chiudono sempre"
+Sull'S&P 500, misurando il gap di apertura in multipli del range mediano: i gap piccoli (sotto 0,25×) si chiudono in giornata il 72% delle volte, quelli grandi (oltre 1×) solo il 23%. I gap grandi tendono a continuare: sono più un segnale di forza che di inversione.
+Descrittivo non vuol dire predittivo
+Non stazionarietà: il decennio è stato in gran parte rialzista. Con il prezzo sotto la media a 200 giorni, P(su | 3 giù) scende da circa 65% a circa 47%.
+Probabilità non è edge: un 58% di giorni positivi non serve se il movimento medio non copre i costi.
+Le probabilità non hanno memoria: 3 cali di fila non obbligano a un rimbalzo.
+Lezione 18 · approfondimentoTest statistici e serie storiche
+Definizione
+Il p-value è la probabilità di osservare un risultato così estremo se l'ipotesi nulla fosse vera (nessun effetto). Non è la probabilità che l'ipotesi nulla sia vera.
+       | 
+ | Domanda | Test
+ | L'aspettativa è diversa da zero? | t-test a un campione; con code grasse, bootstrap
+ | Due strategie hanno media diversa? | t-test di Welch; senza normalità Mann-Whitney
+ | Il win rate è diverso dal 50%? | Test binomiale
+ | Setup ed esito sono associati? | χ² di indipendenza (Fisher se pochi casi)
+ | L'edge sopravvive rimescolando i dati? | Test di permutazione
+ | Quale drawdown aspettarsi? | Bootstrap / Monte Carlo
+ | La serie è stazionaria? Due serie sono cointegrate? | ADF e KPSS; Engle-Granger, Johansen
+ | Lo Sharpe è reale dato quante varianti ho provato? | Deflated Sharpe Ratio, PBO
+Test multipli. Con k ipotesi, la probabilità di almeno un falso positivo è circa 1 − (1 − α)^k: con 20 test al 5% è già il 64%. Correzioni: Bonferroni (soglia α/k, molto severa), Benjamini-Hochberg (controlla la quota di false scoperte), la regola di Harvey-Liu-Zhu t > 3. Regola d'oro: conta e dichiara quante varianti hai provato.
+Serie storiche in breve. I prezzi sono quasi una passeggiata aleatoria (non stazionari), quindi si lavora sui rendimenti. I rendimenti hanno poca autocorrelazione; la volatilità invece si raggruppa (volatility clustering) e si modella con GARCH(1,1): σ²ₜ = ω + α·ε²ₜ₋₁ + β·σ²ₜ₋₁. Il variance ratio test di Lo-MacKinlay dice se prevale il trend (VR > 1) o la mean reversion (VR < 1).
+Errori tipici
+Leggere il p-value come "probabilità che sia vero".
+Provare 50 varianti e festeggiare la migliore a p < 0,05.
+Ignorare la dimensione dell'effetto: un edge "significativo" di 0,5 punti base non copre i costi.
+0.4
+Il fattore umano
+Il vantaggio decisivo e il punto di rottura più comune. Qui si impara a riconoscere il nemico e a disinnescarlo con la struttura, non con la forza di volontà.
+Lezione 19Il cervello sotto rischio
+Definizione
+Sotto rischio e con soldi in gioco, i circuiti veloci della paura e della ricompensa prendono il sopravvento sulla corteccia prefrontale, la parte che rispetta le regole. Succede in modo prevedibile, quindi si può prevenire.
+       | 
+ | Sistema | Cosa fa nel trading | Effetto tipico
+ | Amigdala | Reagisce a una candela contro prima che tu "capisca" | Chiusura in panico, stop non rispettato
+ | Dopamina | Si attiva sull'attesa e sulla sorpresa, non sul guadagno in sé | "Ancora uno", overtrading
+ | Corteccia prefrontale | Regole, pianificazione, freno agli impulsi | È la prima a cedere con stress e poco sonno
+ | Insula | Segnala il dolore della perdita | Con poco sonno si attenua: si rischia di più
+ | Cortisolo | Sale nei drawdown lunghi | Visione a tunnel, paralisi
+ | Testosterone | Sale dopo una serie di vincite ("winner effect", Coates) | Overconfidence proprio quando andrebbe ridotto il rischio
+Oltre il vault · Prospect theory
+Kahneman e Tversky (1979, 1992) hanno misurato che una perdita pesa circa 2,25 volte un guadagno della stessa entità (coefficiente λ). Inoltre la curva del valore è concava sui guadagni (si preferisce il guadagno sicuro: si chiudono presto i vincenti) e convessa sulle perdite (si preferisce scommettere per evitare la perdita certa: si tengono i perdenti). È la radice teorica di loss aversion e disposition effect.
+Kahneman distingue anche il Sistema 1 (veloce, automatico, emotivo) dal Sistema 2 (lento, deliberato). Le regole scritte e le checklist sono un modo per far decidere il Sistema 2 in anticipo, quando il Sistema 1 non è sotto pressione.
+Cosa se ne fa un trader. Non "controllarsi di più", ma cambiare le condizioni: decidere a freddo ed eseguire a caldo; mettere attrito prima dell'impulso; abbassare l'attivazione con 60–90 secondi di respiro lento (espirazione più lunga); proteggere la corteccia prefrontale con sonno e pause; ridurre il rischio dopo le vincite; registrare lo stato del corpo nel diario emotivo.
+Lezione 20Il catalogo dei bias che costano denaro
+Definizione
+Un bias cognitivo è un errore sistematico di giudizio: non capita a caso, ma sempre nella stessa direzione. Per questo si può prevedere e contrastare con regole.
+       | 
+ | Bias | Come si manifesta | Contromisura
+ | Loss aversion | La perdita pesa circa il doppio: chiudo presto i vincenti, tengo i perdenti, sposto lo stop | Uscite meccaniche decise prima; ragionare in R
+ | Disposition effect | +0,5R sui vincenti, −2R sui perdenti: "è una perdita di carta finché non chiudo" | Target e stop dalla scheda; in review confronta R medio vincenti e perdenti
+ | Overconfidence | Dopo 3–4 vincite alzo la size e salto la checklist | Size invariata dopo una vincita, checklist sempre
+ | Bias di conferma | Ho deciso "long" e cerco solo i grafici che mi danno ragione | Scrivere l'invalidazione prima di entrare; "cosa dovrei vedere per non entrare?"
+ | Recency bias | "Il setup non funziona più" dopo 3 perdite | Numero minimo di trade prima di giudicare; metriche sempre con la numerosità accanto
+ | Gambler's fallacy | "Ho perso 4 volte, la quinta va bene di sicuro" | Rischio fisso; kill switch dopo X perdite
+ | Sunk cost | Medio al ribasso; resto su una strategia perché "ci ho messo mesi" | Conta solo l'aspettativa da qui in avanti; vietato mediare
+ | Ancoraggio | "Esco quando torna al mio prezzo di carico" | Stop e target ancorati a struttura e volatilità, non al prezzo pagato
+ | Hindsight | "Era ovvio che saliva": riscrivo la storia | Tesi e probabilità scritte prima; confronto col previsto
+ | Effetto gregge | Entro perché il titolo è ovunque sui social | Ogni trade ha una tua tesi e un tuo livello; il consenso estremo è semmai un segnale contrario
+ | Overtrading da noia | Opero per stimolazione, non perché c'è un setup | Tetto di trade al giorno; "nessun setup" è una giornata riuscita
+Esempio · riconoscere il disposition effect nei tuoi dati
+Nel journal di un mese: 22 vincenti con R medio +0,6R, 18 perdenti con R medio −1,4R. Stop previsto a 1R, eppure le perdite sono più grandi: significa che lo stop è stato spostato o ignorato. Aspettativa: 0,55 × 0,6 − 0,45 × 1,4 = −0,30R, pur vincendo più della metà delle volte.
+Stanchezza, tilt, euforia e fretta amplificano tutti i bias. Dopo ogni trade sbagliato si annota quale bias era in gioco; in review settimanale si cerca quello ricorrente.
+Lezione 21Tilt, recupero e regole anti-impulso
+Definizione
+Il tilt è lo stato di alterazione emotiva in cui smetti di seguire il processo. Va riconosciuto presto e interrotto per regola, non per volontà.
+Segnali: voglia di rientrare subito dopo una perdita, size non pianificata, checklist saltata, timeframe che non usi di solito, battito accelerato, la sensazione che "il mercato ce l'ha con me".
+Protocollo meccanico:
+Alla prima avvisaglia: mani lontane dalla tastiera.
+10–15 minuti fuori dallo schermo: respiro, camminata.
+Rileggi il mantra.
+Se sei ancora attivato, chiudi per la giornata, qualunque sia il P/L.
+Se hai toccato il kill switch, lo stop non si discute.
+Rientro il giorno dopo: size dimezzata finché non completi 5 trade con aderenza ≥ 4 su 5.
+Regole anti-impulso (rendere scomoda l'azione impulsiva): nessun ordine senza checklist; dire il trade ad alta voce in una frase (setup, entrata, stop, perché); timer di 60–90 secondi tra "vedo il setup" e "clicco"; ordini limite invece che a mercato; pausa obbligata dopo una perdita; piattaforma chiusa fuori orario.
+Sintesi da ripetere
+L'impulso è veloce, la ragione è lenta. L'attrito dà alla ragione il tempo di arrivare. Non serve più disciplina: serve meno occasione.
+Lezione 22Sonno, corpo e decisione
+Definizione
+La disciplina è anche fisiologica: sonno, movimento, alimentazione e respiro decidono quanto funziona la parte del cervello che rispetta le regole.
+Il sonno è il fattore singolo più importante. Anche una sola notte scarsa sposta la strategia da "difendersi dalle perdite" a "inseguire i guadagni" (Venkatraman et al., 2011), attenua il segnale di dolore della perdita e peggiora l'uso del feedback negativo. È il profilo esatto del tilt.
+Esempio · la regola pratica
+Meno di 6–7 ore o sonno frammentato → size ridotta o nessun nuovo trade, al massimo gestione delle posizioni aperte. Le ore di sonno si annotano nel diario emotivo e si confrontano con l'aderenza: spesso la correlazione è evidente in poche settimane.
+Movimento: l'esercizio aerobico migliora funzioni esecutive e umore; una camminata prima della sessione abbassa l'attivazione.
+Alimentazione: pasti pesanti portano cali di vigilanza; zuccheri rapidi portano irritabilità. Acqua a portata di mano.
+Caffeina utile al mattino, controproducente dopo metà giornata. Alcol la sera frammenta il sonno profondo.
+Respiro: 5–6 respiri al minuto con espirazione lunga per 60–90 secondi prima di una decisione.
+Lezione 23Il trading nella vita finanziaria
+Definizione
+Il trading è una voce del patrimonio, non il centro. Regge solo se il resto della vita finanziaria è già in ordine.
+       | 
+ | Prima del primo trade | Regola
+ | Fondo d'emergenza | 6–12 mesi di spese, liquido, intoccabile. Non è capitale di trading.
+ | Debiti ad alto interesse | Estinti prima: nessuna strategia batte il 10–20% garantito che paghi al creditore.
+ | Reddito e spese | Si fa trading con il surplus, mai con soldi che servono a vivere.
+ | Lungo periodo | Un piano di accumulo diversificato a basso costo è il motore; il trading è il turbo, opzionale.
+Capitale di rischio: solo la quota che puoi perdere del tutto senza cambiare tenore di vita, obiettivi o sonno (spesso non oltre il 5–10% del patrimonio investibile), in un conto separato. Non si ricarica il conto dopo una perdita con soldi di altre voci: è la spia numero uno di un problema.
+Aspettative realistiche: con capitale piccolo anche un edge reale rende poco in valore assoluto. Il trading come reddito principale ha senso solo dopo 12+ mesi netti positivi e con un cuscinetto che copre 1–2 anni di spese.
+Lezione 24Come si impara davvero: learning science
+Definizione
+Guardare grafici per ore è esposizione passiva. Si impara con la pratica deliberata (Ericsson): obiettivo specifico, al limite delle proprie capacità, feedback immediato, ripetizione con correzione.
+       | 
+ | Tecnica | Nel trading
+ | Recupero attivo | Flashcard e quiz invece di rileggere
+ | Ripasso spaziato | Rivedere dopo 1 giorno, 1 settimana, 1 mese
+ | Interleaving | Alternare argomenti e setup diversi nella stessa sessione
+ | Chunking | Trasformare "barra + livello + contesto + trigger" in un unico riconoscimento automatico
+ | Elaborazione | Spiegare a voce perché un setup funziona
+ | Replay | Ripercorrere sessioni passate barra per barra: centinaia di occasioni in poche ore, senza rischio
+Studio → Backtest → Replay → Demo / micro-live → Journal → Review → di nuovo Studio
+Errori tipici
+Scambiare ore davanti allo schermo per pratica.
+Rileggere invece di testarsi (illusione di competenza).
+Cambiare argomento prima di aver automatizzato il precedente.
+Checklist di padronanza
+So spiegare in una frase perché battere il mercato è possibile ma raro.
+Calcolo a memoria l'aspettativa in R di una serie di trade.
+So dire perché un +50% non annulla un −50% (media geometrica, ergodicità).
+So stimare quanti trade servono prima di giudicare un edge.
+Riconosco almeno 8 bias da un esempio e ne cito la contromisura.
+So cosa cambia nelle mie decisioni dopo una notte di sonno scarso.
+Ho definito quanta parte del mio patrimonio è capitale di rischio.
+Flashcard · rispondi a voce, poi controlla
+      Formula dell'aspettativa in R?
+E[R] = P(vincita) × R medio vincente − P(perdita) × 1. Si calcola al netto dei costi.
+      Win rate 40%, vincita media 2R: che aspettativa?
+0,4 × 2 − 0,6 × 1 = +0,20R per trade.
+      Win rate di pareggio con R:R 1:3?
+1 / (1 + 3) = 25%.
+      Cos'è 1R?
+La perdita che subisci se viene colpito lo stop iniziale. Non si ricalcola spostando lo stop.
+      Errore sul win rate con 100 trade?
+Circa ±1/√100 = ±10 punti percentuali.
+      Dopo −50% quanto serve per tornare in pari?
++100%. Formula: 1/(1 − perdita) − 1.
+      Media d'insieme vs media temporale nel gioco 1,5 / 0,6?
+Insieme +5% a turno; nel tempo √0,9 ≈ 0,949, cioè −5% a turno. Per il tuo conto conta la seconda.
+      Il trade più pericoloso della carriera?
+Un vincente che ha rotto le regole: insegna che rompere le regole paga.
+      Contromisura al disposition effect?
+Stop e target dalla scheda, mai spostati; in review confrontare l'R medio di vincenti e perdenti.
+      Cosa dice Grossman-Stiglitz?
+I mercati non possono essere perfettamente efficienti: resta un'inefficienza che ripaga chi analizza. L'edge esiste ma è piccolo e competitivo.
+      Quanti test falliscono le 452 anomalie di Hou-Xue-Zhang?
+65% con |t| > 1,96; 82% con la soglia corretta per test multipli.
+      Regola sul sonno?
+Meno di 6–7 ore o sonno frammentato: size ridotta o nessun nuovo trade.
+Cancello per il Modulo 1
+Superi le flashcard senza errori e sai spiegare a voce, senza note, aspettativa, R-multiplo, legge dei grandi numeri e 5 bias con la loro contromisura.
+Poi → Modulo 1 · Come funzionano i mercati
+1
+Come funzionano i mercati
+Conoscere il terreno di gioco: i mercati e cosa li muove, gli strumenti con cui entrarci e i loro costi, gli orizzonti temporali e come si forma davvero un prezzo.
+PrerequisitiModulo 0
+Durata2–3 settimane
+RisultatoScegliere lo strumento giusto per un'idea
+1.1
+I mercati e i loro motori
+Ogni mercato ha i suoi orari, i suoi partecipanti e i suoi driver. Qui si costruisce la mappa.
+Lezione 1Il Forex e le valute maggiori
+Definizione
+Il Forex è un mercato over-the-counter (decentralizzato, senza una borsa unica) dove le valute si scambiano in coppia, aperto 24 ore dalla domenica sera al venerdì sera.
+Coppia: EUR/USD = quanti dollari (valuta quotata) per 1 euro (valuta base). Comprare la coppia significa long euro e short dollaro.
+Pip: la quarta cifra decimale (0,0001), la seconda sulle coppie con lo yen (0,01).
+Lotto: standard 100.000 unità di valuta base, mini 10.000, micro 1.000.
+Spread: differenza tra prezzo denaro e lettera, cioè il costo d'ingresso. Si allarga sulle news e nelle ore morte.
+Swap: interesse pagato o incassato per tenere la posizione di notte, legato al differenziale dei tassi.
+Oltre il vault · dal rischio ai lotti
+Su EUR/USD un pip vale 10 $ per lotto standard, 1 $ per mini, 0,10 $ per micro. Vuoi rischiare 100 $ con uno stop di 20 pip: 100 ÷ 20 = 5 $ a pip → 0,5 lotti standard (5 mini). La leva non si sceglie: è la conseguenza della size calcolata dal rischio.
+       | 
+ | Sessione (ora italiana) | Orario | Caratteristiche
+ | Sydney / Tokyo | ~23:00–08:00 | JPY, AUD, NZD più attivi; range stretti
+ | Londra | ~09:00–17:30 | La più liquida; apertura molto volatile
+ | New York | ~14:30–22:00 | Dati USA; l'overlap con Londra (14:30–17:30) è il picco di volume
+Cosa muove ogni valuta
+       | 
+ | Valuta | Driver principali | Carattere
+ | USD | Tassi Fed, valuta di riserva, liquidità globale | Rifugio nelle crisi di liquidità
+ | EUR | Tassi BCE, economia dell'eurozona, spread periferici | Ciclica, sensibile all'energia
+ | JPY | Tassi BoJ, chiusura dei carry trade, rimpatrio di capitali | Rifugio: si rafforza nel risk-off
+ | GBP | Tassi BoE, politica UK | Volatile
+ | CHF | Neutralità, interventi della SNB | Rifugio classico
+ | AUD / NZD | Ferro, rame, Cina; prodotti agricoli | Cicliche, risk-on
+ | CAD | Petrolio, economia USA | Legata al greggio
+Sintesi da ripetere
+Nel risk-off tendono a salire USD, JPY e CHF contro AUD, NZD ed emergenti; nel risk-on il contrario. Nel medio periodo il driver di fondo è il differenziale dei tassi attesi.
+Lezione 2Gli indici azionari
+Definizione
+Un indice è un paniere che riassume un mercato azionario. Si opera tramite future, CFD o ETF e riflette utili attesi, tassi e sentiment.
+       | 
+ | Indice | Cosa rappresenta | Sensibilità
+ | S&P 500 | 500 grandi società USA | Barometro del rischio globale
+ | Nasdaq 100 | Tecnologia e crescita USA | Molto sensibile ai tassi
+ | Dow Jones | 30 blue chip, pesate per prezzo | Più "value"
+ | DAX 40 | Grandi società tedesche | Export, euro, energia
+ | FTSE MIB | Large cap italiane | Banche, spread BTP-Bund
+ | Nikkei 225 | Azionario giapponese | Inverso allo yen
+Cosa li muove: utili attesi e revisioni degli analisti; tassi (rendimenti su → multipli giù, soprattutto per i titoli growth); propensione al rischio; concentrazione (pochi mega-cap possono guidare tutto l'indice).
+Esempio · perché i tassi pesano sul Nasdaq
+Il valore di un'azione è la somma dei flussi futuri scontati. Un'azienda growth ha gran parte dei flussi lontano nel tempo: se il tasso di sconto sale dal 4% al 5%, 100 € incassati fra 10 anni passano da un valore di oggi di 67,6 € a 61,4 € (−9%). Gli stessi 100 € incassati fra un anno perdono meno dell'1%. Per questo il Nasdaq ha "duration alta".
+Note operative: la sessione cash USA apre alle 15:30 italiane ed è molto volatile; i future girano quasi 24 ore; i gap di apertura sono frequenti, attenzione agli stop overnight.
+Lezione 3Obbligazioni e curva dei rendimenti
+Definizione
+Prezzo e rendimento di un'obbligazione si muovono in senso opposto. La curva dei rendimenti è il grafico del rendimento per scadenza (da 3 mesi a 30 anni) e racconta la fase del ciclo.
+Anche chi non opera bond deve guardarli: i rendimenti guidano valute, titoli growth e oro. I Treasury USA sono il bene "privo di rischio" globale e si comprano nel risk-off.
+       | 
+ | Forma della curva | Cosa racconta
+ | Inclinata positiva (lunghi > brevi) | Normale, fase di espansione
+ | Piatta | Fine ciclo, incertezza
+ | Invertita (brevi > lunghi) | Storicamente anticipa le recessioni, con anticipo variabile da mesi ad anni
+Spread da osservare: 2 anni – 10 anni USA (barometro di recessione); spread di credito high yield contro governativi (si allargano nello stress); BTP-Bund (rischio periferico).
+Oltre il vault · duration in una riga
+La duration modificata dice di quanto varia il prezzo per ogni punto di rendimento: ΔP/P ≈ −Duration × Δy. Un BTP con duration 8 perde circa l'8% se i rendimenti salgono di 1 punto. Si approfondisce nel Modulo 10 (Fixed income).
+Lezione 4Le materie prime
+Definizione
+Asset reali il cui prezzo dipende da domanda e offerta fisica, dal dollaro e dai tassi reali. Alcune fanno da rifugio, altre da barometro della crescita.
+       | 
+ | Materia prima | Driver | Nota
+ | Oro | Tassi reali (inverso), dollaro, domanda rifugio, banche centrali | Non rende nulla: brilla quando i tassi reali scendono
+ | Petrolio (WTI, Brent) | Domanda globale, OPEC+, scorte, geopolitica | Guida CAD e NOK; gli shock alimentano l'inflazione
+ | Gas naturale | Stagione, scorte, meteo | Volatilissimo, molto locale
+ | Rame | Crescita globale, Cina, transizione energetica | "Dottor Rame", barometro del ciclo
+ | Agricole | Raccolti, meteo | Guidate dall'offerta
+Esempio · contango e backwardation
+Contango: il future a 1 mese costa 80, quello a 2 mesi 81. Alla scadenza chi rinnova la posizione vende a ~80 e ricompra a 81: perde circa 1,2% al mese anche se lo spot resta fermo. Backwardation: il contrario, il rinnovo rende. Per questo un ETC su petrolio può perdere valore mentre il petrolio sta fermo.
+Lezione 5Criptovalute come mercato, e la volatilità come asset
+Le cripto come mercato si scambiano 24/7/365: niente gap classici, ma movimenti violenti di notte e nel weekend. La volatilità è molto superiore a valute e indici, la liquidità è frammentata tra molti exchange (slippage e "wick" estremi), la correlazione col Nasdaq è spesso positiva ma variabile, e le altcoin amplificano i movimenti del Bitcoin. Rischi non di prezzo: custodia, controparte, regolamentazione, liquidazioni a cascata sui derivati.
+Definizione · volatilità come asset
+La volatilità si compra e si vende (future VIX, opzioni, prodotti quotati). Venderla rende di solito un piccolo premio costante, con un raro rischio di coda enorme.
+VIX: volatilità implicita a 30 giorni sull'S&P 500. È un indice, non si compra direttamente: si operano i suoi future.
+Struttura a termine: nei mercati calmi è in contango (chi è short guadagna col passare del tempo); nello stress va in backwardation.
+Variance risk premium: la volatilità implicita è in media più alta di quella poi realizzata. Chi vende opzioni incassa questa differenza, come chi vende un'assicurazione.
+Il caso Volmageddon · 5 febbraio 2018
+Dopo un 2017 calmissimo molti erano short volatilità tramite prodotti come XIV. In due ore il VIX sale del 115% (da ~17 a ~37); XIV perde il 96% in una seduta e viene chiuso. Le strategie short-vol funzionano finché non smettono, e il crollo è non lineare.
+Usi legittimi: assicurazione di portafoglio (comprare put o call sul VIX, pagando un costo); segnale di regime (VIX alto e curva in backwardation = prudenza); vendita di premio solo con rischio definito e size che regge un raddoppio del VIX.
+Lezione 6Le correlazioni tra asset class
+Definizione
+La correlazione misura quanto due strumenti si muovono insieme, da −1 (opposti) a +1 (identici). Serve a confermare un'idea e a non raddoppiare lo stesso rischio, ma non è stabile.
+       | 
+ | Coppia | Relazione tipica
+ | Azioni ↔ credito high yield | Positiva forte
+ | Azioni ↔ Treasury | Negativa nel risk-off, variabile
+ | Dollaro ↔ materie prime | Negativa
+ | Oro ↔ tassi reali | Negativa
+ | AUD/JPY ↔ azioni | Positiva (termometro del sentiment)
+ | Bitcoin ↔ Nasdaq | Positiva variabile
+ | Petrolio ↔ CAD | Positiva
+Errori tipici
+Pensarsi diversificati con long EUR/USD e long GBP/USD: sono quasi lo stesso trade (short dollaro).
+Dimenticare che nelle crisi le correlazioni di rischio vanno verso +1: scende tutto insieme.
+Prendere le correlazioni dal manuale invece di misurarle sul proprio timeframe.
+1.2
+Gli strumenti: il "contenitore" del trade
+La stessa idea può essere eseguita con strumenti diversi. Cambiano leva, scadenza, costi di detenzione, controparte e tasse.
+Lezione 7Azioni ed ETF
+Definizione
+L'azione è una quota di proprietà di un'azienda comprata a pronti: niente leva strutturale, niente scadenza. L'ETF è un fondo quotato che replica un indice o una strategia e si compra come un'azione.
+Azioni: regolamento T+1/T+2, dividendi, split. Lo short richiede di prendere a prestito il titolo (costo del prestito, rischio di richiamo, dividendi a carico). Adatte da swing in su.
+       | 
+ | Tipo | Cos'è | Rischio specifico
+ | ETF fisico | Compra davvero i titoli dell'indice | Basso
+ | ETF sintetico | Replica tramite swap con una controparte | Controparte
+ | ETC | Su materie prime (fisico o su future) | Roll e contango se su future
+ | ETN | Nota di debito non garantita | Emittente pieno
+Cosa guardare in un ETF: TER (costo annuo), tracking difference, metodo di replica, domicilio, dimensione e liquidità. Gli ETF a leva o inversi si ribilanciano ogni giorno e perdono valore nei mercati laterali: sono per orizzonti brevissimi.
+Esempio · il decadimento di un ETF a leva 2×
+L'indice fa +10% e poi −9,09%: torna a 100. L'ETF 2× fa +20% e poi −18,18%: 100 → 120 → 98,2. Indice fermo, ETF in perdita.
+Lezione 8I futures
+Definizione
+Contratti standardizzati e quotati per comprare o vendere un sottostante a una data futura, con regolazione giornaliera di guadagni e perdite (mark-to-market).
+Margine iniziale e di mantenimento: se il conto scende sotto soglia arriva la margin call.
+Leva implicita alta: il rischio si calcola sempre sul valore nozionale.
+Scadenze e roll: prima della scadenza si passa al contratto successivo.
+Controparte quasi nulla: c'è una cassa di compensazione (CCP) in mezzo.
+Oltre il vault · quanto vale un punto
+         | 
+ | Contratto | Valore di 1 punto | Versione micro
+ | ES (S&P 500) | 50 $ | MES: 5 $
+ | NQ (Nasdaq 100) | 20 $ | MNQ: 2 $
+Con l'S&P a 6.000, un ES vale nozionalmente 300.000 $. Uno stop di 10 punti su un MES costa 50 $; sullo stesso stop, un ES costa 500 $. I micro permettono di dimensionare con precisione anche con conti piccoli.
+Pro: costi bassi, liquidità enorme, book trasparente, nessun conflitto con il broker. Contro: leva pericolosa se non dimensionata. Ideali per day trading e swing su indici, materie prime, tassi.
+Lezione 9Le opzioni: il minimo indispensabile
+Definizione
+Un'opzione è il diritto, non l'obbligo, di comprare (call) o vendere (put) un sottostante a un prezzo fissato (strike) entro una data. Chi compra paga un premio; chi vende lo incassa e si assume l'obbligo.
+Esempio · il payoff di una call
+Compri una call strike 100 pagando 3. A scadenza il sottostante è a 110: guadagni 110 − 100 − 3 = +7. Se è a 95 l'opzione scade senza valore: perdi il premio, −3, e non di più. Pareggio a 103.
+       | 
+ | Greca | Cosa misura
+ | Delta | Quanto varia l'opzione per 1 punto di sottostante (esposizione direzionale)
+ | Theta | Quanto perde ogni giorno per il passare del tempo (a favore di chi vende)
+ | Vega | Sensibilità alla volatilità implicita
+ | Gamma | Quanto cambia il delta: è il rischio di chi vende
+A cosa servono: copertura (put protettiva), rendimento (covered call), direzione con rischio definito (spread verticali), volatilità (straddle prima di un evento). Regola generale: comprare opzioni con volatilità implicita bassa, venderle con volatilità alta.
+Errori tipici
+Vendere opzioni "nude" significa tante piccole vincite e code enormi, lo stesso profilo del carry trade e dello short volatility.
+Lezione 10CFD, Forex spot e derivati cripto
+Definizione
+Il CFD è un contratto bilaterale con il broker che paga la differenza di prezzo del sottostante. Non si possiede nulla: la controparte è il broker.
+CFD: leva alta, stop-out automatico, spread spesso più larghi del sottostante, costo di finanziamento overnight che erode le posizioni tenute a lungo. Alcuni broker sono market maker sul tuo ordine (conflitto d'interesse). Nell'UE: leva limitata per il retail e protezione dal saldo negativo. Adatti a swing e day trading, non al lungo periodo. L'alternativa più pulita sono i micro-futures.
+Forex spot: la posizione viene rinnovata ogni sera con addebito o accredito dello swap. Esistono anche forward (cambio fissato per una data futura), NDF e FX swap. Non c'è un volume centralizzato: si usa il tick volume come approssimazione.
+Cripto: spot (possiedi il token, rischio custodia), futures con scadenza, e perpetual senza scadenza, tenuti vicini allo spot dal funding rate: un pagamento periodico tra long e short. Funding molto positivo = i long pagano = sentiment euforico. Attenzione alle liquidazioni a cascata.
+Lezione 11Il confronto: quale strumento per quale idea
+       | 
+ | Strumento | Leva | Scadenza | Costo di detenzione | Controparte | Adatto a
+ | Azioni | no | no | no | bassa | swing → lungo periodo
+ | ETF | no | no | TER basso | bassa (ETN alta) | lungo periodo
+ | Futures | alta | sì | roll | quasi nulla | day/swing su indici e commodity
+ | Opzioni | non lineare | sì | theta | quasi nulla | copertura, rischio definito
+ | CFD | alta | no | finanziamento | alta | swing/day multi-mercato
+ | FX spot | alta | no | swap | media | day/swing FX
+ | Certificati | varia | sì | costi impliciti | emittente | payoff specifici
+ | Obbligazioni | no | sì | no | emittente | reddito, difesa
+Sintesi da ripetere
+Posizione tenuta a lungo → evita CFD e FX spot (costo notturno): meglio azioni, ETF, futures.
+Capitale piccolo → micro-futures prima dei CFD.
+Rischio di controparte → preferisci mercati regolamentati con cassa di compensazione.
+Lezione 12I tipi di ordine
+Definizione
+L'ordine è lo strumento con cui l'idea diventa esecuzione. La scelta influenza costo, certezza di esecuzione e disciplina.
+       | 
+ | Ordine | Cosa fa | Compromesso
+ | Market | Esegue subito al miglior prezzo disponibile | Esecuzione certa, ma paghi spread e slippage
+ | Limit | Esegue solo al tuo prezzo o meglio | Prezzo migliore, ma può non eseguire
+ | Stop | Diventa market quando il prezzo tocca il livello | Per stop loss e breakout; slippage sui gap
+ | Stop-limit | Diventa limit al livello | Evita slippage estremo, ma rischia di non uscire
+ | Trailing stop | Stop che segue il prezzo a distanza fissa | Automatizza la gestione
+ | OCO / Bracket | Entrata + stop + target insieme; uno annulla l'altro | Ideale per lo swing
+Regole pratiche
+Lo stop loss è sempre un ordine reale, mai mentale.
+In entrata preferisci il limit: ti costringe a scegliere il prezzo.
+Su news e gap gli stop market possono eseguire molto lontano dal livello.
+Lezione 13Costi di trading e fiscalità in Italia
+Definizione
+Costi e tasse sono una perdita certa che si sottrae a ogni edge. L'aspettativa si calcola sempre al netto di spread, commissioni, slippage, finanziamento, roll e TER.
+Esempio · perché lo scalping è così difficile
+Scalping su EUR/USD con stop di 5 pip. Spread 0,8 pip + commissione equivalente a 0,6 pip = 1,4 pip a trade, cioè 0,28R. Un edge lordo di +0,2R diventa −0,08R. Lo stesso costo su uno swing con stop di 50 pip vale 0,03R: trascurabile.
+Il quadro fiscale italiano (indicativo, da verificare ogni anno)
+       | 
+ | Categoria | Cosa ci rientra | Compensabile con le minus?
+ | Redditi di capitale | Dividendi, cedole, guadagni su ETF e fondi armonizzati | No
+ | Redditi diversi | Plus e minus su azioni, obbligazioni, ETC/ETN, futures, opzioni, CFD, forex, certificati | Sì
+Aliquote: 26% sulla maggior parte delle rendite; 12,5% su titoli di Stato italiani e white list. Cripto: dal 2026 l'aliquota prevista è salita al 33% (da verificare con un commercialista per l'anno in corso).
+Minusvalenze: si usano entro 4 anni, solo contro redditi diversi. Chi guadagna con ETF e perde con i CFD accumula minus che non riesce a compensare.
+Regime amministrato (broker italiano): il broker calcola e versa. Dichiarativo (broker estero, exchange cripto): fai tutto tu, con quadri RT e RW e l'IVAFE sui conti esteri. Se non scegli, sei in dichiarativo.
+Bollo: 0,2% annuo sul controvalore dei titoli.
+Non è consulenza fiscale: è una mappa per parlare con un professionista senza partire da zero.
+1.3
+Le criptovalute dalle fondamenta
+Cosa c'è davvero sotto, letto dai documenti originali, e cosa è solido, cosa è limite, cosa è marketing.
+Lezione 14Bitcoin ed Ethereum: i whitepaper
+Definizione · Bitcoin (Nakamoto, 2008)
+Contante elettronico senza una terza parte fidata, reso possibile dalla proof-of-work e dalla regola della catena più lunga.
+Il problema: il commercio online dipende da intermediari. Serve fiducia basata su prova crittografica.
+La moneta è una catena di firme digitali. Da sola non impedisce la doppia spesa.
+Timestamp e catena: ogni blocco contiene l'hash del precedente, quindi rinforza tutti quelli prima.
+Proof-of-work: trovare un hash sotto una soglia costa calcolo. Il consenso è la catena con più lavoro: modificare un blocco passato richiede rifare tutto il lavoro successivo.
+Incentivo: chi mina riceve nuove monete e commissioni. Emissione decrescente (halving) fino a 21 milioni. Attaccare rende meno che rispettare le regole.
+Sicurezza probabilistica: la probabilità che un attaccante in minoranza raggiunga la catena onesta cala esponenzialmente con i blocchi di conferma.
+Definizione · Ethereum (Buterin, 2013)
+Una blockchain con un linguaggio Turing-completo integrato, per eseguire contratti arbitrari: una "macchina a stati" mondiale.
+Modello a conti (non UTXO): conti controllati da chiavi (EOA) e conti controllati da codice (contratti). Ogni operazione consuma gas, che impedisce loop infiniti e attacchi. Casi d'uso: token, derivati con oracoli, DAO. Consenso nato in proof-of-work, passato a proof-of-stake con The Merge (2022). Limiti riconosciuti dallo stesso paper: scalabilità, costo computazionale, complessità.
+Lezione 15Stablecoin, limiti e potenzialità
+       | 
+ | Modello | Esempi | Come tiene il valore | Come si rompe
+ | Garantito in valuta | USDT, USDC | Riserve 1:1 in dollari e titoli | Qualità e trasparenza delle riserve, controparte
+ | Garantito in cripto | DAI | Collaterale superiore al 100%, liquidazioni automatiche | Cascate di liquidazione nei crolli
+ | Algoritmico | UST/Terra | Arbitraggio con un token gemello | Spirale di morte: crollo di maggio 2022
+Tenere liquidità in stablecoin significa assumersi il rischio dell'emittente, non "essere in cash".
+       | 
+ | Solido | Limite | Marketing
+ | Scarsità verificabile e regole trasparenti | Throughput limitato del layer base | Token senza uso reale
+ | Regolamento senza permesso, resistente alla censura | Custodia senza rete: chiave persa = fondi persi | Rendimenti "garantiti" da staking
+ | Programmabilità del regolamento | Controparte su exchange e stablecoin | "Segui le balene"
+ | Mercato globale 24/7 | Volatilità estrema, regolamentazione in evoluzione | Narrazioni che cambiano ogni ciclo
+Sintesi da ripetere
+La cripto è un asset speculativo con una tesi (scarsità, opzione su un sistema alternativo), non un flusso di cassa. Size ridotta, rischio per trade più basso del solito, e nei periodi di stress la liquidità esce da qui per prima.
+1.4
+Gli orizzonti temporali
+L'orizzonte non è "quanto tengo un trade": decide costi, fonte dell'edge, dati, psicologia e strumenti.
+Lezione 16Come cambia tutto con l'orizzonte
+       | 
+ |  | Scalping | Day trading | Swing | Position | Investire
+ | Durata | secondi–minuti | minuti–ore | giorni–settimane | settimane–mesi | anni
+ | Trade al mese | centinaia | decine | ~10 | pochi | ~0
+ | Peso dei costi | enorme | alto | medio | basso | trascurabile
+ | Fonte dell'edge | microstruttura, velocità | livelli intraday, sessioni, news | struttura, pullback | trend macro, regime | premio al rischio, composizione
+ | Psicologia critica | reazione, tilt rapido | noia, disciplina oraria | pazienza nell'attesa | reggere il rumore | non agire
+ | Tempo richiesto | tutto il giorno | ore fisse | 30–60 min al giorno | poche ore a settimana | poche ore al mese
+Scalping: centinaia di trade, R:R spesso sotto 1, i costi dominano; serve esecuzione veloce e lettura del book. Day trading: niente rischio overnight; il nemico è la noia tra un setup e l'altro. Swing: costi leggeri, si accettano i gap del weekend, il difficile è non toccare un trade che "non fa niente". Position: il campione cresce lentamente, stop ampi e size piccola. Lungo periodo: l'edge è strutturale (premio per il rischio azionario), il nemico è agire nei crolli e nelle bolle.
+Sintesi da ripetere
+L'orizzonte giusto è quello compatibile con il tempo che hai, i costi del tuo broker e la tua psicologia, non quello che promette di più. Si scrive nel trading plan.
+Errori tipici
+Scalping con costi da retail e connessione lenta.
+Trasformare uno swing perdente in "investimento di lungo periodo".
+Saltare da un orizzonte all'altro in base all'ultimo esito.
+Lezione 17L'analisi multi-timeframe
+Definizione
+Guardare lo stesso mercato su tre scale temporali (con rapporto circa 1:4–1:6) e operare solo quando sono allineate: contesto, setup, trigger.
+       | 
+ | Ruolo | Esempio swing | Domanda
+ | Contesto | Giornaliero / 4 ore | Che direzione e che regime?
+ | Setup | 1 ora / 15 minuti | C'è una zona o un pattern operativo?
+ | Trigger | 15 / 5 minuti | C'è l'innesco preciso?
+Si opera nella direzione del contesto. Il vantaggio: meno falsi segnali (il rumore di un timeframe è struttura su quello sopra) e R:R migliore (entrata fine sul timeframe basso, target su quello alto).
+Errori tipici
+Timeframe hopping: cambiare scala finché una conferma la tua idea. È bias di conferma travestito da analisi.
+1.5
+Come si scambia davvero
+La microstruttura in versione essenziale: chi mette il prezzo, perché lo spread si allarga, cosa significa liquidità.
+Lezione 18Microstruttura e market making
+Definizione
+La microstruttura studia come si forma il prezzo: regole di negoziazione, ordini, spread e liquidità. Il market maker quota in continuazione un prezzo di acquisto e uno di vendita e guadagna lo spread, rischiando di restare con inventario dal lato sbagliato.
+Lo spread ha tre componenti: costi di gestione dell'ordine, costo di tenere l'inventario, e selezione avversa, cioè il rischio di scambiare con qualcuno più informato. Per questo lo spread si allarga con la volatilità, attorno alle news e quando il market maker teme flusso "tossico".
+Esempio · scomporre lo spread
+Spread quotato 4 centesimi. Compri a mercato pagando 2 centesimi sopra il prezzo medio (spread effettivo 4). Dopo 5 minuti il prezzo medio si è mosso di 1,5 centesimi nella tua direzione. Il guadagno reale del market maker (spread realizzato) è 2 × (2 − 1,5) = 1 centesimo; gli altri 3 sono selezione avversa: li ha persi contro chi era informato.
+Liquidità ha tre dimensioni: spread stretto, profondità del book, capacità di riassorbire un grosso ordine. Più volume non significa sempre più liquidità: conta la profondità nel momento in cui serve, e la liquidità evapora proprio nei momenti di stress. Il modello di Kyle la riassume così: il prezzo si muove in proporzione al flusso netto di ordini, ΔP = λ · flusso.
+Cosa se ne fa un retail
+Usare ordini limit dove possibile: paghi meno spread.
+Evitare i momenti in cui i market maker allargano (news, aperture, ore morte).
+Sapere che lo stop su un livello ovvio sarà eseguito proprio quando la liquidità è peggiore.
+Checklist di padronanza
+So nominare i driver principali di USD, EUR, JPY, AUD e CAD.
+Spiego cosa racconta una curva dei rendimenti invertita.
+So calcolare la size in lotti o contratti partendo dal rischio in euro.
+Per un'idea di trade scelgo lo strumento giustificando leva, costo di detenzione e controparte.
+Conosco la differenza tra market, limit, stop e stop-limit e quando usarli.
+So perché le minus dei CFD non si compensano con i guadagni degli ETF.
+Ho scelto il mio orizzonte in base a tempo, costi e psicologia.
+Flashcard · rispondi a voce, poi controlla
+      Quanto vale un pip su 1 lotto standard EUR/USD?
+10 dollari (1 $ per mini, 0,10 $ per micro).
+      Quali valute salgono nel risk-off?
+USD, JPY, CHF, contro AUD, NZD ed emergenti.
+      Cosa significa contango e perché costa?
+Future lontani più cari dei vicini: chi rinnova la posizione vende basso e ricompra alto, perdendo anche a spot fermo.
+      Valore di un punto su ES e MES?
+50 $ e 5 $.
+      Perché i CFD non vanno tenuti a lungo?
+Costo di finanziamento overnight che erode la posizione, più il rischio di controparte con il broker.
+      Cos'è il funding rate di un perpetual?
+Pagamento periodico tra long e short che tiene il prezzo vicino allo spot. Molto positivo = long euforici.
+      Cosa successe il 5 febbraio 2018?
+Volmageddon: VIX +115% in due ore, l'ETP short-vol XIV −96% in una seduta.
+      Tre componenti dello spread?
+Costi di gestione dell'ordine, costo dell'inventario, selezione avversa.
+      Tre ruoli del multi-timeframe?
+Contesto (direzione e regime), setup (zona o pattern), trigger (innesco preciso).
+      Perché UST/Terra è crollato?
+Stablecoin algoritmica: quando il peg salta, il meccanismo di difesa distrugge valore sempre più in fretta (spirale riflessiva).
+Cancello per il Modulo 2
+Per un'ipotesi di trade sai scrivere in quattro righe: strumento + orizzonte + costo totale + fiscalità, e giustificare ogni scelta.
+Poi → Modulo 2 · Macro, politica monetaria e flussi
+Moduli 2–10 in arrivo
+Il manuale si costruisce un modulo alla volta. I prossimi seguono lo stesso ordine del percorso: Macro, politica monetaria e flussi → Analisi tecnica → Lettura avanzata del prezzo → Analisi fondamentale e dati → Sistema operativo e rischio → Strategie e playbook → Validazione e automazione → Operare davvero, con la Formazione di supporto in parallelo.
+[SCRIPT]
