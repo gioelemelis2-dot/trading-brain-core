@@ -78,3 +78,39 @@ Nei testi si usano tre marcatori:
 - *Documentato:* segue una fonte.
 - *Deduzione:* ragionamento dell'autore a partire da fonti, senza prova diretta.
 - *Ipotesi testabile:* formulata in modo da poter essere confutata, con i dati che servirebbero.
+
+## 8. Classi di contenuto (da tenere sempre separate)
+
+Introdotte il 11/11/2026 su decisione dell'utente (D-05 in `DECISIONI.md`).
+
+| Classe | Etichetta nel testo | Che cosa significa | Dove vive |
+|---|---|---|---|
+| Verificato | `[VERIFICATO]` | Affermazione con fonte letta (stato V) o calcolo ricontrollato da un secondo controllo | Lezioni con stato `verificata` |
+| In verifica | `[IN VERIFICA]` | Fonte confermata solo indirettamente (V-sec) o non ancora letta (C), oppure esempio non ancora ricontrollato | Lezioni `bozza` / `in_verifica` |
+| Ipotesi | `[IPOTESI]` | Deduzione o congettura formulata in modo testabile | Lezioni (riquadro "Ipotesi") e `glossario/DOMANDE-APERTE.md` |
+| Esercitazione | `[ESERCIZIO]` / `[ESEMPIO]` | Numeri costruiti a mano per insegnare: non descrivono il mercato | Sezioni 8 e 18 delle lezioni |
+| Dato simulato | `[SIMULATO]` | Prodotto da un generatore con seme dichiarato | `dati/simulati/`, output degli script |
+| Dato reale | `[REALE]` | Osservazione di mercato o economica con fonte, data e hash | `dati/reali/`, `dati/derivati/` |
+
+Regola: nelle sezioni 8 (esempi numerici) e 9 (casi reali) di ogni lezione, ogni numero porta una di queste etichette. Le lezioni scritte prima di questa regola (L2.1–L2.3) usano già "Esempio" e "Stato V/V-sec/C": vanno allineate alla prima revisione.
+
+## 9. Ciclo di vita di una lezione
+
+```
+bozza ──► in_verifica ──► verificata ──► (da_aggiornare) ──► verificata
+                │
+                └── padronanza dell'utente: separata, registrata solo col cancello superato
+```
+
+| Stato | Condizione per entrarci |
+|---|---|
+| `bozza` | Struttura a 20 sezioni presente, ancora incompleta o non riletta |
+| `in_verifica` | Completa; fonti con stato dichiarato; restano fonti C/V-sec o esempi non ricontrollati |
+| `verificata` | Tutte le fonti usate come prova sono V; esempi ricalcolati da script o da un secondo revisore (Claude o Gemini, non l'autore) |
+| `da_aggiornare` | Data `revisione_entro` superata o fonte superata |
+
+**Una lezione non è "completata" perché è scritta.** È completa per il Brain quando è `verificata`; è acquisita dall'utente solo quando il cancello è superato.
+
+## 10. Sorgente e versione generata
+
+I file Markdown in `brain/` sono la **fonte primaria** della conoscenza. Il manuale HTML (stile v1) sarà **generato** da questi file con uno script e non si modificherà mai a mano (decisione D-03). Il v1 originale resta in `originale/` come documento storico.

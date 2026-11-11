@@ -1,12 +1,12 @@
 # Glossario e indice analitico
 
-Versione 0.1 · 11/11/2026. Ogni voce: definizione breve · dove si studia · voci collegate. Il glossario cresce con ogni sprint; le definizioni complete stanno nelle lezioni.
+Versione 0.2 · 11/11/2026 (sprint S2). Ogni voce: definizione breve · dove si studia · voci collegate. Il glossario cresce con ogni sprint; le definizioni complete stanno nelle lezioni.
 
 | Termine | Definizione breve | Dove | Collegati |
 |---|---|---|---|
 | Aspettativa (E[R]) | Risultato medio per trade su molte ripetizioni | 0.10 | R-multiplo, edge |
 | Base rate | Frequenza storica di un evento in una popolazione di riferimento | 0.1, 0.17 | Probabilità condizionata |
-| Breakeven (inflazione) | Differenza tra rendimento nominale e rendimento di un titolo indicizzato all'inflazione | L2.4 (da scrivere) | Tasso reale |
+| Breakeven (inflazione) | Differenza tra rendimento nominale e rendimento di un titolo indicizzato all'inflazione | L2.4 | Tasso reale |
 | Carry | Rendimento ottenuto tenendo una posizione se i prezzi non cambiano (es. differenziale di tasso) | 0.3, L2.3, 7 | UIP |
 | Cancello | Prova di padronanza che chiude un modulo | STANDARD §5 | Livelli L1–L5 |
 | Corridoio / pavimento | Regimi di controllo del tasso overnight con riserve scarse / abbondanti | L2.1 | IORB, DFR |
@@ -30,3 +30,16 @@ Versione 0.1 · 11/11/2026. Ogni voce: definizione breve · dove si studia · vo
 | UIP / CIP | Parità scoperta / coperta dei tassi d'interesse | L2.3 | Carry, forward premium puzzle |
 | Variance drag | Crescita composta ≈ media aritmetica − σ²/2 | 0.15 | Ergodicità |
 | Variance risk premium | Differenza media tra volatilità implicita e realizzata | 1.5, 10.5 | VIX |
+| Breakeven (scomposizione) | Inflazione attesa + premio di rischio d'inflazione − premio di liquidità dell'indicizzato | L2.4 | Fisher |
+| BTP€i / BTP Italia | Titoli di Stato italiani indicizzati all'inflazione dell'area euro / italiana | L2.4 | TIPS |
+| Carry trade | Posizione long valuta ad alto tasso, short valuta a basso tasso; guadagni piccoli e code negative | L2.6, 7 | UIP |
+| Conto del Tesoro (TGA) | Conto del Tesoro USA presso la Fed; quando cresce, le riserve calano | L2.5 | Riserve |
+| Equazione di Fisher | (1+i) = (1+r)(1+π_e) | L2.4 | Tasso reale |
+| Frammentazione | Divergenza degli spread sovrani nell'area euro | L2.6, 2.4 | TPI |
+| HICP / PCE / CPI | Misure d'inflazione di BCE / Fed / BoE-BoJ e statistica USA | L2.6 | Obiettivo 2% |
+| MPC | Monetary Policy Committee della BoE: 9 membri | L2.6 | Bank Rate |
+| Premio di liquidità (indicizzati) | Rendimento extra dei titoli indicizzati perché meno liquidi | L2.4 | Breakeven |
+| Riserve | Depositi delle banche presso la banca centrale | L2.1, L2.5 | IORB, QE |
+| Tasso reale ex ante / ex post | Nominale meno inflazione attesa / realizzata | L2.4 | Fisher |
+| TIPS | Titoli del Tesoro USA indicizzati al CPI | L2.4 | Breakeven |
+| YCC | Controllo della curva dei rendimenti (BoJ 2016–2024) | L2.6 | BoJ |

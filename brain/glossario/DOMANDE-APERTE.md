@@ -11,3 +11,8 @@ Questioni non risolte emerse durante lo studio. Ogni voce: data · origine · pe
 | Q5 | 2026-11-11 | Da dove viene l'intervallo "27–53% di false scoperte" attribuito a Harvey-Liu-Zhu nel v1? | Audit A6 | Lettura del paper | aperta |
 | Q6 | 2026-11-11 | La tabella 0.17 (S&P, Nasdaq, Bitcoin 2016–2026) è riproducibile? Con quali dati e quali convenzioni (chiusure, fusi orari, festivi)? | Audit C5 | Pipeline dati documentata (traccia N) | aperta |
 | Q7 | 2026-11-11 | Riferimento normativo esatto dell'aliquota 33% sulle cripto (L. 207/2024 o conferme successive) e trattamento delle conversioni in stablecoin non in euro | Audit A16 | Gazzetta Ufficiale, Agenzia delle Entrate | aperta |
+| Q8 | 2026-11-11 | Bitcoin, tabella 0.17: il range mediano (3,49%) coincide con la deviazione standard (3,49%). Coincidenza o errore di trascrizione? | Specifica dati 0.17 | Ricalcolo sui dati del vault | aperta |
+| Q9 | 2026-11-11 | Tabella 0.17: a quale strumento si riferisce "P(su \| 3 giù) sotto la media a 200 giorni: da circa 65% a circa 47%"? | Specifica dati 0.17 (S10) | Note del vault | aperta |
+| Q10 | 2026-11-11 | Gagnon et al. (2011): −91 pb sul 10 anni e −71 pb sul premio negli 8 annunci sono i numeri del paper originale? | L2.5 | Lettura del paper (IJCB 7(1)) | aperta (R-001) |
+| Q11 | 2026-11-11 | Livello esatto del 10 anni USA all'inizio di settembre 2013 (fonti tra 2,96% e 3,01%) e massimo dell'anno | L2.5 | Serie giornaliera ufficiale (Tesoro USA / FRED) | aperta |
+| Q12 | 2026-11-11 | Importi e modalità degli acquisti di gestione delle riserve annunciati dalla Fed a dicembre 2025 | L2.5 | Comunicato FOMC di dicembre 2025 | aperta |

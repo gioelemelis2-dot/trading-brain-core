@@ -1,6 +1,6 @@
 # 6 · Piano di espansione
 
-Versione 1.0 · 11/11/2026
+Versione 1.1 · 11/11/2026 (aggiornata a fine sprint S2)
 
 ## 6.1 Criterio di priorità
 
@@ -38,8 +38,9 @@ Ogni sprint è pensato per una sessione di lavoro e lascia il Brain in uno stato
 | Sprint | Fase | Contenuto | Uscita verificabile | Stato |
 |---|---|---|---|---|
 | S1 | 1–3, 4 | Governance, audit, verifica v1, mappa, architettura, bibliografia, piano; **M2 · L2.1–L2.3** + protocollo di analisi + strumento FedWatch | File in `brain/`, script eseguibili, registro | ✅ 11/11/2026 |
-| S2 | 4 | M2 · L2.4 Tassi reali e inflazione attesa · L2.5 Bilancio della BC (QE/QT, riserve) · L2.6 Fed/BCE/BoJ/BoE | 3 lezioni con fonti V | ⏳ |
-| S3 | 4, 6 | Lab M2: event study su decisioni FOMC/BCE con dati scaricabili (FRED/BCE) — dipende dall'accesso di rete ai siti di dati | Notebook/script + risultati, anche negativi | ⏳ |
+| S2 | 4, 3 | M2 · L2.4 Tassi reali e inflazione attesa · L2.5 Bilancio della BC (QE/QT, riserve) · L2.6 Fed/BCE/BoJ/BoE; classi di contenuto e ciclo di vita; piano di migrazione; specifica dati 0.17; materiali di collaborazione con Gemini | 3 lezioni `in_verifica`, documenti, `riproduci_017.py` | ✅ 11/11/2026 |
+| S3 | 4, 6 | Lab M2: event study su decisioni FOMC/BCE con dati reali — **bloccato**: i siti di dati (FRED, Yahoo, Stooq) sono rifiutati dalla rete dell'ambiente; serve abilitarli o ricevere file dall'utente | Script + risultati, anche negativi | ⏸ |
+| S3-bis | 4 | **Generatore del manuale HTML** dai Markdown (stile v1, navigabile, indice, flashcard, checklist, stato delle lezioni visibile) — decisione D-03 | `strumenti/genera_manuale.py` + HTML generato | ⏳ |
 | S4 | 4 | Traccia 10.1 (parte 1): variabili casuali, distribuzioni, stima, IC, test, regressione | 5–6 lezioni + esercizi in Python | ⏳ |
 | S5 | 5 | Applicare le correzioni del v1 come lezioni v2 (0.3, 0.19, 0.22, 1.5, 1.13) con nota di modifica | Diff documentato | ⏳ |
 | S6 | 4 | M2 unità 2.2 (ciclo) e 2.3 (dati macro come eventi, vintages) | 5 lezioni | ⏳ |
@@ -59,7 +60,11 @@ Ogni sprint è pensato per una sessione di lavoro e lascia il Brain in uno stato
 4. Ogni 5 sprint si riapre la matrice delle lacune e si ricalcolano le priorità.
 5. Le domande nate durante lo studio vanno in `glossario/DOMANDE-APERTE.md`, non si perdono nel testo.
 
-## 6.4 Cosa serve dall'utente
+## 6.4 Ordine aggiornato dei prossimi sprint
+
+S4 traccia 10.1 (statistica) → S3-bis generatore HTML → S5 correzioni v1 → S6 unità 2.2–2.3 → S3 lab (appena ci sono dati reali). La verifica di Gemini sulle lezioni L2.1–L2.6 (richiesta R-001) procede in parallelo e decide quando passano a `verificata`.
+
+## 6.5 Cosa serve dall'utente
 
 - **Padronanza**: i cancelli si superano rispondendo; la base registra il superamento solo quando l'utente lo dichiara (con data). Il Brain non si "auto-promuove".
 - **Dati del vault**: se si vuole rigenerare la tabella 0.17, servono i dati o almeno la fonte usata.

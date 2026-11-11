@@ -10,18 +10,19 @@
 
 | Unità | Lezione | Stato | File |
 |---|---|---|---|
-| 2.1 Politica monetaria e mercati | L2.1 Banche centrali: mandati, strumenti, come si fissa il tasso | bozza v0.1 | [L2.1](L2.1-banche-centrali-e-strumenti.md) |
-| | L2.2 Aspettative e sorprese | bozza v0.1 | [L2.2](L2.2-aspettative-e-sorprese.md) |
-| | L2.3 La catena di trasmissione ai mercati | bozza v0.1 | [L2.3](L2.3-trasmissione-ai-mercati.md) |
-| | L2.4 Tassi nominali, reali e inflazione attesa | da scrivere (S2) | — |
-| | L2.5 Bilancio della banca centrale: QE, QT, riserve | da scrivere (S2) | — |
-| | L2.6 Fed, BCE, BoJ, BoE: differenze che contano | da scrivere (S2) | — |
-| | Lab: event study su decisioni FOMC/BCE | da fare (S3) | — |
+| 2.1 Politica monetaria e mercati | L2.1 Banche centrali: mandati, strumenti, come si fissa il tasso | in_verifica v0.1 | [L2.1](L2.1-banche-centrali-e-strumenti.md) |
+| | L2.2 Aspettative e sorprese | in_verifica v0.1 | [L2.2](L2.2-aspettative-e-sorprese.md) |
+| | L2.3 La catena di trasmissione ai mercati | in_verifica v0.1 | [L2.3](L2.3-trasmissione-ai-mercati.md) |
+| | L2.4 Tassi nominali, reali e inflazione attesa | in_verifica v0.1 | [L2.4](L2.4-tassi-reali-e-inflazione-attesa.md) |
+| | L2.5 Bilancio della banca centrale: QE, QT, riserve | in_verifica v0.1 | [L2.5](L2.5-bilancio-banca-centrale-qe-qt.md) |
+| | L2.6 Fed, BCE, BoJ, BoE: differenze che contano | in_verifica v0.1 | [L2.6](L2.6-fed-bce-boj-boe.md) |
+| | Lab: event study su decisioni FOMC/BCE | bloccato: servono dati reali (rete o file dell'utente) | — |
 | 2.2–2.7 | Vedi `architettura/ARCHITETTURA.md` | pianificate | — |
 
-Strumenti: [Protocollo di analisi di un movimento](PROTOCOLLO-ANALISI-MOVIMENTO.md) · [`strumenti/sorpresa_monetaria.py`](../../strumenti/sorpresa_monetaria.py)
+Nessuna lezione è ancora `verificata`: lo diventa quando tutte le fonti usate come prova sono lette (V) e gli esempi ricontrollati da un secondo revisore (Claude o Gemini, non l'autore). Ciclo di vita in `governance/STANDARD.md` §9.
 
-Le lezioni sono **bozze**: passano a "verificata" quando tutte le fonti usate come prova sono lette (V) e gli esempi ricalcolati da un secondo controllo (regola in `piano/PIANO-ESPANSIONE.md` §6.3).
+Strumenti: [Protocollo di analisi di un movimento](PROTOCOLLO-ANALISI-MOVIMENTO.md) · [`strumenti/sorpresa_monetaria.py`](../../strumenti/sorpresa_monetaria.py) · [`strumenti/tassi_reali.py`](../../strumenti/tassi_reali.py)
+
 
 ## Cancello dell'unità 2.1 (intermedio)
 Senza note, a voce o per iscritto:
@@ -29,8 +30,9 @@ Senza note, a voce o per iscritto:
 2. Calcola sorpresa e probabilità implicita da due prezzi di futures dati. **(L3)**
 3. Su una decisione reale recente: compila il protocollo pre/post evento, classifica lo shock (policy/informativo), percorri la catena di trasmissione segnando quali anelli sono osservati e quali ipotizzati. **(L4)**
 4. Indica un anello con evidenza debole e descrivi il test che potrebbe rafforzarla o smentirla. **(L4→L5)**
+5. Calcola un tasso reale esatto e scomponi un breakeven; scrivi le scritture contabili di un QE; spiega EUR/USD come confronto tra due banche centrali. **(L3)**
 
-Superamento: tutti e quattro i punti, con calcoli corretti e almeno due spiegazioni alternative al punto 3. Si registra in `governance/REGISTRO-CONOSCENZE.md` con data.
+Superamento: tutti e cinque i punti, con calcoli corretti e almeno due spiegazioni alternative al punto 3. Si registra in `governance/REGISTRO-CONOSCENZE.md` con data.
 
 ## Cancello del Modulo 2 (finale, da completare quando il modulo è scritto)
 Dato un evento macro reale, costruire il quadro (attese, sorpresa, catena di trasmissione con livelli di evidenza, spiegazioni alternative, conseguenze sul rischio) e dichiarare **cosa lo smentirebbe**. **(L4)**

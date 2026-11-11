@@ -31,10 +31,10 @@ Legenda profondità: **I** introduttiva · **II** intermedia · **III** avanzata
 - **Nuova unità 1.6 · Chi partecipa al mercato** (Area B): exchange, broker, dealer, market maker, banche, hedge fund, fondi pensione e sovrani, fondi comuni ed ETF, retail, HFT, arbitraggisti; incentivi e vincoli · **1.7 Infrastrutture**: sedi (RM, MTF, OTF, SI), dark pool, clearing, settlement, custodia
 - Cancello: L3
 
-### Modulo 2 · Macro, politica monetaria e flussi (nuovo · **in sviluppo**)
+### Modulo 2 · Macro, politica monetaria e flussi (nuovo · **in sviluppo**: unità 2.1 scritta, in verifica)
 | Unità | Lezioni | Profondità |
 |---|---|---|
-| 2.1 Politica monetaria e mercati | **L2.1** Banche centrali: mandati, strumenti, come si fissa il tasso ✅ bozza · **L2.2** Aspettative e sorprese ✅ bozza · **L2.3** Trasmissione ai mercati ✅ bozza · L2.4 Tassi nominali, reali e inflazione attesa · L2.5 Bilancio della banca centrale: QE, QT, riserve · L2.6 Fed, BCE, BoJ, BoE: differenze che contano | I–II |
+| 2.1 Politica monetaria e mercati | **L2.1** Banche centrali · **L2.2** Aspettative e sorprese · **L2.3** Trasmissione ai mercati · **L2.4** Tassi reali e inflazione attesa · **L2.5** Bilancio: QE, QT, riserve · **L2.6** Fed, BCE, BoJ, BoE — tutte `in_verifica` (11/11/2026) | I–II |
 | 2.2 Il ciclo economico | Crescita, produttività, output gap · Inflazione e disinflazione · Mercato del lavoro · Indicatori anticipatori/coincidenti/ritardati · Come si costruiscono e si rivedono i dati (vintages) | I–II |
 | 2.3 Dati macro come eventi | Calendario macro, consensus e sorprese · Reazioni condizionate al regime · Event study su dati macro (lab) | II |
 | 2.4 Credito, debito e politica fiscale | Debito pubblico e privato, ciclo del credito, spread · Politica fiscale e interazione con la monetaria | II |

@@ -1,6 +1,6 @@
 # 5 · Bibliografia strategica
 
-Versione 1.0 · 11/11/2026
+Versione 1.1 · 11/11/2026 (aggiunte sprint S2)
 
 **Come leggere questa bibliografia**
 - **Rango** F1–F7 = tipo di fonte (vedi `governance/STANDARD.md` §1).
@@ -35,6 +35,12 @@ Versione 1.0 · 11/11/2026
 | Novy-Marx, R. | The other side of value: The gross profitability premium | 2013 | *Journal of Financial Economics* | F1 | 0.3 (correzione A9) | — | V-sec |
 | Engstrom, E.; Sharpe, S. | The near-term forward yield spread as a leading indicator | 2019 | *Financial Analysts Journal* | F1 | 2.2, L2.3 | — | V-sec |
 | Estrella, A.; Mishkin, F. | Predicting U.S. recessions: Financial variables as leading indicators | 1998 | *Review of Economics and Statistics* 80(1) | F1 | 1.3, 2.2 | Instabilità dopo il 2008 segnalata da lavori successivi | V-sec |
+| Gagnon, J.; Raskin, M.; Remache, J.; Sack, B. | The financial market effects of the Federal Reserve's large-scale asset purchases | 2011 | *International Journal of Central Banking* 7(1), 3–43; FRBNY Staff Report 441 | F1 | L2.5: QE riduce i tassi lunghi soprattutto via premi | Primo programma; event study | V-sec |
+| D'Amico, S.; Kim, D.; Wei, M. | Tips from TIPS: the informational content of Treasury Inflation-Protected Security prices | 2008/2010/2014 (rivista 2018) | Federal Reserve Board, FEDS | F1/F3 | L2.4: premio di liquidità dei TIPS fino a ~100 pb, ~300 pb in crisi | Stime da modello | V-sec |
+| Erb, C.; Harvey, C. | The Golden Dilemma | 2013 | *Financial Analysts Journal* 69(4), 10–42; NBER w18706 | F1 | L2.4: oro copertura dall'inflazione inaffidabile su orizzonti pratici | Testo completo non letto | V-sec |
+| Federal Reserve | Federal Reserve Balance Sheet Developments (nov. 2025); minute FOMC 28–29/10/2025 | 2025 | federalreserve.gov | F3 | L2.5: fine del runoff dal 1/12/2025 | Importi degli acquisti di dicembre da confermare | V-sec |
+| Bank of Japan | Price Stability Target of 2 Percent; dichiarazione congiunta Governo–BoJ 22/01/2013 | 2013 | boj.or.jp | F3 | L2.6 | — | V-sec |
+| Bank of England | FAQ "Inflation and interest rates"; Monetary Policy Summary febbraio 2026 | 2026 | bankofengland.co.uk | F3 | L2.6: MPC 9 membri; 2% CPI fissato dal governo; voto 5–4 | — | V-sec |
 
 ---
 

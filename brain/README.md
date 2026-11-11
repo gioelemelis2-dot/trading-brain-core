@@ -19,11 +19,15 @@ Nasce dal **Manuale del Brain v1** (artifact del 23/09/2026), conservato intatto
 | La nuova architettura dei moduli, con la corrispondenza vecchio → nuovo | [`architettura/ARCHITETTURA.md`](architettura/ARCHITETTURA.md) |
 | La bibliografia ragionata per area | [`bibliografia/BIBLIOGRAFIA.md`](bibliografia/BIBLIOGRAFIA.md) |
 | L'ordine di lavoro e le priorità | [`piano/PIANO-ESPANSIONE.md`](piano/PIANO-ESPANSIONE.md) |
-| Le prime lezioni nuove (Modulo 2, politica monetaria) | [`moduli/m02-macro/`](moduli/m02-macro/) |
+| Le lezioni nuove (Modulo 2, unità 2.1: L2.1–L2.6, in verifica) | [`moduli/m02-macro/`](moduli/m02-macro/) |
 | Le regole di qualità, i livelli di evidenza e il modello di lezione | [`governance/STANDARD.md`](governance/STANDARD.md) |
 | Cosa è stato studiato, verificato, è incompleto o controverso | [`governance/REGISTRO-CONOSCENZE.md`](governance/REGISTRO-CONOSCENZE.md) |
 | Lo storico delle modifiche | [`governance/REGISTRO-MODIFICHE.md`](governance/REGISTRO-MODIFICHE.md) |
 | Glossario e questioni aperte | [`glossario/`](glossario/) |
+| Le decisioni prese e da prendere | [`governance/DECISIONI.md`](governance/DECISIONI.md) |
+| Il piano di migrazione in un repository autonomo (in attesa di approvazione) | [`piano/PIANO-MIGRAZIONE.md`](piano/PIANO-MIGRAZIONE.md) |
+| Regole sui dati reali e simulati, richieste di dati aperte | [`dati/`](dati/) |
+| La collaborazione con Gemini (consegna, protocollo, rapporti) | [`collaborazione/`](collaborazione/) |
 | Script di verifica riproducibili | [`strumenti/`](strumenti/) |
 
 ## Principi
@@ -32,3 +36,5 @@ Nasce dal **Manuale del Brain v1** (artifact del 23/09/2026), conservato intatto
 2. **Ogni affermazione ha una provenienza** e un livello di evidenza (E1–E7, vedi STANDARD §2).
 3. **Una competenza non è acquisita perché esiste una lezione**: serve il superamento del cancello.
 4. **"Non lo sappiamo" è una risposta valida.**
+5. **I Markdown sono la fonte primaria**; il manuale HTML sarà generato da questi file (D-03).
+6. **Verificato, in verifica, ipotesi, esercitazioni, dati simulati e dati reali restano separati** (STANDARD §8).

@@ -55,7 +55,7 @@ Eseguito `python3 strumenti/verifica_m0.py` il 11/11/2026.
 | C2 | 1.9 | "Comprare opzioni con IV bassa, venderle con IV alta" | Conta il confronto IV vs **volatilità realizzata futura** e il variance risk premium, non il livello assoluto | Rimandare al Modulo 10 (volatilità) |
 | C3 | 1.17 | Multi-timeframe: "meno falsi segnali" | Plausibile, nessuna evidenza citata | Marcare E5 e trasformarlo in ipotesi testabile (Modulo 8) |
 | C4 | 0.23 | Fondo d'emergenza 6–12 mesi, capitale di rischio 5–10% | Convenzioni di finanza personale | Marcare E5 |
-| C5 | 0.17 | Tabella statistiche 2016–2026 "dal vault" | Non riproducibile senza dati e script | Rigenerare con pipeline documentata (traccia N) |
+| C5 | 0.17 | Tabella statistiche 2016–2026 "dal vault" | Non riproducibile senza dati e script; due anomalie da chiarire (Q8 range = dev. std per Bitcoin; Q9 strumento di S10) | Specifica dei dati e script pronti: `dati/RICHIESTA-DATI-0.17.md`, `strumenti/riproduci_017.py` (in attesa dei dati del vault) |
 | C6 | 0.19 | Ruoli di amigdala, insula, dopamina "nel trading" | Semplificazioni divulgative di risultati di laboratorio | Aggiungere livelli di evidenza e la distinzione neuroscienze vs divulgazione (Area P) |
 
 ## Sintesi
