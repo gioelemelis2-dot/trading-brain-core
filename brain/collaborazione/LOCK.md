@@ -2,7 +2,9 @@
 
 Leggere prima di iniziare. Regole in [`PROTOCOLLO-OPERATIVO.md`](PROTOCOLLO-OPERATIVO.md) §4 (provvisorio).
 
-Stato generale: **attivo** · Fase: **prima revisione reciproca** (D-10) — nessuna migrazione, nuovi cantieri sospesi.
+Stato generale: **SVILUPPO SOSPESO** (D-12) · Fase: **revisione indipendente di Gemini in corso** — Claude non avvia attività fino a nuova indicazione dell'utente.
+
+**Versione di riferimento della revisione: commit `1b051df`** (le impronte in `pacchetto-per-gemini/MANIFEST.sha256` corrispondono a quel commit). I commit successivi toccano solo file di continuità e registro (`CONTINUITA.md`, `collaborazione/LOCK.md`, `governance/DECISIONI.md`, `governance/REGISTRO-MODIFICHE.md`).
 
 ## File congelati
 | File | Motivo | Da | Fino a |

@@ -1,35 +1,48 @@
 # Documento di continuità
 
-Ultimo aggiornamento: **2026-11-11**, dopo la **preparazione della prima revisione reciproca Claude–Gemini**. Leggere questo file per primo (vale anche per Gemini, insieme a `collaborazione/HANDOFF-GEMINI.md`).
+Ultimo aggiornamento: **2026-11-11**. Leggere questo file per primo (vale anche per Gemini, insieme a `collaborazione/HANDOFF-GEMINI.md`).
 
-## Fase attuale: prima revisione reciproca (decisione D-10)
-- **Nessuna migrazione** (D-02 sospesa), **nessuna nuova struttura definitiva**, **nuovi cantieri sospesi** (traccia 10.1, generatore HTML, unità 2.2–2.3, correzioni v1, lab).
-- Priorità: collaborazione, continuità, verificabilità del materiale già prodotto.
+## Stato: SVILUPPO SOSPESO, in attesa della revisione di Gemini (decisione D-12)
+Fino a nuova indicazione dell'utente Claude **non**:
+- avvia nuovi moduli didattici;
+- sviluppa il motore quantitativo o altri strumenti;
+- modifica le lezioni L2.4–L2.6 né altri propri materiali originali;
+- esegue migrazioni o riorganizzazioni;
+- modifica i materiali di Gemini;
+- avvia autonomamente altre attività.
 
-## Dove siamo
-- Modulo 2, unità 2.1: L2.1–L2.6 `in_verifica`. Nessuna lezione `verificata`; nessuna padronanza registrata.
-- **L2.4, L2.5, L2.6 congelate** per la revisione di Gemini (`collaborazione/LOCK.md`): Claude non le modifica.
-- Manuale v1 intatto (artifact `https://claude.ai/artifact/T4xESphh3BmonZPoprQBtb` e `originale/`).
-- Materiale pronto per Gemini: `collaborazione/pacchetto-per-gemini/` (registro delle verifiche, domande su architettura e registri, confronto quantitativo, impronte SHA-256).
-- Materiale pronto per la revisione dei lavori di Gemini: `collaborazione/revisione-materiali-gemini/` (checklist, modello di rapporto, `strumenti/riferimento_rovina.py` testato contro la formula chiusa della rovina classica).
-- Dove Gemini consegna: `collaborazione/da-gemini/consegne/` (con MANIFEST obbligatorio). **Claude non modifica mai quella cartella** (D-11).
-- Nessun materiale di Gemini ricevuto finora.
+## Versione di riferimento della revisione
+- **Commit `1b051df`** sul branch `claude/vibrant-cannon-5uunho` del repository `l-Altro`, cartella `brain/`.
+- Le impronte `collaborazione/pacchetto-per-gemini/MANIFEST.sha256` corrispondono a quel commit (verificato il 2026-11-11: tutte corrette).
+- I commit successivi toccano solo continuità e registri; nessun contenuto sotto revisione è cambiato.
 
-## In attesa dell'utente
-1. **Master Mission e Protocollo comune** (testi originali) da inserire in `collaborazione/fondamenti/` (D-09). Il protocollo operativo è provvisorio e non li sostituisce.
-2. Avviare Gemini sulla consegna dei suoi materiali (R-007), sugli scenari di confronto (R-008) e sulla revisione di L2.4–L2.6 (R-001).
-3. Dati del vault per la lezione 0.17 (`dati/RICHIESTA-DATI-0.17.md`).
-4. Conferma o modifica di D-08.
+## Che cosa riceve Gemini
+`collaborazione/pacchetto-per-gemini/`: registro delle 32 affermazioni, formule ed esempi di L2.4–L2.6; domande su architettura e governance (AR-01…AR-14); confronto quantitativo con i quattro scenari S1–S4; materiale sulla verifica delle regole FTMO (checklist sezione C in `revisione-materiali-gemini/`); impronte SHA-256.
 
-## Prossima azione esatta (quando arrivano i materiali di Gemini)
-1. Leggere `collaborazione/LOCK.md` e `collaborazione/da-gemini/` (rapporti e consegne nuove).
-2. Per una **consegna**: verificare il MANIFEST (hash), eseguire i test in ambiente pulito, compilare `revisione-materiali-gemini/CHECKLIST-REVISIONE.md`, eseguire `riferimento_rovina.py` sugli scenari S1–S4 e confrontare; scrivere `revisione-materiali-gemini/R-CLAUDE-AAAAMMGG-NN-*.md` dal modello. Non toccare i file di Gemini.
-3. Per un **rapporto di revisione** su L2.4–L2.6: controllo di qualità (protocollo §6), esito per ogni codice in `da-claude/ESITI.md`; modifiche alle lezioni solo dopo, sbloccando il congelamento in `LOCK.md`.
-4. Aggiornare registri, `LOCK.md` e questo file. Non riprendere i cantieri sospesi senza via libera dell'utente.
+## Seconda fase: quando arriva `GEMINI_PEER_REVIEW_CLAUDE.md`
+Il dossier sarà depositato da Gemini in `collaborazione/da-gemini/` e **non verrà modificato** da Claude. Procedura prevista:
+1. Verificare su quale commit Gemini ha lavorato e che le impronte coincidano.
+2. Per ogni contestazione (citata con i codici `L2.x-Axx/Fxx/Exx`, `AR-xx`, `X0x`):
+   - riprodurre calcoli ed esempi (script in `strumenti/` e `riferimento_rovina.py`);
+   - leggere le fonti citate da Gemini, dichiarando lo stato effettivo (V / V-sec / C / X);
+   - classificare: **errore dimostrato di Claude** · **errore di Gemini** · **divergenza metodologica** · **non decidibile con le evidenze disponibili**.
+3. Riconoscere esplicitamente gli errori propri; contestare con evidenze le conclusioni non supportate; registrare le divergenze in `collaborazione/DISACCORDI.md`.
+4. Scenari S1–S4: pubblicare solo allora i propri risultati e confrontarli con quelli di Gemini entro l'errore Monte Carlo (S1 ha la soluzione in forma chiusa 0,5).
+5. Scrivere il **rapporto conclusivo di confronto** (rilievi accolti, respinti con motivazione, divergenze, correzioni proposte con priorità) e presentarlo all'utente.
+6. **Nessuna correzione** ai materiali di Claude prima dell'autorizzazione dell'utente dopo la valutazione complessiva.
+
+## Documenti fondativi
+Master Mission e Protocollo comune **non ancora ricevuti**. `collaborazione/PROTOCOLLO-OPERATIVO.md` resta **provvisorio** e non li sostituisce (D-09). Alla ricezione: inserimento integrale in `collaborazione/fondamenti/`, poi verifica di coerenza del protocollo operativo e elenco delle differenze all'utente, senza riallineare prima della sua approvazione.
+
+## Altre questioni aperte (ferme)
+- Piano di migrazione: sospeso (D-02, D-10).
+- Dati del vault per la lezione 0.17: richiesti (`dati/RICHIESTA-DATI-0.17.md`).
+- D-08 da confermare.
+- Materiali di Gemini (studio FTMO, motore, test, rulebook, Discovery Lab): non ancora ricevuti.
+
+## Dove eravamo nel lavoro (per la ripresa futura)
+Modulo 2, unità 2.1: L2.1–L2.6 `in_verifica`; nessuna lezione `verificata`; nessuna padronanza registrata. Roadmap sospesa: `piano/PIANO-ESPANSIONE.md` §6.3-bis.
 
 ## Convenzioni da mantenere
-- Lingua: italiano. Riquadri del v1: Definizione · Esempio · Errori tipici · Sintesi · Oltre il vault.
-- File lezione: `moduli/mXX-nome/L<m>.<n>-titolo.md`, intestazione YAML (id, versione, data, stato, revisione_entro).
-- Mai segnare una fonte come V senza averla letta; mai una padronanza senza cancello superato dichiarato dall'utente; mai dati simulati presentati come reali.
-- Branch di lavoro: `claude/vibrant-cannon-5uunho` del repository `l-Altro`, cartella `brain/`.
-- Gemini scrive solo in `collaborazione/da-gemini/` su branch `gemini/<argomento>`.
+- Lingua: italiano. Mai segnare una fonte come V senza averla letta; mai una padronanza senza cancello superato dichiarato dall'utente; mai dati simulati presentati come reali.
+- Gemini scrive solo in `collaborazione/da-gemini/`; Claude non modifica mai quella cartella.

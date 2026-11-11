@@ -73,3 +73,10 @@ Formato: data · versione della base · cosa · perché · file.
 - Nessuna migrazione, nessuna modifica alle lezioni, nessun nuovo cantiere.
 - Materiali di Gemini non ancora ricevuti: nessuna revisione eseguita.
 - Regole FTMO consultate solo su fonti secondarie (divergenti su punti chiave): non verificate su ftmo.com.
+
+## 2026-11-11 · v1.2.1 (sospensione per la revisione di Gemini)
+
+- Recepita la decisione D-12: sviluppo sospeso; attesa del dossier `GEMINI_PEER_REVIEW_CLAUDE.md`.
+- Fissata la **versione di riferimento della revisione: commit `1b051df`**; verificate tutte le impronte di `MANIFEST.sha256`.
+- Aggiornati solo `CONTINUITA.md` (procedura della seconda fase), `collaborazione/LOCK.md`, `governance/DECISIONI.md`, questo registro.
+- Nessuna modifica a lezioni, strumenti, pacchetto per Gemini, documenti provvisori o materiali di Gemini.
