@@ -1,0 +1,51 @@
+== 1. File per area
+  .                2
+  architettura     1
+  audit            6
+  bibliografia     1
+  collaborazione   54
+  dati             4
+  glossario        2
+  governance       4
+  mappa            2
+  moduli           8
+  piano            2
+  strumenti        4
+
+== 2. Lezioni nuove: conformità al modello a 20 sezioni, fonti, etichette
+  L2.1-banche-centrali-e-strumenti.md      sezioni 20/20 · stato in_verifica  · fonti V 0 V-sec 4 C 3 · flashcard 8 · esercizi 4 · etichette 0 (nessuna)
+  L2.2-aspettative-e-sorprese.md           sezioni 20/20 · stato in_verifica  · fonti V 0 V-sec 5 C 4 · flashcard 8 · esercizi 4 · etichette 0 (nessuna)
+  L2.3-trasmissione-ai-mercati.md          sezioni 20/20 · stato in_verifica  · fonti V 0 V-sec 2 C 5 · flashcard 6 · esercizi 4 · etichette 0 (nessuna)
+  L2.4-tassi-reali-e-inflazione-attesa.md  sezioni 20/20 · stato in_verifica  · fonti V 0 V-sec 2 C 4 · flashcard 7 · esercizi 4 · etichette 30 
+  L2.5-bilancio-banca-centrale-qe-qt.md    sezioni 20/20 · stato in_verifica  · fonti V 0 V-sec 3 C 4 · flashcard 6 · esercizi 4 · etichette 36 
+  L2.6-fed-bce-boj-boe.md                  sezioni 20/20 · stato in_verifica  · fonti V 0 V-sec 5 C 3 · flashcard 7 · esercizi 4 · etichette 42 
+
+== 3. Manuale v1: lezioni per modulo
+  lezioni: 42 · cancelli: 2
+
+== 4. Bibliografia: stato delle voci e duplicati
+  voci: 191 · stato: {'C': 160, 'V-sec': 29, 'V': 2}
+  titoli ripetuti: ['cripto attività']
+
+== 5. Riferimenti a stati e numeri che possono essere superati
+  CONTINUITA.md                          2 occorrenze: ['SVILUPPO SOSPESO', 'in attesa']
+  collaborazione/LOCK.md                 2 occorrenze: ['SOSPESO', 'congelat']
+  governance/REGISTRO-CONOSCENZE.md      1 occorrenze: ['Aggiornato: 2026-11-11, preparazione della prima revisione reciproca (nessun contenuto nuovo).']
+  collaborazione/HANDOFF-GEMINI.md       1 occorrenze: ['Versione 1.1']
+  README.md                              1 occorrenze: ['L2.1–L2.6']
+  audit/03-MATRICE-LACUNE.md             3 occorrenze: ['in sviluppo', 'in sviluppo', 'in sviluppo']
+
+== 6. Termini richiesti dall'incarico presenti nel Brain
+  Strategy Discovery Lab   8 file: ['governance/REGISTRO-CONOSCENZE.md', 'collaborazione/HANDOFF-GEMINI.md', 'collaborazione/pacchetto-per-gemini/03-CONFRONTO-QUANTITATIVO.md', 'collaborazione/da-claude/RICHIESTE.md']
+  Trading Guardian         0 file: []
+  Guardian                 0 file: []
+  rulebook                 14 file: ['CONTINUITA.md', 'governance/REGISTRO-CONOSCENZE.md', 'governance/REGISTRO-MODIFICHE.md', 'collaborazione/README.md']
+  walk-forward             3 file: ['architettura/ARCHITETTURA.md', 'audit/03-MATRICE-LACUNE.md', 'collaborazione/revisione-materiali-gemini/CHECKLIST-REVISIONE.md']
+  point-in-time            3 file: ['mappa/MAPPA-COMPETENZE.md', 'piano/PIANO-ESPANSIONE.md', 'architettura/ARCHITETTURA.md']
+  CPCV                     4 file: ['bibliografia/BIBLIOGRAFIA.md', 'architettura/ARCHITETTURA.md', 'audit/03-MATRICE-LACUNE.md', 'collaborazione/revisione-materiali-gemini/CHECKLIST-REVISIONE.md']
+  Deflated Sharpe          2 file: ['bibliografia/BIBLIOGRAFIA.md', 'collaborazione/revisione-materiali-gemini/CHECKLIST-REVISIONE.md']
+  kill switch              3 file: ['architettura/ARCHITETTURA.md', 'audit/03-MATRICE-LACUNE.md', 'audit/01-DIAGNOSI.md']
+
+== 7. Coerenza manifest della revisione (atteso: superato dopo l'errata)
+   diverso o assente: ./LEGGIMI.md
+  OK 30 · diversi 1
