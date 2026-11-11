@@ -1,0 +1,8 @@
+FAIL: test_B1_markov_parte_dalla_distribuzione_stazionaria (__main__.B_DifettiDocumentati.test_B1_markov_parte_dalla_distribuzione_stazionaria)
+AssertionError: 85.1302971920103 not less than 4 : primo trade vinto nel 0.695 dei casi
+FAIL: test_B2_markov_rifiuta_parametri_non_ammissibili (__main__.B_DifettiDocumentati.test_B2_markov_rifiuta_parametri_non_ammissibili)
+AssertionError: ValueError not raised
+FAIL: test_B3_parametro_slippage_dichiarato_ha_effetto (__main__.B_DifettiDocumentati.test_B3_parametro_slippage_dichiarato_ha_effetto)
+AssertionError: 1252 == 1252 : slippage_tail_alpha non è usato dal motore
+Ran 9 tests in 0.709s
+FAILED (failures=3)

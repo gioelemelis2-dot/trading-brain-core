@@ -1,0 +1,17 @@
+(1) Lomax alpha=1.8, scala 0.05R
+    mediana 0.0235R · media 0.0625R (finita perché alpha>1) · varianza infinita (alpha<=2)
+    P(S >  1R) = 4.17e-03
+    P(S >  2R) = 1.25e-03
+    P(S >  3R) = 6.12e-04
+    P(S >  5R) = 2.47e-04
+    P(S > 10R) = 7.15e-05
+
+(2) Convergenza della probabilità di superamento con slippage Lomax NON troncato (20 semi × 5.000)
+    media 0.3573 · dev.std tra semi 0.0068 · errore binomiale atteso 0.0068
+
+(3) Intraday 1%, 6 trade/giorno, 25 giorni, 30.000 sfide, numeri casuali comuni
+    nessuno     pass 0.4113 (+0.0000)  DL 0.5289  ML 0.0585
+    lognormale  pass 0.3770 (-0.0343)  DL 0.5333  ML 0.0877
+    lomax_cap1  pass 0.3668 (-0.0445)  DL 0.5378  ML 0.0932
+    lomax_cap3  pass 0.3607 (-0.0506)  DL 0.5452  ML 0.0922
+    lomax       pass 0.3596 (-0.0517)  DL 0.5445  ML 0.0940

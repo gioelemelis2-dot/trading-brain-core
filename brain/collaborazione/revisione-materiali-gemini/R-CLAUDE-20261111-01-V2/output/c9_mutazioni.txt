@@ -1,0 +1,13 @@
+UCCISO        M01 V1: nessun congelamento, target valido solo da min_days
+UCCISO        M02 congelamento attivato ma si continua a operare
+UCCISO        M03 pavimento giornaliero statico (dal capitale iniziale)
+SOPRAVVISSUTO M04 disuguaglianza stretta sul max loss
+SOPRAVVISSUTO M05 target controllato PRIMA delle barriere
+SOPRAVVISSUTO M06 costi ignorati
+SOPRAVVISSUTO M07 Markov: P(L|W) sbagliata (usa P(L|L))
+SOPRAVVISSUTO M08 MAE: soglia daily loss ignorata durante il trade
+SOPRAVVISSUTO M09 fase 2 con target della fase 1
+UCCISO        M10 giorni di superamento sottostimati (ignora min_days)
+SOPRAVVISSUTO M11 pavimento giornaliero al 4%
+
+Mutanti uccisi dalla suite di Gemini: 4/11

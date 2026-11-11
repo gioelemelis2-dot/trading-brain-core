@@ -1,0 +1,16 @@
+(1) Algebra: p=0.40, P(L|L)=0.80
+   P(L|W) = 0.3000 -> P(W|W) = 0.7000; rho1 = P(L|L)-P(L|W) = 0.5000
+   durata media serie vincenti 1/(1-P(W|W)) = 3.333; serie perdenti 1/(1-P(L|L)) = 5.000
+(2) [SIMULATO] 1.000.000 esiti col ramo di Gemini: WR 0.3995, P(W|W) 0.6998, rho1 0.5001, serie W 3.33, serie L 5.01
+(3a) Stato iniziale: il motore parte da last_outcome_was_loss=False (come dopo una VINCITA)
+   [SIMULATO] P(primo trade vincente) = 0.7000 (stazionaria 0.40; teorica 1-P(L|W) = 0.70)
+   P(vincita al trade  1 di ogni fase) = 0.7000
+   P(vincita al trade  3 di ogni fase) = 0.4750
+   P(vincita al trade  5 di ogni fase) = 0.4188
+   P(vincita al trade 10 di ogni fase) = 0.4006
+(3b) Vincolo di ammissibilità: P(L|W) <= 1  <=>  P(L|L) >= 1 - p/(1-p)
+   p=0.40 P(L|L)=0.80: P(L|W) calcolata 0.300; [SIMULATO] WR effettivo 0.3987 (atteso 0.40); soglia minima P(L|L) = 0.333
+   p=0.40 P(L|L)=0.40: P(L|W) calcolata 0.900; [SIMULATO] WR effettivo 0.3999 (atteso 0.40); soglia minima P(L|L) = 0.333
+   p=0.40 P(L|L)=0.30: P(L|W) calcolata 1.050 -> TAGLIATA a 1; [SIMULATO] WR effettivo 0.4115 (atteso 0.40); soglia minima P(L|L) = 0.333
+   p=0.40 P(L|L)=0.20: P(L|W) calcolata 1.200 -> TAGLIATA a 1; [SIMULATO] WR effettivo 0.4445 (atteso 0.40); soglia minima P(L|L) = 0.333
+   p=0.60 P(L|L)=0.10: P(L|W) calcolata 0.600; [SIMULATO] WR effettivo 0.5998 (atteso 0.60); soglia minima P(L|L) = 0.000

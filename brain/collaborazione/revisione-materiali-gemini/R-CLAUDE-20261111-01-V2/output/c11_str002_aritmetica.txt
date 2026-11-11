@@ -1,0 +1,13 @@
+R:R 1:0.43  costo 0.00R  -> pareggio 69.9%
+R:R 1:0.43  costo 0.04R  -> pareggio 72.7%
+R:R 1:0.43  costo 0.05R  -> pareggio 73.4%
+R:R 1:0.70  costo 0.00R  -> pareggio 58.8%
+R:R 1:0.70  costo 0.04R  -> pareggio 61.2%
+R:R 1:0.70  costo 0.05R  -> pareggio 61.8%
+R:R 1:1.20  costo 0.00R  -> pareggio 45.5%
+R:R 1:1.20  costo 0.04R  -> pareggio 47.3%
+R:R 1:1.20  costo 0.05R  -> pareggio 47.7%
+Il 61,2% dichiarato per R:R 0,70 implica un costo di circa 0.0404R per trade
+94.518 aperture / 252 sedute l'anno = 375 anni: non è un campione storico 2016-2026, è sintetico
+filtro 0,70 + gap min (Gemini)  : ~966 trade in 10 anni; pareggio 61.2%; se WR=70% -> z = 6.0
+filtro R:R >= 1,2 (Claude)      : ~345 trade in 10 anni; pareggio 47.7%; se WR=70% -> z = 9.0

@@ -1,0 +1,258 @@
+[
+ {
+  "blocco": "swing_2tpd",
+  "rischio": 0.0025,
+  "esito": "pass",
+  "esatto": 0.06976283447647821,
+  "gemini": 0.0688,
+  "z": -0.3779572936011102
+ },
+ {
+  "blocco": "swing_2tpd",
+  "rischio": 0.0025,
+  "esito": "max_loss",
+  "esatto": 0.0002804093552339599,
+  "gemini": 0.0002,
+  "z": -0.48025426342853794
+ },
+ {
+  "blocco": "swing_2tpd",
+  "rischio": 0.0025,
+  "esito": "daily_loss",
+  "esatto": 0.0,
+  "gemini": 0.0,
+  "z": NaN
+ },
+ {
+  "blocco": "swing_2tpd",
+  "rischio": 0.0025,
+  "esito": "timeout",
+  "esatto": 0.9299567561682875,
+  "gemini": 0.931,
+  "z": 0.40876276028450853
+ },
+ {
+  "blocco": "swing_2tpd",
+  "rischio": 0.005,
+  "esito": "pass",
+  "esatto": 0.4830735361307078,
+  "gemini": 0.478,
+  "z": -1.0152891641252562
+ },
+ {
+  "blocco": "swing_2tpd",
+  "rischio": 0.005,
+  "esito": "max_loss",
+  "esatto": 0.045255650170788725,
+  "gemini": 0.0416,
+  "z": -1.7586712997415028
+ },
+ {
+  "blocco": "swing_2tpd",
+  "rischio": 0.005,
+  "esito": "daily_loss",
+  "esatto": 0.0,
+  "gemini": 0.0,
+  "z": NaN
+ },
+ {
+  "blocco": "swing_2tpd",
+  "rischio": 0.005,
+  "esito": "timeout",
+  "esatto": 0.4716708136985036,
+  "gemini": 0.4804,
+  "z": 1.7486462433329255
+ },
+ {
+  "blocco": "swing_2tpd",
+  "rischio": 0.0075,
+  "esito": "pass",
+  "esatto": 0.6535342259089464,
+  "gemini": 0.6493,
+  "z": -0.8898354169690306
+ },
+ {
+  "blocco": "swing_2tpd",
+  "rischio": 0.0075,
+  "esito": "max_loss",
+  "esatto": 0.16883817133871956,
+  "gemini": 0.1643,
+  "z": -1.2114424114522733
+ },
+ {
+  "blocco": "swing_2tpd",
+  "rischio": 0.0075,
+  "esito": "daily_loss",
+  "esatto": 0.0,
+  "gemini": 0.0,
+  "z": NaN
+ },
+ {
+  "blocco": "swing_2tpd",
+  "rischio": 0.0075,
+  "esito": "timeout",
+  "esatto": 0.17762760275233336,
+  "gemini": 0.1864,
+  "z": 2.295243679846047
+ },
+ {
+  "blocco": "swing_2tpd",
+  "rischio": 0.01,
+  "esito": "pass",
+  "esatto": 0.6685807469865587,
+  "gemini": 0.6653,
+  "z": -0.6969585311629335
+ },
+ {
+  "blocco": "swing_2tpd",
+  "rischio": 0.01,
+  "esito": "max_loss",
+  "esatto": 0.28109560121191723,
+  "gemini": 0.2807,
+  "z": -0.08800250167467817
+ },
+ {
+  "blocco": "swing_2tpd",
+  "rischio": 0.01,
+  "esito": "daily_loss",
+  "esatto": 0.0,
+  "gemini": 0.0,
+  "z": NaN
+ },
+ {
+  "blocco": "swing_2tpd",
+  "rischio": 0.01,
+  "esito": "timeout",
+  "esatto": 0.050323651801523976,
+  "gemini": 0.054,
+  "z": 1.681677651486946
+ },
+ {
+  "blocco": "swing_2tpd",
+  "rischio": 0.015,
+  "esito": "pass",
+  "esatto": 0.5890830660893365,
+  "gemini": 0.589,
+  "z": -0.01688334426057886
+ },
+ {
+  "blocco": "swing_2tpd",
+  "rischio": 0.015,
+  "esito": "max_loss",
+  "esatto": 0.40869965574488754,
+  "gemini": 0.4088,
+  "z": 0.020412035338194676
+ },
+ {
+  "blocco": "swing_2tpd",
+  "rischio": 0.015,
+  "esito": "daily_loss",
+  "esatto": 0.0,
+  "gemini": 0.0,
+  "z": NaN
+ },
+ {
+  "blocco": "swing_2tpd",
+  "rischio": 0.015,
+  "esito": "timeout",
+  "esatto": 0.0022172781657758328,
+  "gemini": 0.0022,
+  "z": -0.03673411292695719
+ },
+ {
+  "blocco": "swing_2tpd",
+  "rischio": 0.02,
+  "esito": "pass",
+  "esatto": 0.5155713684238846,
+  "gemini": 0.5146,
+  "z": -0.19436796347604357
+ },
+ {
+  "blocco": "swing_2tpd",
+  "rischio": 0.02,
+  "esito": "max_loss",
+  "esatto": 0.4843892574493507,
+  "gemini": 0.4852,
+  "z": 0.1622275976084251
+ },
+ {
+  "blocco": "swing_2tpd",
+  "rischio": 0.02,
+  "esito": "daily_loss",
+  "esatto": 0.0,
+  "gemini": 0.0,
+  "z": NaN
+ },
+ {
+  "blocco": "swing_2tpd",
+  "rischio": 0.02,
+  "esito": "timeout",
+  "esatto": 3.93741267638565e-05,
+  "gemini": 0.0002,
+  "z": 2.5598739700854414
+ },
+ {
+  "blocco": "intraday_6tpd",
+  "rischio": 0.005,
+  "esito": "pass",
+  "esatto": 0.6001692578184223,
+  "gemini": 0.5985,
+  "z": -0.3407598783245824
+ },
+ {
+  "blocco": "intraday_6tpd",
+  "rischio": 0.005,
+  "esito": "max_loss",
+  "esatto": 0.057382022395476205,
+  "gemini": 0.0537,
+  "z": -1.5831812625767618
+ },
+ {
+  "blocco": "intraday_6tpd",
+  "rischio": 0.005,
+  "esito": "daily_loss",
+  "esatto": 0.0,
+  "gemini": 0.0,
+  "z": NaN
+ },
+ {
+  "blocco": "intraday_6tpd",
+  "rischio": 0.005,
+  "esito": "timeout",
+  "esatto": 0.3424487197861015,
+  "gemini": 0.3478,
+  "z": 1.1277039603152963
+ },
+ {
+  "blocco": "intraday_6tpd",
+  "rischio": 0.01,
+  "esito": "pass",
+  "esatto": 0.4125508716786931,
+  "gemini": 0.4054,
+  "z": -1.4525634041825477
+ },
+ {
+  "blocco": "intraday_6tpd",
+  "rischio": 0.01,
+  "esito": "max_loss",
+  "esatto": 0.05694476273035658,
+  "gemini": 0.0576,
+  "z": 0.2827503378056732
+ },
+ {
+  "blocco": "intraday_6tpd",
+  "rischio": 0.01,
+  "esito": "daily_loss",
+  "esatto": 0.5291796562440312,
+  "gemini": 0.5353,
+  "z": 1.2261585632388865
+ },
+ {
+  "blocco": "intraday_6tpd",
+  "rischio": 0.01,
+  "esito": "timeout",
+  "esatto": 0.0013247093469193848,
+  "gemini": 0.0017,
+  "z": 1.0317994581177121
+ }
+]

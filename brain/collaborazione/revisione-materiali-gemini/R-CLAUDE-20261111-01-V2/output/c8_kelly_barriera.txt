@@ -1,0 +1,23 @@
+lordo (senza costi): E[R]=0.200, Var[R]=2.160 -> f* = 0.618% del capitale (alpha=5%, D=10%)
+netto (costo 0,05R, come nel motore): E[R]=0.150, Var[R]=2.160 -> f* = 0.464% del capitale (alpha=5%, D=10%)
+
+Rischio di rovina (-10%) al variare di f: diffusione vs cammino discreto ESATTO (esiti netti, costo 0,05R)
+      f  diff. infinita  esatto infinito  diff. con T=+10%  esatto con T=+10%
+ 0.464%          0.0501           0.0421            0.0477             0.0404
+ 0.618%          0.1057           0.0916            0.0956             0.0842
+ 0.750%          0.1569           0.1378            0.1357             0.1218
+ 1.000%          0.2494           0.2214            0.1996             0.1829
+
+Stesso calcolo con esiti LORDI (costo 0), cioè le ipotesi con cui risulta 0,618%:
+  f=0.618%: diffusione infinita 0.0500, con target 0.0476; esatto infinito 0.0364, esatto con target 0.0352
+
+Sensibilità all'incertezza su E[R]: win rate stimato da N trade (±1 errore standard)
+  N= 100 WR=0.351: E[R]=+0.003  f*=0.010%
+  N= 100 WR=0.400: E[R]=+0.150  f*=0.464%
+  N= 100 WR=0.449: E[R]=+0.297  f*=0.890%
+  N= 300 WR=0.372: E[R]=+0.065  f*=0.207%
+  N= 300 WR=0.400: E[R]=+0.150  f*=0.464%
+  N= 300 WR=0.428: E[R]=+0.235  f*=0.711%
+  N=1000 WR=0.385: E[R]=+0.104  f*=0.324%
+  N=1000 WR=0.400: E[R]=+0.150  f*=0.464%
+  N=1000 WR=0.415: E[R]=+0.196  f*=0.600%

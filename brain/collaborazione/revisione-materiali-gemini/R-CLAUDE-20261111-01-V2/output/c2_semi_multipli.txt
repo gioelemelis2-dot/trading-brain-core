@@ -1,0 +1,2 @@
+rischio 0.005 tpd 2: esatto 0.4831 | 30 semi: media 0.4826, dev.std 0.0058 (attesa binomiale 0.0050) | z della media -0.50 | 6s
+rischio 0.010 tpd 6: esatto 0.4126 | 30 semi: media 0.4132, dev.std 0.0056 (attesa binomiale 0.0049) | z della media 0.73 | 2s

@@ -1,0 +1,19 @@
+=== AVVIO SUITE DETERMINISTICA V2 PER CLAUDE CODE (SEED=42, N=10.000) ===
+
+--- A. Modalità Swing (2 trade/die, max 60 giorni/fase) ---
+Risk 0.25%: Pass=6.88% [6.40%-7.39%], ML=0.02%, DL=0.00%, Timeout=93.10%
+Risk 0.50%: Pass=47.80% [46.82%-48.78%], ML=4.16%, DL=0.00%, Timeout=48.04%
+Risk 0.75%: Pass=64.93% [63.99%-65.86%], ML=16.43%, DL=0.00%, Timeout=18.64%
+Risk 1.00%: Pass=66.53% [65.60%-67.45%], ML=28.07%, DL=0.00%, Timeout=5.40%
+Risk 1.50%: Pass=58.90% [57.93%-59.86%], ML=40.88%, DL=0.00%, Timeout=0.22%
+Risk 2.00%: Pass=51.46% [50.48%-52.44%], ML=48.52%, DL=0.00%, Timeout=0.02%
+
+--- B. Modalità Intraday (6 trade/die, max 25 giorni/fase) — Test Correzione min_days ---
+Risk 0.50%: Pass=59.85% [58.89%-60.81%], ML=5.37%, DL=0.00%, Timeout=34.78%
+Risk 1.00%: Pass=40.54% [39.58%-41.51%], ML=5.76%, DL=53.53%, Timeout=0.17%
+
+--- C. Test Impatto MAE (Maximum Adverse Excursion) Intra-Trade su Intraday ---
+Risk 0.50% con MAE: Pass=60.43%, ML=5.93%, DL=0.00%
+Risk 1.00% con MAE: Pass=41.26%, ML=5.54%, DL=53.05%
+
+[OK] Risultati grezzi esportati con successo in: /tmp/claude-0/-home-user-l-Altro/cf76bcae-15b0-5f4e-b9ff-4bc4b5339697/scratchpad/revisione-v2-claude/gemini-v2-link/simulations_v2_raw.json

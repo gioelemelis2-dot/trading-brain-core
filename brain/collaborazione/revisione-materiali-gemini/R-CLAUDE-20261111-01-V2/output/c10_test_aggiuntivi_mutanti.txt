@@ -1,0 +1,11 @@
+M01  suite Gemini: UCCISO         test Claude (A): FAILED (failures=2)
+M02  suite Gemini: UCCISO         test Claude (A): FAILED (failures=1)
+M03  suite Gemini: UCCISO         test Claude (A): FAILED (failures=3)
+M04  suite Gemini: SOPRAVVISSUTO  test Claude (A): OK
+M05  suite Gemini: SOPRAVVISSUTO  test Claude (A): OK
+M06  suite Gemini: SOPRAVVISSUTO  test Claude (A): FAILED (failures=4, errors=1)
+M07  suite Gemini: SOPRAVVISSUTO  test Claude (A): FAILED (failures=1)
+M08  suite Gemini: SOPRAVVISSUTO  test Claude (A): FAILED (errors=1)
+M09  suite Gemini: SOPRAVVISSUTO  test Claude (A): FAILED (failures=3)
+M10  suite Gemini: UCCISO         test Claude (A): OK
+M11  suite Gemini: SOPRAVVISSUTO  test Claude (A): OK

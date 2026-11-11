@@ -1,0 +1,16 @@
+Deriva che dà P(vincita)=0.40: mu = 0.09748 (sigma=1)   [a deriva nulla P(vincita) = 0.3333]
+   P(MAE <= -0.10R | vincita) = 0.8563   (deriva nulla: 0.8571)
+   P(MAE <= -0.25R | vincita) = 0.6651   (deriva nulla: 0.6667)
+   P(MAE <= -0.50R | vincita) = 0.3981   (deriva nulla: 0.4000)
+   P(MAE <= -0.75R | vincita) = 0.1805   (deriva nulla: 0.1818)
+   P(MAE <= -0.90R | vincita) = 0.0684   (deriva nulla: 0.0690)
+   MAE medio dei vincitori = -0.4315R (deriva nulla: -0.4328R)
+   Gemini dichiara: P(MAE <= -0.5R | vincita) = 0.107, MAE medio = -0.205R
+
+[SIMULATO] Sentieri browniani DISCRETIZZATI (passo dt), stessa deriva: il minimo si sottostima
+   passi per unità di tempo    4: P(vincita) 0.447, P(MAE<=-0.5|vinc.) 0.276, MAE medio -0.290
+   passi per unità di tempo   25: P(vincita) 0.420, P(MAE<=-0.5|vinc.) 0.342, MAE medio -0.366
+   passi per unità di tempo  400: P(vincita) 0.412, P(MAE<=-0.5|vinc.) 0.383, MAE medio -0.412
+
+Distribuzione usata nel motore V2: Normale(-0.205, 0.1025) tagliata in [-0.95, 0]
+   P(MAE <= -0.5R) implicita = 0.00200  (contro 0.107 dichiarato da Gemini e 0.398 browniano esatto)
