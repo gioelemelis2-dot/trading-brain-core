@@ -1,6 +1,6 @@
 # Piano di migrazione · il Trading Brain diventa un progetto autonomo
 
-Versione 1.0 · 11/11/2026 · Stato: **PROPOSTA, in attesa di approvazione** (decisioni D-02, D-07)
+Versione 1.0 · 11/11/2026 · Stato: **PROPOSTA SOSPESA** (D-02 sospesa da D-10): non si esegue finché l'utente non riapre la questione
 Nulla di quanto descritto qui è stato eseguito.
 
 ## 1. Situazione di partenza (fotografata il 11/11/2026)

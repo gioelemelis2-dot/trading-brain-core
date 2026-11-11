@@ -1,6 +1,8 @@
 # Documento di consegna per Gemini
 
-Versione 1.0 · 11/11/2026 · Autore: Claude · Destinatario: Gemini (Antigravity)
+Versione 1.1 · 11/11/2026 · Autore: Claude · Destinatario: Gemini (Antigravity)
+
+**Fase attuale: prima revisione reciproca** (D-10). Nessuna migrazione, nessun nuovo cantiere non urgente. Materiale per revisionare il lavoro di Claude: [`pacchetto-per-gemini/`](pacchetto-per-gemini/). Dove consegnare i propri materiali (studio FTMO, motore, test, rulebook, Discovery Lab): [`da-gemini/consegne/`](da-gemini/consegne/).
 Da leggere per intero prima di qualsiasi attività. Le regole di lavoro sono in [`PROTOCOLLO-OPERATIVO.md`](PROTOCOLLO-OPERATIVO.md).
 
 > **Avvertenza.** L'utente ha predisposto un *Master Mission* e un *Protocollo comune di collaborazione*. Nella sessione in cui Claude ha scritto questo documento **quei testi non erano disponibili**. Se li hai, prevalgono su questo documento: segnala all'utente ogni differenza nel tuo primo rapporto.
@@ -84,7 +86,8 @@ In ordine di valore atteso:
 
 | # | Attività | Perché proprio tu | Richiesta |
 |---|---|---|---|
-| 1 | **Verificare le lezioni L2.1–L2.6**: portare le fonti da V-sec/C a V, ricontrollare gli esempi, segnalare affermazioni sbagliate o sopravvalutate | Seconda lettura indipendente; nessuna lezione può diventare `verificata` senza un revisore diverso dall'autore | R-001 |
+| 0 | **Consegnare i materiali già prodotti** (studio di rovina FTMO, motore Python, test, rulebook YAML, Strategy Discovery Lab) con `MANIFEST` in `da-gemini/consegne/` ed eseguire l'esperimento di confronto in `pacchetto-per-gemini/03-CONFRONTO-QUANTITATIVO.md` §2 | Claude li revisiona in modo indipendente con `revisione-materiali-gemini/` | R-007, R-008 |
+| 1 | **Verificare le lezioni L2.1–L2.6** (priorità a L2.4–L2.6, registro delle verifiche in `pacchetto-per-gemini/01-…`): portare le fonti da V-sec/C a V, ricontrollare gli esempi, segnalare affermazioni sbagliate o sopravvalutate | Seconda lettura indipendente; nessuna lezione può diventare `verificata` senza un revisore diverso dall'autore | R-001 |
 | 2 | **Seconda opinione sull'audit del v1** (soprattutto gli errori A7 McLean-Pontiff e A9 Novy-Marx/RMW, e le imprecisioni A4–A18) | Un errore nell'audit si propagherebbe nelle correzioni del v1 | R-002 |
 | 3 | **Fiscalità italiana 2026** su fonti ufficiali (Agenzia delle Entrate, Gazzetta Ufficiale, MEF) | Alta probabilità di errori e di cambi normativi | R-003, Q7 |
 | 4 | **Harvey-Liu-Zhu 2016**: esiste nel testo l'intervallo "27–53%"? | Verifica puntuale su testo integrale | R-004, Q5 |

@@ -1,25 +1,35 @@
 # Bacheca delle attività (LOCK)
 
-Leggere prima di iniziare. Regole in [`PROTOCOLLO-OPERATIVO.md`](PROTOCOLLO-OPERATIVO.md) §4.
+Leggere prima di iniziare. Regole in [`PROTOCOLLO-OPERATIVO.md`](PROTOCOLLO-OPERATIVO.md) §4 (provvisorio).
 
-Stato generale: **attivo** (nessun congelamento)
+Stato generale: **attivo** · Fase: **prima revisione reciproca** (D-10) — nessuna migrazione, nuovi cantieri sospesi.
+
+## File congelati
+| File | Motivo | Da | Fino a |
+|---|---|---|---|
+| `moduli/m02-macro/L2.4-tassi-reali-e-inflazione-attesa.md` | Revisione di Gemini (R-001) | 2026-11-11 | consegna del rapporto e sua integrazione |
+| `moduli/m02-macro/L2.5-bilancio-banca-centrale-qe-qt.md` | idem | 2026-11-11 | idem |
+| `moduli/m02-macro/L2.6-fed-bce-boj-boe.md` | idem | 2026-11-11 | idem |
+| `collaborazione/da-gemini/**` | Materiali di Gemini: Claude non li modifica mai (D-11) | sempre | — |
 
 ## In corso
-
 | Attività | File coinvolti | Chi | Inizio | Fine prevista |
 |---|---|---|---|---|
-| — | — | — | — | — |
+| Revisione L2.4–L2.6, architettura e registri | sola lettura del Brain; scrittura in `da-gemini/` | Gemini | da avviare | — |
+| Consegna materiali FTMO / motore / test / rulebook / Discovery Lab | `da-gemini/consegne/` | Gemini | da avviare | — |
+| Revisione indipendente dei materiali di Gemini | `revisione-materiali-gemini/` | Claude | alla ricezione | — |
 
-## Riservate a Claude (non avviare ricerche sovrapposte senza accordo)
-
-| Attività | Motivo |
+## Sospese (D-10)
+| Attività | Chi |
 |---|---|
-| Stesura delle lezioni del Modulo 2 (L2.7 in poi) e della traccia 10.1 | Roadmap, sprint S3–S4 |
-| Generatore del manuale HTML | Decisione D-03, coerenza architetturale |
+| Traccia 10.1 (statistica) | Claude |
+| Generatore del manuale HTML (S3-bis) | Claude |
+| Unità 2.2–2.3, correzioni v1 (S5), lab event study (S3) | Claude |
+| Migrazione in un repository autonomo | — (D-02 sospesa) |
 
 ## Concluse
-
 | Attività | Chi | Data | Esito |
 |---|---|---|---|
-| Sprint S1 (audit, architettura, bibliografia, L2.1–L2.3) | Claude | 2026-11-11 | commit `fbb5256` |
-| Sprint S2 (L2.4–L2.6, collaborazione, piano di migrazione, specifica dati 0.17) | Claude | 2026-11-11 | vedi REGISTRO-MODIFICHE |
+| Sprint S1 | Claude | 2026-11-11 | commit `fbb5256` |
+| Sprint S2 | Claude | 2026-11-11 | commit `9cbcca4` |
+| Preparazione della prima revisione reciproca | Claude | 2026-11-11 | vedi REGISTRO-MODIFICHE |

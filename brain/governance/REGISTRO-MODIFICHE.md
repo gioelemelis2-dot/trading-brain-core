@@ -51,3 +51,25 @@ Formato: data · versione della base · cosa · perché · file.
 - Nessun dato reale scaricato: FRED, Yahoo Finance e Stooq sono rifiutati dalla rete dell'ambiente.
 - Master Mission e Protocollo comune dell'utente non trovati (né in conversazione, né su Drive, né tra gli artifact): il protocollo operativo è provvisorio.
 - Le fonti V-sec non sono state lette nel testo integrale.
+
+## 2026-11-11 · v1.2 (preparazione della prima revisione reciproca)
+
+**Decisioni dell'utente recepite**: D-02 sospesa; D-09 (documenti fondativi da inserire, il protocollo provvisorio non li sostituisce); D-10 (nessuna migrazione, nessuna struttura definitiva, cantieri sospesi); D-11 (materiali di Gemini intoccabili, nessuna modifica simultanea, integrazione solo con proposta documentata e controllo).
+
+**Aggiunto (cartelle provvisorie, solo in `collaborazione/`)**
+- `pacchetto-per-gemini/`: registro delle verifiche per L2.4–L2.6 (affermazioni, formule, esempi con risultati attesi, domande), domande guida su architettura/registri/governance (AR-01…AR-14), confronto quantitativo con esperimento a 4 scenari, `MANIFEST.sha256`.
+- `revisione-materiali-gemini/`: README, checklist (sezioni A–I: integrità, riproducibilità, rulebook e regole FTMO, motore, Monte Carlo, test, Discovery Lab, interpretazione, esito), modello di rapporto (confermati, errori, ipotesi discutibili, dati mancanti, differenze metodologiche, proposte), `strumenti/riferimento_rovina.py` (calcolo esatto + Monte Carlo; test: rovina classica in forma chiusa, monotonia rispetto al limite giornaliero, Monte Carlo entro 4 errori standard).
+- `da-gemini/consegne/README.md`: struttura delle consegne e MANIFEST obbligatorio.
+- Decisioni D-09–D-11; richieste R-007–R-009.
+
+**Modificato**
+- `PROTOCOLLO-OPERATIVO.md` marcato PROVVISORIO (non sostituisce i documenti fondativi); ruoli di scrittura per le nuove cartelle.
+- `fondamenti/README.md`: procedura per inserire i testi originali.
+- `HANDOFF-GEMINI.md` v1.1: fase attuale, attività 0 (consegna materiali e confronto).
+- `LOCK.md`: L2.4–L2.6 congelate; attività sospese.
+- `PIANO-ESPANSIONE.md` (§6.3-bis sospensione), `PIANO-MIGRAZIONE.md` (proposta sospesa), `CONTINUITA.md`.
+
+**Non fatto (dichiarato)**
+- Nessuna migrazione, nessuna modifica alle lezioni, nessun nuovo cantiere.
+- Materiali di Gemini non ancora ricevuti: nessuna revisione eseguita.
+- Regole FTMO consultate solo su fonti secondarie (divergenti su punti chiave): non verificate su ftmo.com.

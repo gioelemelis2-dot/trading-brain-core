@@ -60,7 +60,11 @@ Ogni sprint è pensato per una sessione di lavoro e lascia il Brain in uno stato
 4. Ogni 5 sprint si riapre la matrice delle lacune e si ricalcolano le priorità.
 5. Le domande nate durante lo studio vanno in `glossario/DOMANDE-APERTE.md`, non si perdono nel testo.
 
-## 6.4 Ordine aggiornato dei prossimi sprint
+## 6.3-bis Sospensione (11/11/2026, decisione D-10)
+
+Su richiesta dell'utente **tutti i nuovi cantieri non urgenti sono sospesi** (traccia 10.1, generatore HTML, unità 2.2–2.3, correzioni v1, lab). La priorità è la **prima revisione reciproca con Gemini**: revisione di L2.4–L2.6 da parte di Gemini e revisione dei materiali di Gemini da parte di Claude. L'ordine qui sotto riprende solo dopo l'esito della revisione e un via libera dell'utente.
+
+## 6.4 Ordine aggiornato dei prossimi sprint (sospeso)
 
 S4 traccia 10.1 (statistica) → S3-bis generatore HTML → S5 correzioni v1 → S6 unità 2.2–2.3 → S3 lab (appena ci sono dati reali). La verifica di Gemini sulle lezioni L2.1–L2.6 (richiesta R-001) procede in parallelo e decide quando passano a `verificata`.
 

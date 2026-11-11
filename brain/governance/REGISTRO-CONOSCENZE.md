@@ -1,6 +1,6 @@
 # Registro delle conoscenze
 
-Aggiornato: 2026-11-11, fine sprint S2.
+Aggiornato: 2026-11-11, preparazione della prima revisione reciproca (nessun contenuto nuovo).
 
 Stato di ogni blocco di conoscenza. **"Scritto" non significa "acquisito"**: la colonna *Padronanza* si aggiorna solo con un cancello superato, dichiarato dall'utente con data.
 
@@ -39,6 +39,7 @@ Nessuna lezione è `verificata` al 2026-11-11.
 | `strumenti/sorpresa_monetaria.py` | Eseguito; esempi di L2.2 coincidono | `[ESEMPIO]` | 2026-11-11 |
 | `strumenti/tassi_reali.py` | Eseguito; esempi ed esercizi di L2.4 coincidono | `[ESEMPIO]` | 2026-11-11 |
 | `strumenti/riproduci_017.py` | Test su casi costruiti a mano + serie GBM | `[SIMULATO]` solo per test; nessun dato reale elaborato | 2026-11-11 |
+| `collaborazione/revisione-materiali-gemini/strumenti/riferimento_rovina.py` (strumento di revisione, non canonico) | Coincide con la formula chiusa della rovina classica; Monte Carlo entro 4 errori standard dal valore esatto | calcolo esatto + `[SIMULATO]` | 2026-11-11 |
 
 ## Dati
 
@@ -67,4 +68,9 @@ Nessuna lezione è `verificata` al 2026-11-11.
 ## Revisioni esterne (Gemini)
 | Rapporto | Oggetto | Esito |
 |---|---|---|
-| — | Nessun rapporto ricevuto al 2026-11-11 | — |
+| — | Nessun rapporto ricevuto al 2026-11-11; L2.4–L2.6 in attesa di revisione (R-001) | — |
+
+## Materiali di Gemini in attesa di revisione
+| Materiale | Stato |
+|---|---|
+| Studio rovina FTMO (10.000 Monte Carlo), motore Python, test unitari, rulebook YAML, Strategy Discovery Lab | annunciati dall'utente, **non ricevuti**; nessuna valutazione |

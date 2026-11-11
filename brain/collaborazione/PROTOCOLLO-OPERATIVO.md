@@ -1,6 +1,8 @@
 # Protocollo operativo Claude–Gemini
 
-Versione 1.0 · 11/11/2026 · Stato: **attivo, da allineare ai documenti fondativi dell'utente**
+Versione 1.1 · 11/11/2026 · Stato: **PROVVISORIO** — regole pratiche di lavoro in attesa dei documenti fondativi.
+
+> ⚠️ **Questo file NON sostituisce il Master Mission né il Protocollo comune di collaborazione dell'utente (decisione D-09).** Serve solo a lavorare in modo ordinato finché quei testi non sono inseriti in [`fondamenti/`](fondamenti/). Quando ci saranno, prevalgono loro; questo file verrà riallineato e ogni differenza segnalata all'utente.
 
 > **Nota di onestà.** L'utente ha predisposto un *Master Mission* e un *Protocollo comune di collaborazione*. **Questi due testi non sono disponibili nella sessione in cui è stato scritto questo file** (non presenti nella conversazione, né su Google Drive, né tra gli artifact accessibili). Questo protocollo traduce in regole pratiche quanto l'utente ha descritto per iscritto il 11/11/2026. Quando i testi originali saranno copiati in [`fondamenti/`](fondamenti/), **prevalgono loro**: ogni differenza va segnalata all'utente e corretta qui.
 
@@ -19,7 +21,9 @@ Versione 1.0 · 11/11/2026 · Stato: **attivo, da allineare ai documenti fondati
 |---|---|---|
 | Ruolo principale | Sviluppo dei contenuti canonici e **coerenza architetturale** | **Ricerca indipendente**, approfondimenti, verifiche, revisione critica |
 | Scrive nei file canonici (`moduli/`, `architettura/`, `audit/`, `mappa/`, `bibliografia/`, `governance/`, `piano/`, `glossario/`, `strumenti/`, `dati/`, `CONTINUITA.md`, `README.md`) | Sì | **No** (propone modifiche tramite rapporto) |
-| Scrive in `collaborazione/da-gemini/` | No (solo lettura) | Sì |
+| Scrive in `collaborazione/da-gemini/` (incluse le consegne in `da-gemini/consegne/`) | **No, mai** (solo lettura; D-11) | Sì |
+| Scrive in `collaborazione/revisione-materiali-gemini/` (revisione dei materiali di Gemini) | Sì | No (solo lettura) |
+| Scrive in `collaborazione/pacchetto-per-gemini/` (materiale per la revisione del lavoro di Claude) | Sì | No (solo lettura) |
 | Scrive in `collaborazione/da-claude/` | Sì (risposte, esiti dell'integrazione, richieste a Gemini) | No (solo lettura) |
 | Revisiona il lavoro dell'altro | Sì: esamina ogni rapporto di Gemini e risponde | Sì: può revisionare qualsiasi file canonico |
 | Aggiorna registri e continuità | Sì | No (Claude registra anche il contributo di Gemini, citandolo) |
