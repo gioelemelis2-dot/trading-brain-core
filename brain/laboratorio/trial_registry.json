@@ -1,0 +1,7 @@
+{
+  "protocol": "TRIAL_REGISTRY_V1",
+  "epistemic_type": "REGOLA",
+  "condition_h": "{H_trial_counter_integro}",
+  "total_trials": 0,
+  "trials": []
+}
