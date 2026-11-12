@@ -94,3 +94,10 @@ Formato: data · versione della base · cosa · perché · file.
 - Aggiunta `collaborazione/revisione-materiali-gemini/R-CLAUDE-20261111-02-V3/`: `CLAUDE_FINAL_REVIEW_V3.md`, `PROPOSTE-CORREZIONE-V3.md`, 4 strumenti `v3_*.py`, uscite, impronte.
 - Esito: validazione V3 **non conclusa**. Riconosciuta come più appropriata la convenzione dello z usata da Gemini (test score) in C-14.
 - Rimossa una cartella `__pycache__` generata localmente (non tracciata). Aggiornati `CONTINUITA.md`, `collaborazione/LOCK.md` e questo registro. Nessun file di Antigravity e nessuna lezione modificati.
+
+## 2026-11-12 · v1.5 (revisione V3.1)
+
+- Ricevuto il pacchetto V3.1 (ZIP `99e8f0bd…`, coincide con il dichiarato; manifest 14/14 OK) e `CONTINUITA_V3_1_PASSAGGIO_A_CLAUDE.md`. Non archiviati nel Brain (decisione pendente).
+- Aggiunta `collaborazione/revisione-materiali-gemini/R-CLAUDE-20261112-03-V31/`: revisione, proposte Q-01…Q-09 (non applicate), 4 strumenti `v31_*`, uscite, impronte. Novità metodologica: **effetto esatto del MAE** (prima solo simulato).
+- Esito: motore corretto; pacchetto non validato (N-01, N-02).
+- Rimossa una cartella `__pycache__` locale. Aggiornati `CONTINUITA.md`, `collaborazione/LOCK.md` e questo registro. Nessun file di Antigravity e nessuna lezione modificati.

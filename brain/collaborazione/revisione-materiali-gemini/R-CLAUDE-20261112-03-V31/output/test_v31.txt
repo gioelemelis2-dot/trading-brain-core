@@ -1,0 +1,11 @@
+C-01: Verifica che il primo trade campioni lo stato da pi (frequenza vittoria = 40% non 70%). ... ok
+C-02: Verifica che parametri non ammissibili sollevino ValueError. ... ok
+C-03: Verifica che lo slippage sia eseguito e riduca il tasso di passaggio. ... ok
+C-12: Verifica che max_days=None azzeri i timeout e porti il pass rate al 99% a rischio 0.25%. ... ok
+Concordanza rigorosa con il calcolo esatto analitico di Claude: ... ok
+P-01 (N-01): Dimostra che l'accoppiamento CRN per-sfida impedisce qualsiasi desincronizzazione. ... ok
+P-02 (N-02): Verifica generalizzazione analitica del MAE per scenari con WR ed R:R diversi. ... ok
+P-05 (N-05): Verifica che l'ordine delle barriere sia identico sia intra-trade sia a chiusura: ... ok
+Ran 8 tests in 0.964s
+OK
+real	0m1.044s

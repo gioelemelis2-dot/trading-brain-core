@@ -1,0 +1,7 @@
+Slippage con tetto: E[S] = 0.0602R, Var[S] = 0.0222  ->  E[R] = 0.1139, Var[R] = 2.2609, f* = 0.3363%   (V3.1: 0,114 / 2,19 / 0,3472%)
+E[R] = 0.150, Var 2,16: f* = 0.4636%
+E[R] = 0.100, Var 2,16: f* = 0.3091%
+E[R] = 0.050, Var 2,16: f* = 0.1545%
+300 trade, ±1 errore standard (≈ 68%): E[R] in [+0.065, +0.235]  ->  f* da 0.20% a 0.73%
+300 trade, IC 95% (±1,96 errori standard): E[R] in [-0.016, +0.316]  ->  f* da nessuna size (edge non distinguibile da zero) a 0.98%
+V3.1 dichiara: 'Stima da 300 trade reali (IC 95%)' [+0,068R, +0,232R] -> [0,21%, 0,71%]

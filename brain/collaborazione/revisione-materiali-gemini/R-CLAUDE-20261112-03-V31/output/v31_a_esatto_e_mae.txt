@@ -1,0 +1,17 @@
+(A) Regime senza limite (6000 giorni) e 60 giorni, 2 trade/giorno
+  modern_unlimited_days  0.0025  pass esatto 0.9943  V3.1 0.9945  z +0.33
+  modern_unlimited_days  0.0050  pass esatto 0.9108  V3.1 0.9089  z -0.65
+  modern_unlimited_days  0.0075  pass esatto 0.7945  V3.1 0.7927  z -0.44
+  modern_unlimited_days  0.0100  pass esatto 0.7034  V3.1 0.7065  z +0.67
+  legacy_fixed_days      0.0025  pass esatto 0.0698  V3.1 0.0673  z -0.97
+  legacy_fixed_days      0.0050  pass esatto 0.4831  V3.1 0.4801  z -0.60
+  legacy_fixed_days      0.0075  pass esatto 0.6535  V3.1 0.6564  z +0.60
+  legacy_fixed_days      0.0100  pass esatto 0.6686  V3.1 0.6717  z +0.66
+  Markov stazionario swing 1%: esatto 0.4406  V3.1 0.4397  z -0.17
+
+(B) Effetto ESATTO del MAE browniano, intraday 1%, 6 trade/giorno, 25 giorni
+  pass       senza MAE esatto 0.4126 (V3.1 0.4182) · con MAE esatto 0.3884 (V3.1 0.3943, z +1.22) · effetto esatto -2.42 punti (V3.1 -2.39)
+  daily_loss senza MAE esatto 0.5292 (V3.1 0.5212) · con MAE esatto 0.5550 (V3.1 0.5469, z -1.63) · effetto esatto +2.58 punti (V3.1 +2.57)
+  max_loss   senza MAE esatto 0.0569 (V3.1 0.0595) · con MAE esatto 0.0557 (V3.1 0.0578, z +0.91) · effetto esatto -0.12 punti (V3.1 -0.17)
+  sfide 'passate solo con MAE' dichiarate da V3.1: 0
+  Swing 1%, 60 giorni: effetto esatto del MAE sul superamento -1.53 punti

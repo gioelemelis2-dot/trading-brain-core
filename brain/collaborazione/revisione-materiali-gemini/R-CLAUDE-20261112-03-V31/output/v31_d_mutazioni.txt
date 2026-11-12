@@ -1,0 +1,14 @@
+SOPRAVVISSUTO V01 fase 2 senza nuovi generatori (accoppiamento parziale)
+UCCISO        V02 deriva fissa 0,09754 (P-02 annullata)  [test_p02_mae_generalization_multi_scenario]
+SOPRAVVISSUTO V03 il motore passa R:R 2 fisso al campionatore MAE
+SOPRAVVISSUTO V04 durante il trade daily loss prima del max loss (P-05 annullata)
+UCCISO        V05 costi ignorati  [test_exact_calculation_concordance_group_a]
+UCCISO        V06 Markov: partenza sempre da vincita (C-01 annullata)  [test_c01_markov_stationary_start]
+SOPRAVVISSUTO V07 fase 2 con il target della fase 1
+SOPRAVVISSUTO V08 nessun controllo daily loss durante il trade
+UCCISO        V09 pavimento giornaliero statico  [test_c12_unlimited_days_ftmo, test_exact_calculation_concordance_group_a]
+SOPRAVVISSUTO V10 MAE troncato a -0,5R (escursioni profonde perse)
+UCCISO        V11 MAE: fattore 2 dimenticato nell'inversione  [test_p02_mae_generalization_multi_scenario]
+SOPRAVVISSUTO V12 bug min_days della V1 reintrodotto
+
+Mutanti uccisi dalla suite V3.1: 5/12
