@@ -1,7 +1,7 @@
 """
 Framework di Mutation Testing Spietato per il Binario B (Pipeline + Backtester + DSR).
-Genera 29 mutanti non equivalenti che alterano la logica critica (inclusa la bonifica Red Team).
-Esegue la suite di verifiche contro ciascun mutante e dimostra che il 100% dei mutanti viene UCCISO (29/29).
+Genera 31 mutanti non equivalenti che alterano la logica critica (inclusa la bonifica Red Team).
+Esegue la suite di verifiche contro ciascun mutante e dimostra che il 100% dei mutanti viene UCCISO (31/31).
 """
 
 import copy
@@ -80,6 +80,8 @@ class MutationTestingEngine:
             ("M27_dsr_concurrent_race_condition", "Omette locking esclusivo causando perdita di trial concorrenti nel registry"),
             ("M28_dsr_dry_run_writes_disk_or_wrong_n", "Crea/scrive trial_registry.json su disco anche con dry_run=True"),
             ("M29_dsr_masks_pathological_variance", "Maschera variance_term <= 0 con clamp 1e-6 invece di restituire NON_STIMABILE"),
+            ("M30_on_fill_close_not_atomic_on_pnl_error", "Deduce friction o appende fill prima che calcola_pnl_monetario fallisca in chiusura"),
+            ("M31_execute_invalid_sl_tp_post_gap", "Apre posizione con SL/TP invalidi dopo gap invece di scartare in rejected_orders"),
         ]
 
     def test_m01(self) -> bool:
@@ -451,6 +453,51 @@ class MutationTestingEngine:
         """Mutante M29 (BASSO-4): variance_term <= 0 in DSR restituisce (None, None) senza clamp 1e-6."""
         dsr_val, std_sr = DSRCalculator.calculate_dsr_analytical(2.0, 5, 50, skewness=5.0, kurtosis=1.0)
         return dsr_val is None and std_sr is None
+
+    def test_m30(self) -> bool:
+        """Mutante M30 (ALTO-2 residuo): on_fill in chiusura e' atomico se calcola_pnl_monetario fallisce."""
+        s_es = Strumento(
+            simbolo="ES", classe="future", valuta_base="USD", valuta_profitto="USD",
+            dimensione_contratto=None, passo_tick=Decimal("0.25"), valore_tick=Decimal("12.50"), fonte="CME",
+        )
+        p = Portfolio(s_es, valuta_conto="EUR", initial_cash=Decimal("100000.00"), cambio_valuta=None)
+        p.on_fill(FillEvent(
+            timestamp=self.t0, symbol="ES", direction=Direction.BUY, quantity=Decimal("1"),
+            fill_price=Decimal("5800.00"), commission=Decimal("5.00"),
+            spread_cost=Decimal("10.00"), slippage=Decimal("10.00"),
+        ))
+        cash_before = p.cash
+        fills_before = len(p.fill_history)
+        try:
+            p.on_fill(FillEvent(
+                timestamp=self.t0 + timedelta(hours=1), symbol="ES", direction=Direction.SELL, quantity=Decimal("1"),
+                fill_price=Decimal("5810.00"), commission=Decimal("5.00"),
+                spread_cost=Decimal("10.00"), slippage=Decimal("10.00"),
+            ))
+            return False
+        except ValueError:
+            return p.cash == cash_before and len(p.fill_history) == fills_before
+
+    def test_m31(self) -> bool:
+        """Mutante M31 (ALTO-7): Ordine apertura con SL/TP invalidati dal gap viene scartato in rejected_orders."""
+        s_fx = Strumento(
+            simbolo="EURUSD", classe="fx", valuta_base="EUR", valuta_profitto="USD",
+            dimensione_contratto=Decimal("100000"), fonte="test",
+        )
+        bars = [
+            Candle("EURUSD", "1H", self.t0, self.t0 + timedelta(hours=1),
+                   Decimal("1.08000"), Decimal("1.08100"), Decimal("1.07900"), Decimal("1.08000"), Decimal("100")),
+            Candle("EURUSD", "1H", self.t0 + timedelta(hours=1), self.t0 + timedelta(hours=2),
+                   Decimal("1.07400"), Decimal("1.07600"), Decimal("1.07300"), Decimal("1.07500"), Decimal("100")),
+        ]
+        def strat(bar, p, eng):
+            if eng.current_bar_index == 0:
+                return SignalEvent(bar.close_time, "EURUSD", Direction.BUY, Decimal("1.00"), stop_loss=Decimal("1.07500"))
+            return None
+
+        eng = EventDrivenBacktester(s_fx, "USD", Decimal("100000.00"), Decimal("0.00010"), Decimal("2.50"), Decimal("0.00005"))
+        p = eng.run(bars, strat)
+        return len(p.positions) == 0 and len(p.fill_history) == 0 and len(p.rejected_orders) == 1
 
 
 def run_all_mutations():

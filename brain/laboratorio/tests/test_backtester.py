@@ -794,6 +794,97 @@ class TestEventDrivenBacktesterZeroTrust(unittest.TestCase):
         self.assertEqual(len(p.discarded_end_of_data_orders), 1)
         self.assertEqual(len(eng.pending_orders), 0)
 
+    def test_15_portfolio_on_fill_atomic_when_calcola_pnl_raises(self):
+        """ALTO-2 residuo: se calcola_pnl_monetario() solleva ValueError in chiusura, cash e fill_history restano intatti."""
+        s_es = Strumento(
+            simbolo="ES",
+            classe="future",
+            valuta_base="USD",
+            valuta_profitto="USD",
+            dimensione_contratto=None,
+            passo_tick=Decimal("0.25"),
+            valore_tick=Decimal("12.50"),
+            fonte="CME",
+        )
+        p = Portfolio(s_es, valuta_conto="EUR", initial_cash=Decimal("100000.00"), cambio_valuta=None)
+        # Apertura posizione (non invoca calcola_pnl_monetario)
+        p.on_fill(FillEvent(
+            timestamp=self.t0,
+            symbol="ES",
+            direction=Direction.BUY,
+            quantity=Decimal("1"),
+            fill_price=Decimal("5800.00"),
+            commission=Decimal("5.00"),
+            spread_cost=Decimal("10.00"),
+            slippage=Decimal("10.00"),
+        ))
+        cash_before = p.cash
+        fills_before = len(p.fill_history)
+
+        with self.assertRaises(ValueError):
+            p.on_fill(FillEvent(
+                timestamp=self.t0 + timedelta(hours=1),
+                symbol="ES",
+                direction=Direction.SELL,
+                quantity=Decimal("1"),
+                fill_price=Decimal("5810.00"),
+                commission=Decimal("5.00"),
+                spread_cost=Decimal("10.00"),
+                slippage=Decimal("10.00"),
+            ))
+
+        self.assertEqual(p.cash, cash_before, "cash non deve essere mutato se calcola_pnl_monetario fallisce.")
+        self.assertEqual(len(p.fill_history), fills_before, "fill_history non deve contenere il fill fallito.")
+        self.assertIn("ES", p.positions)
+
+    def test_16_rejected_orders_invalid_sl_tp_post_gap(self):
+        """ALTO-7: ordini di apertura con SL/TP resi invalidi da un gap ad Open(t) vengono scartati in rejected_orders."""
+        s_fx = Strumento(
+            simbolo="EURUSD", classe="fx", valuta_base="EUR", valuta_profitto="USD",
+            dimensione_contratto=Decimal("100000"), fonte="test",
+        )
+        # Caso A (BUY invalidato da gap down sotto stop_loss e gap up oltre take_profit)
+        bars_buy = [
+            Candle("EURUSD", "1H", self.t0, self.t0 + timedelta(hours=1),
+                   Decimal("1.08000"), Decimal("1.08100"), Decimal("1.07900"), Decimal("1.08000"), Decimal("100")),
+            # Gap down ad Open=1.07400 (stop_loss=1.07500 >= Open -> invalido!)
+            Candle("EURUSD", "1H", self.t0 + timedelta(hours=1), self.t0 + timedelta(hours=2),
+                   Decimal("1.07400"), Decimal("1.07600"), Decimal("1.07300"), Decimal("1.07500"), Decimal("100")),
+        ]
+        def strat_buy_bad_sl(bar, p, eng):
+            if eng.current_bar_index == 0:
+                return SignalEvent(bar.close_time, "EURUSD", Direction.BUY, Decimal("1.00"),
+                                   stop_loss=Decimal("1.07500"), take_profit=Decimal("1.09000"))
+            return None
+
+        eng1 = EventDrivenBacktester(s_fx, "USD", Decimal("100000.00"), Decimal("0.00010"), Decimal("2.50"), Decimal("0.00005"))
+        p1 = eng1.run(bars_buy, strat_buy_bad_sl)
+        self.assertEqual(len(p1.positions), 0)
+        self.assertEqual(len(p1.fill_history), 0)
+        self.assertEqual(len(p1.rejected_orders), 1)
+        self.assertEqual(p1.cash, Decimal("100000.00"))
+
+        # Caso B (SELL invalidato da gap up oltre stop_loss / gap down sotto take_profit)
+        bars_sell = [
+            Candle("EURUSD", "1H", self.t0, self.t0 + timedelta(hours=1),
+                   Decimal("1.08000"), Decimal("1.08100"), Decimal("1.07900"), Decimal("1.08000"), Decimal("100")),
+            # Gap down ad Open=1.06900 (take_profit=1.07000 >= Open per SELL -> invalido!)
+            Candle("EURUSD", "1H", self.t0 + timedelta(hours=1), self.t0 + timedelta(hours=2),
+                   Decimal("1.06900"), Decimal("1.07200"), Decimal("1.06800"), Decimal("1.07100"), Decimal("100")),
+        ]
+        def strat_sell_bad_tp(bar, p, eng):
+            if eng.current_bar_index == 0:
+                return SignalEvent(bar.close_time, "EURUSD", Direction.SELL, Decimal("1.00"),
+                                   stop_loss=Decimal("1.08500"), take_profit=Decimal("1.07000"))
+            return None
+
+        eng2 = EventDrivenBacktester(s_fx, "USD", Decimal("100000.00"), Decimal("0.00010"), Decimal("2.50"), Decimal("0.00005"))
+        p2 = eng2.run(bars_sell, strat_sell_bad_tp)
+        self.assertEqual(len(p2.positions), 0)
+        self.assertEqual(len(p2.fill_history), 0)
+        self.assertEqual(len(p2.rejected_orders), 1)
+        self.assertEqual(p2.cash, Decimal("100000.00"))
+
 
 if __name__ == "__main__":
     unittest.main()

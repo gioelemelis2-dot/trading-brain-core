@@ -246,6 +246,24 @@ class EventDrivenBacktester:
                 if (pos.position_type == PositionType.LONG and order.direction != Direction.SELL) or \
                    (pos.position_type == PositionType.SHORT and order.direction != Direction.BUY):
                     continue
+            else:
+                # ALTO-7: Validazione coerenza SL/TP rispetto al vero bar.open dopo eventuale gap
+                if order.direction == Direction.BUY:
+                    if (order.stop_loss is not None and order.stop_loss >= bar.open) or (
+                        order.take_profit is not None and order.take_profit <= bar.open
+                    ):
+                        self.portfolio.rejected_orders.append(
+                            (order, "BUY invalidato post-gap: stop_loss >= bar.open o take_profit <= bar.open")
+                        )
+                        continue
+                elif order.direction == Direction.SELL:
+                    if (order.stop_loss is not None and order.stop_loss <= bar.open) or (
+                        order.take_profit is not None and order.take_profit >= bar.open
+                    ):
+                        self.portfolio.rejected_orders.append(
+                            (order, "SELL invalidato post-gap: stop_loss <= bar.open o take_profit >= bar.open")
+                        )
+                        continue
 
             spread_cost = self.portfolio.calcola_costo_punti(
                 self.spread_points / Decimal("2"), order.quantity, bar.open

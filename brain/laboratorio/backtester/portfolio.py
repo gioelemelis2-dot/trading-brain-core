@@ -36,6 +36,7 @@ class Portfolio:
         self.fill_history: List[FillEvent] = []
         self.trade_history: List[TradeRecord] = []
         self.discarded_end_of_data_orders: List[OrderEvent] = []
+        self.rejected_orders: List[Tuple[OrderEvent, str]] = []
         self.equity_curve_close: List[Tuple[datetime, Decimal]] = []
         self.equity_curve_intrabar: List[Tuple[datetime, Decimal]] = []
 
@@ -176,7 +177,8 @@ class Portfolio:
         if existing is None and fill.metadata.get("reduce_only", False):
             return None
 
-        # ALTO-2: Verifica supporto operazione (piramidazione non supportata) PRIMA di modificare self.cash
+        # ALTO-2: Verifica supporto operazione e calcola gross_pnl PRIMA di toccare fill_history e self.cash
+        gross_pnl: Optional[Decimal] = None
         if existing is not None:
             is_closing = (
                 (existing.position_type == PositionType.LONG and fill.direction == Direction.SELL)
@@ -184,6 +186,9 @@ class Portfolio:
             )
             if not is_closing:
                 raise NotImplementedError("Piramidazione posizioni non supportata.")
+            gross_pnl = self.calcola_pnl_monetario(
+                existing.position_type, existing.entry_price, fill.fill_price, existing.quantity
+            )
 
         self.fill_history.append(fill)
 
@@ -209,11 +214,8 @@ class Portfolio:
                 take_profit=fill.metadata.get("take_profit"),
             )
         else:
-            # Chiusura posizione esistente
-            gross_pnl = self.calcola_pnl_monetario(
-                existing.position_type, existing.entry_price, fill.fill_price, existing.quantity
-            )
-
+            # Chiusura posizione esistente (gross_pnl gia' calcolato atomicamente prima delle mutazioni)
+            assert gross_pnl is not None
             total_comm = existing.entry_commission + fill.commission
             total_spread = existing.entry_spread + fill.spread_cost
             total_slip = existing.entry_slippage + fill.slippage
