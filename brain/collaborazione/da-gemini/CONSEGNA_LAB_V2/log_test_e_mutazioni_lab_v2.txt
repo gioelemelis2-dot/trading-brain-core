@@ -1,8 +1,8 @@
 ================================================================================
 LOG DI ESECUZIONE TEST UNITARI E MUTATION TESTING - CONSEGNA LAB V2 ZERO-TRUST
-Data: 2026-11-12T21:52:49Z
+Data: 2026-11-12T21:57:24Z
 Branch: feat/lab-dati-backtester
-Commit Base: c8f199a
+Commit Base: 7a4ca1a
 ================================================================================
 
 --- FASE 1: TEST UNITARI PIPELINE DATI (9 TEST) ---
@@ -19,7 +19,7 @@ test_09_template_riconciliazione_da25_valido_per_scheda_g0 (brain.dati.tests.tes
 Verifica che TEMPLATE_RICONCILIAZIONE_DA25.toml sia elaborato da g0.scheda.scheda() senza errori. ... ok
 
 ----------------------------------------------------------------------
-Ran 9 tests in 0.020s
+Ran 9 tests in 0.016s
 
 OK
 
@@ -53,7 +53,7 @@ test_03_engine_and_portfolio_import_guardian_g0 (brain.laboratorio.tests.test_an
 Verifica che engine.py e portfolio.py importino Strumento e Valore da brain.guardian.g0. ... ok
 
 ----------------------------------------------------------------------
-Ran 3 tests in 0.017s
+Ran 3 tests in 0.015s
 
 OK
 

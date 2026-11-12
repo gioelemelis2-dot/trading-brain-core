@@ -360,15 +360,15 @@ index 0000000..68281af
 +Tutti i requisiti del mandato notturno sono stati adempiuti con autonomia esecutiva totale, verifiche al centesimo e zero compromessi epistemici.
 diff --git a/brain/collaborazione/da-gemini/CONSEGNA_LAB_V2/log_test_e_mutazioni_lab_v2.txt b/brain/collaborazione/da-gemini/CONSEGNA_LAB_V2/log_test_e_mutazioni_lab_v2.txt
 new file mode 100644
-index 0000000..1d29f28
+index 0000000..ec92acd
 --- /dev/null
 +++ b/brain/collaborazione/da-gemini/CONSEGNA_LAB_V2/log_test_e_mutazioni_lab_v2.txt
 @@ -0,0 +1,113 @@
 +================================================================================
 +LOG DI ESECUZIONE TEST UNITARI E MUTATION TESTING - CONSEGNA LAB V2 ZERO-TRUST
-+Data: 2026-11-12T21:52:49Z
++Data: 2026-11-12T21:57:24Z
 +Branch: feat/lab-dati-backtester
-+Commit Base: c8f199a
++Commit Base: 7a4ca1a
 +================================================================================
 +
 +--- FASE 1: TEST UNITARI PIPELINE DATI (9 TEST) ---
@@ -385,7 +385,7 @@ index 0000000..1d29f28
 +Verifica che TEMPLATE_RICONCILIAZIONE_DA25.toml sia elaborato da g0.scheda.scheda() senza errori. ... ok
 +
 +----------------------------------------------------------------------
-+Ran 9 tests in 0.020s
++Ran 9 tests in 0.016s
 +
 +OK
 +
@@ -419,7 +419,7 @@ index 0000000..1d29f28
 +Verifica che engine.py e portfolio.py importino Strumento e Valore da brain.guardian.g0. ... ok
 +
 +----------------------------------------------------------------------
-+Ran 3 tests in 0.017s
++Ran 3 tests in 0.015s
 +
 +OK
 +
@@ -2085,7 +2085,7 @@ index 0000000..e780006
 +        }
 diff --git a/brain/dati/reali/TEMPLATE_RICONCILIAZIONE_DA25.toml b/brain/dati/reali/TEMPLATE_RICONCILIAZIONE_DA25.toml
 new file mode 100644
-index 0000000..3cd2f2e
+index 0000000..6bc9bd9
 --- /dev/null
 +++ b/brain/dati/reali/TEMPLATE_RICONCILIAZIONE_DA25.toml
 @@ -0,0 +1,59 @@
@@ -2101,7 +2101,7 @@ index 0000000..3cd2f2e
 +equity = "100420.00"
 +saldi_riferimento = []
 +fonte = "estratto conto broker MT5 demo FTMO"
-+riconciliato = true
++riconciliato = false
 +
 +[[strumento]]
 +simbolo = "EURUSD"
@@ -2150,7 +2150,7 @@ index 0000000..3cd2f2e
 +fonte = "stima prudenziale spread/gap"
 diff --git a/brain/dati/tests/test_pipeline.py b/brain/dati/tests/test_pipeline.py
 new file mode 100644
-index 0000000..60f8254
+index 0000000..5f5ed10
 --- /dev/null
 +++ b/brain/dati/tests/test_pipeline.py
 @@ -0,0 +1,265 @@
@@ -2410,7 +2410,7 @@ index 0000000..60f8254
 +
 +        righe = scheda(dati)
 +        testo = "\n".join(righe)
-+        self.assertIn("G0 · CONSULTIVO · riconciliato: True", testo)
++        self.assertIn("G0 · CONSULTIVO · NON RICONCILIATO", testo)
 +        self.assertIn("LIMITI DETERMINISTICI", testo)
 +        self.assertIn("TRADE PREVISTO", testo)
 +        self.assertIn("SCENARIO DI STRESS", testo)

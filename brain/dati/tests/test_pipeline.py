@@ -254,7 +254,7 @@ class TestDataPipelineZeroTrust(unittest.TestCase):
 
         righe = scheda(dati)
         testo = "\n".join(righe)
-        self.assertIn("G0 · CONSULTIVO · riconciliato: True", testo)
+        self.assertIn("G0 · CONSULTIVO · NON RICONCILIATO", testo)
         self.assertIn("LIMITI DETERMINISTICI", testo)
         self.assertIn("TRADE PREVISTO", testo)
         self.assertIn("SCENARIO DI STRESS", testo)

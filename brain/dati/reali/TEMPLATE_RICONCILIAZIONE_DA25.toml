@@ -10,7 +10,7 @@ saldo_mezzanotte = "100250.00"
 equity = "100420.00"
 saldi_riferimento = []
 fonte = "estratto conto broker MT5 demo FTMO"
-riconciliato = true
+riconciliato = false
 
 [[strumento]]
 simbolo = "EURUSD"
