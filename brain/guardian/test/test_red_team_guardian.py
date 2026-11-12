@@ -237,6 +237,69 @@ class TestMedio5e6e7Lock(unittest.TestCase):
             self.assertEqual(J.verifica(d), [])
 
 
+class TestAlto8RecuperoLockOrfano(unittest.TestCase):
+    """ALTO-8 (revisione esterna): nel ripiego senza fcntl, fra il ricontrollo del lock orfano e la sua rimozione un
+    altro processo può rimuovere l'orfano e creare il PROPRIO lock; la rimozione cancella allora un lock vivo e due
+    scrittori entrano insieme. Riproduzione deterministica con due thread: il thread A si ferma esattamente nella
+    finestra (dopo il secondo controllo del contenuto, prima della rimozione) mentre il thread B scrive."""
+
+    T = {"simbolo": "EURUSD", "direzione": "long", "aperto_utc": "2026-11-12T09:00:00Z", "ingresso": "1.085",
+         "stop": "1.083", "quantita": "1", "fonte": "t"}
+
+    def test_al_massimo_uno_scrittore_nella_sezione_critica(self):
+        import threading
+        morto = int(subprocess.run([sys.executable, "-c", "import os; print(os.getpid())"], capture_output=True,
+                                   text=True).stdout.strip())
+        orfano = json.dumps({"pid": morto, "host": socket.gethostname(), "t": time.time() - 100})
+        stato = {"dentro": 0, "massimo": 0, "letture_A": 0}
+        guardia, errori = threading.Lock(), []
+        originale_read = Path.read_text
+        originale_contr = J.controlla_riferimenti
+
+        def scrivi():
+            try:
+                J.aggiungi("trade", self.T, d)
+            except Exception as e:                                       # noqa: BLE001
+                errori.append(repr(e))
+
+        def read_text(self_path, *a, **k):
+            testo = originale_read(self_path, *a, **k)
+            if self_path.name == J.FILE_LOCK and threading.current_thread().name == "A" and testo == orfano:
+                stato["letture_A"] += 1
+                if stato["letture_A"] == 2:                              # A è nella finestra: ricontrollo fatto
+                    tb.start()
+                    time.sleep(0.6)                                      # ... e B intanto agisce
+            return testo
+
+        def controlla(*a, **k):                                         # eseguito dentro la sezione critica
+            with guardia:
+                stato["dentro"] += 1
+                stato["massimo"] = max(stato["massimo"], stato["dentro"])
+            try:
+                if threading.current_thread().name == "B":
+                    time.sleep(1.0)
+                return originale_contr(*a, **k)
+            finally:
+                with guardia:
+                    stato["dentro"] -= 1
+
+        with tempfile.TemporaryDirectory() as tmp, mock.patch.object(J, "fcntl", None), \
+                mock.patch.object(J, "ATTESA_LOCK_S", 10.0), mock.patch.object(Path, "read_text", read_text), \
+                mock.patch.object(J, "controlla_riferimenti", controlla):
+            d = Path(tmp)
+            J.percorso_lock(d).write_text(orfano, encoding="utf-8")
+            ta, tb = threading.Thread(target=scrivi, name="A"), threading.Thread(target=scrivi, name="B")
+            ta.start()
+            ta.join(30)
+            if tb.is_alive() or tb.ident is not None:
+                tb.join(30)
+            self.assertEqual(errori, [])
+            self.assertEqual(stato["massimo"], 1, "due scrittori insieme nella sezione critica")
+            righe = J._righe(d / "trade.jsonl")
+            self.assertEqual(len({json.loads(r)["id"] for r in righe}), 2)
+            self.assertEqual(J.verifica(d), [])
+
+
 class TestMedio10e11Toml(unittest.TestCase):
     def test_fmt_con_esponenti_estremi(self):
         for x, atteso in (("1E+100", "[MISURA] x: 10.000.000"), ("1E-100", "[MISURA] x: 0,00 USD"),
