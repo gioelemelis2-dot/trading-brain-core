@@ -9,6 +9,7 @@
 | Regole della prop firm FTMO (`regole/prop_firm_ftmo.toml`) | verificate sulla fonte ufficiale il 12/11/2026 | dettagli dei tipi di conto Standard e Swing (FAQ); prossima verifica 12/02/2027 |
 | Regole personali (`regole/regole_personali.toml`) | **proposta** | conferma dell'utente, regola per regola |
 | Calcoli G0 (`g0/`) | implementati e testati (18 test unitari) | **validazione**: riconciliazione con un estratto conto reale e con le specifiche del broker |
+| Journal (`journal/`) | implementato e testato (6 test: catena di hash, validazione, Brier, sigilli, R1) | scelta di dove conservare i dati (`journal/LEGGIMI.md`, alternative A/B/C) |
 | Uso per decidere | **NON AUTORIZZATO** | la scheda lo dichiara in prima riga finché `riconciliato = false` |
 
 ## Componenti
@@ -25,6 +26,7 @@ python3 -s -B -m g0.scheda esempi/situazione_esempio.toml
 ```bash
 python3 -s -B -m unittest discover -s test -v
 ```
+Risultato al 12/11/2026: **24 test, tutti superati** (18 G0, 6 journal).
 Requisiti: Python 3.11 o successivo, sola libreria standard.
 
 ## Limiti dichiarati

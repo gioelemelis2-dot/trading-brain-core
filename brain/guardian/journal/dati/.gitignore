@@ -1,0 +1,3 @@
+# Dati personali del journal: non si versionano (DA-16). Restano solo in locale.
+*
+!.gitignore

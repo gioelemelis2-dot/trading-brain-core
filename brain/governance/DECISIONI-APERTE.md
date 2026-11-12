@@ -233,6 +233,24 @@ DA-13 rulebook (Q-09) ──► DA-11 G0 minimo ──► DA-12 indicatori compo
 
 ---
 
+## H. Informazioni e scelte necessarie per usare G0 e journal (12/11/2026)
+
+### DA-24 · Dove conservare i dati del journal
+- **Alternative** (`guardian/journal/LEGGIMI.md`):
+  - **A.** sul tuo computer;
+  - **B.** nel repository privato, compilato da Claude in sessione;
+  - **C.** misto: trade, decisioni e previsioni nel repository; stato personale solo in locale.
+- **Parere di Claude:** C. Protegge i dati sensibili e permette di lavorare insieme sul resto.
+
+### DA-25 · Dati del conto per completare e riconciliare il G0
+- Prodotto FTMO (2-Step, 1-Step, Instant) e tipo di conto (Standard o Swing), dimensione, valuta e piattaforma.
+- Strumenti operati e loro specifiche presso il broker.
+- Conferma o modifica delle regole personali P-01…P-15 e dei valori «DA DEFINIRE».
+- Un estratto conto, anche demo, per la riconciliazione: senza riconciliazione il G0 non si usa per decidere.
+- Dettaglio in `guardian/regole/LEGGIMI.md`.
+
+---
+
 ## Fonti di questo registro
 - `audit/AUDIT-ARCH-20261111/RELAZIONE-AUDIT.md` §5;
 - `collaborazione/da-claude/CLAUDE_QUANTITATIVE_BRAIN_PROPOSAL.md` §10;

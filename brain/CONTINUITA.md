@@ -59,6 +59,15 @@ Ultimo aggiornamento: **2026-11-11**, dopo l'audit architetturale. Leggere quest
 
 **Registro unico delle decisioni aperte: creato il 12/11/2026** (`governance/DECISIONI-APERTE.md`, DA-01…DA-18; bloccanti DA-01, DA-03, DA-15). Decisioni dell'utente del 12/11 registrate in `governance/DECISIONI.md` (D-14…D-18). Pacchetto per la revisione esterna consegnato in chat (istruzioni in `collaborazione/revisione-materiali-gemini/R-CLAUDE-20261112-08-REVISIONE-ESTERNA/`).
 
+**Lavoro del 12/11/2026 dopo le decisioni D-19…D-23:**
+- errata V3.3 chiusa come addendum (`collaborazione/da-claude/ERRATA-V3_3/`, 24/24 mutanti non equivalenti uccisi);
+- revisione esterna di ChatGPT archiviata, con risposta;
+- regole FTMO verificate sulla fonte ufficiale e rulebook separato (`guardian/regole/`);
+- modello epistemico (`governance/MODELLO-EPISTEMICO.md`);
+- **G0 minimo** e **journal** (`guardian/`, 24 test superati).
+
+Il G0 **non** è ancora utilizzabile per decidere: serve la riconciliazione con un estratto conto (DA-25). Il repository nuovo e privato (D-19) va creato dall'utente; poi va spostato il Brain e archiviate le consegne di Gemini.
+
 **Ora: fermo in attesa dell'utente**, per:
 - rispondere alle decisioni di `governance/DECISIONI-APERTE.md`, a partire da quelle bloccanti;
 - valutare la revisione V3.3 e decidere se applicare l'errata (T-01…T-05) all'inizio della fase successiva;

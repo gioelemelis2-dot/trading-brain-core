@@ -154,3 +154,12 @@ Formato: data · versione della base · cosa · perché · file.
 - `DECISIONI-APERTE.md`: DA-01, DA-03, DA-11 e DA-15 segnate come decise; aggiunte DA-19…DA-23, dalla revisione esterna.
 - Archiviata la revisione esterna di ChatGPT (`R-CLAUDE-20261112-08-REVISIONE-ESTERNA/REVISIONE_ESTERNA_TRADING_BRAIN_CHATGPT.md`, senza modifiche) e la risposta di Claude.
 - Errori di Claude riconosciuti: etichetta «co-monotonicità» per lo scenario di stress; conteggio delle prove «mentali»; caso Wilson n = 0 e aritmetica di STR-002 non rilevati nelle revisioni V3.x.
+
+## 2026-11-12 · v1.11 (errata V3.3, Q-09, G0 minimo, journal)
+
+- `collaborazione/da-claude/ERRATA-V3_3/`: errata T-01…T-05 come addendum. Test V16, V22, V24 e R-16 (fallimento atteso); script di mutazione: 24/24 mutanti non equivalenti uccisi. V3.3 intatta.
+- Ambiente: aggiunto l'host `ftmo.com` (approvato dall'utente) per leggere le regole ufficiali.
+- `guardian/regole/`: regole FTMO (2-Step, 1-Step, Instant) verificate sulla fonte ufficiale (estratto e hash, 12/11/2026); regole personali come proposta, con provenienza.
+- `governance/MODELLO-EPISTEMICO.md`: schema dei valori e mappatura verso `STANDARD.md` (proposta DA-06, usata dal G0).
+- `guardian/g0/`: G0 minimo consultivo (schema dei valori, perdita allo stop per FX/futures/CFD, limiti FTMO, scenario di stress, scheda); `guardian/journal/`: journal di sola aggiunta con catena di hash, Brier score, impegni sigillati, indicatore R1 spento finché i parametri non sono definiti. 24 test superati.
+- `DECISIONI-APERTE.md`: aggiunte DA-24 (conservazione dei dati del journal) e DA-25 (dati del conto per la riconciliazione).
