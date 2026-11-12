@@ -53,7 +53,7 @@ M = {
         (ST, "perdita = perdita_prof / stop.valore", "perdita = perdita_prof / ingresso.valore")],
     "V09 controllo is_finite() rimosso su prezzi, quantità e cambio": [
         (ST, "        if not (v.valore.is_finite() and v.valore > 0):", "        if not (v.valore > 0):")],
-    "V10 distanza non multipla del tick ammessa": [(ST, "if tick != tick.to_integral_value():", "if False:")],
+    "V10 distanza non multipla del tick ammessa": [(ST, "if abs(tick - intero) > TOLLERANZA_TICK:", "if False:")],
     "V11 stop uguale all'ingresso ammesso": [(ST, "if ingresso.valore == stop.valore:", "if False:")],
     # --- g0/limiti.py: limiti FTMO e stress ---
     "V12 limite giornaliero: frazione applicata al saldo invece che al capitale iniziale": [
@@ -70,7 +70,8 @@ M = {
     # --- g0/scheda.py: avvisi e regole personali ---
     "V18 P-05 regola aurea: >= diventa > (limite personale UGUALE a quello FTMO accettato)": [
         (SC, "if v >= f_g.valore:", "if v > f_g.valore:")],
-    "V19 P-01: > diventa >= (rischio uguale alla soglia segnalato)": [(SC, "if frac.valore > v:", "if frac.valore >= v:")],
+    "V19 P-01: > diventa >= (rischio uguale alla soglia segnalato)": [(SC, 'if _maggiore(frac, v, avvisi, f"{rid} rischio del trade previsto"):',
+         "if frac.valore is not None and frac.valore >= v:")],
     "V20 P-11/P-14: < diventa <= (valore uguale alla soglia = violazione)": [
         (SC, 'violata = (x < v) if rid in ("P-11", "P-14") else (x >= v)',
          'violata = (x <= v) if rid in ("P-11", "P-14") else (x >= v)')],
@@ -78,20 +79,22 @@ M = {
         (SC, 'violata = (x < v) if rid in ("P-11", "P-14") else (x >= v)',
          'violata = (x < v) if rid in ("P-11", "P-14") else (x > v)')],
     "V22 P-05: avvisi su trade soppressi a margine personale negativo (difetto reintrodotto)": [
-        (SC, "if pt is not None and pt.valore > margine_p.valore:",
-         "if margine_p.valore >= 0 and pt is not None and pt.valore > margine_p.valore:")],
+        (SC, 'if pt is not None and _maggiore(pt, margine_p, avvisi, f"{rid} trade previsto"):',
+         'if margine_p.valore >= 0 and pt is not None and _maggiore(pt, margine_p, avvisi, f"{rid} trade previsto"):')],
     "V23 trade previsto: > diventa >= sul margine giornaliero (equity AL limite = violazione)": [
-        (SC, "if pt.valore > mg.valore:", "if pt.valore >= mg.valore:")],
+        (SC, 'if _maggiore(pt, mg, avvisi, "Trade previsto contro il limite giornaliero"):',
+         "if pt.valore is not None and pt.valore >= mg.valore:")],
     "V24 posizione aperta misurata dal prezzo d'ingresso": [
         (SC, 'da = p["prezzo_attuale"] if aperta else p["ingresso"]', 'da = p["ingresso"]')],
     "V25 dati di sessione negativi ammessi": [(SC, "if x is None or x < 0:", "if x is None:")],
     "V26 _numero accetta NaN e infiniti": [(SC, "return d if d.is_finite() else None", "return d")],
     "V27 stress: < diventa <= sul margine giornaliero dopo lo scenario": [
-        (SC, "if dopo.valore < 0:", "if dopo.valore <= 0:")],
-    "V28 stress: margine totale dopo lo scenario non controllato": [(SC, "if dopo_t.valore < 0:", "if False:")],
+        (SC, 'if _maggiore(ZERO, dopo, avvisi, "Scenario di stress contro il limite giornaliero"):',
+         "if dopo.valore is not None and dopo.valore <= 0:")],
+    "V28 stress: margine totale dopo lo scenario non controllato": [(SC, 'if _maggiore(ZERO, dopo_t, avvisi, "Scenario di stress contro il limite totale"):', "if False:")],
     # --- journal/journal.py ---
     "V29 versioni_finali: catene di correzioni non risolte": [
-        (JO, 'r = radice.get(d["corregge"], d["corregge"]) if "corregge" in d else rec["id"]',
+        (JO, 'r = radice[d["corregge"]] if "corregge" in d else rec["id"]',
          'r = d["corregge"] if "corregge" in d else rec["id"]')],
     "V30 impronta esterna non controllata": [(JO, "elif _sha(_canonico(ancora)) != impronta_attesa:", "elif False:")],
     "V31 doppia chiusura di una previsione ammessa": [(JO, "    if gia:\n", "    if False:\n")],
@@ -134,12 +137,43 @@ M = {
         (JO, "with _lock_esclusivo(cartella):", 'with _lock_esclusivo(cartella / "altro"):')],
     "V52 ripiego: file di lock non esclusivo (lock rimasto ignorato)": [
         (JO, "os.O_CREAT | os.O_EXCL | os.O_WRONLY", "os.O_CREAT | os.O_WRONLY")],
-    "V53 ripiego: file di lock non rimosso a fine scrittura": [(JO, "        path.unlink()\n", "        pass\n")],
+    "V53 ripiego: file di lock non rimosso a fine scrittura": [(JO, "    finally:\n        path.unlink()\n", "    finally:\n        pass\n")],
     "V54 TOML minimale: escape \\\" non gestito": [(TO, "_ESCAPE = {'\"': '\"', ", "_ESCAPE = {")],
     "V55 TOML minimale: chiave duplicata ammessa": [(TO, "if chiave in corrente:", "if False:")],
     "V56 TOML minimale: decimali restituiti come testo": [(TO, 'return float(t.replace("_", "")), i + len(t)', "return t, i + len(t)")],
     "V57 TOML minimale: tabella definita due volte ammessa": [(TO, "if id(t) in definite:", "if False:")],
     "V58 TOML minimale: sottotabella agganciata al PRIMO elemento dell'array di tabelle": [(TO, "x = x[-1]", "x = x[0]")],
+    # --- bonifica Red Team esterno (ramo fix/red-team-guardian) ---
+    "V59 stop_residui: NON STIMABILE non propagato (TypeError)": [
+        (LI, "if not (margine_.stimabile and perdita_per_stop.stimabile):", "if False:")],
+    "V60 margine: sottrazione anche con un dato NON STIMABILE": [
+        (LI, "v = equity.valore - limite.valore if equity.stimabile and limite.stimabile else None",
+         "v = equity.valore - limite.valore")],
+    "V61 scheda: confronto con NON STIMABILE taciuto (nessun avviso)": [
+        (SC, '        avvisi.append(f"{cosa}: controllo non verificabile (dato NON STIMABILE)")\n', "")],
+    "V62 R1: trade sovrapposti contati come rientro dopo una perdita": [(IN, "if minuti < 0:", "if False:")],
+    "V63 strumento: simbolo, fonte o valuta di soli spazi ammessi": [
+        (ST, "if not isinstance(x, str) or not x.strip():", "if not isinstance(x, str):")],
+    "V64 tick: nessuna tolleranza (rumore float rifiutato)": [(ST, 'TOLLERANZA_TICK = Decimal("1e-9")', 'TOLLERANZA_TICK = Decimal("0")')],
+    "V65 tick: tolleranza troppo larga (prezzi fuori tick accettati)": [
+        (ST, 'TOLLERANZA_TICK = Decimal("1e-9")', 'TOLLERANZA_TICK = Decimal("0.6")')],
+    "V66 tick: numero di tick non arrotondato dopo la tolleranza": [(ST, "        tick = intero\n", "")],
+    "V67 versioni_finali: riferimenti fantasma non controllati": [(JO, 'for rif in ("corregge", "chiude"):\n            if rif in d and d[rif] not in radice:', 'for rif in ():\n            if rif in d and d[rif] not in radice:')],
+    "V68 versioni_finali: correzione fra nature diverse ammessa": [
+        (JO, 'if "corregge" in d and esito[d["corregge"]] != e:', "if False:")],
+    "V69 previsione con esito senza chiude ammessa": [
+        (JO, 'if registro == "previsione" and "chiude" not in dati and ({"esito", "esito_utc"} & set(dati)):', "if False:")],
+    "V70 lock aperto senza O_CLOEXEC": [
+        (JO, 'os.O_RDWR | os.O_CREAT | getattr(os, "O_CLOEXEC", 0)', "os.O_RDWR | os.O_CREAT")],
+    "V71 lock orfano: host non controllato": [(JO, " or host != socket.gethostname()", "")],
+    "V72 lock orfano: processo attivo non controllato": [(JO, " or _pid_attivo(pid)", "")],
+    "V73 lock orfano: età del lock non controllata": [(JO, "time.time() - t <= 2 * ATTESA_LOCK_S or ", "")],
+    "V74 verifica() senza lock": [(JO, "with _lock_esclusivo(cartella, facoltativo=True):", "if True:")],
+    "V75 fmt: precisione non adeguata agli esponenti estremi": [
+        (SC, "ctx.prec = max(ctx.prec, x.adjusted() - q.adjusted() + 2)", "ctx.prec = ctx.prec")],
+    "V76 P-01: capitale non positivo non controllato (divisione per zero)": [
+        (SC, "if cap.stimabile and cap.valore <= 0:", "if False:")],
+    "V77 TOML minimale: chiavi tra virgolette non gestite": [(TO, '''if s[0] in "\\"'":''', "if False:")],
     # --- equivalenti dichiarati ---
     "E01 ancora: confronto del numero di righe rimosso (EQUIVALENTE)": [
         (JO, 'if a["righe"] != len(righe) or a["ultimo_hash"] != ultimo:', 'if a["ultimo_hash"] != ultimo:')],
