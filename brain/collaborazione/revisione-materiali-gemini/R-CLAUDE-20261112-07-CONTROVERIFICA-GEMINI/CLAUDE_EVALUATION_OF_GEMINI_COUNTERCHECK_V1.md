@@ -119,8 +119,8 @@ Gemini non li ha individuati; li segnalo io.
 5. **Provenienza delle soglie di 60–90 s e 10–15 minuti.** In CLM-02 citavo già le righe 57 e 78 di `rulebook.yaml`, e il rulebook intitola quella sezione «Lezione 0.21» (riga 75). Né io né Gemini avevamo però **collegato esplicitamente** le soglie al testo del **Manuale v1 dell'utente**, Lezione 21 «Tilt, recupero e regole anti-impulso» (`brain/originale/manuale-v1.txt`, righe 417–430: «timer di 60–90 secondi», «10–15 minuti fuori dallo schermo»). Sono quindi **regole personali già scritte nel materiale dell'utente**, non invenzioni di Gemini. Questo rafforza la mia lettura di CLM-02 («ammissibili come regola personale»), ma corregge l'impressione, data da entrambi, che fossero soglie introdotte dal rapporto V1.
 6. **Limite non abbastanza evidenziato nel calcolo di potenza:** a parità di σ, N scala con 1/edge². Con l'edge vero più piccolo del previsto (probabile, dopo costi e decadimento) i numeri esplodono: 1.336 trade con 0,10R, 5.342 con 0,05R.
    - Questi due valori **tengono σ fisso a 1,4697R**: vale se l'edge si riduce per un costo fisso più alto. Se si riduce per un win rate più basso, cambia anche σ e il calcolo va rifatto.
-8. **Incoerenza nel mio registro delle divergenze:** il §3, punto 2, dice che nessuno dei due aveva affrontato l'assenza di un archivio comune, mentre l'avevo segnalata l'11/11 e nell'Audit §8.12. È da qui che nasce l'«errore di entrambi» di Gemini (G-01f).
 7. **Prima valutazione in chat:** era basata solo sul riepilogo. I punti 3 (unilaterale) e 11 (decisioni mancanti) vanno letti alla luce di questo documento: il primo cade, il secondo è confermato (G-13).
+8. **Incoerenza nel mio registro delle divergenze:** il §3, punto 2, dice che nessuno dei due aveva affrontato l'assenza di un archivio comune, mentre l'avevo segnalata l'11/11 e nell'Audit §8.12. È da qui che nasce l'«errore di entrambi» di Gemini (G-01f).
 
 ---
 
