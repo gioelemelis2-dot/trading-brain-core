@@ -27,6 +27,7 @@ Concorrenza: `aggiungi` lavora sotto un lock esclusivo (`.journal.lock` nella ca
 - Il file di lock è aperto con `O_CLOEXEC`. Da Python 3.4 (PEP 446) i descrittori sono comunque non ereditabili: il flag rende esplicita l'intenzione.
 - Altrimenti un file di lock creato in modo esclusivo, con PID, host e orario, rimosso alla fine.
   - Un lock **orfano** è recuperato automaticamente, ma solo se: stesso host, processo non più attivo e più vecchio di 2 × 30 secondi.
+  - Il recupero avviene tenendo un secondo lock esclusivo (`.journal.lock.recupero`). Così fra il ricontrollo del contenuto e la rimozione dell'orfano nessun altro processo può cambiarlo: senza, un recupero concorrente poteva cancellare il lock appena creato da un altro processo (ALTO-8). Se il file `.recupero` resta dopo un'interruzione, il lock non si recupera più da solo: l'errore dopo l'attesa chiede di rimuoverlo a mano.
   - Ogni altro lock si attende, compresi quelli illeggibili o di un altro host.
   - Su Windows lo stato del processo si legge con `OpenProcess`, perché `os.kill` lì terminerebbe il processo; questo ramo non è verificato in questo repository.
 - Dopo 30 secondi di attesa: errore esplicito, mai una scrittura non protetta.

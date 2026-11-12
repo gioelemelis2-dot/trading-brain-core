@@ -123,6 +123,27 @@ def _lock_orfano(path: Path):
     return testo
 
 
+def _recupera_orfano(path: Path, orfano: str) -> None:
+    """Rimuove il lock orfano SOLO tenendo il lock di recupero `<lock>.recupero`, creato in modo esclusivo.
+    Mentre l'orfano esiste nessuno può creare un lock nuovo (O_EXCL fallisce) e nessun altro può rimuoverlo (serve il
+    lock di recupero): fra il ricontrollo del contenuto e la rimozione il file non può cambiare (niente TOCTOU).
+    Se un altro processo sta già recuperando, si rinuncia e si riprova al giro successivo."""
+    recupero = path.with_name(path.name + ".recupero")
+    try:
+        fd = os.open(recupero, os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o600)
+    except OSError:                                              # recupero in corso altrove (o non possibile)
+        return
+    try:
+        os.close(fd)
+        try:
+            if path.read_text(encoding="utf-8") == orfano:
+                path.unlink()
+        except OSError:
+            pass
+    finally:
+        recupero.unlink()
+
+
 @contextmanager
 def _lock_esclusivo(cartella: Path, facoltativo: bool = False):
     """Lock esclusivo sulla cartella dei dati, con attesa massima ATTESA_LOCK_S e poi TimeoutError (mai una scrittura
@@ -170,15 +191,11 @@ def _lock_esclusivo(cartella: Path, facoltativo: bool = False):
         except FileExistsError:
             orfano = _lock_orfano(path)
             if orfano is not None:
-                try:                                             # ricontrollo: si rimuove solo il lock giudicato orfano
-                    if path.read_text(encoding="utf-8") == orfano:
-                        path.unlink()
-                except OSError:
-                    pass
+                _recupera_orfano(path, orfano)                   # atomico rispetto agli altri recuperi
                 continue
             if time.monotonic() >= scadenza:
                 raise TimeoutError(f"journal bloccato: esiste {path}. Un altro processo sta scrivendo, oppure "
-                                   f"un'interruzione ha lasciato il lock: se nessun processo è attivo, rimuoverlo "
+                                   f"un'interruzione ha lasciato il lock (o il file «.recupero»): se nessun processo è attivo, rimuoverli "
                                    f"a mano") from None
             time.sleep(0.02)
     try:

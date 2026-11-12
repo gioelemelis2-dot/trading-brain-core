@@ -9,7 +9,7 @@
 | Regole della prop firm FTMO (`regole/prop_firm_ftmo.toml`) | verificate sulla fonte ufficiale il 12/11/2026 | dettagli dei tipi di conto Standard e Swing (FAQ); prossima verifica 12/02/2027 |
 | Regole personali (`regole/regole_personali.toml`) | **proposta** | conferma dell'utente, regola per regola |
 | Calcoli G0 (`g0/`) | implementati e testati (44 test unitari) | **validazione**: riconciliazione con un estratto conto reale e con le specifiche del broker |
-| Journal (`journal/`) | implementato e testato (31 test: trade sovrapposti esclusi da R1, riferimenti fantasma rifiutati, lock anche in verifica e recupero sicuro dei lock orfani, formato orari unico su ogni versione, probabilità Decimal, lock esclusivo, catena di hash, ancora e impronta esterna, validazione all'ingresso, coerenza di correzioni ed esiti, Brier con correzioni, sigilli, R1, Decimal e orari ISO-8601) | scelta di dove conservare i dati (`journal/LEGGIMI.md`, alternative A/B/C) |
+| Journal (`journal/`) | implementato e testato (32 test: trade sovrapposti esclusi da R1, riferimenti fantasma rifiutati, lock anche in verifica e recupero sicuro dei lock orfani, formato orari unico su ogni versione, probabilità Decimal, lock esclusivo, catena di hash, ancora e impronta esterna, validazione all'ingresso, coerenza di correzioni ed esiti, Brier con correzioni, sigilli, R1, Decimal e orari ISO-8601) | scelta di dove conservare i dati (`journal/LEGGIMI.md`, alternative A/B/C) |
 | Uso per decidere | **NON AUTORIZZATO** | la scheda lo dichiara in prima riga finché `riconciliato = false` |
 
 ## Componenti
@@ -30,12 +30,12 @@ python3 -s -B -m g0.scheda esempi/situazione_esempio.toml
 ```bash
 python3 -s -B -m unittest discover -s test -v
 ```
-Risultato: **75 test, tutti superati** con `-W error`, su Python 3.9, 3.11, 3.12 e 3.13:
+Risultato: **76 test, tutti superati** con `-W error`, su Python 3.9, 3.11, 3.12 e 3.13:
 - 18 G0 e 6 journal originari;
 - 17 in `test/test_fix_g0_journal.py`: 5 del mandato «Binario A», 7 del contro-audit e 5 del mandato notturno;
 - 11 in `test/test_mutanti_g0_journal.py`, aggiunti per uccidere i mutanti sopravvissuti;
 - 9 in `test/test_compatibilita_e_concorrenza.py`: Python 3.9, probabilità `Decimal`, lock concorrente;
-- 14 in `test/test_red_team_guardian.py`: rilievi dell'audit esterno «Red Team» e il rilievo MEDIO dell'audit di verifica.
+- 15 in `test/test_red_team_guardian.py`: rilievi dell'audit esterno «Red Team», il rilievo MEDIO dell'audit di verifica e ALTO-8 (race nel recupero del lock orfano).
 
 Mutation testing (dalla cartella `guardian/test/`, con una cartella temporanea per le copie):
 ```bash
