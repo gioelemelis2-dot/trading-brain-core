@@ -55,7 +55,7 @@ Ultimo aggiornamento: **2026-11-11**, dopo l'audit architetturale. Leggere quest
   - memoria condivisa inesistente nei fatti;
   - contaminazione delle ipotesi da addestramento.
 
-**Valutazione della controverifica di Gemini:** in corso (`R-CLAUDE-20261112-07-CONTROVERIFICA-GEMINI/`).
+**Valutazione della controverifica di Gemini: completata il 12/11/2026** (`R-CLAUDE-20261112-07-CONTROVERIFICA-GEMINI/`): utile come riconoscimento degli errori, insufficiente come verifica indipendente (Area G e autocritica assenti, nessun disaccordo, proposte trasformate in decisioni). Decisioni consolidate in §7.
 
 **Ora: fermo in attesa dell'utente**, per:
 - valutare la revisione V3.3 e decidere se applicare l'errata (T-01…T-05) all'inizio della fase successiva;
