@@ -1,0 +1,561 @@
+# Log integrale: test e mutation testing di G0 e journal (ramo feat/fix-g0-journal)
+# Generato: 2026-11-12T21:17Z · Python 3.13.18
+# Ogni sezione è stata rieseguita sul commit indicato, in una copia di lavoro separata (git worktree), senza tagli.
+# Test (da brain/guardian):            python3 -s -B -W error -m unittest discover -s test -v
+# Mutazioni (da brain/guardian/test):  python3 -s -B mutazioni_g0_journal.py <cartella temporanea>
+# Il nome del file è quello richiesto dal mandato notturno; i numeri reali sono 52 test e 44 mutanti non equivalenti.
+
+## 1. Prima fase rossa (mandato «Binario A»): 5 test prima delle correzioni — commit 9ff30e2
+test_avviso_se_lo_stress_viola_il_limite_totale (test_fix_g0_journal.TestFix1StressMargineTotale.test_avviso_se_lo_stress_viola_il_limite_totale)
+Conto 2-Step a 91.500: limite giornaliero 86.500 (margine 5.000), limite totale 90.000 (margine 1.500). ... FAIL
+test_future_senza_dimensione_contratto_fittizia (test_fix_g0_journal.TestFix2MetadatiFutures.test_future_senza_dimensione_contratto_fittizia)
+Un future si descrive con passo e valore del tick: nessuna dimensione del contratto «1» inventata. ... ERROR
+test_regola_confermata_applicata_e_non_confermate_dichiarate (test_fix_g0_journal.TestFix3RegolePersonali.test_regola_confermata_applicata_e_non_confermate_dichiarate)
+Con P-01 confermata a 0,5% del capitale, il trade previsto dell'esempio (682 USD su 100.000 = 0,682%) ... ERROR
+test_ancora_rileva_ultima_riga_troncamento_e_riscrittura (test_fix_g0_journal.TestFix4AncoraEsterna.test_ancora_rileva_ultima_riga_troncamento_e_riscrittura) ... FAIL
+test_decimal_e_frazioni_di_secondo (test_fix_g0_journal.TestFix5IndicatoriDecimal.test_decimal_e_frazioni_di_secondo) ... ERROR
+test_1step_giornaliero_e_trailing (test_g0.TestLimitiFTMO.test_1step_giornaliero_e_trailing) ... ok
+test_2step_giornaliero_esempio_ufficiale (test_g0.TestLimitiFTMO.test_2step_giornaliero_esempio_ufficiale) ... ok
+test_2step_totale_statico (test_g0.TestLimitiFTMO.test_2step_totale_statico) ... ok
+test_instant_esempio_ufficiale (test_g0.TestLimitiFTMO.test_instant_esempio_ufficiale) ... ok
+test_limite_e_derivato_dalla_regola_verificata (test_g0.TestLimitiFTMO.test_limite_e_derivato_dalla_regola_verificata) ... ok
+test_scenario_di_stress (test_g0.TestMarginiStress.test_scenario_di_stress) ... ok
+test_stop_residui (test_g0.TestMarginiStress.test_stop_residui) ... ok
+test_future_tick (test_g0.TestPerditaAlloStop.test_future_tick) ... ok
+test_fx_conto_nella_valuta_base_converte_al_prezzo_dello_stop (test_g0.TestPerditaAlloStop.test_fx_conto_nella_valuta_base_converte_al_prezzo_dello_stop) ... ok
+test_fx_conto_nella_valuta_quotata (test_g0.TestPerditaAlloStop.test_fx_conto_nella_valuta_quotata) ... ok
+test_fx_terza_valuta_richiede_cambio_misurato (test_g0.TestPerditaAlloStop.test_fx_terza_valuta_richiede_cambio_misurato) ... ok
+test_vendita_allo_scoperto_e_commissioni (test_g0.TestPerditaAlloStop.test_vendita_allo_scoperto_e_commissioni) ... ok
+test_esempio_end_to_end (test_g0.TestScheda.test_esempio_end_to_end) ... ok
+test_posizione_aperta_senza_prezzo_attuale_rifiutata (test_g0.TestScheda.test_posizione_aperta_senza_prezzo_attuale_rifiutata) ... ok
+test_non_stimabile_contagioso_e_incertezza_obbligatoria (test_g0.TestSchemaDeiValori.test_non_stimabile_contagioso_e_incertezza_obbligatoria) ... ok
+test_propagazione_del_tipo_piu_debole_e_delle_condizioni (test_g0.TestSchemaDeiValori.test_propagazione_del_tipo_piu_debole_e_delle_condizioni) ... ok
+test_un_numero_senza_tipo_valido_e_rifiutato (test_g0.TestSchemaDeiValori.test_un_numero_senza_tipo_valido_e_rifiutato) ... ok
+test_una_stima_non_allarga_mai_un_limite (test_g0.TestSchemaDeiValori.test_una_stima_non_allarga_mai_un_limite) ... ok
+test_r1_spento_senza_parametri_e_attivo_con_parametri (test_journal.TestIndicatori.test_r1_spento_senza_parametri_e_attivo_con_parametri) ... ok
+test_brier (test_journal.TestJournal.test_brier) ... ok
+test_cancellazione_scoperta (test_journal.TestJournal.test_cancellazione_scoperta) ... ok
+test_catena_integra_e_manomissione_scoperta (test_journal.TestJournal.test_catena_integra_e_manomissione_scoperta) ... ok
+test_sigillo (test_journal.TestJournal.test_sigillo) ... ok
+test_validazione (test_journal.TestJournal.test_validazione) ... ok
+
+======================================================================
+ERROR: test_future_senza_dimensione_contratto_fittizia (test_fix_g0_journal.TestFix2MetadatiFutures.test_future_senza_dimensione_contratto_fittizia)
+Un future si descrive con passo e valore del tick: nessuna dimensione del contratto «1» inventata.
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/claude-0/-home-user/cf76bcae-15b0-5f4e-b9ff-4bc4b5339697/scratchpad/log/9ff30e2/brain/guardian/test/test_fix_g0_journal.py", line 49, in test_future_senza_dimensione_contratto_fittizia
+    p = perdita_allo_stop(es, misura("5000.00", "prezzo", "t"), misura("4990.00", "prezzo", "t"),
+                          misura("2", "contratti", "t"), "USD")
+  File "/tmp/claude-0/-home-user/cf76bcae-15b0-5f4e-b9ff-4bc4b5339697/scratchpad/log/9ff30e2/brain/guardian/g0/strumenti.py", line 50, in perdita_allo_stop
+    spec = Valore(s.dimensione_contratto, "unità", "REGOLA", "norma", s.fonte, stato_verifica=s.stato_verifica)
+           ~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<string>", line 12, in __init__
+  File "/tmp/claude-0/-home-user/cf76bcae-15b0-5f4e-b9ff-4bc4b5339697/scratchpad/log/9ff30e2/brain/guardian/g0/valori.py", line 45, in __post_init__
+    raise ValueError("valore assente se e solo se l'incertezza è NON STIMABILE")
+ValueError: valore assente se e solo se l'incertezza è NON STIMABILE
+
+======================================================================
+ERROR: test_regola_confermata_applicata_e_non_confermate_dichiarate (test_fix_g0_journal.TestFix3RegolePersonali.test_regola_confermata_applicata_e_non_confermate_dichiarate)
+Con P-01 confermata a 0,5% del capitale, il trade previsto dell'esempio (682 USD su 100.000 = 0,682%)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/claude-0/-home-user/cf76bcae-15b0-5f4e-b9ff-4bc4b5339697/scratchpad/log/9ff30e2/brain/guardian/test/test_fix_g0_journal.py", line 63, in test_regola_confermata_applicata_e_non_confermate_dichiarate
+    with open(SCH.FILE_REGOLE_PERSONALI, "rb") as f:
+              ^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: module 'g0.scheda' has no attribute 'FILE_REGOLE_PERSONALI'
+
+======================================================================
+ERROR: test_decimal_e_frazioni_di_secondo (test_fix_g0_journal.TestFix5IndicatoriDecimal.test_decimal_e_frazioni_di_secondo)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/claude-0/-home-user/cf76bcae-15b0-5f4e-b9ff-4bc4b5339697/scratchpad/log/9ff30e2/brain/guardian/test/test_fix_g0_journal.py", line 118, in test_decimal_e_frazioni_di_secondo
+    m = metriche_dopo_perdita([t1, t2])
+  File "/tmp/claude-0/-home-user/cf76bcae-15b0-5f4e-b9ff-4bc4b5339697/scratchpad/log/9ff30e2/brain/guardian/journal/indicatori.py", line 47, in metriche_dopo_perdita
+    minuti = (_t(succ["aperto_utc"]) - _t(prec["chiuso_utc"])).total_seconds() / 60
+              ~~^^^^^^^^^^^^^^^^^^^^
+  File "/tmp/claude-0/-home-user/cf76bcae-15b0-5f4e-b9ff-4bc4b5339697/scratchpad/log/9ff30e2/brain/guardian/journal/indicatori.py", line 20, in _t
+    return datetime.strptime(s, "%Y-%m-%dT%H:%M:%SZ")
+           ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.13/_strptime.py", line 789, in _strptime_datetime
+    tt, fraction, gmtoff_fraction = _strptime(data_string, format)
+                                    ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.13/_strptime.py", line 555, in _strptime
+    raise ValueError("time data %r does not match format %r" %
+                     (data_string, format))
+ValueError: time data '2026-11-12T09:33:00.120Z' does not match format '%Y-%m-%dT%H:%M:%SZ'
+
+======================================================================
+FAIL: test_avviso_se_lo_stress_viola_il_limite_totale (test_fix_g0_journal.TestFix1StressMargineTotale.test_avviso_se_lo_stress_viola_il_limite_totale)
+Conto 2-Step a 91.500: limite giornaliero 86.500 (margine 5.000), limite totale 90.000 (margine 1.500).
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/claude-0/-home-user/cf76bcae-15b0-5f4e-b9ff-4bc4b5339697/scratchpad/log/9ff30e2/brain/guardian/test/test_fix_g0_journal.py", line 39, in test_avviso_se_lo_stress_viola_il_limite_totale
+    self.assertIn("margine totale dopo lo scenario", testo)
+    ~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 'margine totale dopo lo scenario' not found in "G0 · CONSULTIVO · NON RICONCILIATO con un estratto conto reale: NON usare questi numeri per decidere.\n\nMISURE\n[MISURA] capitale iniziale: 100.000,00 USD  (verifica: V)\n[MISURA] saldo alle 00:00 CE(S)T: 91.500,00 USD  (verifica: V)\n[MISURA] equity attuale: 91.500,00 USD  (verifica: V)\n\nREGOLE DELLA PROP FIRM\n[REGOLA] perdita giornaliera massima (ftmo_2step): 0,05 frazione del capitale iniziale  (verifica: V)\n[REGOLA] perdita massima (ftmo_2step): 0,10 frazione del capitale iniziale  (verifica: V)\n\nLIMITI DETERMINISTICI (prima di ogni stima)\n[DERIVATO] limite giornaliero: 86.500,00 USD  (verifica: V)\n[DERIVATO] margine giornaliero: 5.000,00 USD  (verifica: V)\n[DERIVATO] limite totale: 90.000,00 USD  (verifica: V)\n[DERIVATO] margine totale: 1.500,00 USD  (verifica: V)\n\nSCENARIO DI STRESS (tutte le posizioni allo stop, incluso il trade previsto)\n[DERIVATO | H_esec, scenario di stress] perdita nello scenario: 1.510,50 USD  (verifica: C)\n[DERIVATO | H_esec, scenario di stress] margine giornaliero dopo lo scenario: 3.489,50 USD  (verifica: C)\n\nRISERVE (non deterministiche)\n[IPOTESI | H_gap] riserva per gap e slippage: NON STIMABILE  (verifica: C)\n\nAVVISI\nnessun avviso dalle regole della prop firm\n\nREGOLE PERSONALI\nnessuna regola personale attiva: sono una proposta da confermare (regole/regole_personali.toml)\n\nRACCOMANDAZIONE\nnessuna obiezione dalle regole verificate\n\nDECISIONE: dell'utente, da registrare nel journal (con eventuale deroga e motivo)"
+
+======================================================================
+FAIL: test_ancora_rileva_ultima_riga_troncamento_e_riscrittura (test_fix_g0_journal.TestFix4AncoraEsterna.test_ancora_rileva_ultima_riga_troncamento_e_riscrittura)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/claude-0/-home-user/cf76bcae-15b0-5f4e-b9ff-4bc4b5339697/scratchpad/log/9ff30e2/brain/guardian/test/test_fix_g0_journal.py", line 87, in test_ancora_rileva_ultima_riga_troncamento_e_riscrittura
+    self.assertTrue((d / "ancora_integrita.json").exists())
+    ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: False is not true
+
+----------------------------------------------------------------------
+Ran 29 tests in 0.021s
+
+FAILED (failures=2, errors=3)
+
+## 2. Seconda fase rossa (contro-audit): 7 test prima delle correzioni — commit 2dcb9aa
+test_p05_non_piu_stretto_della_prop_e_avvisi_non_soppressi (test_fix_g0_journal.TestAudit1P05RegolaAurea.test_p05_non_piu_stretto_della_prop_e_avvisi_non_soppressi) ... FAIL
+test_p01_size_maggiore_dopo_perdita (test_fix_g0_journal.TestAudit2P01SecondaParte.test_p01_size_maggiore_dopo_perdita) ... FAIL
+test_numeri_e_orari_validati_all_ingresso (test_fix_g0_journal.TestAudit3ValidazioneJournal.test_numeri_e_orari_validati_all_ingresso) ... FAIL
+test_brier_applica_le_correzioni (test_fix_g0_journal.TestAudit4BrierCorrezioni.test_brier_applica_le_correzioni) ... FAIL
+test_verifica_con_impronta_rileva_cancellazione_totale (test_fix_g0_journal.TestAudit5ImprontaEsterna.test_verifica_con_impronta_rileva_cancellazione_totale) ... ERROR
+test_valori_non_positivi_rifiutati (test_fix_g0_journal.TestAudit6Positivita.test_valori_non_positivi_rifiutati) ... FAIL
+test_documenti_di_continuita_allineati (test_fix_g0_journal.TestAudit7Continuita.test_documenti_di_continuita_allineati) ... FAIL
+test_avviso_se_lo_stress_viola_il_limite_totale (test_fix_g0_journal.TestFix1StressMargineTotale.test_avviso_se_lo_stress_viola_il_limite_totale)
+Conto 2-Step a 91.500: limite giornaliero 86.500 (margine 5.000), limite totale 90.000 (margine 1.500). ... ok
+test_future_senza_dimensione_contratto_fittizia (test_fix_g0_journal.TestFix2MetadatiFutures.test_future_senza_dimensione_contratto_fittizia)
+Un future si descrive con passo e valore del tick: nessuna dimensione del contratto «1» inventata. ... ok
+test_regola_confermata_applicata_e_non_confermate_dichiarate (test_fix_g0_journal.TestFix3RegolePersonali.test_regola_confermata_applicata_e_non_confermate_dichiarate)
+Con P-01 confermata a 0,5% del capitale, il trade previsto dell'esempio (682 USD su 100.000 = 0,682%) ... ok
+test_ancora_rileva_ultima_riga_troncamento_e_riscrittura (test_fix_g0_journal.TestFix4AncoraEsterna.test_ancora_rileva_ultima_riga_troncamento_e_riscrittura) ... ok
+test_decimal_e_frazioni_di_secondo (test_fix_g0_journal.TestFix5IndicatoriDecimal.test_decimal_e_frazioni_di_secondo) ... ok
+test_1step_giornaliero_e_trailing (test_g0.TestLimitiFTMO.test_1step_giornaliero_e_trailing) ... ok
+test_2step_giornaliero_esempio_ufficiale (test_g0.TestLimitiFTMO.test_2step_giornaliero_esempio_ufficiale) ... ok
+test_2step_totale_statico (test_g0.TestLimitiFTMO.test_2step_totale_statico) ... ok
+test_instant_esempio_ufficiale (test_g0.TestLimitiFTMO.test_instant_esempio_ufficiale) ... ok
+test_limite_e_derivato_dalla_regola_verificata (test_g0.TestLimitiFTMO.test_limite_e_derivato_dalla_regola_verificata) ... ok
+test_scenario_di_stress (test_g0.TestMarginiStress.test_scenario_di_stress) ... ok
+test_stop_residui (test_g0.TestMarginiStress.test_stop_residui) ... ok
+test_future_tick (test_g0.TestPerditaAlloStop.test_future_tick) ... ok
+test_fx_conto_nella_valuta_base_converte_al_prezzo_dello_stop (test_g0.TestPerditaAlloStop.test_fx_conto_nella_valuta_base_converte_al_prezzo_dello_stop) ... ok
+test_fx_conto_nella_valuta_quotata (test_g0.TestPerditaAlloStop.test_fx_conto_nella_valuta_quotata) ... ok
+test_fx_terza_valuta_richiede_cambio_misurato (test_g0.TestPerditaAlloStop.test_fx_terza_valuta_richiede_cambio_misurato) ... ok
+test_vendita_allo_scoperto_e_commissioni (test_g0.TestPerditaAlloStop.test_vendita_allo_scoperto_e_commissioni) ... ok
+test_esempio_end_to_end (test_g0.TestScheda.test_esempio_end_to_end) ... ok
+test_posizione_aperta_senza_prezzo_attuale_rifiutata (test_g0.TestScheda.test_posizione_aperta_senza_prezzo_attuale_rifiutata) ... ok
+test_non_stimabile_contagioso_e_incertezza_obbligatoria (test_g0.TestSchemaDeiValori.test_non_stimabile_contagioso_e_incertezza_obbligatoria) ... ok
+test_propagazione_del_tipo_piu_debole_e_delle_condizioni (test_g0.TestSchemaDeiValori.test_propagazione_del_tipo_piu_debole_e_delle_condizioni) ... ok
+test_un_numero_senza_tipo_valido_e_rifiutato (test_g0.TestSchemaDeiValori.test_un_numero_senza_tipo_valido_e_rifiutato) ... ok
+test_una_stima_non_allarga_mai_un_limite (test_g0.TestSchemaDeiValori.test_una_stima_non_allarga_mai_un_limite) ... ok
+test_r1_spento_senza_parametri_e_attivo_con_parametri (test_journal.TestIndicatori.test_r1_spento_senza_parametri_e_attivo_con_parametri) ... ok
+test_brier (test_journal.TestJournal.test_brier) ... ok
+test_cancellazione_scoperta (test_journal.TestJournal.test_cancellazione_scoperta) ... ok
+test_catena_integra_e_manomissione_scoperta (test_journal.TestJournal.test_catena_integra_e_manomissione_scoperta) ... ok
+test_sigillo (test_journal.TestJournal.test_sigillo) ... ok
+test_validazione (test_journal.TestJournal.test_validazione) ... ok
+
+======================================================================
+ERROR: test_verifica_con_impronta_rileva_cancellazione_totale (test_fix_g0_journal.TestAudit5ImprontaEsterna.test_verifica_con_impronta_rileva_cancellazione_totale)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/claude-0/-home-user/cf76bcae-15b0-5f4e-b9ff-4bc4b5339697/scratchpad/log/2dcb9aa/brain/guardian/test/test_fix_g0_journal.py", line 203, in test_verifica_con_impronta_rileva_cancellazione_totale
+    self.assertEqual(J.verifica(d, impronta_attesa=imp), [])
+                     ~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: verifica() got an unexpected keyword argument 'impronta_attesa'
+
+======================================================================
+FAIL: test_p05_non_piu_stretto_della_prop_e_avvisi_non_soppressi (test_fix_g0_journal.TestAudit1P05RegolaAurea.test_p05_non_piu_stretto_della_prop_e_avvisi_non_soppressi)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/claude-0/-home-user/cf76bcae-15b0-5f4e-b9ff-4bc4b5339697/scratchpad/log/2dcb9aa/brain/guardian/test/test_fix_g0_journal.py", line 146, in test_p05_non_piu_stretto_della_prop_e_avvisi_non_soppressi
+    self.assertIn("non è più stretto del limite della prop firm", testo)
+    ~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 'non è più stretto del limite della prop firm' not found in "G0 · CONSULTIVO · NON RICONCILIATO con un estratto conto reale: NON usare questi numeri per decidere.\n\nMISURE\n[MISURA] capitale iniziale: 100.000,00 USD  (verifica: V)\n[MISURA] saldo alle 00:00 CE(S)T: 100.400,00 USD  (verifica: V)\n[MISURA] equity attuale: 100.150,00 USD  (verifica: V)\n\nREGOLE DELLA PROP FIRM\n[REGOLA] perdita giornaliera massima (ftmo_1step): 0,03 frazione del capitale iniziale  (verifica: V)\n[REGOLA] perdita massima (ftmo_1step): 0,10 frazione del capitale iniziale  (verifica: V)\n\nLIMITI DETERMINISTICI (prima di ogni stima)\n[DERIVATO] limite giornaliero: 97.400,00 USD  (verifica: V)\n[DERIVATO] margine giornaliero: 2.750,00 USD  (verifica: V)\n[DERIVATO] limite totale: 90.000,00 USD  (verifica: V)\n[DERIVATO] margine totale: 10.150,00 USD  (verifica: V)\n\nTRADE PREVISTO\n[DERIVATO | H_esec] perdita allo stop (USDJPY): 682,00 USD  (verifica: C)\n[DERIVATO | H_esec] stop pieni di questa dimensione, dato il margine attuale (posizioni aperte escluse): 4 stop  (verifica: C)\n\nSCENARIO DI STRESS (tutte le posizioni allo stop, incluso il trade previsto)\n[DERIVATO | H_esec, scenario di stress] perdita nello scenario: 842,50 USD  (verifica: C)\n[DERIVATO | H_esec, scenario di stress] margine giornaliero dopo lo scenario: 1.907,50 USD  (verifica: C)\n[DERIVATO | H_esec, scenario di stress] margine totale dopo lo scenario: 9.307,50 USD  (verifica: C)\n\nRISERVE (non deterministiche)\n[IPOTESI | H_gap] riserva per gap e slippage: NON STIMABILE  (verifica: C)\n\nAVVISI\nnessun avviso dalle regole verificate\n\nREGOLE PERSONALI\n1 regole personali confermate su 15 (le altre sono una proposta, non applicate)\n[DERIVATO] P-05 margine rispetto al limite personale giornaliero (4,000%): 3.750,00 USD  (verifica: V)\n\nRACCOMANDAZIONE\nnessuna obiezione dalle regole verificate\n\nDECISIONE: dell'utente, da registrare nel journal (con eventuale deroga e motivo)"
+
+======================================================================
+FAIL: test_p01_size_maggiore_dopo_perdita (test_fix_g0_journal.TestAudit2P01SecondaParte.test_p01_size_maggiore_dopo_perdita)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/claude-0/-home-user/cf76bcae-15b0-5f4e-b9ff-4bc4b5339697/scratchpad/log/2dcb9aa/brain/guardian/test/test_fix_g0_journal.py", line 158, in test_p01_size_maggiore_dopo_perdita
+    self.assertIn("P-01 (seconda parte) non verificata", testo)
+    ~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 'P-01 (seconda parte) non verificata' not found in "G0 · CONSULTIVO · NON RICONCILIATO con un estratto conto reale: NON usare questi numeri per decidere.\n\nMISURE\n[MISURA] capitale iniziale: 100.000,00 USD  (verifica: V)\n[MISURA] saldo alle 00:00 CE(S)T: 100.400,00 USD  (verifica: V)\n[MISURA] equity attuale: 100.150,00 USD  (verifica: V)\n\nREGOLE DELLA PROP FIRM\n[REGOLA] perdita giornaliera massima (ftmo_2step): 0,05 frazione del capitale iniziale  (verifica: V)\n[REGOLA] perdita massima (ftmo_2step): 0,10 frazione del capitale iniziale  (verifica: V)\n\nLIMITI DETERMINISTICI (prima di ogni stima)\n[DERIVATO] limite giornaliero: 95.400,00 USD  (verifica: V)\n[DERIVATO] margine giornaliero: 4.750,00 USD  (verifica: V)\n[DERIVATO] limite totale: 90.000,00 USD  (verifica: V)\n[DERIVATO] margine totale: 10.150,00 USD  (verifica: V)\n\nTRADE PREVISTO\n[DERIVATO | H_esec] perdita allo stop (USDJPY): 682,00 USD  (verifica: C)\n[DERIVATO | H_esec] stop pieni di questa dimensione, dato il margine attuale (posizioni aperte escluse): 6 stop  (verifica: C)\n\nSCENARIO DI STRESS (tutte le posizioni allo stop, incluso il trade previsto)\n[DERIVATO | H_esec, scenario di stress] perdita nello scenario: 842,50 USD  (verifica: C)\n[DERIVATO | H_esec, scenario di stress] margine giornaliero dopo lo scenario: 3.907,50 USD  (verifica: C)\n[DERIVATO | H_esec, scenario di stress] margine totale dopo lo scenario: 9.307,50 USD  (verifica: C)\n\nRISERVE (non deterministiche)\n[IPOTESI | H_gap] riserva per gap e slippage: NON STIMABILE  (verifica: C)\n\nAVVISI\nnessun avviso dalle regole verificate\n\nREGOLE PERSONALI\n1 regole personali confermate su 15 (le altre sono una proposta, non applicate)\n[DERIVATO | H_esec] P-01 rischio del trade previsto (soglia 1,000%): 0,01 frazione del capitale  (verifica: C)\n\nRACCOMANDAZIONE\nnessuna obiezione dalle regole verificate\n\nDECISIONE: dell'utente, da registrare nel journal (con eventuale deroga e motivo)"
+
+======================================================================
+FAIL: test_numeri_e_orari_validati_all_ingresso (test_fix_g0_journal.TestAudit3ValidazioneJournal.test_numeri_e_orari_validati_all_ingresso)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/claude-0/-home-user/cf76bcae-15b0-5f4e-b9ff-4bc4b5339697/scratchpad/log/2dcb9aa/brain/guardian/test/test_fix_g0_journal.py", line 172, in test_numeri_e_orari_validati_all_ingresso
+    with self.assertRaises(ValueError, msg=f"{campo}={valore}"):
+         ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: ValueError not raised : aperto_utc=ieri
+
+======================================================================
+FAIL: test_brier_applica_le_correzioni (test_fix_g0_journal.TestAudit4BrierCorrezioni.test_brier_applica_le_correzioni)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/claude-0/-home-user/cf76bcae-15b0-5f4e-b9ff-4bc4b5339697/scratchpad/log/2dcb9aa/brain/guardian/test/test_fix_g0_journal.py", line 187, in test_brier_applica_le_correzioni
+    self.assertAlmostEqual(J.brier(d)["claude"]["brier"], (0.6 - 1) ** 2)
+    ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 0.03999999999999998 != 0.16000000000000003 within 7 places (0.12000000000000005 difference)
+
+======================================================================
+FAIL: test_valori_non_positivi_rifiutati (test_fix_g0_journal.TestAudit6Positivita.test_valori_non_positivi_rifiutati)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/claude-0/-home-user/cf76bcae-15b0-5f4e-b9ff-4bc4b5339697/scratchpad/log/2dcb9aa/brain/guardian/test/test_fix_g0_journal.py", line 230, in test_valori_non_positivi_rifiutati
+    with self.assertRaises(ValueError, msg=f"caso {i}"):
+         ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: ValueError not raised : caso 0
+
+======================================================================
+FAIL: test_documenti_di_continuita_allineati (test_fix_g0_journal.TestAudit7Continuita.test_documenti_di_continuita_allineati)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/claude-0/-home-user/cf76bcae-15b0-5f4e-b9ff-4bc4b5339697/scratchpad/log/2dcb9aa/brain/guardian/test/test_fix_g0_journal.py", line 237, in test_documenti_di_continuita_allineati
+    self.assertIn("trading-brain-core", (brain / "CONTINUITA.md").read_text(encoding="utf-8"))
+    ~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 'trading-brain-core' not found in '# Documento di continuità\n\nUltimo aggiornamento: **2026-11-11**, dopo l\'audit architetturale. Leggere questo file per primo (vale anche per Gemini, insieme a `collaborazione/HANDOFF-GEMINI.md`).\n\n## Stato\n- **Sviluppo sospeso** (D-12): nessun nuovo modulo, nessuno sviluppo del motore quantitativo, nessuna modifica a L2.1–L2.6 né ai materiali di Antigravity, nessuna migrazione o riorganizzazione.\n- **Audit architetturale concluso** (D-13): `audit/AUDIT-ARCH-20261111/`, sintesi in `RELAZIONE-AUDIT.md`, con 7 decisioni richieste all\'utente (§5) e un piano a tre mesi **proposto, non approvato** (`07-PRIORITA-TRE-MESI.md`).\n- **Ciclo di revisione V2/V3 di Antigravity:**\n  - seconda revisione V2 (`collaborazione/revisione-materiali-gemini/R-CLAUDE-20261111-01-V2/`, commit `3bbe137`) con errata (`a764e61`); contestazione C-01…C-17 in `collaborazione/da-claude/`;\n  - risposta di Antigravity e pacchetto V3 ricevuti come archivio ZIP in conversazione (SHA-256 `6c64a3a4…`), **non archiviati nel Brain**;\n  - **revisione conclusiva V3** in `collaborazione/revisione-materiali-gemini/R-CLAUDE-20261111-02-V3/`: validazione **non conclusa**. Punti: 9 risolti, 2 risolti con limitazione, 5 non risolti, 1 non verificabile; nuovi problemi N-01…N-09 (i più gravi: CRN non accoppiati tra sfide, MAE con parametri fissi, attribuzione a Claude nell\'intestazione del motore, documentazione incoerente su Kelly). Proposte P-01…P-11 **non applicate**;\n  - revisione V3: in attesa della valutazione dell\'utente; V3.1 ricevuta (ZIP `99e8f0bd…`) e revisionata il 12/11/2026 (vedi sotto).\n- Lezioni: L2.1–L2.6 `in_verifica`; nessuna `verificata`; nessun cancello superato.\n- Master Mission e Protocollo comune: non ancora ricevuti; protocollo operativo provvisorio (D-09).\n\n## Prossima azione esatta\n**Revisione V3.1: completata il 12/11/2026.**\n- Cartella: `collaborazione/revisione-materiali-gemini/R-CLAUDE-20261112-03-V31/`.\n- Esito: motore corretto, pacchetto non validato (N-01, N-02).\n- Antigravity ha risposto con la V3.2.\n\n**Parte B: completata il 12/11/2026.** `collaborazione/da-claude/CLAUDE_QUANTITATIVE_BRAIN_PROPOSAL.md` (proposta, **non implementata**; 5 decisioni richieste all\'utente, §10).\n\n**Revisione V3.2: completata il 12/11/2026.**\n- Cartella: `collaborazione/revisione-materiali-gemini/R-CLAUDE-20261112-04-V32/`.\n- Pacchetto ricevuto: ZIP `989dd288…`, manifest 15/15. Non archiviato nel Brain.\n- Esito: **VALIDATA CON RISERVE**.\n  - Q-01, Q-02 (V02–V12 11/11), Q-03, Q-04, Q-05 e Q-08 risolti; Q-06 in parte.\n  - Riserve non bloccanti S-01…S-09; la più rilevante è S-01: il valore simulato 0,8596 chiamato «benchmark analitico» (l\'esatto è 0,8572).\n  - Proposte **non applicate** (eventuale V3.3 minore).\n- Q-07 e Q-09 fuori perimetro.\n\n**Revisione V3.3: completata il 12/11/2026.**\n- Cartella: `collaborazione/revisione-materiali-gemini/R-CLAUDE-20261112-05-V33/`.\n- Pacchetto ricevuto: ZIP `6fb9d76e…`, manifest 18/18. Non archiviato nel Brain.\n- Esito: **VALIDATA CON RISERVE**.\n  - S-01…S-09 risolte (S-07 in parte); software corretto; risultati identici alla V3.2.\n  - Riserve nuove T-01…T-05, documentali e di copertura:\n    - T-01: mutazioni dichiarate «21/21» non riproducibili; V22 sopravvive; con le definizioni di Claude 21/24;\n    - T-02: precisione fittizia dei valori esatti;\n    - T-03: README attribuisce a Claude la revisione V3.3 prima che esista.\n  - Proposto un errata, non un nuovo ciclo.\n\n**Decisioni dell\'utente recepite (12/11/2026):**\n- V3.3 congelata con riserve; T-01…T-05 requisiti di ingresso della successiva fase tecnica;\n- Trading Guardian iniziale G0 consultivo.\n\n**Audit architetturale della revisione V2 di Gemini: completato il 12/11/2026.**\n- Cartella: `collaborazione/revisione-materiali-gemini/R-CLAUDE-20261112-06-ARCH-V2/`.\n- Contenuto: audit, affermazioni e fonti, registro delle divergenze D-01…D-28, pacchetto per una revisione esterna.\n- Esito: buona base di principi, non ancora base esecutiva. Rilievi principali:\n  - modello a 5 tipi non progettato;\n  - errori bibliografici;\n  - stato della roadmap dichiarato in modo prematuro;\n  - memoria condivisa inesistente nei fatti;\n  - contaminazione delle ipotesi da addestramento.\n\n**Valutazione della controverifica di Gemini: completata il 12/11/2026** (`R-CLAUDE-20261112-07-CONTROVERIFICA-GEMINI/`): utile come riconoscimento degli errori, insufficiente come verifica indipendente (Area G e autocritica assenti, nessun disaccordo, proposte trasformate in decisioni). Decisioni consolidate in §7.\n\n**Registro unico delle decisioni aperte: creato il 12/11/2026** (`governance/DECISIONI-APERTE.md`, DA-01…DA-18; bloccanti DA-01, DA-03, DA-15). Decisioni dell\'utente del 12/11 registrate in `governance/DECISIONI.md` (D-14…D-18). Pacchetto per la revisione esterna consegnato in chat (istruzioni in `collaborazione/revisione-materiali-gemini/R-CLAUDE-20261112-08-REVISIONE-ESTERNA/`).\n\n**Lavoro del 12/11/2026 dopo le decisioni D-19…D-23:**\n- errata V3.3 chiusa come addendum (`collaborazione/da-claude/ERRATA-V3_3/`, 24/24 mutanti non equivalenti uccisi);\n- revisione esterna di ChatGPT archiviata, con risposta;\n- regole FTMO verificate sulla fonte ufficiale e rulebook separato (`guardian/regole/`);\n- modello epistemico (`governance/MODELLO-EPISTEMICO.md`);\n- **G0 minimo** e **journal** (`guardian/`, 24 test superati).\n\nIl G0 **non** è ancora utilizzabile per decidere: serve la riconciliazione con un estratto conto (DA-25). Il repository nuovo e privato (D-19) va creato dall\'utente; poi va spostato il Brain e archiviate le consegne di Gemini.\n\n**Ora: fermo in attesa dell\'utente**, per:\n- rispondere alle decisioni di `governance/DECISIONI-APERTE.md`, a partire da quelle bloccanti;\n- valutare la revisione V3.3 e decidere se applicare l\'errata (T-01…T-05) all\'inizio della fase successiva;\n- prendere le decisioni elencate nell\'audit architetturale (§10) e nella valutazione della controverifica (§7);\n- avviare Q-09 (Trading Guardian) e Q-07;\n- prendere le decisioni della proposta della Parte B.\n\n## Correzioni note ancora da applicare (dopo il via libera)\n- Contestazione, punto C-04: il rimando "(§3, C-05)" va corretto in "(§3, C-06)".\n- Registri: seconda revisione e stato dello Studio 01 nel `REGISTRO-CONOSCENZE.md`; Q-01…Q-07 in `DOMANDE-APERTE.md`; conteggio della bibliografia (audit I-02, I-03, I-06).\n\n## Ripresa dopo interruzioni\nPrompt pronto in [`PROMPT-RIPRESA.md`](PROMPT-RIPRESA.md). Regola: prima di un lavoro lungo, Claude programma un messaggio di ripresa con quel prompt; senza lavoro in corso non programma nulla.\n\n## Convenzioni da mantenere\n- Lingua: italiano. Mai segnare una fonte come V senza averla letta; mai una padronanza senza cancello superato dichiarato dall\'utente; mai dati simulati presentati come reali.\n- Branch di lavoro: `claude/vibrant-cannon-5uunho` del repository `l-Altro`, cartella `brain/` (migrazione sospesa).\n- Gemini scrive solo in `collaborazione/da-gemini/`; Claude non modifica mai i materiali di Gemini.\n'
+
+----------------------------------------------------------------------
+Ran 36 tests in 0.036s
+
+FAILED (failures=6, errors=1)
+
+## 3. Terza fase rossa (mandato notturno): 5 test prima delle correzioni — commit 9170ecf
+test_p05_non_piu_stretto_della_prop_e_avvisi_non_soppressi (test_fix_g0_journal.TestAudit1P05RegolaAurea.test_p05_non_piu_stretto_della_prop_e_avvisi_non_soppressi) ... ok
+test_p01_size_maggiore_dopo_perdita (test_fix_g0_journal.TestAudit2P01SecondaParte.test_p01_size_maggiore_dopo_perdita) ... ok
+test_numeri_e_orari_validati_all_ingresso (test_fix_g0_journal.TestAudit3ValidazioneJournal.test_numeri_e_orari_validati_all_ingresso) ... ok
+test_brier_applica_le_correzioni (test_fix_g0_journal.TestAudit4BrierCorrezioni.test_brier_applica_le_correzioni) ... ok
+test_verifica_con_impronta_rileva_cancellazione_totale (test_fix_g0_journal.TestAudit5ImprontaEsterna.test_verifica_con_impronta_rileva_cancellazione_totale) ... ok
+test_valori_non_positivi_rifiutati (test_fix_g0_journal.TestAudit6Positivita.test_valori_non_positivi_rifiutati) ... ok
+test_documenti_di_continuita_allineati (test_fix_g0_journal.TestAudit7Continuita.test_documenti_di_continuita_allineati) ... ok
+test_avviso_se_lo_stress_viola_il_limite_totale (test_fix_g0_journal.TestFix1StressMargineTotale.test_avviso_se_lo_stress_viola_il_limite_totale)
+Conto 2-Step a 91.500: limite giornaliero 86.500 (margine 5.000), limite totale 90.000 (margine 1.500). ... ok
+test_future_senza_dimensione_contratto_fittizia (test_fix_g0_journal.TestFix2MetadatiFutures.test_future_senza_dimensione_contratto_fittizia)
+Un future si descrive con passo e valore del tick: nessuna dimensione del contratto «1» inventata. ... ok
+test_regola_confermata_applicata_e_non_confermate_dichiarate (test_fix_g0_journal.TestFix3RegolePersonali.test_regola_confermata_applicata_e_non_confermate_dichiarate)
+Con P-01 confermata a 0,5% del capitale, il trade previsto dell'esempio (682 USD su 100.000 = 0,682%) ... ok
+test_ancora_rileva_ultima_riga_troncamento_e_riscrittura (test_fix_g0_journal.TestFix4AncoraEsterna.test_ancora_rileva_ultima_riga_troncamento_e_riscrittura) ... ok
+test_decimal_e_frazioni_di_secondo (test_fix_g0_journal.TestFix5IndicatoriDecimal.test_decimal_e_frazioni_di_secondo) ... ok
+test_commissioni_negative_o_non_finite_rifiutate (test_fix_g0_journal.TestNotte1Commissioni.test_commissioni_negative_o_non_finite_rifiutate)
+Commissioni negative (segno invertito in un export) o non finite RIDURREBBERO la perdita allo stop. ... FAIL
+test_avvisi_trade_e_stress_anche_a_limite_personale_superato (test_fix_g0_journal.TestNotte2P05MarginePersonaleNegativo.test_avvisi_trade_e_stress_anche_a_limite_personale_superato)
+P-05 a 0,4%: limite personale = 100.400 − 400 = 100.000. Equity 99.900 → margine personale −100 (limite ... FAIL
+test_corregge_e_chiude_coerenti_e_nessuna_doppia_chiusura (test_fix_g0_journal.TestNotte3SemanticaJournal.test_corregge_e_chiude_coerenti_e_nessuna_doppia_chiusura) ... FAIL
+test_dati_di_sessione_e_soglie_non_validi (test_fix_g0_journal.TestNotte4DatiSessione.test_dati_di_sessione_e_soglie_non_validi)
+Booleani, negativi, NaN, infiniti e ore di sonno oltre 24: dato non valido, mai «regola rispettata» o crash. ... FAIL
+test_booleani_rifiutati_come_numeri (test_fix_g0_journal.TestNotte5BooleaniJournal.test_booleani_rifiutati_come_numeri)
+In Python True == 1: senza controllo, `probabilita: true`, `esito: true` e `aderenza: true` passerebbero. ... FAIL
+test_1step_giornaliero_e_trailing (test_g0.TestLimitiFTMO.test_1step_giornaliero_e_trailing) ... ok
+test_2step_giornaliero_esempio_ufficiale (test_g0.TestLimitiFTMO.test_2step_giornaliero_esempio_ufficiale) ... ok
+test_2step_totale_statico (test_g0.TestLimitiFTMO.test_2step_totale_statico) ... ok
+test_instant_esempio_ufficiale (test_g0.TestLimitiFTMO.test_instant_esempio_ufficiale) ... ok
+test_limite_e_derivato_dalla_regola_verificata (test_g0.TestLimitiFTMO.test_limite_e_derivato_dalla_regola_verificata) ... ok
+test_scenario_di_stress (test_g0.TestMarginiStress.test_scenario_di_stress) ... ok
+test_stop_residui (test_g0.TestMarginiStress.test_stop_residui) ... ok
+test_future_tick (test_g0.TestPerditaAlloStop.test_future_tick) ... ok
+test_fx_conto_nella_valuta_base_converte_al_prezzo_dello_stop (test_g0.TestPerditaAlloStop.test_fx_conto_nella_valuta_base_converte_al_prezzo_dello_stop) ... ok
+test_fx_conto_nella_valuta_quotata (test_g0.TestPerditaAlloStop.test_fx_conto_nella_valuta_quotata) ... ok
+test_fx_terza_valuta_richiede_cambio_misurato (test_g0.TestPerditaAlloStop.test_fx_terza_valuta_richiede_cambio_misurato) ... ok
+test_vendita_allo_scoperto_e_commissioni (test_g0.TestPerditaAlloStop.test_vendita_allo_scoperto_e_commissioni) ... ok
+test_esempio_end_to_end (test_g0.TestScheda.test_esempio_end_to_end) ... ok
+test_posizione_aperta_senza_prezzo_attuale_rifiutata (test_g0.TestScheda.test_posizione_aperta_senza_prezzo_attuale_rifiutata) ... ok
+test_non_stimabile_contagioso_e_incertezza_obbligatoria (test_g0.TestSchemaDeiValori.test_non_stimabile_contagioso_e_incertezza_obbligatoria) ... ok
+test_propagazione_del_tipo_piu_debole_e_delle_condizioni (test_g0.TestSchemaDeiValori.test_propagazione_del_tipo_piu_debole_e_delle_condizioni) ... ok
+test_un_numero_senza_tipo_valido_e_rifiutato (test_g0.TestSchemaDeiValori.test_un_numero_senza_tipo_valido_e_rifiutato) ... ok
+test_una_stima_non_allarga_mai_un_limite (test_g0.TestSchemaDeiValori.test_una_stima_non_allarga_mai_un_limite) ... ok
+test_r1_spento_senza_parametri_e_attivo_con_parametri (test_journal.TestIndicatori.test_r1_spento_senza_parametri_e_attivo_con_parametri) ... ok
+test_brier (test_journal.TestJournal.test_brier) ... ok
+test_cancellazione_scoperta (test_journal.TestJournal.test_cancellazione_scoperta) ... ok
+test_catena_integra_e_manomissione_scoperta (test_journal.TestJournal.test_catena_integra_e_manomissione_scoperta) ... ok
+test_sigillo (test_journal.TestJournal.test_sigillo) ... ok
+test_validazione (test_journal.TestJournal.test_validazione) ... ok
+
+======================================================================
+FAIL: test_commissioni_negative_o_non_finite_rifiutate (test_fix_g0_journal.TestNotte1Commissioni.test_commissioni_negative_o_non_finite_rifiutate)
+Commissioni negative (segno invertito in un export) o non finite RIDURREBBERO la perdita allo stop.
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/claude-0/-home-user/cf76bcae-15b0-5f4e-b9ff-4bc4b5339697/scratchpad/log/9170ecf/brain/guardian/test/test_fix_g0_journal.py", line 267, in test_commissioni_negative_o_non_finite_rifiutate
+    with self.assertRaises(ValueError, msg=f"commissioni={c}"):
+         ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: ValueError not raised : commissioni=-200
+
+======================================================================
+FAIL: test_avvisi_trade_e_stress_anche_a_limite_personale_superato (test_fix_g0_journal.TestNotte2P05MarginePersonaleNegativo.test_avvisi_trade_e_stress_anche_a_limite_personale_superato)
+P-05 a 0,4%: limite personale = 100.400 − 400 = 100.000. Equity 99.900 → margine personale −100 (limite
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/claude-0/-home-user/cf76bcae-15b0-5f4e-b9ff-4bc4b5339697/scratchpad/log/9170ecf/brain/guardian/test/test_fix_g0_journal.py", line 279, in test_avvisi_trade_e_stress_anche_a_limite_personale_superato
+    self.assertIn("P-05: se lo stop del trade previsto viene colpito", avvisi)
+    ~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 'P-05: se lo stop del trade previsto viene colpito' not found in 'P-05: limite personale giornaliero già superato: kill switch personale.\n'
+
+======================================================================
+FAIL: test_corregge_e_chiude_coerenti_e_nessuna_doppia_chiusura (test_fix_g0_journal.TestNotte3SemanticaJournal.test_corregge_e_chiude_coerenti_e_nessuna_doppia_chiusura)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/claude-0/-home-user/cf76bcae-15b0-5f4e-b9ff-4bc4b5339697/scratchpad/log/9170ecf/brain/guardian/test/test_fix_g0_journal.py", line 302, in test_corregge_e_chiude_coerenti_e_nessuna_doppia_chiusura
+    with self.assertRaises(ValueError, msg=nome):
+         ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: ValueError not raised : (a) esito che corregge una previsione
+
+======================================================================
+FAIL: test_dati_di_sessione_e_soglie_non_validi (test_fix_g0_journal.TestNotte4DatiSessione.test_dati_di_sessione_e_soglie_non_validi)
+Booleani, negativi, NaN, infiniti e ore di sonno oltre 24: dato non valido, mai «regola rispettata» o crash.
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/claude-0/-home-user/cf76bcae-15b0-5f4e-b9ff-4bc4b5339697/scratchpad/log/9170ecf/brain/guardian/test/test_fix_g0_journal.py", line 328, in test_dati_di_sessione_e_soglie_non_validi
+    self.assertIn(f"{rid.replace('_', '-')}: dato «sessione.{chiave}» non valido", avvisi, f"{chiave}={x!r}")
+    ~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 'P-14: dato «sessione.ore_sonno» non valido' not found in 'P-14: dato «sessione.ore_sonno» non numerico\n' : ore_sonno=True
+
+======================================================================
+FAIL: test_booleani_rifiutati_come_numeri (test_fix_g0_journal.TestNotte5BooleaniJournal.test_booleani_rifiutati_come_numeri)
+In Python True == 1: senza controllo, `probabilita: true`, `esito: true` e `aderenza: true` passerebbero.
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/claude-0/-home-user/cf76bcae-15b0-5f4e-b9ff-4bc4b5339697/scratchpad/log/9170ecf/brain/guardian/test/test_fix_g0_journal.py", line 345, in test_booleani_rifiutati_come_numeri
+    with self.assertRaises(ValueError, msg=str(dati)):
+         ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: ValueError not raised : {'autore': 'claude', 'evento': 'x', 'scadenza_utc': '2026-12-01T00:00:00Z', 'fonte': 't', 'probabilita': True}
+
+----------------------------------------------------------------------
+Ran 41 tests in 0.049s
+
+FAILED (failures=5)
+
+## 4. Fase verde delle correzioni notturne: 41 test — commit ab0e48f
+test_p05_non_piu_stretto_della_prop_e_avvisi_non_soppressi (test_fix_g0_journal.TestAudit1P05RegolaAurea.test_p05_non_piu_stretto_della_prop_e_avvisi_non_soppressi) ... ok
+test_p01_size_maggiore_dopo_perdita (test_fix_g0_journal.TestAudit2P01SecondaParte.test_p01_size_maggiore_dopo_perdita) ... ok
+test_numeri_e_orari_validati_all_ingresso (test_fix_g0_journal.TestAudit3ValidazioneJournal.test_numeri_e_orari_validati_all_ingresso) ... ok
+test_brier_applica_le_correzioni (test_fix_g0_journal.TestAudit4BrierCorrezioni.test_brier_applica_le_correzioni) ... ok
+test_verifica_con_impronta_rileva_cancellazione_totale (test_fix_g0_journal.TestAudit5ImprontaEsterna.test_verifica_con_impronta_rileva_cancellazione_totale) ... ok
+test_valori_non_positivi_rifiutati (test_fix_g0_journal.TestAudit6Positivita.test_valori_non_positivi_rifiutati) ... ok
+test_documenti_di_continuita_allineati (test_fix_g0_journal.TestAudit7Continuita.test_documenti_di_continuita_allineati) ... ok
+test_avviso_se_lo_stress_viola_il_limite_totale (test_fix_g0_journal.TestFix1StressMargineTotale.test_avviso_se_lo_stress_viola_il_limite_totale)
+Conto 2-Step a 91.500: limite giornaliero 86.500 (margine 5.000), limite totale 90.000 (margine 1.500). ... ok
+test_future_senza_dimensione_contratto_fittizia (test_fix_g0_journal.TestFix2MetadatiFutures.test_future_senza_dimensione_contratto_fittizia)
+Un future si descrive con passo e valore del tick: nessuna dimensione del contratto «1» inventata. ... ok
+test_regola_confermata_applicata_e_non_confermate_dichiarate (test_fix_g0_journal.TestFix3RegolePersonali.test_regola_confermata_applicata_e_non_confermate_dichiarate)
+Con P-01 confermata a 0,5% del capitale, il trade previsto dell'esempio (682 USD su 100.000 = 0,682%) ... ok
+test_ancora_rileva_ultima_riga_troncamento_e_riscrittura (test_fix_g0_journal.TestFix4AncoraEsterna.test_ancora_rileva_ultima_riga_troncamento_e_riscrittura) ... ok
+test_decimal_e_frazioni_di_secondo (test_fix_g0_journal.TestFix5IndicatoriDecimal.test_decimal_e_frazioni_di_secondo) ... ok
+test_commissioni_negative_o_non_finite_rifiutate (test_fix_g0_journal.TestNotte1Commissioni.test_commissioni_negative_o_non_finite_rifiutate)
+Commissioni negative (segno invertito in un export) o non finite RIDURREBBERO la perdita allo stop. ... ok
+test_avvisi_trade_e_stress_anche_a_limite_personale_superato (test_fix_g0_journal.TestNotte2P05MarginePersonaleNegativo.test_avvisi_trade_e_stress_anche_a_limite_personale_superato)
+P-05 a 0,4%: limite personale = 100.400 − 400 = 100.000. Equity 99.900 → margine personale −100 (limite ... ok
+test_corregge_e_chiude_coerenti_e_nessuna_doppia_chiusura (test_fix_g0_journal.TestNotte3SemanticaJournal.test_corregge_e_chiude_coerenti_e_nessuna_doppia_chiusura) ... ok
+test_dati_di_sessione_e_soglie_non_validi (test_fix_g0_journal.TestNotte4DatiSessione.test_dati_di_sessione_e_soglie_non_validi)
+Booleani, negativi, NaN, infiniti e ore di sonno oltre 24: dato non valido, mai «regola rispettata» o crash. ... ok
+test_booleani_rifiutati_come_numeri (test_fix_g0_journal.TestNotte5BooleaniJournal.test_booleani_rifiutati_come_numeri)
+In Python True == 1: senza controllo, `probabilita: true`, `esito: true` e `aderenza: true` passerebbero. ... ok
+test_1step_giornaliero_e_trailing (test_g0.TestLimitiFTMO.test_1step_giornaliero_e_trailing) ... ok
+test_2step_giornaliero_esempio_ufficiale (test_g0.TestLimitiFTMO.test_2step_giornaliero_esempio_ufficiale) ... ok
+test_2step_totale_statico (test_g0.TestLimitiFTMO.test_2step_totale_statico) ... ok
+test_instant_esempio_ufficiale (test_g0.TestLimitiFTMO.test_instant_esempio_ufficiale) ... ok
+test_limite_e_derivato_dalla_regola_verificata (test_g0.TestLimitiFTMO.test_limite_e_derivato_dalla_regola_verificata) ... ok
+test_scenario_di_stress (test_g0.TestMarginiStress.test_scenario_di_stress) ... ok
+test_stop_residui (test_g0.TestMarginiStress.test_stop_residui) ... ok
+test_future_tick (test_g0.TestPerditaAlloStop.test_future_tick) ... ok
+test_fx_conto_nella_valuta_base_converte_al_prezzo_dello_stop (test_g0.TestPerditaAlloStop.test_fx_conto_nella_valuta_base_converte_al_prezzo_dello_stop) ... ok
+test_fx_conto_nella_valuta_quotata (test_g0.TestPerditaAlloStop.test_fx_conto_nella_valuta_quotata) ... ok
+test_fx_terza_valuta_richiede_cambio_misurato (test_g0.TestPerditaAlloStop.test_fx_terza_valuta_richiede_cambio_misurato) ... ok
+test_vendita_allo_scoperto_e_commissioni (test_g0.TestPerditaAlloStop.test_vendita_allo_scoperto_e_commissioni) ... ok
+test_esempio_end_to_end (test_g0.TestScheda.test_esempio_end_to_end) ... ok
+test_posizione_aperta_senza_prezzo_attuale_rifiutata (test_g0.TestScheda.test_posizione_aperta_senza_prezzo_attuale_rifiutata) ... ok
+test_non_stimabile_contagioso_e_incertezza_obbligatoria (test_g0.TestSchemaDeiValori.test_non_stimabile_contagioso_e_incertezza_obbligatoria) ... ok
+test_propagazione_del_tipo_piu_debole_e_delle_condizioni (test_g0.TestSchemaDeiValori.test_propagazione_del_tipo_piu_debole_e_delle_condizioni) ... ok
+test_un_numero_senza_tipo_valido_e_rifiutato (test_g0.TestSchemaDeiValori.test_un_numero_senza_tipo_valido_e_rifiutato) ... ok
+test_una_stima_non_allarga_mai_un_limite (test_g0.TestSchemaDeiValori.test_una_stima_non_allarga_mai_un_limite) ... ok
+test_r1_spento_senza_parametri_e_attivo_con_parametri (test_journal.TestIndicatori.test_r1_spento_senza_parametri_e_attivo_con_parametri) ... ok
+test_brier (test_journal.TestJournal.test_brier) ... ok
+test_cancellazione_scoperta (test_journal.TestJournal.test_cancellazione_scoperta) ... ok
+test_catena_integra_e_manomissione_scoperta (test_journal.TestJournal.test_catena_integra_e_manomissione_scoperta) ... ok
+test_sigillo (test_journal.TestJournal.test_sigillo) ... ok
+test_validazione (test_journal.TestJournal.test_validazione) ... ok
+
+----------------------------------------------------------------------
+Ran 41 tests in 0.073s
+
+OK
+
+## 5. Mutation testing, primo giro — commit 1d1c4f1 (script e 41 test): sopravvissuti da uccidere
+CONTROLLO     M00 copia non mutata: suite verde
+UCCISO        V01 tipo del risultato = il PIÙ FORTE fra gli input  (g0/valori.py)  [test_limite_e_derivato_dalla_regola_verificata, test_fx_conto_nella_valuta_quotata, test_propagazione_del_tipo_piu_debole_e_delle_condizioni]
+UCCISO        V02 NON STIMABILE non più contagioso  (g0/valori.py)  [test_non_stimabile_contagioso_e_incertezza_obbligatoria]
+UCCISO        V03 restringi può allargare il limite  (g0/valori.py)  [test_una_stima_non_allarga_mai_un_limite]
+UCCISO        V04 stato di verifica = il PIÙ FORTE  (g0/valori.py)  [test_propagazione_del_tipo_piu_debole_e_delle_condizioni]
+UCCISO        V05 commissioni omesse dalla perdita  (g0/strumenti.py)  [test_avviso_se_lo_stress_viola_il_limite_totale, test_commissioni_negative_o_non_finite_rifiutate, test_vendita_allo_scoperto_e_commissioni, test_esempio_end_to_end]
+UCCISO        V06 commissioni negative ammesse  (g0/strumenti.py)  [test_commissioni_negative_o_non_finite_rifiutate]
+UCCISO        V07 cambio FX: * invece di /  (g0/strumenti.py)  [test_fx_terza_valuta_richiede_cambio_misurato]
+UCCISO        V08 valuta base convertita al prezzo d'ingresso invece che allo stop  (g0/strumenti.py)  [test_fx_conto_nella_valuta_base_converte_al_prezzo_dello_stop, test_esempio_end_to_end]
+SOPRAVVISSUTO V09 controllo is_finite() rimosso su prezzi, quantità e cambio  (g0/strumenti.py)
+UCCISO        V10 distanza non multipla del tick ammessa  (g0/strumenti.py)  [test_future_tick]
+UCCISO        V11 stop uguale all'ingresso ammesso  (g0/strumenti.py)  [test_valori_non_positivi_rifiutati]
+UCCISO        V12 limite giornaliero: frazione applicata al saldo invece che al capitale iniziale  (g0/limiti.py)  [test_1step_giornaliero_e_trailing, test_2step_giornaliero_esempio_ufficiale, test_instant_esempio_ufficiale]
+UCCISO        V13 frazioni FTMO scambiate (giornaliero con la frazione totale)  (g0/limiti.py)  [test_1step_giornaliero_e_trailing, test_2step_giornaliero_esempio_ufficiale, test_instant_esempio_ufficiale]
+UCCISO        V14 trailing 1-Step/Instant ignorato  (g0/limiti.py)  [test_1step_giornaliero_e_trailing, test_instant_esempio_ufficiale]
+UCCISO        V15 2-Step trattato come trailing  (g0/limiti.py)  [test_2step_totale_statico]
+UCCISO        V16 capitale iniziale non positivo ammesso  (g0/limiti.py)  [test_valori_non_positivi_rifiutati]
+SOPRAVVISSUTO V17 scenario di stress senza le riserve dichiarate  (g0/limiti.py)
+SOPRAVVISSUTO V18 P-05 regola aurea: >= diventa > (limite personale UGUALE a quello FTMO accettato)  (g0/scheda.py)
+SOPRAVVISSUTO V19 P-01: > diventa >= (rischio uguale alla soglia segnalato)  (g0/scheda.py)
+SOPRAVVISSUTO V20 P-11/P-14: < diventa <= (valore uguale alla soglia = violazione)  (g0/scheda.py)
+SOPRAVVISSUTO V21 P-15: >= diventa > (raggiunto il massimo di perdite: nessun avviso)  (g0/scheda.py)
+UCCISO        V22 P-05: avvisi su trade soppressi a margine personale negativo (difetto reintrodotto)  (g0/scheda.py)  [test_avvisi_trade_e_stress_anche_a_limite_personale_superato]
+SOPRAVVISSUTO V23 trade previsto: > diventa >= sul margine giornaliero (equity AL limite = violazione)  (g0/scheda.py)
+UCCISO        V24 posizione aperta misurata dal prezzo d'ingresso  (g0/scheda.py)  [test_esempio_end_to_end]
+UCCISO        V25 dati di sessione negativi ammessi  (g0/scheda.py)  [test_dati_di_sessione_e_soglie_non_validi]
+UCCISO        V26 _numero accetta NaN e infiniti  (g0/scheda.py)  [test_dati_di_sessione_e_soglie_non_validi]
+SOPRAVVISSUTO V27 stress: < diventa <= sul margine giornaliero dopo lo scenario  (g0/scheda.py)
+UCCISO        V28 stress: margine totale dopo lo scenario non controllato  (g0/scheda.py)  [test_avviso_se_lo_stress_viola_il_limite_totale]
+SOPRAVVISSUTO V29 versioni_finali: catene di correzioni non risolte  (journal/journal.py)
+UCCISO        V30 impronta esterna non controllata  (journal/journal.py)  [test_verifica_con_impronta_rileva_cancellazione_totale]
+UCCISO        V31 doppia chiusura di una previsione ammessa  (journal/journal.py)  [test_corregge_e_chiude_coerenti_e_nessuna_doppia_chiusura]
+UCCISO        V32 chiude verso una correzione ammesso  (journal/journal.py)  [test_corregge_e_chiude_coerenti_e_nessuna_doppia_chiusura]
+UCCISO        V33 corregge fra record di natura diversa ammesso  (journal/journal.py)  [test_corregge_e_chiude_coerenti_e_nessuna_doppia_chiusura]
+UCCISO        V34 catena di hash non controllata  (journal/journal.py)  [test_catena_integra_e_manomissione_scoperta]
+UCCISO        V35 Brier: errore assoluto invece del quadrato  (journal/journal.py)  [test_brier_applica_le_correzioni, test_brier]
+SOPRAVVISSUTO V36 journal: orari non UTC ammessi  (journal/journal.py)
+SOPRAVVISSUTO V37 journal: chiusura nello stesso istante dell'apertura rifiutata (< diventa <=)  (journal/journal.py)
+UCCISO        V38 journal: probabilità booleana ammessa  (journal/journal.py)  [test_booleani_rifiutati_come_numeri]
+UCCISO        V39 sigillo verificato senza nonce  (journal/journal.py)  [test_sigillo]
+UCCISO        V40 ancora non controllata da verifica()  (journal/journal.py)  [test_ancora_rileva_ultima_riga_troncamento_e_riscrittura]
+UCCISO        V41 indicatori: microsecondi ignorati nelle durate  (journal/indicatori.py)  [test_decimal_e_frazioni_di_secondo]
+SOPRAVVISSUTO V42 indicatori: orari non UTC ammessi  (journal/indicatori.py)
+SOPRAVVISSUTO V43 R1: < invece di <= sui minuti (rientro esattamente al limite escluso)  (journal/indicatori.py)
+SOPRAVVISSUTO V44 indicatori: un pareggio conta come perdita  (journal/indicatori.py)
+EQUIVALENTE   E01 ancora: confronto del numero di righe rimosso (EQUIVALENTE)  (journal/journal.py)
+
+E01 equivalente: Se l'ultima riga coincide con quella ancorata, il suo prec_hash fissa la riga precedente e così via fino alla genesi: la catena determina tutte le righe e quindi il loro numero. Ogni file con lo stesso ultimo hash ma un numero di righe diverso rompe la catena, che verifica() segnala comunque. Cambia solo il testo del messaggio, non l'esito della verifica (salvo collisioni di SHA-256).
+
+Mutanti non equivalenti uccisi: 30/44
+Per file: g0/limiti.py 5/6; g0/scheda.py 5/11; g0/strumenti.py 6/7; g0/valori.py 4/4; journal/indicatori.py 1/4; journal/journal.py 9/12
+
+## 6. Fase verde finale — commit 4eb79e0 (52 test, inclusi gli 11 di test_mutanti_g0_journal.py)
+test_p05_non_piu_stretto_della_prop_e_avvisi_non_soppressi (test_fix_g0_journal.TestAudit1P05RegolaAurea.test_p05_non_piu_stretto_della_prop_e_avvisi_non_soppressi) ... ok
+test_p01_size_maggiore_dopo_perdita (test_fix_g0_journal.TestAudit2P01SecondaParte.test_p01_size_maggiore_dopo_perdita) ... ok
+test_numeri_e_orari_validati_all_ingresso (test_fix_g0_journal.TestAudit3ValidazioneJournal.test_numeri_e_orari_validati_all_ingresso) ... ok
+test_brier_applica_le_correzioni (test_fix_g0_journal.TestAudit4BrierCorrezioni.test_brier_applica_le_correzioni) ... ok
+test_verifica_con_impronta_rileva_cancellazione_totale (test_fix_g0_journal.TestAudit5ImprontaEsterna.test_verifica_con_impronta_rileva_cancellazione_totale) ... ok
+test_valori_non_positivi_rifiutati (test_fix_g0_journal.TestAudit6Positivita.test_valori_non_positivi_rifiutati) ... ok
+test_documenti_di_continuita_allineati (test_fix_g0_journal.TestAudit7Continuita.test_documenti_di_continuita_allineati) ... ok
+test_avviso_se_lo_stress_viola_il_limite_totale (test_fix_g0_journal.TestFix1StressMargineTotale.test_avviso_se_lo_stress_viola_il_limite_totale)
+Conto 2-Step a 91.500: limite giornaliero 86.500 (margine 5.000), limite totale 90.000 (margine 1.500). ... ok
+test_future_senza_dimensione_contratto_fittizia (test_fix_g0_journal.TestFix2MetadatiFutures.test_future_senza_dimensione_contratto_fittizia)
+Un future si descrive con passo e valore del tick: nessuna dimensione del contratto «1» inventata. ... ok
+test_regola_confermata_applicata_e_non_confermate_dichiarate (test_fix_g0_journal.TestFix3RegolePersonali.test_regola_confermata_applicata_e_non_confermate_dichiarate)
+Con P-01 confermata a 0,5% del capitale, il trade previsto dell'esempio (682 USD su 100.000 = 0,682%) ... ok
+test_ancora_rileva_ultima_riga_troncamento_e_riscrittura (test_fix_g0_journal.TestFix4AncoraEsterna.test_ancora_rileva_ultima_riga_troncamento_e_riscrittura) ... ok
+test_decimal_e_frazioni_di_secondo (test_fix_g0_journal.TestFix5IndicatoriDecimal.test_decimal_e_frazioni_di_secondo) ... ok
+test_commissioni_negative_o_non_finite_rifiutate (test_fix_g0_journal.TestNotte1Commissioni.test_commissioni_negative_o_non_finite_rifiutate)
+Commissioni negative (segno invertito in un export) o non finite RIDURREBBERO la perdita allo stop. ... ok
+test_avvisi_trade_e_stress_anche_a_limite_personale_superato (test_fix_g0_journal.TestNotte2P05MarginePersonaleNegativo.test_avvisi_trade_e_stress_anche_a_limite_personale_superato)
+P-05 a 0,4%: limite personale = 100.400 − 400 = 100.000. Equity 99.900 → margine personale −100 (limite ... ok
+test_corregge_e_chiude_coerenti_e_nessuna_doppia_chiusura (test_fix_g0_journal.TestNotte3SemanticaJournal.test_corregge_e_chiude_coerenti_e_nessuna_doppia_chiusura) ... ok
+test_dati_di_sessione_e_soglie_non_validi (test_fix_g0_journal.TestNotte4DatiSessione.test_dati_di_sessione_e_soglie_non_validi)
+Booleani, negativi, NaN, infiniti e ore di sonno oltre 24: dato non valido, mai «regola rispettata» o crash. ... ok
+test_booleani_rifiutati_come_numeri (test_fix_g0_journal.TestNotte5BooleaniJournal.test_booleani_rifiutati_come_numeri)
+In Python True == 1: senza controllo, `probabilita: true`, `esito: true` e `aderenza: true` passerebbero. ... ok
+test_1step_giornaliero_e_trailing (test_g0.TestLimitiFTMO.test_1step_giornaliero_e_trailing) ... ok
+test_2step_giornaliero_esempio_ufficiale (test_g0.TestLimitiFTMO.test_2step_giornaliero_esempio_ufficiale) ... ok
+test_2step_totale_statico (test_g0.TestLimitiFTMO.test_2step_totale_statico) ... ok
+test_instant_esempio_ufficiale (test_g0.TestLimitiFTMO.test_instant_esempio_ufficiale) ... ok
+test_limite_e_derivato_dalla_regola_verificata (test_g0.TestLimitiFTMO.test_limite_e_derivato_dalla_regola_verificata) ... ok
+test_scenario_di_stress (test_g0.TestMarginiStress.test_scenario_di_stress) ... ok
+test_stop_residui (test_g0.TestMarginiStress.test_stop_residui) ... ok
+test_future_tick (test_g0.TestPerditaAlloStop.test_future_tick) ... ok
+test_fx_conto_nella_valuta_base_converte_al_prezzo_dello_stop (test_g0.TestPerditaAlloStop.test_fx_conto_nella_valuta_base_converte_al_prezzo_dello_stop) ... ok
+test_fx_conto_nella_valuta_quotata (test_g0.TestPerditaAlloStop.test_fx_conto_nella_valuta_quotata) ... ok
+test_fx_terza_valuta_richiede_cambio_misurato (test_g0.TestPerditaAlloStop.test_fx_terza_valuta_richiede_cambio_misurato) ... ok
+test_vendita_allo_scoperto_e_commissioni (test_g0.TestPerditaAlloStop.test_vendita_allo_scoperto_e_commissioni) ... ok
+test_esempio_end_to_end (test_g0.TestScheda.test_esempio_end_to_end) ... ok
+test_posizione_aperta_senza_prezzo_attuale_rifiutata (test_g0.TestScheda.test_posizione_aperta_senza_prezzo_attuale_rifiutata) ... ok
+test_non_stimabile_contagioso_e_incertezza_obbligatoria (test_g0.TestSchemaDeiValori.test_non_stimabile_contagioso_e_incertezza_obbligatoria) ... ok
+test_propagazione_del_tipo_piu_debole_e_delle_condizioni (test_g0.TestSchemaDeiValori.test_propagazione_del_tipo_piu_debole_e_delle_condizioni) ... ok
+test_un_numero_senza_tipo_valido_e_rifiutato (test_g0.TestSchemaDeiValori.test_un_numero_senza_tipo_valido_e_rifiutato) ... ok
+test_una_stima_non_allarga_mai_un_limite (test_g0.TestSchemaDeiValori.test_una_stima_non_allarga_mai_un_limite) ... ok
+test_r1_spento_senza_parametri_e_attivo_con_parametri (test_journal.TestIndicatori.test_r1_spento_senza_parametri_e_attivo_con_parametri) ... ok
+test_brier (test_journal.TestJournal.test_brier) ... ok
+test_cancellazione_scoperta (test_journal.TestJournal.test_cancellazione_scoperta) ... ok
+test_catena_integra_e_manomissione_scoperta (test_journal.TestJournal.test_catena_integra_e_manomissione_scoperta) ... ok
+test_sigillo (test_journal.TestJournal.test_sigillo) ... ok
+test_validazione (test_journal.TestJournal.test_validazione) ... ok
+test_brier_e_indicatori_con_correzione_di_una_correzione (test_mutanti_g0_journal.TestCorrezioniACatena.test_brier_e_indicatori_con_correzione_di_una_correzione)
+V29. a → a2 (corregge a) → a3 (corregge a2): vale a3 (0,6). Esito 1: Brier (0,6 − 1)² = 0,16 su n = 1. ... ok
+test_r1_rientro_esattamente_al_limite_e_pareggio (test_mutanti_g0_journal.TestIndicatoriAlLimite.test_r1_rientro_esattamente_al_limite_e_pareggio)
+V43: R1 = ingresso ENTRO `minuti_max` (≤): 3 minuti con minuti_max = 3 è un caso. ... ok
+test_indicatori_rifiutano_fusi_diversi_da_utc (test_mutanti_g0_journal.TestOrariUTC.test_indicatori_rifiutano_fusi_diversi_da_utc)
+V42. ... ok
+test_journal_rifiuta_fusi_diversi_da_utc_e_ammette_apertura_uguale_a_chiusura (test_mutanti_g0_journal.TestOrariUTC.test_journal_rifiuta_fusi_diversi_da_utc_e_ammette_apertura_uguale_a_chiusura)
+V36, V37. +01:00 non è UTC (anche se è un orario ISO valido); +00:00 sì. Un trade aperto e chiuso nello ... ok
+test_equity_esattamente_al_limite_non_e_violazione (test_mutanti_g0_journal.TestSoglieAlLimite.test_equity_esattamente_al_limite_non_e_violazione)
+V23, V27. FTMO: violazione = equity SOTTO il limite. Limite giornaliero 100.400 − 5.000 = 95.400. ... ok
+test_p01_rischio_uguale_alla_soglia_non_la_supera (test_mutanti_g0_journal.TestSoglieAlLimite.test_p01_rischio_uguale_alla_soglia_non_la_supera)
+V19. Trade EURUSD 1 lotto, 200 USD esatti su 100.000 = 0,2%: con soglia 0,2% nessun avviso; 0,19% sì. ... ok
+test_p05_uguale_al_limite_della_prop_non_e_piu_stretto (test_mutanti_g0_journal.TestSoglieAlLimite.test_p05_uguale_al_limite_della_prop_non_e_piu_stretto)
+V18. P-05 = 5% sul 2-Step (limite FTMO 5%): non è PIÙ stretto, va segnalato; 4,99% invece sì. ... ok
+test_p11_e_p14_valore_uguale_alla_soglia_rispetta_la_regola (test_mutanti_g0_journal.TestSoglieAlLimite.test_p11_e_p14_valore_uguale_alla_soglia_rispetta_la_regola)
+V20. «Meno di 6 ore di sonno»: 6 ore rispettano la regola, 5,9 no. Pausa di 15 minuti: 15 la rispettano. ... ok
+test_p15_raggiunto_il_massimo_di_perdite_consecutive (test_mutanti_g0_journal.TestSoglieAlLimite.test_p15_raggiunto_il_massimo_di_perdite_consecutive)
+V21. «Massimo numero di perdite consecutive prima dello stop» = 3: alla terza perdita la regola scatta. ... ok
+test_le_riserve_entrano_nello_scenario (test_mutanti_g0_journal.TestStressConRiserve.test_le_riserve_entrano_nello_scenario)
+V17. Scenario = perdite allo stop + riserve dichiarate; una riserva NON STIMABILE rende lo scenario tale. ... ok
+test_prezzi_quantita_e_cambi_infiniti_rifiutati (test_mutanti_g0_journal.TestValoriNonFiniti.test_prezzi_quantita_e_cambi_infiniti_rifiutati)
+V09. Infinity > 0 è vero: senza is_finite() la perdita allo stop diventerebbe infinita senza errore. ... ok
+
+----------------------------------------------------------------------
+Ran 52 tests in 0.118s
+
+OK
+
+## 7. Mutation testing finale — commit 4eb79e0
+CONTROLLO     M00 copia non mutata: suite verde
+UCCISO        V01 tipo del risultato = il PIÙ FORTE fra gli input  (g0/valori.py)  [test_limite_e_derivato_dalla_regola_verificata, test_fx_conto_nella_valuta_quotata, test_propagazione_del_tipo_piu_debole_e_delle_condizioni]
+UCCISO        V02 NON STIMABILE non più contagioso  (g0/valori.py)  [test_non_stimabile_contagioso_e_incertezza_obbligatoria, test_le_riserve_entrano_nello_scenario]
+UCCISO        V03 restringi può allargare il limite  (g0/valori.py)  [test_una_stima_non_allarga_mai_un_limite]
+UCCISO        V04 stato di verifica = il PIÙ FORTE  (g0/valori.py)  [test_propagazione_del_tipo_piu_debole_e_delle_condizioni]
+UCCISO        V05 commissioni omesse dalla perdita  (g0/strumenti.py)  [test_avviso_se_lo_stress_viola_il_limite_totale, test_commissioni_negative_o_non_finite_rifiutate, test_vendita_allo_scoperto_e_commissioni, test_esempio_end_to_end, test_equity_esattamente_al_limite_non_e_violazione]
+UCCISO        V06 commissioni negative ammesse  (g0/strumenti.py)  [test_commissioni_negative_o_non_finite_rifiutate]
+UCCISO        V07 cambio FX: * invece di /  (g0/strumenti.py)  [test_fx_terza_valuta_richiede_cambio_misurato]
+UCCISO        V08 valuta base convertita al prezzo d'ingresso invece che allo stop  (g0/strumenti.py)  [test_fx_conto_nella_valuta_base_converte_al_prezzo_dello_stop, test_esempio_end_to_end]
+UCCISO        V09 controllo is_finite() rimosso su prezzi, quantità e cambio  (g0/strumenti.py)  [test_prezzi_quantita_e_cambi_infiniti_rifiutati]
+UCCISO        V10 distanza non multipla del tick ammessa  (g0/strumenti.py)  [test_future_tick]
+UCCISO        V11 stop uguale all'ingresso ammesso  (g0/strumenti.py)  [test_valori_non_positivi_rifiutati]
+UCCISO        V12 limite giornaliero: frazione applicata al saldo invece che al capitale iniziale  (g0/limiti.py)  [test_1step_giornaliero_e_trailing, test_2step_giornaliero_esempio_ufficiale, test_instant_esempio_ufficiale, test_equity_esattamente_al_limite_non_e_violazione]
+UCCISO        V13 frazioni FTMO scambiate (giornaliero con la frazione totale)  (g0/limiti.py)  [test_1step_giornaliero_e_trailing, test_2step_giornaliero_esempio_ufficiale, test_instant_esempio_ufficiale, test_equity_esattamente_al_limite_non_e_violazione]
+UCCISO        V14 trailing 1-Step/Instant ignorato  (g0/limiti.py)  [test_1step_giornaliero_e_trailing, test_instant_esempio_ufficiale]
+UCCISO        V15 2-Step trattato come trailing  (g0/limiti.py)  [test_2step_totale_statico]
+UCCISO        V16 capitale iniziale non positivo ammesso  (g0/limiti.py)  [test_valori_non_positivi_rifiutati]
+UCCISO        V17 scenario di stress senza le riserve dichiarate  (g0/limiti.py)  [test_le_riserve_entrano_nello_scenario]
+UCCISO        V18 P-05 regola aurea: >= diventa > (limite personale UGUALE a quello FTMO accettato)  (g0/scheda.py)  [test_p05_uguale_al_limite_della_prop_non_e_piu_stretto]
+UCCISO        V19 P-01: > diventa >= (rischio uguale alla soglia segnalato)  (g0/scheda.py)  [test_p01_rischio_uguale_alla_soglia_non_la_supera]
+UCCISO        V20 P-11/P-14: < diventa <= (valore uguale alla soglia = violazione)  (g0/scheda.py)  [test_p11_e_p14_valore_uguale_alla_soglia_rispetta_la_regola]
+UCCISO        V21 P-15: >= diventa > (raggiunto il massimo di perdite: nessun avviso)  (g0/scheda.py)  [test_p15_raggiunto_il_massimo_di_perdite_consecutive]
+UCCISO        V22 P-05: avvisi su trade soppressi a margine personale negativo (difetto reintrodotto)  (g0/scheda.py)  [test_avvisi_trade_e_stress_anche_a_limite_personale_superato]
+UCCISO        V23 trade previsto: > diventa >= sul margine giornaliero (equity AL limite = violazione)  (g0/scheda.py)  [test_equity_esattamente_al_limite_non_e_violazione]
+UCCISO        V24 posizione aperta misurata dal prezzo d'ingresso  (g0/scheda.py)  [test_esempio_end_to_end, test_equity_esattamente_al_limite_non_e_violazione]
+UCCISO        V25 dati di sessione negativi ammessi  (g0/scheda.py)  [test_dati_di_sessione_e_soglie_non_validi]
+UCCISO        V26 _numero accetta NaN e infiniti  (g0/scheda.py)  [test_dati_di_sessione_e_soglie_non_validi]
+UCCISO        V27 stress: < diventa <= sul margine giornaliero dopo lo scenario  (g0/scheda.py)  [test_equity_esattamente_al_limite_non_e_violazione]
+UCCISO        V28 stress: margine totale dopo lo scenario non controllato  (g0/scheda.py)  [test_avviso_se_lo_stress_viola_il_limite_totale]
+UCCISO        V29 versioni_finali: catene di correzioni non risolte  (journal/journal.py)  [test_brier_e_indicatori_con_correzione_di_una_correzione]
+UCCISO        V30 impronta esterna non controllata  (journal/journal.py)  [test_verifica_con_impronta_rileva_cancellazione_totale]
+UCCISO        V31 doppia chiusura di una previsione ammessa  (journal/journal.py)  [test_corregge_e_chiude_coerenti_e_nessuna_doppia_chiusura]
+UCCISO        V32 chiude verso una correzione ammesso  (journal/journal.py)  [test_corregge_e_chiude_coerenti_e_nessuna_doppia_chiusura]
+UCCISO        V33 corregge fra record di natura diversa ammesso  (journal/journal.py)  [test_corregge_e_chiude_coerenti_e_nessuna_doppia_chiusura]
+UCCISO        V34 catena di hash non controllata  (journal/journal.py)  [test_catena_integra_e_manomissione_scoperta]
+UCCISO        V35 Brier: errore assoluto invece del quadrato  (journal/journal.py)  [test_brier_applica_le_correzioni, test_brier, test_brier_e_indicatori_con_correzione_di_una_correzione]
+UCCISO        V36 journal: orari non UTC ammessi  (journal/journal.py)  [test_journal_rifiuta_fusi_diversi_da_utc_e_ammette_apertura_uguale_a_chiusura]
+UCCISO        V37 journal: chiusura nello stesso istante dell'apertura rifiutata (< diventa <=)  (journal/journal.py)  [test_journal_rifiuta_fusi_diversi_da_utc_e_ammette_apertura_uguale_a_chiusura]
+UCCISO        V38 journal: probabilità booleana ammessa  (journal/journal.py)  [test_booleani_rifiutati_come_numeri]
+UCCISO        V39 sigillo verificato senza nonce  (journal/journal.py)  [test_sigillo]
+UCCISO        V40 ancora non controllata da verifica()  (journal/journal.py)  [test_ancora_rileva_ultima_riga_troncamento_e_riscrittura]
+UCCISO        V41 indicatori: microsecondi ignorati nelle durate  (journal/indicatori.py)  [test_decimal_e_frazioni_di_secondo]
+UCCISO        V42 indicatori: orari non UTC ammessi  (journal/indicatori.py)  [test_indicatori_rifiutano_fusi_diversi_da_utc]
+UCCISO        V43 R1: < invece di <= sui minuti (rientro esattamente al limite escluso)  (journal/indicatori.py)  [test_r1_rientro_esattamente_al_limite_e_pareggio]
+UCCISO        V44 indicatori: un pareggio conta come perdita  (journal/indicatori.py)  [test_r1_rientro_esattamente_al_limite_e_pareggio]
+EQUIVALENTE   E01 ancora: confronto del numero di righe rimosso (EQUIVALENTE)  (journal/journal.py)
+
+E01 equivalente: Se l'ultima riga coincide con quella ancorata, il suo prec_hash fissa la riga precedente e così via fino alla genesi: la catena determina tutte le righe e quindi il loro numero. Ogni file con lo stesso ultimo hash ma un numero di righe diverso rompe la catena, che verifica() segnala comunque. Cambia solo il testo del messaggio, non l'esito della verifica (salvo collisioni di SHA-256).
+
+Mutanti non equivalenti uccisi: 44/44
+Per file: g0/limiti.py 6/6; g0/scheda.py 11/11; g0/strumenti.py 7/7; g0/valori.py 4/4; journal/indicatori.py 4/4; journal/journal.py 12/12

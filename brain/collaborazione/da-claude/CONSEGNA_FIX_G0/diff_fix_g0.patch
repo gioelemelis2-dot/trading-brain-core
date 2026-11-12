@@ -1,8 +1,8 @@
 diff --git a/brain/CONTINUITA.md b/brain/CONTINUITA.md
-index 015d79c..2c6fa66 100644
+index 015d79c..2649ff6 100644
 --- a/brain/CONTINUITA.md
 +++ b/brain/CONTINUITA.md
-@@ -66,7 +66,20 @@ Ultimo aggiornamento: **2026-11-11**, dopo l'audit architetturale. Leggere quest
+@@ -66,7 +66,22 @@ Ultimo aggiornamento: **2026-11-11**, dopo l'audit architetturale. Leggere quest
  - modello epistemico (`governance/MODELLO-EPISTEMICO.md`);
  - **G0 minimo** e **journal** (`guardian/`, 24 test superati).
  
@@ -18,13 +18,15 @@ index 015d79c..2c6fa66 100644
 +**Ramo `feat/fix-g0-journal` (non ancora unito a `main`):**
 +- 5 correzioni del mandato «Binario A»;
 +- 7 correzioni del contro-audit (P-05 contro il limite della prop firm; seconda parte di P-01; validazione all'ingresso del journal; correzioni in `brier()`; impronta esterna dell'ancora; positività in G0; documenti di continuità).
-+- TDD: **36/36 test verdi** con `-W error`.
++- 5 correzioni del mandato notturno (commissioni non negative; avvisi P-05 anche a limite personale superato; coerenza di correzioni ed esiti nel journal; dati di sessione e soglie validati; booleani rifiutati come numeri).
++- TDD: **52/52 test verdi** con `-W error`; mutation testing: **44/44 mutanti non equivalenti uccisi** (`guardian/test/mutazioni_g0_journal.py`).
++- Audit su Gemini: il ramo `feat/lab-dati-backtester` non è su GitHub; i 138 hash dichiarati nei materiali di Gemini ricevuti coincidono; l'hash falso del V3.3 citato nel mandato non compare in nessun materiale disponibile (`CONSEGNA_FIX_G0/AUDIT_OSTILE_SU_GEMINI.md`).
 +- Consegna in `collaborazione/da-claude/CONSEGNA_FIX_G0/`.
 +- L'unione a `main` è una decisione dell'utente.
  
  **Ora: fermo in attesa dell'utente**, per:
  - rispondere alle decisioni di `governance/DECISIONI-APERTE.md`, a partire da quelle bloccanti;
-@@ -84,5 +97,5 @@ Prompt pronto in [`PROMPT-RIPRESA.md`](PROMPT-RIPRESA.md). Regola: prima di un l
+@@ -84,5 +99,5 @@ Prompt pronto in [`PROMPT-RIPRESA.md`](PROMPT-RIPRESA.md). Regola: prima di un l
  
  ## Convenzioni da mantenere
  - Lingua: italiano. Mai segnare una fonte come V senza averla letta; mai una padronanza senza cancello superato dichiarato dall'utente; mai dati simulati presentati come reali.
@@ -45,10 +47,10 @@ index 609b9c1..038919b 100644
    - il Brain versionato è sul ramo GitHub `claude/vibrant-cannon-5uunho` del repository `l-Altro`, che sugli altri rami contiene un'applicazione TypeScript estranea;
    - Gemini lavora su una copia locale (dichiarato da Gemini; non verificabile da Claude);
 diff --git a/brain/governance/REGISTRO-MODIFICHE.md b/brain/governance/REGISTRO-MODIFICHE.md
-index 69e512e..8f63979 100644
+index 69e512e..4adbab9 100644
 --- a/brain/governance/REGISTRO-MODIFICHE.md
 +++ b/brain/governance/REGISTRO-MODIFICHE.md
-@@ -163,3 +163,13 @@ Formato: data · versione della base · cosa · perché · file.
+@@ -163,3 +163,22 @@ Formato: data · versione della base · cosa · perché · file.
  - `governance/MODELLO-EPISTEMICO.md`: schema dei valori e mappatura verso `STANDARD.md` (proposta DA-06, usata dal G0).
  - `guardian/g0/`: G0 minimo consultivo (schema dei valori, perdita allo stop per FX/futures/CFD, limiti FTMO, scenario di stress, scheda); `guardian/journal/`: journal di sola aggiunta con catena di hash, Brier score, impegni sigillati, indicatore R1 spento finché i parametri non sono definiti. 24 test superati.
  - `DECISIONI-APERTE.md`: aggiunte DA-24 (conservazione dei dati del journal) e DA-25 (dati del conto per la riconciliazione).
@@ -62,8 +64,17 @@ index 69e512e..8f63979 100644
 +  - 36/36 test verdi.
 +- Aggiornati `CONTINUITA.md`, `DECISIONI-APERTE.md` (DA-01 eseguita) e questo registro (autorizzazione del contro-audit, punto 7).
 +- Nessuna modifica a V3.3, lezioni o materiali di Gemini.
++
++## 2026-11-12 · v1.13 (mandato notturno: blindatura di G0 e journal, mutation testing, audit su Gemini)
++
++- **Ramo `feat/fix-g0-journal`**, in TDD:
++  - 5 correzioni: commissioni finite e non negative; avvisi P-05 su trade e stress anche a limite personale superato; `controlla_riferimenti` nel journal (stessa natura per `corregge`, `chiude` solo sulla radice di una previsione, nessuna doppia chiusura), applicato anche da `verifica`; soglie e dati di sessione validati; booleani rifiutati come numeri;
++  - `guardian/test/mutazioni_g0_journal.py`: 44 mutanti non equivalenti sui 6 file operativi, più 1 equivalente dichiarato. Erano 30/44 uccisi con 41 test; con 11 test aggiunti sono 44/44;
++  - 52/52 test verdi.
++- **Audit su Gemini** (`CONSEGNA_FIX_G0/AUDIT_OSTILE_SU_GEMINI.md`): nessun ramo del Binario B su GitHub; 138/138 hash dichiarati coincidono; l'hash falso del V3.3 non compare nei materiali disponibili ed è quasi certamente ricostruito dall'abbreviazione `6fb9d76e…7638`.
++- Nessuna modifica a V3.3, lezioni o materiali di Gemini.
 diff --git a/brain/guardian/LEGGIMI.md b/brain/guardian/LEGGIMI.md
-index bf41c2c..455551b 100644
+index bf41c2c..686cfd2 100644
 --- a/brain/guardian/LEGGIMI.md
 +++ b/brain/guardian/LEGGIMI.md
 @@ -8,15 +8,18 @@
@@ -72,29 +83,38 @@ index bf41c2c..455551b 100644
  | Regole personali (`regole/regole_personali.toml`) | **proposta** | conferma dell'utente, regola per regola |
 -| Calcoli G0 (`g0/`) | implementati e testati (18 test unitari) | **validazione**: riconciliazione con un estratto conto reale e con le specifiche del broker |
 -| Journal (`journal/`) | implementato e testato (6 test: catena di hash, validazione, Brier, sigilli, R1) | scelta di dove conservare i dati (`journal/LEGGIMI.md`, alternative A/B/C) |
-+| Calcoli G0 (`g0/`) | implementati e testati (24 test unitari) | **validazione**: riconciliazione con un estratto conto reale e con le specifiche del broker |
-+| Journal (`journal/`) | implementato e testato (12 test: catena di hash, ancora e impronta esterna, validazione all'ingresso, Brier con correzioni, sigilli, R1, Decimal e orari ISO-8601) | scelta di dove conservare i dati (`journal/LEGGIMI.md`, alternative A/B/C) |
++| Calcoli G0 (`g0/`) | implementati e testati (34 test unitari) | **validazione**: riconciliazione con un estratto conto reale e con le specifiche del broker |
++| Journal (`journal/`) | implementato e testato (18 test: catena di hash, ancora e impronta esterna, validazione all'ingresso, coerenza di correzioni ed esiti, Brier con correzioni, sigilli, R1, Decimal e orari ISO-8601) | scelta di dove conservare i dati (`journal/LEGGIMI.md`, alternative A/B/C) |
  | Uso per decidere | **NON AUTORIZZATO** | la scheda lo dichiara in prima riga finché `riconciliato = false` |
  
  ## Componenti
  - `g0/valori.py`: schema dei valori. Un numero senza tipo, fonte e stato di verifica non si può costruire. Propaga tipo, condizioni, verifica e NON STIMABILE. Una stima non può allargare un limite.
 -- `g0/strumenti.py`: perdita allo stop per FX, futures e CFD, con conversione nella valuta del conto. È un DERIVATO condizionato a H_esec: gap, slippage e lato del trigger sono esclusi e vanno in una riserva separata.
-+- `g0/strumenti.py`: perdita allo stop per FX, futures e CFD, con conversione nella valuta del conto. I futures si descrivono **solo** con passo e valore del tick (nessuna dimensione del contratto fittizia); FX e CFD richiedono la dimensione del contratto. Prezzi, quantità, cambi, specifiche e capitale iniziale devono essere positivi; uno stop uguale al prezzo di partenza è rifiutato. È un DERIVATO condizionato a H_esec: gap, slippage e lato del trigger sono esclusi e vanno in una riserva separata.
++- `g0/strumenti.py`: perdita allo stop per FX, futures e CFD, con conversione nella valuta del conto. I futures si descrivono **solo** con passo e valore del tick (nessuna dimensione del contratto fittizia); FX e CFD richiedono la dimensione del contratto. Prezzi, quantità, cambi, specifiche e capitale iniziale devono essere positivi; uno stop uguale al prezzo di partenza è rifiutato; le commissioni devono essere finite e non negative (0 per i conti solo spread), perché una commissione negativa ridurrebbe la perdita allo stop. È un DERIVATO condizionato a H_esec: gap, slippage e lato del trigger sono esclusi e vanno in una riserva separata.
  - `g0/limiti.py`: limiti FTMO (2-Step, 1-Step, Instant) esattamente come nelle regole ufficiali; margini; stop residui; scenario di stress (tutte le posizioni allo stop).
 -- `g0/scheda.py`: scheda consultiva in ordine fisso (misure → regole → limiti → trade previsto → stress → riserve → avvisi → raccomandazione → decisione).
 +- `g0/scheda.py`: scheda consultiva in ordine fisso (misure → regole → limiti → trade previsto → stress → riserve → avvisi → regole personali → raccomandazione → decisione).
 +  - Lo stress è confrontato con il limite **giornaliero e con quello totale**.
-+  - Le regole personali si leggono da `regole/regole_personali.toml`: si applicano **solo** quelle con `confermata = true`. P-01 (rischio del trade e size dopo una perdita), P-05 (limite personale giornaliero, segnalato se non è più stretto di quello della prop firm), P-11, P-14 e P-15 hanno un controllo automatico; le altre restano domande della checklist; i dati di sessione mancanti sono dichiarati.
++  - Le regole personali si leggono da `regole/regole_personali.toml`: si applicano **solo** quelle con `confermata = true`. P-01 (rischio del trade e size dopo una perdita), P-05 (limite personale giornaliero, segnalato se non è più stretto di quello della prop firm), P-11, P-14 e P-15 hanno un controllo automatico; le altre restano domande della checklist; i dati di sessione mancanti sono dichiarati. Soglie e dati di sessione non validi (booleani, negativi, NaN, infiniti, ore di sonno oltre 24, perdite consecutive non intere) producono un avviso «non valido» e la regola resta non verificata. P-05 segnala trade e stress anche quando il limite personale è già superato.
 +  - I dati di sessione facoltativi stanno nella sezione `[sessione]`: `minuti_da_ultima_perdita`, `ore_sonno`, `perdite_consecutive_oggi`, `ultima_operazione_in_perdita` (vero/falso), `size_precedente`.
  
  ## Uso
  Dalla cartella `guardian/`:
-@@ -26,7 +29,7 @@ python3 -s -B -m g0.scheda esempi/situazione_esempio.toml
+@@ -26,7 +29,16 @@ python3 -s -B -m g0.scheda esempi/situazione_esempio.toml
  ```bash
  python3 -s -B -m unittest discover -s test -v
  ```
 -Risultato al 12/11/2026: **24 test, tutti superati** (18 G0, 6 journal).
-+Risultato: **36 test, tutti superati** con `-W error` (18 G0 e 6 journal originari; 5 test del mandato «Binario A» e 7 del contro-audit in `test/test_fix_g0_journal.py`; dettaglio in `collaborazione/da-claude/CONSEGNA_FIX_G0/`).
++Risultato: **52 test, tutti superati** con `-W error`:
++- 18 G0 e 6 journal originari;
++- 17 in `test/test_fix_g0_journal.py`: 5 del mandato «Binario A», 7 del contro-audit e 5 del mandato notturno;
++- 11 in `test/test_mutanti_g0_journal.py`, aggiunti per uccidere i mutanti sopravvissuti.
++
++Mutation testing (dalla cartella `guardian/test/`, con una cartella temporanea per le copie):
++```bash
++python3 -s -B mutazioni_g0_journal.py /tmp/mutanti_g0
++```
++Risultato: **44/44 mutanti non equivalenti uccisi**, su tutti e 6 i file operativi; 1 mutante equivalente, dichiarato con la motivazione. Con i soli 41 test precedenti erano 30/44. Dettaglio in `collaborazione/da-claude/CONSEGNA_FIX_G0/`.
  Requisiti: Python 3.11 o successivo, sola libreria standard.
  
  ## Limiti dichiarati
@@ -125,7 +145,7 @@ index 4ec25b2..fab0009 100644
      saldi = list(saldi_di_riferimento)
      ins = [capitale_iniziale, f_t]
 diff --git a/brain/guardian/g0/scheda.py b/brain/guardian/g0/scheda.py
-index 53dbd6e..3fb6a61 100644
+index 53dbd6e..0c00965 100644
 --- a/brain/guardian/g0/scheda.py
 +++ b/brain/guardian/g0/scheda.py
 @@ -9,13 +9,23 @@ from __future__ import annotations
@@ -163,16 +183,46 @@ index 53dbd6e..3fb6a61 100644
              s["fonte"], s.get("stato_verifica", "C"), s.get("valuta_base"),
              Decimal(str(s["passo_tick"])) if "passo_tick" in s else None,
              Decimal(str(s["valore_tick"])) if "valore_tick" in s else None)
-@@ -59,7 +70,95 @@ def _perdita(p, strumenti, valuta, cambi, fonte, aperta=False):
+@@ -59,7 +70,126 @@ def _perdita(p, strumenti, valuta, cambi, fonte, aperta=False):
                               misura(p["quantita"], "lotti/contratti", fonte), valuta, cambio, comm)
  
  
 -def scheda(dati: dict) -> list[str]:
 +def _numero(x):
++    """Numero finito come Decimal, oppure None. Rifiuta booleani (in TOML `true` non è un numero), testo non numerico,
++    NaN e infiniti, come `journal._decimale`."""
++    if isinstance(x, bool):
++        return None
 +    try:
-+        return Decimal(str(x))
++        d = Decimal(str(x))
 +    except (InvalidOperation, ValueError):
 +        return None
++    return d if d.is_finite() else None
++
++
++def _soglia_valida(rid: str, v) -> bool:
++    """Soglia di una regola personale: positiva; le frazioni (P-01, P-05) sotto 1; le ore di sonno al massimo 24;
++    le perdite consecutive un intero."""
++    if v is None or v <= 0:
++        return False
++    if rid in ("P-01", "P-05"):
++        return v < 1
++    if rid == "P-14":
++        return v <= 24
++    if rid == "P-15":
++        return v == v.to_integral_value()
++    return True
++
++
++def _dato_sessione_valido(rid: str, x) -> bool:
++    """Dato di sessione: non negativo; ore di sonno al massimo 24; perdite consecutive un intero."""
++    if x is None or x < 0:
++        return False
++    if rid == "P-14":
++        return x <= 24
++    if rid == "P-15":
++        return x == x.to_integral_value()
++    return True
 +
 +
 +def _pct(x: Decimal) -> str:
@@ -195,8 +245,9 @@ index 53dbd6e..3fb6a61 100644
 +            continue
 +        param, serve = CONTROLLI_PERSONALI[rid]
 +        v = _numero(r.get("valore"))
-+        if r.get("parametro") != param or v is None:
-+            avvisi.append(f"{rid}: regola confermata senza valore numerico per «{param}»: non applicata")
++        if r.get("parametro") != param or not _soglia_valida(rid, v):
++            avvisi.append(f"{rid}: regola confermata senza valore numerico valido per «{param}» "
++                          f"({r.get('valore')!r}): non applicata")
 +            continue
 +        soglia = Valore(v, param, "REGOLA", "norma", f"{fonte} {rid}", stato_verifica="V")
 +        if rid == "P-01":
@@ -229,21 +280,21 @@ index 53dbd6e..3fb6a61 100644
 +            margine_p = combina([eq, saldo0, cap, soglia], eq.valore - (saldo0.valore - v * cap.valore), eq.unita,
 +                                "calcolo deterministico", fonte=f"{rid} margine personale giornaliero")
 +            righe.append(fmt(margine_p, f"{rid} margine rispetto al limite personale giornaliero ({_pct(v)})"))
++            # Controlli indipendenti: anche a limite personale già superato, trade e stress vanno segnalati.
 +            if margine_p.valore < 0:
 +                avvisi.append(f"{rid}: limite personale giornaliero già superato: kill switch personale.")
-+            else:
-+                if pt is not None and pt.valore > margine_p.valore:
-+                    avvisi.append(f"{rid}: se lo stop del trade previsto viene colpito, il limite personale giornaliero viene superato.")
-+                if st is not None and st.valore > margine_p.valore:
-+                    avvisi.append(f"{rid}: nello scenario di stress il limite personale giornaliero viene superato.")
++            if pt is not None and pt.valore > margine_p.valore:
++                avvisi.append(f"{rid}: se lo stop del trade previsto viene colpito, il limite personale giornaliero viene superato.")
++            if st is not None and st.valore > margine_p.valore:
++                avvisi.append(f"{rid}: nello scenario di stress il limite personale giornaliero viene superato.")
 +        else:
 +            chiave = serve.split(".")[1]
 +            if chiave not in sess:
 +                righe.append(f"{rid} confermata: dato «{serve}» non fornito, regola non verificata")
 +                continue
 +            x = _numero(sess[chiave])
-+            if x is None:
-+                avvisi.append(f"{rid}: dato «{serve}» non numerico")
++            if not _dato_sessione_valido(rid, x):
++                avvisi.append(f"{rid}: dato «{serve}» non valido ({sess[chiave]!r}): regola non verificata")
 +                continue
 +            violata = (x < v) if rid in ("P-11", "P-14") else (x >= v)
 +            righe.append(f"{rid}: {chiave} = {x} (soglia {v}){' → regola violata' if violata else ''}")
@@ -260,7 +311,7 @@ index 53dbd6e..3fb6a61 100644
      c = dati["conto"]
      valuta, prodotto, fonte = c["valuta"], c["prodotto"], c["fonte"]
      righe = []
-@@ -89,6 +188,7 @@ def scheda(dati: dict) -> list[str]:
+@@ -89,6 +219,7 @@ def scheda(dati: dict) -> list[str]:
          avvisi.append("Equity già sotto un limite della prop firm: verificare subito sulla piattaforma.")
      perdite_aperte = [_perdita(p, strumenti, valuta, cambi, fonte, aperta=True) for p in dati.get("posizione", [])]
      tp = dati.get("trade_previsto")
@@ -268,7 +319,7 @@ index 53dbd6e..3fb6a61 100644
      if tp:
          pt = _perdita(tp, strumenti, valuta, cambi, fonte)
          sr = L.stop_residui(mg, pt)
-@@ -96,23 +196,30 @@ def scheda(dati: dict) -> list[str]:
+@@ -96,23 +227,30 @@ def scheda(dati: dict) -> list[str]:
                    fmt(sr, "stop pieni di questa dimensione, dato il margine attuale (posizioni aperte escluse)")]
          if pt.valore > mg.valore:
              avvisi.append("Se lo stop del trade previsto viene colpito, il limite giornaliero viene violato.")
@@ -304,7 +355,7 @@ index 53dbd6e..3fb6a61 100644
                "", "DECISIONE: dell'utente, da registrare nel journal (con eventuale deroga e motivo)"]
      return righe
 diff --git a/brain/guardian/g0/strumenti.py b/brain/guardian/g0/strumenti.py
-index 325cfb0..4db006f 100644
+index 325cfb0..e479f93 100644
 --- a/brain/guardian/g0/strumenti.py
 +++ b/brain/guardian/g0/strumenti.py
 @@ -27,7 +27,7 @@ class Strumento:
@@ -316,7 +367,7 @@ index 325cfb0..4db006f 100644
      fonte: str                         # specifica del broker o dell'exchange, con data
      stato_verifica: str = "C"          # V solo se la specifica è stata letta sulla fonte del broker
      valuta_base: Optional[str] = None  # solo FX
-@@ -41,13 +41,33 @@ class Strumento:
+@@ -41,13 +41,34 @@ class Strumento:
              raise ValueError("per una coppia FX serve la valuta base")
          if self.classe == "future" and (self.passo_tick is None or self.valore_tick is None):
              raise ValueError("per un future servono passo e valore del tick")
@@ -334,7 +385,8 @@ index 325cfb0..4db006f 100644
 -    `quantita`: lotti (FX/CFD) o contratti (future). `commissioni`: costo totale previsto in valuta del conto."""
 -    spec = Valore(s.dimensione_contratto, "unità", "REGOLA", "norma", s.fonte, stato_verifica=s.stato_verifica)
 +    `quantita`: lotti (FX/CFD) o contratti (future). `commissioni`: costo totale previsto in valuta del conto.
-+    Rifiuta prezzi, quantità e cambi non positivi e uno stop uguale al prezzo di partenza."""
++    Rifiuta prezzi, quantità e cambi non positivi, commissioni negative o non finite (ridurrebbero la perdita)
++    e uno stop uguale al prezzo di partenza."""
 +    for nome, v in (("ingresso", ingresso), ("stop", stop), ("quantita", quantita)) + ((("cambio", cambio),) if cambio else ()):
 +        if not (v.valore.is_finite() and v.valore > 0):
 +            raise ValueError(f"{nome} deve essere un numero positivo ({v.valore})")
@@ -352,7 +404,7 @@ index 325cfb0..4db006f 100644
      distanza = abs(ingresso.valore - stop.valore)
      if s.classe == "future":
          tick = distanza / s.passo_tick
-@@ -56,7 +76,7 @@ def perdita_allo_stop(s: Strumento, ingresso: Valore, stop: Valore, quantita: Va
+@@ -56,7 +77,7 @@ def perdita_allo_stop(s: Strumento, ingresso: Valore, stop: Valore, quantita: Va
          perdita_prof = tick * s.valore_tick * quantita.valore
      else:
          perdita_prof = distanza * s.dimensione_contratto * quantita.valore
@@ -361,11 +413,21 @@ index 325cfb0..4db006f 100644
  
      if s.valuta_profitto == valuta_conto:
          perdita = perdita_prof
+@@ -70,6 +91,9 @@ def perdita_allo_stop(s: Strumento, ingresso: Valore, stop: Valore, quantita: Va
+         perdita = perdita_prof / cambio.valore
+         ins.append(cambio)
+     if commissioni is not None:
++        if not (commissioni.valore.is_finite() and commissioni.valore >= 0):
++            raise ValueError(f"commissioni: numero finito e non negativo (0 per i conti solo spread), non "
++                             f"{commissioni.valore}: un valore negativo ridurrebbe la perdita allo stop")
+         if commissioni.unita != valuta_conto:
+             raise ValueError("commissioni in una valuta diversa da quella del conto")
+         perdita += commissioni.valore
 diff --git a/brain/guardian/journal/LEGGIMI.md b/brain/guardian/journal/LEGGIMI.md
-index 4557e7b..e9776ee 100644
+index 4557e7b..c19ee2b 100644
 --- a/brain/guardian/journal/LEGGIMI.md
 +++ b/brain/guardian/journal/LEGGIMI.md
-@@ -10,9 +10,23 @@ Creato da Claude (D-23) e affidato all'utente per la compilazione, con l'aiuto d
+@@ -10,9 +10,28 @@ Creato da Claude (D-23) e affidato all'utente per la compilazione, con l'aiuto d
  | `stato` | ore di sonno, stato emotivo, note | **dati personali sensibili**, facoltativi |
  | `previsione` | previsioni probabilistiche di utente, Claude e Gemini, con scadenza e poi esito | per il Brier score e la calibrazione |
  
@@ -373,6 +435,11 @@ index 4557e7b..e9776ee 100644
 +- Orari: ISO-8601 in UTC (`…Z` o `+00:00`), anche con frazioni di secondo; `chiuso_utc` non precede `aperto_utc`.
 +- Numeri: finiti (niente testo, NaN o infiniti). `ingresso`, `stop`, `quantita`, `uscita` e `target` maggiori di zero; `ore_sonno` tra 0 e 24; `data` come data ISO-8601.
 +- Riferimenti: `corregge` e `chiude` devono puntare a un record esistente dello stesso registro.
++- Previsioni ed esiti (`controlla_riferimenti`, applicato da `aggiungi` e ripetuto da `verifica`):
++  - `corregge` collega record della stessa natura (previsione → previsione, esito → esito);
++  - `chiude` punta all'id **radice** di una previsione, non a una sua correzione né a un esito;
++  - una previsione ha un solo esito originale: per cambiarlo si scrive una correzione (`corregge`), che chiude la stessa previsione.
++- Booleani: `true`/`false` non valgono come numeri (`probabilita`, `esito`, `aderenza`, prezzi e quantità), anche se in Python `True == 1`.
 +- Gli indicatori calcolano con `Decimal`, mai con `float`.
 +
 +Correzioni: `versioni_finali` applica `corregge`, anche a catena (una correzione di una correzione). Brier score e indicatori usano sempre l'ultima versione.
@@ -477,7 +544,7 @@ index 5dac82b..558cee7 100644
              for m in metriche_dopo_perdita(trades)
              if m["minuti_dopo_perdita"] <= minuti_max and m["rapporto_size"] >= rapporto_min]
 diff --git a/brain/guardian/journal/journal.py b/brain/guardian/journal/journal.py
-index cf791cf..5165dda 100644
+index cf791cf..45b56f2 100644
 --- a/brain/guardian/journal/journal.py
 +++ b/brain/guardian/journal/journal.py
 @@ -9,12 +9,19 @@ Registri (un file JSON Lines ciascuno, nella cartella dati):
@@ -586,10 +653,29 @@ index cf791cf..5165dda 100644
  def valida(registro: str, dati: dict) -> None:
      if registro not in REGISTRI:
          raise ValueError(f"registro sconosciuto: {registro}")
-@@ -90,6 +155,22 @@ def valida(registro: str, dati: dict) -> None:
+@@ -77,7 +142,8 @@ def valida(registro: str, dati: dict) -> None:
+         raise ValueError(f"campi non previsti: {sorted(ignoti)}")
+     if registro == "trade" and dati["direzione"] not in ("long", "short"):
+         raise ValueError("direzione: long o short")
+-    if registro == "trade" and "aderenza" in dati and dati["aderenza"] not in (1, 2, 3, 4, 5):
++    # `type(x) is int`: in Python True == 1, quindi un booleano passerebbe per un intero.
++    if registro == "trade" and "aderenza" in dati and (type(dati["aderenza"]) is not int or dati["aderenza"] not in range(1, 6)):
+         raise ValueError("aderenza: intero da 1 a 5")
+     if registro == "decisione" and not isinstance(dati["deroga"], bool):
+         raise ValueError("deroga: vero o falso")
+@@ -85,11 +151,67 @@ def valida(registro: str, dati: dict) -> None:
+         raise ValueError("una deroga richiede il motivo")
+     if registro == "previsione" and "chiude" not in dati:
+         p = dati["probabilita"]
+-        if not isinstance(p, (int, float)) or not 0 <= p <= 1:
+-            raise ValueError("probabilita: numero tra 0 e 1")
++        if isinstance(p, bool) or not isinstance(p, (int, float)) or not 0 <= p <= 1:
++            raise ValueError("probabilita: numero tra 0 e 1 (non un booleano)")
      if registro == "previsione" and "esito" in dati:
-         if dati["esito"] not in (0, 1):
-             raise ValueError("esito: 0 o 1")
+-        if dati["esito"] not in (0, 1):
+-            raise ValueError("esito: 0 o 1")
++        if type(dati["esito"]) is not int or dati["esito"] not in (0, 1):
++            raise ValueError("esito: intero 0 o 1 (non un booleano)")
 +    for campo in POSITIVI.get(registro, ()):
 +        if campo in dati and _decimale(campo, dati[campo]) <= 0:
 +            raise ValueError(f"{campo}: deve essere maggiore di zero ({dati[campo]!r})")
@@ -606,17 +692,54 @@ index cf791cf..5165dda 100644
 +            raise ValueError(f"data: non è una data ISO-8601 ({dati['data']!r})") from None
 +        if "ore_sonno" in dati and not 0 <= _decimale("ore_sonno", dati["ore_sonno"]) <= 24:
 +            raise ValueError("ore_sonno: tra 0 e 24")
++
++
++def controlla_riferimenti(registro: str, dati: dict, precedenti: list[dict]) -> None:
++    """Coerenza di `corregge` e `chiude` rispetto ai record precedenti dello stesso registro (`precedenti`: record
++    completi, in ordine). Regole:
++    - `corregge` e `chiude` puntano a un record esistente;
++    - nel registro delle previsioni un record è una PREVISIONE (senza `chiude`) o un ESITO (con `chiude`):
++      (a) `corregge` collega record della stessa natura (previsione → previsione, esito → esito);
++      (b) `chiude` punta all'id RADICE di una previsione (l'originale, non una sua correzione né un esito);
++      (c) una previsione ha al più un esito originale: un esito successivo deve usare `corregge`, e la correzione
++          di un esito chiude la stessa previsione dell'esito corretto (non sposta la chiusura)."""
++    per_id = {r["id"]: r["dati"] for r in precedenti}
++    for rif in ("corregge", "chiude"):
++        if rif in dati and dati[rif] not in per_id:
++            raise ValueError(f"{rif}: il record {dati[rif]!r} non esiste nel registro {registro}")
++    if registro != "previsione":
++        return
++    esito = "chiude" in dati
++    if "corregge" in dati:
++        corretto = per_id[dati["corregge"]]
++        if ("chiude" in corretto) != esito:
++            natura = lambda e: "un esito" if e else "una previsione"
++            raise ValueError(f"corregge: {natura(esito)} non può correggere {natura('chiude' in corretto)} "
++                             f"({dati['corregge']})")
++    if not esito:
++        return
++    bersaglio = per_id[dati["chiude"]]
++    if "chiude" in bersaglio:
++        raise ValueError(f"chiude: {dati['chiude']} è un esito, non una previsione")
++    if "corregge" in bersaglio:
++        raise ValueError(f"chiude: {dati['chiude']} è una correzione; indicare l'id radice della previsione "
++                         f"({bersaglio['corregge']} o il suo originale)")
++    if "corregge" in dati:
++        if per_id[dati["corregge"]]["chiude"] != dati["chiude"]:
++            raise ValueError(f"la correzione di un esito deve chiudere la stessa previsione "
++                             f"({per_id[dati['corregge']]['chiude']}), non {dati['chiude']}")
++        return
++    gia = [r["id"] for r in precedenti if r["dati"].get("chiude") == dati["chiude"] and "corregge" not in r["dati"]]
++    if gia:
++        raise ValueError(f"previsione {dati['chiude']} già chiusa da {gia[0]}: per cambiare l'esito usare corregge")
  
  
  def aggiungi(registro: str, dati: dict, cartella: Path | None = None) -> dict:
-@@ -99,18 +180,36 @@ def aggiungi(registro: str, dati: dict, cartella: Path | None = None) -> dict:
+@@ -99,24 +221,41 @@ def aggiungi(registro: str, dati: dict, cartella: Path | None = None) -> dict:
      cartella.mkdir(parents=True, exist_ok=True)
      path = cartella / f"{registro}.jsonl"
      righe = _righe(path)
-+    ids = {json.loads(r)["id"] for r in righe}
-+    for rif in ("corregge", "chiude"):
-+        if rif in dati and dati[rif] not in ids:
-+            raise ValueError(f"{rif}: il record {dati[rif]!r} non esiste nel registro {registro}")
++    controlla_riferimenti(registro, dati, [json.loads(r) for r in righe])
      rec = {"schema": SCHEMA, "registro": registro, "id": f"{registro[:3].upper()}-{len(righe) + 1:05d}",
             "registrato_utc": datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
             "prec_hash": _sha(righe[-1]) if righe else GENESI, "dati": dati}
@@ -647,9 +770,18 @@ index cf791cf..5165dda 100644
 +        elif _sha(_canonico(ancora)) != impronta_attesa:
 +            problemi.append("l'impronta dell'ancora non coincide con quella annotata: journal modificato dopo l'annotazione")
      for registro in REGISTRI:
-         prec = GENESI
+-        prec = GENESI
++        prec, letti = GENESI, []
          for i, riga in enumerate(_righe(cartella / f"{registro}.jsonl"), 1):
-@@ -124,20 +223,62 @@ def verifica(cartella: Path | None = None) -> list[str]:
+             try:
+                 rec = json.loads(riga)
+                 valida(registro, rec["dati"])
++                controlla_riferimenti(registro, rec["dati"], letti)
++                letti.append(rec)
+             except (ValueError, KeyError) as e:
+                 problemi.append(f"{registro} riga {i}: {e}")
+                 prec = _sha(riga)
+@@ -124,20 +263,62 @@ def verifica(cartella: Path | None = None) -> list[str]:
              if rec.get("prec_hash") != prec:
                  problemi.append(f"{registro} riga {i}: catena interrotta (riga precedente modificata o rimossa)")
              prec = _sha(riga)
@@ -721,7 +853,7 @@ index cf791cf..5165dda 100644
      per_autore = {}
      for pid, d in prev.items():
          if pid in esiti:
-@@ -160,10 +301,12 @@ def main(argv=None) -> int:
+@@ -160,10 +341,12 @@ def main(argv=None) -> int:
      a = argv if argv is not None else sys.argv[1:]
      if a[:1] == ["aggiungi"] and len(a) == 3:
          print(_canonico(aggiungi(a[1], json.loads(a[2]))))
@@ -736,12 +868,225 @@ index cf791cf..5165dda 100644
      elif a == ["brier"]:
          print(json.dumps(brier(), ensure_ascii=False, indent=2))
      elif a[:1] == ["sigilla"] and len(a) == 2:
+diff --git a/brain/guardian/test/mutazioni_g0_journal.py b/brain/guardian/test/mutazioni_g0_journal.py
+new file mode 100644
+index 0000000..5c33e3a
+--- /dev/null
++++ b/brain/guardian/test/mutazioni_g0_journal.py
+@@ -0,0 +1,207 @@
++"""Mutation testing del Guardian G0 e del journal (mandato notturno, 12/11/2026), modellato su mutazioni_v3_3.py.
++
++Ogni mutante è una copia di `guardian/` con UN difetto in UNO dei 6 file operativi (g0/valori.py, g0/strumenti.py,
++g0/limiti.py, g0/scheda.py, journal/journal.py, journal/indicatori.py), in una cartella separata; l'originale non è
++toccato. Nella copia ci sono anche i 3 documenti di continuità letti da TestAudit7 (altrimenti fallirebbe per ogni
++mutante e lo «ucciderebbe» per il motivo sbagliato).
++
++Controlli prima di contare un mutante:
++1. la copia NON mutata (M00) deve superare tutta la suite: se fallisce, lo script si ferma (uccisioni non credibili);
++2. ogni sostituzione deve comparire esattamente una volta nel file originale;
++3. il modulo mutato deve essere importato DALLA COPIA e contenere la mutazione (percorso e testo controllati).
++
++Un mutante è ucciso se la suite (python3 -s -B -W error -m unittest discover -s test) fallisce.
++I mutanti «E» sono dichiarati equivalenti, con la motivazione: non entrano nel conteggio dei non equivalenti.
++
++Uso: python3 -s -B mutazioni_g0_journal.py [<cartella brain>] <cartella dei mutanti>
++"""
++import os
++import shutil
++import subprocess
++import sys
++from pathlib import Path
++
++if len(sys.argv) == 2:
++    BRAIN, OUT = Path(__file__).resolve().parents[2], Path(sys.argv[1])
++elif len(sys.argv) == 3:
++    BRAIN, OUT = Path(sys.argv[1]).resolve(), Path(sys.argv[2])
++else:
++    sys.exit(__doc__)
++GUARDIAN = BRAIN / "guardian"
++DOCUMENTI = ("CONTINUITA.md", "governance/DECISIONI-APERTE.md", "governance/REGISTRO-MODIFICHE.md")
++VA, ST, LI, SC, JO, IN = ("g0/valori.py", "g0/strumenti.py", "g0/limiti.py", "g0/scheda.py",
++                          "journal/journal.py", "journal/indicatori.py")
++
++M = {
++    # --- g0/valori.py: schema epistemico ---
++    "V01 tipo del risultato = il PIÙ FORTE fra gli input": [
++        (VA, "tipo = min(candidati, key=ORDINE_TIPO.__getitem__)", "tipo = max(candidati, key=ORDINE_TIPO.__getitem__)")],
++    "V02 NON STIMABILE non più contagioso": [
++        (VA, "    if any(not v.stimabile for v in ins):", "    if False:")],
++    "V03 restringi può allargare il limite": [
++        (VA, "if not candidato.stimabile or candidato.valore >= limite.valore:", "if not candidato.stimabile:")],
++    "V04 stato di verifica = il PIÙ FORTE": [
++        (VA, "stato = min((v.stato_verifica for v in ins), key=ORDINE_VERIFICA.__getitem__)",
++         "stato = max((v.stato_verifica for v in ins), key=ORDINE_VERIFICA.__getitem__)")],
++    # --- g0/strumenti.py: perdita allo stop ---
++    "V05 commissioni omesse dalla perdita": [(ST, "perdita += commissioni.valore", "perdita += 0")],
++    "V06 commissioni negative ammesse": [
++        (ST, "if not (commissioni.valore.is_finite() and commissioni.valore >= 0):",
++         "if not commissioni.valore.is_finite():")],
++    "V07 cambio FX: * invece di /": [(ST, "perdita = perdita_prof / cambio.valore", "perdita = perdita_prof * cambio.valore")],
++    "V08 valuta base convertita al prezzo d'ingresso invece che allo stop": [
++        (ST, "perdita = perdita_prof / stop.valore", "perdita = perdita_prof / ingresso.valore")],
++    "V09 controllo is_finite() rimosso su prezzi, quantità e cambio": [
++        (ST, "        if not (v.valore.is_finite() and v.valore > 0):", "        if not (v.valore > 0):")],
++    "V10 distanza non multipla del tick ammessa": [(ST, "if tick != tick.to_integral_value():", "if False:")],
++    "V11 stop uguale all'ingresso ammesso": [(ST, "if ingresso.valore == stop.valore:", "if False:")],
++    # --- g0/limiti.py: limiti FTMO e stress ---
++    "V12 limite giornaliero: frazione applicata al saldo invece che al capitale iniziale": [
++        (LI, "v = saldo_mezzanotte.valore - f_g.valore * capitale_iniziale.valore",
++         "v = saldo_mezzanotte.valore - f_g.valore * saldo_mezzanotte.valore")],
++    "V13 frazioni FTMO scambiate (giornaliero con la frazione totale)": [
++        (LI, "    f_g, _ = _frazioni(prodotto)", "    _, f_g = _frazioni(prodotto)")],
++    "V14 trailing 1-Step/Instant ignorato": [(LI, 'if prodotto != "ftmo_2step" and saldi:', "if False:")],
++    "V15 2-Step trattato come trailing": [(LI, 'if prodotto != "ftmo_2step" and saldi:', "if saldi:")],
++    "V16 capitale iniziale non positivo ammesso": [
++        (LI, "if not (capitale_iniziale.valore.is_finite() and capitale_iniziale.valore > 0):", "if False:")],
++    "V17 scenario di stress senza le riserve dichiarate": [
++        (LI, "ins = list(perdite_allo_stop) + list(riserve)", "ins = list(perdite_allo_stop)")],
++    # --- g0/scheda.py: avvisi e regole personali ---
++    "V18 P-05 regola aurea: >= diventa > (limite personale UGUALE a quello FTMO accettato)": [
++        (SC, "if v >= f_g.valore:", "if v > f_g.valore:")],
++    "V19 P-01: > diventa >= (rischio uguale alla soglia segnalato)": [(SC, "if frac.valore > v:", "if frac.valore >= v:")],
++    "V20 P-11/P-14: < diventa <= (valore uguale alla soglia = violazione)": [
++        (SC, 'violata = (x < v) if rid in ("P-11", "P-14") else (x >= v)',
++         'violata = (x <= v) if rid in ("P-11", "P-14") else (x >= v)')],
++    "V21 P-15: >= diventa > (raggiunto il massimo di perdite: nessun avviso)": [
++        (SC, 'violata = (x < v) if rid in ("P-11", "P-14") else (x >= v)',
++         'violata = (x < v) if rid in ("P-11", "P-14") else (x > v)')],
++    "V22 P-05: avvisi su trade soppressi a margine personale negativo (difetto reintrodotto)": [
++        (SC, "if pt is not None and pt.valore > margine_p.valore:",
++         "if margine_p.valore >= 0 and pt is not None and pt.valore > margine_p.valore:")],
++    "V23 trade previsto: > diventa >= sul margine giornaliero (equity AL limite = violazione)": [
++        (SC, "if pt.valore > mg.valore:", "if pt.valore >= mg.valore:")],
++    "V24 posizione aperta misurata dal prezzo d'ingresso": [
++        (SC, 'da = p["prezzo_attuale"] if aperta else p["ingresso"]', 'da = p["ingresso"]')],
++    "V25 dati di sessione negativi ammessi": [(SC, "if x is None or x < 0:", "if x is None:")],
++    "V26 _numero accetta NaN e infiniti": [(SC, "return d if d.is_finite() else None", "return d")],
++    "V27 stress: < diventa <= sul margine giornaliero dopo lo scenario": [
++        (SC, "if dopo.valore < 0:", "if dopo.valore <= 0:")],
++    "V28 stress: margine totale dopo lo scenario non controllato": [(SC, "if dopo_t.valore < 0:", "if False:")],
++    # --- journal/journal.py ---
++    "V29 versioni_finali: catene di correzioni non risolte": [
++        (JO, 'r = radice.get(d["corregge"], d["corregge"]) if "corregge" in d else rec["id"]',
++         'r = d["corregge"] if "corregge" in d else rec["id"]')],
++    "V30 impronta esterna non controllata": [(JO, "elif _sha(_canonico(ancora)) != impronta_attesa:", "elif False:")],
++    "V31 doppia chiusura di una previsione ammessa": [(JO, "    if gia:\n", "    if False:\n")],
++    "V32 chiude verso una correzione ammesso": [(JO, 'if "corregge" in bersaglio:', "if False:")],
++    "V33 corregge fra record di natura diversa ammesso": [(JO, 'if ("chiude" in corretto) != esito:', "if False:")],
++    "V34 catena di hash non controllata": [(JO, 'if rec.get("prec_hash") != prec:', "if False:")],
++    "V35 Brier: errore assoluto invece del quadrato": [
++        (JO, '(d["probabilita"] - esiti[pid]) ** 2', 'abs(d["probabilita"] - esiti[pid])')],
++    "V36 journal: orari non UTC ammessi": [
++        (JO, "if t.tzinfo is None or t.utcoffset() != timedelta(0):", "if t.tzinfo is None:")],
++    "V37 journal: chiusura nello stesso istante dell'apertura rifiutata (< diventa <=)": [
++        (JO, 'orari["chiuso_utc"] < orari["aperto_utc"]', 'orari["chiuso_utc"] <= orari["aperto_utc"]')],
++    "V38 journal: probabilità booleana ammessa": [
++        (JO, "if isinstance(p, bool) or not isinstance(p, (int, float))", "if not isinstance(p, (int, float))")],
++    "V39 sigillo verificato senza nonce": [
++        (JO, "return secrets.compare_digest(impegno, _sha(nonce + _canonico(payload)))",
++         "return secrets.compare_digest(impegno, _sha(_canonico(payload)))")],
++    "V40 ancora non controllata da verifica()": [(JO, "    problemi += _verifica_ancora(cartella)\n", "")],
++    # --- journal/indicatori.py ---
++    "V41 indicatori: microsecondi ignorati nelle durate": [
++        (IN, " + Decimal(d.microseconds) / Decimal(1_000_000)", "")],
++    "V42 indicatori: orari non UTC ammessi": [
++        (IN, "if t.tzinfo is None or t.utcoffset() != timedelta(0):", "if t.tzinfo is None:")],
++    "V43 R1: < invece di <= sui minuti (rientro esattamente al limite escluso)": [
++        (IN, 'm["minuti_dopo_perdita"] <= minuti_max', 'm["minuti_dopo_perdita"] < minuti_max')],
++    "V44 indicatori: un pareggio conta come perdita": [
++        (IN, 'if _dec(prec["pnl_conto"]) < 0:', 'if _dec(prec["pnl_conto"]) <= 0:')],
++    # --- equivalenti dichiarati ---
++    "E01 ancora: confronto del numero di righe rimosso (EQUIVALENTE)": [
++        (JO, 'if a["righe"] != len(righe) or a["ultimo_hash"] != ultimo:', 'if a["ultimo_hash"] != ultimo:')],
++}
++EQUIVALENTI = {
++    "E01": "Se l'ultima riga coincide con quella ancorata, il suo prec_hash fissa la riga precedente e così via fino "
++           "alla genesi: la catena determina tutte le righe e quindi il loro numero. Ogni file con lo stesso ultimo "
++           "hash ma un numero di righe diverso rompe la catena, che verifica() segnala comunque. Cambia solo il "
++           "testo del messaggio, non l'esito della verifica (salvo collisioni di SHA-256).",
++}
++
++
++def copia(dest: Path) -> Path:
++    if dest.exists():
++        shutil.rmtree(dest)
++    shutil.copytree(GUARDIAN, dest / "brain" / "guardian",
++                    ignore=shutil.ignore_patterns("__pycache__", "*.pyc", "dati"))
++    for doc in DOCUMENTI:
++        (dest / "brain" / doc).parent.mkdir(parents=True, exist_ok=True)
++        shutil.copyfile(BRAIN / doc, dest / "brain" / doc)
++    return dest / "brain" / "guardian"
++
++
++def esegui(g: Path):
++    dati = g.parent.parent / "journal_dati"
++    env = {"PATH": os.environ["PATH"], "PYTHONDONTWRITEBYTECODE": "1", "TRADING_JOURNAL_DIR": str(dati)}
++    r = subprocess.run([sys.executable, "-s", "-B", "-W", "error", "-m", "unittest", "discover", "-s", "test"],
++                       cwd=g, capture_output=True, text=True, timeout=600, env=env)
++    falliti = [l.split()[1] for l in r.stderr.splitlines() if l.startswith(("FAIL:", "ERROR:"))]
++    return r.returncode, falliti, r.stderr
++
++
++def importato(g: Path, modulo: str, prima: str, dopo: str) -> None:
++    """Il modulo deve venire dalla copia e contenere la mutazione: il testo nuovo presente oppure, per una
++    cancellazione, il testo originale assente."""
++    nome = modulo[:-3].replace("/", ".")
++    env = {"PATH": os.environ["PATH"], "PYTHONDONTWRITEBYTECODE": "1"}
++    r = subprocess.run([sys.executable, "-s", "-B", "-c", f"import {nome} as m; print(m.__file__)"],
++                       cwd=g, capture_output=True, text=True, env=env)
++    percorso = Path(r.stdout.strip())
++    assert percorso == g / modulo, (modulo, r.stdout, r.stderr)
++    testo = percorso.read_text(encoding="utf-8")
++    assert (dopo in testo) if dopo.strip() else (prima not in testo), (modulo, "mutazione assente nel modulo importato")
++
++
++OUT.mkdir(parents=True, exist_ok=True)
++g0 = copia(OUT / "M00")
++rc, falliti, err = esegui(g0)
++print(f"{'CONTROLLO' if rc == 0 else 'ERRORE':13s} M00 copia non mutata: suite {'verde' if rc == 0 else 'ROSSA'}")
++if rc:
++    sys.exit("la copia non mutata fallisce: uccisioni non credibili\n" + err[-3000:])
++
++ris = []
++for nome, subs in M.items():
++    mid = nome.split()[0]
++    g = copia(OUT / mid)
++    for f, a, b in subs:
++        p = g / f
++        c = p.read_text(encoding="utf-8")
++        assert c.count(a) == 1, (nome, f, a[:60], c.count(a))
++        p.write_text(c.replace(a, b, 1), encoding="utf-8")
++        assert p.read_text(encoding="utf-8") != (GUARDIAN / f).read_text(encoding="utf-8"), nome
++        importato(g, f, a, b)
++    rc, falliti, _ = esegui(g)
++    esito = "UCCISO" if rc else ("EQUIVALENTE" if mid in EQUIVALENTI else "SOPRAVVISSUTO")
++    ris.append((mid, esito))
++    file_ = ", ".join(sorted({f for f, _, _ in subs}))
++    print(f"{esito:13s} {nome}  ({file_})" + (f"  [{', '.join(falliti)}]" if falliti else ""))
++    shutil.rmtree(OUT / mid)
++shutil.rmtree(OUT / "M00")
++
++non_eq = [x for x in ris if x[0] not in EQUIVALENTI]
++uccisi = sum(1 for _, e in non_eq if e == "UCCISO")
++print()
++for k, v in EQUIVALENTI.items():
++    print(f"{k} equivalente: {v}")
++print(f"\nMutanti non equivalenti uccisi: {uccisi}/{len(non_eq)}")
++per_file = {}
++for (mid, e), subs in zip(ris, M.values()):
++    if mid not in EQUIVALENTI:
++        for f in {f for f, _, _ in subs}:
++            t = per_file.setdefault(f, [0, 0])
++            t[0] += e == "UCCISO"
++            t[1] += 1
++print("Per file: " + "; ".join(f"{f} {u}/{n}" for f, (u, n) in sorted(per_file.items())))
++sys.exit(0 if uccisi == len(non_eq) else 1)
 diff --git a/brain/guardian/test/test_fix_g0_journal.py b/brain/guardian/test/test_fix_g0_journal.py
 new file mode 100644
-index 0000000..0eda59b
+index 0000000..56d3fa7
 --- /dev/null
 +++ b/brain/guardian/test/test_fix_g0_journal.py
-@@ -0,0 +1,244 @@
+@@ -0,0 +1,348 @@
 +"""Test dei 5 difetti del G0 e del journal (mandato «Binario A», 12/11/2026), scritti PRIMA delle correzioni (TDD).
 +Uso (dalla cartella guardian/): python3 -s -B -m unittest discover -s test -v
 +"""
@@ -982,6 +1327,284 @@ index 0000000..0eda59b
 +        self.assertIn("feat/fix-g0-journal", (brain / "governance" / "REGISTRO-MODIFICHE.md").read_text(encoding="utf-8"))
 +        aperte = (brain / "governance" / "DECISIONI-APERTE.md").read_text(encoding="utf-8")
 +        self.assertIn("trading-brain-core", aperte.split("### DA-01")[1].split("### DA-02")[0])
++
++
++if __name__ == "__main__":
++    unittest.main()
++
++
++# ---------------------------------------------------------------------------------------------------------------
++# Mandato notturno del 12/11/2026: 4 difetti residui in 357e48d, più 1 trovato in auto-audit (test scritti PRIMA)
++# ---------------------------------------------------------------------------------------------------------------
++
++def _avvisi(testo):
++    return testo.split("\nAVVISI\n")[1].split("\nREGOLE PERSONALI\n")[0]
++
++
++class TestNotte1Commissioni(unittest.TestCase):
++    def test_commissioni_negative_o_non_finite_rifiutate(self):
++        """Commissioni negative (segno invertito in un export) o non finite RIDURREBBERO la perdita allo stop."""
++        fx = Strumento("EURUSD", "fx", "USD", D(100000), "t", valuta_base="EUR")
++        m = lambda x, u="prezzo": misura(x, u, "t")
++        base = perdita_allo_stop(fx, m("1.085"), m("1.083"), m("1", "lotti"), "USD")
++        self.assertEqual(base.valore, D("200"))
++        self.assertEqual(perdita_allo_stop(fx, m("1.085"), m("1.083"), m("1", "lotti"), "USD",
++                                           commissioni=m("0", "USD")).valore, D("200"))     # spread-only: ammesso
++        self.assertEqual(perdita_allo_stop(fx, m("1.085"), m("1.083"), m("1", "lotti"), "USD",
++                                           commissioni=m("7", "USD")).valore, D("207"))
++        for c in ("-200", "-0.01", "NaN", "Infinity", "-Infinity"):
++            with self.assertRaises(ValueError, msg=f"commissioni={c}"):
++                perdita_allo_stop(fx, m("1.085"), m("1.083"), m("1", "lotti"), "USD", commissioni=m(c, "USD"))
++
++
++class TestNotte2P05MarginePersonaleNegativo(unittest.TestCase):
++    def test_avvisi_trade_e_stress_anche_a_limite_personale_superato(self):
++        """P-05 a 0,4%: limite personale = 100.400 − 400 = 100.000. Equity 99.900 → margine personale −100 (limite
++        personale superato, FTMO no: limite 95.400). Trade 682 e stress 842,50 vanno segnalati comunque."""
++        d = esempio()
++        d["conto"]["equity"] = "99900"
++        avvisi = _avvisi("\n".join(SCH.scheda(d, regole_personali=regole_con(P_05="0.004"))))
++        self.assertIn("P-05: limite personale giornaliero già superato", avvisi)
++        self.assertIn("P-05: se lo stop del trade previsto viene colpito", avvisi)
++        self.assertIn("P-05: nello scenario di stress", avvisi)
++
++
++class TestNotte3SemanticaJournal(unittest.TestCase):
++    def test_corregge_e_chiude_coerenti_e_nessuna_doppia_chiusura(self):
++        base = {"autore": "claude", "evento": "A", "scadenza_utc": "2026-12-01T00:00:00Z", "fonte": "t"}
++        esito = lambda pid, x, **k: dict({"autore": "utente", "fonte": "t", "chiude": pid, "esito": x}, **k)
++        with tempfile.TemporaryDirectory() as tmp:
++            d = Path(tmp)
++            a = J.aggiungi("previsione", dict(base, probabilita=0.8), d)["id"]
++            a2 = J.aggiungi("previsione", dict(base, probabilita=0.7, corregge=a), d)["id"]   # correzione valida
++            b = J.aggiungi("previsione", dict(base, evento="B", probabilita=0.3), d)["id"]
++            e = J.aggiungi("previsione", esito(a, 1), d)["id"]
++            casi = {
++                "(a) esito che corregge una previsione": esito(b, 1, corregge=a),
++                "(a) previsione che corregge un esito": dict(base, probabilita=0.5, corregge=e),
++                "(b) chiude punta a un esito": esito(e, 1),
++                "(b) chiude punta a una correzione, non alla radice": esito(a2, 0),
++                "(c) secondo esito senza corregge sulla stessa previsione": esito(a, 0),
++                "(c) correzione di esito che sposta la chiusura su un'altra previsione": esito(b, 0, corregge=e),
++            }
++            for nome, dati in casi.items():
++                with self.assertRaises(ValueError, msg=nome):
++                    J.aggiungi("previsione", dati, d)
++            J.aggiungi("previsione", esito(a, 0, corregge=e), d)                              # correzione valida
++            J.aggiungi("previsione", esito(b, 1), d)                                          # chiusura valida
++            self.assertEqual(J.verifica(d), [])
++            # Un file scritto a mano (catena di hash ricostruita) con una doppia chiusura: verifica() la segnala.
++            path = d / "previsione.jsonl"
++            righe = J._righe(path)
++            rec = {"schema": J.SCHEMA, "registro": "previsione", "id": f"PRE-{len(righe) + 1:05d}",
++                   "registrato_utc": "2026-11-12T22:00:00Z", "prec_hash": J._sha(righe[-1]), "dati": esito(a, 1)}
++            with open(path, "a", encoding="utf-8") as f:
++                f.write(J._canonico(rec) + "\n")
++            self.assertTrue(any("già chiusa" in p for p in J.verifica(d)), J.verifica(d))
++
++
++class TestNotte4DatiSessione(unittest.TestCase):
++    def test_dati_di_sessione_e_soglie_non_validi(self):
++        """Booleani, negativi, NaN, infiniti e ore di sonno oltre 24: dato non valido, mai «regola rispettata» o crash."""
++        casi = [("P_14", "6", "ore_sonno", True), ("P_14", "6", "ore_sonno", "25"), ("P_14", "6", "ore_sonno", "-1"),
++                ("P_11", "15", "minuti_da_ultima_perdita", "-5"), ("P_11", "15", "minuti_da_ultima_perdita", "NaN"),
++                ("P_15", "3", "perdite_consecutive_oggi", "-1"), ("P_15", "3", "perdite_consecutive_oggi", "1.5"),
++                ("P_15", "3", "perdite_consecutive_oggi", "Infinity")]
++        for rid, soglia, chiave, x in casi:
++            d = esempio()
++            d["sessione"] = {chiave: x}
++            avvisi = _avvisi("\n".join(SCH.scheda(d, regole_personali=regole_con(**{rid: soglia}))))
++            self.assertIn(f"{rid.replace('_', '-')}: dato «sessione.{chiave}» non valido", avvisi, f"{chiave}={x!r}")
++        for rid, soglia in (("P_14", "NaN"), ("P_11", "-15"), ("P_15", "Infinity"), ("P_01", "NaN"), ("P_05", "0")):
++            d = esempio()
++            d["sessione"] = {"ore_sonno": "8", "minuti_da_ultima_perdita": "30", "perdite_consecutive_oggi": "0"}
++            avvisi = _avvisi("\n".join(SCH.scheda(d, regole_personali=regole_con(**{rid: soglia}))))
++            self.assertIn(f"{rid.replace('_', '-')}: regola confermata senza valore numerico valido", avvisi, soglia)
++
++
++class TestNotte5BooleaniJournal(unittest.TestCase):
++    def test_booleani_rifiutati_come_numeri(self):
++        """In Python True == 1: senza controllo, `probabilita: true`, `esito: true` e `aderenza: true` passerebbero."""
++        P = {"autore": "claude", "evento": "x", "scadenza_utc": "2026-12-01T00:00:00Z", "fonte": "t"}
++        T = {"simbolo": "EURUSD", "direzione": "long", "aperto_utc": "2026-11-12T09:00:00Z", "ingresso": "1.085",
++             "stop": "1.083", "quantita": "1", "fonte": "t"}
++        for registro, dati in (("previsione", dict(P, probabilita=True)), ("previsione", dict(P, probabilita=False)),
++                               ("previsione", {"autore": "u", "fonte": "t", "chiude": "PRE-00001", "esito": True}),
++                               ("trade", dict(T, aderenza=True)), ("trade", dict(T, quantita=True))):
++            with self.assertRaises(ValueError, msg=str(dati)):
++                J.valida(registro, dati)
++        J.valida("previsione", dict(P, probabilita=1))                          # interi 0 e 1 restano ammessi
++        J.valida("previsione", {"autore": "u", "fonte": "t", "chiude": "PRE-00001", "esito": 0})
+diff --git a/brain/guardian/test/test_mutanti_g0_journal.py b/brain/guardian/test/test_mutanti_g0_journal.py
+new file mode 100644
+index 0000000..5113f13
+--- /dev/null
++++ b/brain/guardian/test/test_mutanti_g0_journal.py
+@@ -0,0 +1,168 @@
++"""Test aggiunti dopo il primo giro di mutation testing (mutazioni_g0_journal.py, 12/11/2026): con i 41 test
++precedenti sopravvivevano 14 mutanti su 44 non equivalenti. Ogni test indica i mutanti che uccide.
++I valori attesi vengono dalle regole (FTMO: violazione = equity SOTTO il limite; regole personali come scritte nel
++file), non dal codice.
++Uso (dalla cartella guardian/): python3 -s -B -m unittest discover -s test -v
++"""
++import sys
++import tempfile
++import tomllib
++import unittest
++from decimal import Decimal as D
++from pathlib import Path
++
++sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
++
++from g0 import limiti as L                                      # noqa: E402
++from g0 import scheda as SCH                                     # noqa: E402
++from g0.strumenti import Strumento, perdita_allo_stop            # noqa: E402
++from g0.valori import NON_STIMABILE, ipotesi, misura             # noqa: E402
++from journal import journal as J                                 # noqa: E402
++from journal.indicatori import metriche_dopo_perdita, pattern_r1, trade_da_journal  # noqa: E402
++
++ESEMPIO = Path(__file__).resolve().parent.parent / "esempi" / "situazione_esempio.toml"
++EURUSD_200 = {"simbolo": "EURUSD", "ingresso": "1.08500", "stop": "1.08300", "quantita": "1"}   # 200 USD esatti
++T = {"simbolo": "EURUSD", "direzione": "long", "aperto_utc": "2026-11-12T09:00:00Z", "ingresso": "1.085",
++     "stop": "1.083", "quantita": "1", "fonte": "t"}
++
++
++def esempio(**conto):
++    with open(ESEMPIO, "rb") as f:
++        d = tomllib.load(f)
++    d["conto"].update(conto)
++    return d
++
++
++def regole_con(**conferme):
++    with open(SCH.FILE_REGOLE_PERSONALI, "rb") as f:
++        regole = tomllib.load(f)
++    for r in regole["regola"]:
++        if r["id"].replace("-", "_") in conferme:
++            r.update(confermata=True, valore=conferme[r["id"].replace("-", "_")])
++    return regole
++
++
++def avvisi(d, **conferme):
++    testo = "\n".join(SCH.scheda(d, regole_personali=regole_con(**conferme)))
++    return testo.split("\nAVVISI\n")[1].split("\nREGOLE PERSONALI\n")[0]
++
++
++class TestValoriNonFiniti(unittest.TestCase):
++    def test_prezzi_quantita_e_cambi_infiniti_rifiutati(self):
++        """V09. Infinity > 0 è vero: senza is_finite() la perdita allo stop diventerebbe infinita senza errore."""
++        fx = Strumento("EURUSD", "fx", "USD", D(100000), "t", valuta_base="EUR")
++        jp = Strumento("USDJPY", "fx", "JPY", D(100000), "t", valuta_base="USD")
++        m = lambda x, u="prezzo": misura(x, u, "t")
++        for caso in (lambda: perdita_allo_stop(fx, m("Infinity"), m("1.083"), m("1", "lotti"), "USD"),
++                     lambda: perdita_allo_stop(fx, m("1.085"), m("1.083"), m("Infinity", "lotti"), "USD"),
++                     lambda: perdita_allo_stop(jp, m("150"), m("149.5"), m("1", "lotti"), "EUR",
++                                               cambio=misura("Infinity", "JPY/EUR", "t"))):
++            with self.assertRaises(ValueError):
++                caso()
++
++
++class TestStressConRiserve(unittest.TestCase):
++    def test_le_riserve_entrano_nello_scenario(self):
++        """V17. Scenario = perdite allo stop + riserve dichiarate; una riserva NON STIMABILE rende lo scenario tale."""
++        st = L.scenario_di_stress([misura("200", "USD", "t")], [ipotesi("50", "USD", "t", "H_gap")])
++        self.assertEqual(st.valore, D("250"))
++        self.assertIn("H_gap", st.condizioni)
++        st = L.scenario_di_stress([misura("200", "USD", "t")], [ipotesi(None, "USD", "t", "H_gap")])
++        self.assertEqual(st.incertezza, NON_STIMABILE)
++
++
++class TestSoglieAlLimite(unittest.TestCase):
++    def test_p05_uguale_al_limite_della_prop_non_e_piu_stretto(self):
++        """V18. P-05 = 5% sul 2-Step (limite FTMO 5%): non è PIÙ stretto, va segnalato; 4,99% invece sì."""
++        self.assertIn("non è più stretto del limite della prop firm", avvisi(esempio(), P_05="0.05"))
++        self.assertNotIn("non è più stretto", avvisi(esempio(), P_05="0.0499"))
++
++    def test_p01_rischio_uguale_alla_soglia_non_la_supera(self):
++        """V19. Trade EURUSD 1 lotto, 200 USD esatti su 100.000 = 0,2%: con soglia 0,2% nessun avviso; 0,19% sì."""
++        d = esempio()
++        d["trade_previsto"] = dict(EURUSD_200)
++        self.assertNotIn("P-01: il trade previsto rischia", avvisi(d, P_01="0.002"))
++        self.assertIn("P-01: il trade previsto rischia", avvisi(d, P_01="0.0019"))
++
++    def test_p11_e_p14_valore_uguale_alla_soglia_rispetta_la_regola(self):
++        """V20. «Meno di 6 ore di sonno»: 6 ore rispettano la regola, 5,9 no. Pausa di 15 minuti: 15 la rispettano."""
++        for rid, chiave, soglia, ok, ko in (("P_14", "ore_sonno", "6", "6", "5.9"),
++                                           ("P_11", "minuti_da_ultima_perdita", "15", "15", "14")):
++            for x, violata in ((ok, False), (ko, True)):
++                d = esempio()
++                d["sessione"] = {chiave: x}
++                presente = f"{rid.replace('_', '-')}:" in avvisi(d, **{rid: soglia})
++                self.assertEqual(presente, violata, f"{chiave}={x}")
++
++    def test_p15_raggiunto_il_massimo_di_perdite_consecutive(self):
++        """V21. «Massimo numero di perdite consecutive prima dello stop» = 3: alla terza perdita la regola scatta."""
++        for x, violata in (("3", True), ("2", False)):
++            d = esempio()
++            d["sessione"] = {"perdite_consecutive_oggi": x}
++            self.assertEqual("P-15:" in avvisi(d, P_15="3"), violata, x)
++
++    def test_equity_esattamente_al_limite_non_e_violazione(self):
++        """V23, V27. FTMO: violazione = equity SOTTO il limite. Limite giornaliero 100.400 − 5.000 = 95.400.
++        Trade previsto 200 USD: con equity 95.600 lo stop porta l'equity AL limite (nessun avviso); 95.599,99 sotto.
++        Scenario di stress = 160,50 (posizione aperta) + 200 = 360,50: equity 95.760,50 → al limite; 95.760,49 sotto."""
++        msg_t = "Se lo stop del trade previsto viene colpito, il limite giornaliero viene violato."
++        msg_s = "Nello scenario di stress il limite giornaliero viene violato."
++        for eq, trade, stress in (("95600", False, True), ("95599.99", True, True),
++                                  ("95760.50", False, False), ("95760.49", False, True)):
++            d = esempio(equity=eq)
++            d["trade_previsto"] = dict(EURUSD_200)
++            a = avvisi(d)
++            self.assertEqual(msg_t in a, trade, f"trade, equity {eq}")
++            self.assertEqual(msg_s in a, stress, f"stress, equity {eq}")
++
++
++class TestCorrezioniACatena(unittest.TestCase):
++    def test_brier_e_indicatori_con_correzione_di_una_correzione(self):
++        """V29. a → a2 (corregge a) → a3 (corregge a2): vale a3 (0,6). Esito 1: Brier (0,6 − 1)² = 0,16 su n = 1.
++        Lo stesso per i trade: una sola operazione, nell'ultima versione."""
++        with tempfile.TemporaryDirectory() as tmp:
++            d = Path(tmp)
++            base = {"autore": "claude", "evento": "A", "scadenza_utc": "2026-12-01T00:00:00Z", "fonte": "t"}
++            a = J.aggiungi("previsione", dict(base, probabilita=0.8), d)["id"]
++            a2 = J.aggiungi("previsione", dict(base, probabilita=0.7, corregge=a), d)["id"]
++            J.aggiungi("previsione", dict(base, probabilita=0.6, corregge=a2), d)
++            J.aggiungi("previsione", {"autore": "utente", "fonte": "t", "chiude": a, "esito": 1}, d)
++            self.assertEqual(J.brier(d)["claude"]["n"], 1)
++            self.assertAlmostEqual(J.brier(d)["claude"]["brier"], (0.6 - 1) ** 2)
++            chiuso = dict(T, chiuso_utc="2026-11-12T09:30:00Z", pnl_conto="-100")
++            t1 = J.aggiungi("trade", chiuso, d)["id"]
++            t2 = J.aggiungi("trade", dict(chiuso, pnl_conto="-150", corregge=t1), d)["id"]
++            J.aggiungi("trade", dict(chiuso, pnl_conto="-200", corregge=t2), d)
++            trades = trade_da_journal(d / "trade.jsonl")
++            self.assertEqual([t["pnl_conto"] for t in trades], ["-200"])
++
++
++class TestOrariUTC(unittest.TestCase):
++    def test_journal_rifiuta_fusi_diversi_da_utc_e_ammette_apertura_uguale_a_chiusura(self):
++        """V36, V37. +01:00 non è UTC (anche se è un orario ISO valido); +00:00 sì. Un trade aperto e chiuso nello
++        stesso istante (per esempio uno stop immediato) non è un errore: «chiuso_utc non precede aperto_utc»."""
++        with self.assertRaises(ValueError):
++            J.valida("trade", dict(T, aperto_utc="2026-11-12T10:00:00+01:00"))
++        J.valida("trade", dict(T, aperto_utc="2026-11-12T09:00:00+00:00"))
++        J.valida("trade", dict(T, chiuso_utc=T["aperto_utc"]))
++
++    def test_indicatori_rifiutano_fusi_diversi_da_utc(self):
++        """V42."""
++        t1 = dict(T, chiuso_utc="2026-11-12T09:30:00Z", pnl_conto="-100")
++        t2 = dict(T, aperto_utc="2026-11-12T10:33:00+01:00")
++        with self.assertRaises(ValueError):
++            metriche_dopo_perdita([t1, t2])
++
++
++class TestIndicatoriAlLimite(unittest.TestCase):
++    def test_r1_rientro_esattamente_al_limite_e_pareggio(self):
++        """V43: R1 = ingresso ENTRO `minuti_max` (≤): 3 minuti con minuti_max = 3 è un caso.
++        V44: un pareggio (P/L = 0) non è una perdita: nessuna metrica «dopo una perdita»."""
++        t1 = dict(T, chiuso_utc="2026-11-12T09:30:00Z", pnl_conto="-200")
++        t2 = dict(T, aperto_utc="2026-11-12T09:33:00Z", quantita="2")
++        self.assertEqual(len(pattern_r1([t1, t2], minuti_max=3, rapporto_min=2)["casi"]), 1)
++        self.assertEqual(metriche_dopo_perdita([dict(t1, pnl_conto="0"), t2]), [])
 +
 +
 +if __name__ == "__main__":
