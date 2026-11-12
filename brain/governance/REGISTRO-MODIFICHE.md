@@ -256,3 +256,22 @@ Formato: data · versione della base · cosa · perché · file.
 - **Gate 2 aperto:** in attesa del CSV storico XAUUSD 15m.
 - I gate sono la denominazione operativa dell'utente: nel Brain non ne esiste ancora una definizione formale.
 - Nessuna modifica a V3.3, lezioni o ai file di codice e test di Gemini.
+
+## 2026-11-12 · v1.19 (Gate 2 preparato, non chiuso; frazioni con 3 decimali nella scheda)
+
+- **Esecuzione sul Mac non possibile da questa sessione:** nessuna cartella condivisa con il Remote Control. Il lavoro è stato fatto nel container cloud e pubblicato su GitHub.
+- **Scaricamento Dukascopy dal cloud non riuscito:**
+  - l'host `datafeed.dukascopy.com` è stato aggiunto all'ambiente cloud personale;
+  - il server ha poi risposto con 429 e connessioni chiuse;
+  - i tentativi ripetuti sono stati fermati dal controllo dei permessi della sessione.
+  - Nessun dato inventato o simulato in sostituzione.
+- **`brain/dati/pipeline/dukascopy.py`**, da eseguire sul Mac:
+  - candele BID da 1 minuto aggregate a 15 minuti UTC, con pause, nuovi tentativi su 429/5xx, cache locale e User-Agent generico;
+  - controlli che fermano su scala o ordine dei campi sbagliati (formato non documentato), OHLC incoerenti e ordine non crescente;
+  - buchi classificati: pausa giornaliera; fine settimana (solo se contiene un sabato intero, regola corretta durante i test); chiusure lunghe da verificare; anomali, che fermano salvo `--accetta-buchi`;
+  - CSV e `meta.json` con SHA-256, ingestione, partizione 70/30 e `commitment.json` con nonce fuori dal repository.
+  - 9 test offline, con file `.bi5` costruiti e un finto server che risponde 429.
+- `.gitignore`: esclusi CSV, cache, partizioni `.jsonl` e `*.secret`; versionati i soli metadati e il sigillo.
+- **Scheda del G0:** le frazioni si mostrano con 3 decimali; P-01 si legge «0,005» invece di «0,01». In TDD (`8d1ae16` rosso, `5961613` verde), con il nuovo mutante V80.
+- **Esito:** 118/118 test (77 Guardian, 32 Binario B, 9 Dukascopy) su Python 3.13 e 3.9; mutanti non equivalenti uccisi 80/80 su 3.13 e 79/79 su 3.9.
+- Il Gate 2 si chiude quando `XAUUSD_15m.meta.json` e `commitment.json` sono su GitHub.

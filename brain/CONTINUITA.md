@@ -1,6 +1,6 @@
 # Documento di continuità
 
-Ultimo aggiornamento: **2026-11-12**, dopo la verifica completa del Binario B e la chiusura dei Gate 0 e 1 (vedi «Stato consolidato di `main`» e «Gate operativi»). Leggere questo file per primo (vale anche per Gemini, insieme a `collaborazione/HANDOFF-GEMINI.md`).
+Ultimo aggiornamento: **2026-11-12**, dopo la verifica completa del Binario B, la chiusura dei Gate 0 e 1 e la preparazione del Gate 2 (vedi «Stato consolidato di `main`» e «Gate operativi»). Leggere questo file per primo (vale anche per Gemini, insieme a `collaborazione/HANDOFF-GEMINI.md`).
 
 ## Stato
 - **Sviluppo sospeso** (D-12): nessun nuovo modulo, nessuno sviluppo del motore quantitativo, nessuna modifica a L2.1–L2.6 né ai materiali di Antigravity, nessuna migrazione o riorganizzazione.
@@ -97,11 +97,11 @@ Il G0 **non** è ancora utilizzabile per decidere: serve la riconciliazione con 
   - Entrambi verificati su Python 3.13 e 3.9.
 
 **Stato consolidato di `main`:**
-- Suite unificata: **108/108 test verdi** con `python3 -s -B -W error`, su Python 3.13 e 3.9. Sono 76 di `brain/guardian/test` più 32 del Binario B.
-  - Il Binario B si esegue dalla radice del repository: `python3 -s -B -W error -m unittest brain.dati.tests.test_pipeline brain.laboratorio.tests.test_backtester brain.laboratorio.tests.test_anti_frode_statico`.
-- `brain/guardian/`: 76/76 test verdi anche su Python 3.11 e 3.12.
+- Suite unificata: **118/118 test verdi** con `python3 -s -B -W error`, su Python 3.13 e 3.9. Sono 77 di `brain/guardian/test`, 32 del Binario B e 9 dello scaricamento Dukascopy.
+  - Dalla radice del repository: `python3 -s -B -W error -m unittest brain.dati.tests.test_pipeline brain.dati.tests.test_dukascopy brain.laboratorio.tests.test_backtester brain.laboratorio.tests.test_anti_frode_statico`.
+- `brain/guardian/`: verde anche su Python 3.11 e 3.12 (76/76 all'ultima prova su quelle versioni, prima del test sulle frazioni).
 - ALTO-8 (race nel recupero del lock orfano senza `fcntl`, da una revisione esterna) corretto in TDD sul ramo `fix/lock-orfano-toctou` e unito a `main`.
-- Mutanti non equivalenti uccisi: 79/79 su 3.13 e 78/78 su 3.9 (V48 equivalente prima di 3.11, E01 equivalente su tutte le versioni). Riconfermato 79/79 su 3.13 dopo che i test sono stati resi indipendenti dalle conferme reali delle regole personali.
+- Mutanti non equivalenti uccisi: 80/80 su 3.13 e 79/79 su 3.9 (V48 equivalente prima di 3.11, E01 equivalente su tutte le versioni).
 
 **Gate operativi** (denominazione dell'utente; nel Brain non c'è ancora una definizione formale dei gate):
 - **Gate 0, chiuso:** verifica completa del codice. Guardian e Binario B sono su `main`, con ALTO-2 e ALTO-7 verificati e 108/108 test.
@@ -111,19 +111,25 @@ Il G0 **non** è ancora utilizzabile per decidere: serve la riconciliazione con 
   - Commissione ECN round-turn 7,00 USD/lotto. Specifiche del contratto e commissione sono da verificare sul broker (stato C).
   - Regole personali confermate dall'utente il 12/11/2026: **P-01 = 0,5%** (250 USD per trade) e **P-05 = 1,5%** (750 USD al giorno). Nella scheda risultano «2 confermate su 15».
   - Scheda **non riconciliata** con la piattaforma (DA-25): finché non lo è, la scheda dichiara di non usarne i numeri per decidere.
-- **Gate 2, aperto:** in attesa del CSV storico **XAUUSD 15m**, da registrare in `dati/reali/` con fonte, data di download, hash e licenza (vedi `dati/reali/README.md`).
+- **Gate 2, pronto ma NON chiuso:** lo storico reale e il `commitment.json` non esistono ancora.
+  - Dal container cloud il server Dukascopy rifiuta le richieste: prima il proxy (host poi consentito nell'ambiente cloud), poi il server stesso, con 429 e connessioni chiuse. I tentativi ripetuti sono stati fermati dal controllo dei permessi. Nessun dato è stato inventato o simulato al posto di quello reale.
+  - Pronto `brain/dati/pipeline/dukascopy.py`, da eseguire **sul Mac**, dalla radice del repository: `python3 -s -B -m brain.dati.pipeline.dukascopy --anni 3`.
+  - Cosa fa: scarica le candele BID da 1 minuto e le aggrega a 15 minuti UTC; controlla scala, OHLC, ordine e buchi; poi ingestione e partizione In-Sample 70% / Out-of-Sample 30%, con `commitment.json` e il nonce fuori dal repository (`~/.trading_brain/nonce/`).
+  - Il formato dei file Dukascopy non è documentato: scala dei prezzi (×10⁻³) e ordine dei campi sono dedotti, e il modulo si ferma se i dati non tornano. 9 test offline.
+  - Esclusi da git: il CSV, la cache dei file grezzi, le partizioni `.jsonl` e `*.secret`. Si versionano `dati/reali/XAUUSD_15m.meta.json` (periodo, SHA-256, buchi, date IS/OOS) e `dati/reali/partizioni/XAUUSD_15m/commitment.json`.
+  - Si chiude quando i due file sono su GitHub: allora si registrano qui le date IS/OOS e gli hash.
 - **Gate 3, inizializzato (non aperto):**
   - `dati/operativo/journal_broker_mt5_50k/`: i dati del journal sono esclusi da git, perché personali (DA-16);
   - `dati/operativo/trial_registry_xauusd.json`: `TRIAL_REGISTRY_V1`, 0 prove.
 - Rami storici ancora su GitHub: `feat/fix-g0-journal`, `fix/red-team-guardian` e `fix/lock-orfano-toctou`, tutti già uniti.
-- Nota minore aperta: nella scheda la riga «P-01 rischio del trade previsto» arrotonda la frazione a 2 decimali (per esempio 0,005014 → «0,01»). L'avviso P-01 riporta invece il valore corretto (0,501%). Da correggere in `fmt`.
+- Visualizzazione delle frazioni nella scheda corretta in TDD: P-01 si legge «0,005», non più «0,01» (3 decimali per tutte le frazioni).
 
 **Ora: fermo in attesa dell'utente**, per:
 - rispondere alle decisioni di `governance/DECISIONI-APERTE.md`, a partire da quelle bloccanti;
 - valutare la revisione V3.3 e decidere se applicare l'errata (T-01…T-05) all'inizio della fase successiva;
 - prendere le decisioni elencate nell'audit architetturale (§10) e nella valutazione della controverifica (§7);
 - avviare Q-09 (Trading Guardian) e Q-07;
-- fornire il CSV storico XAUUSD 15m (Gate 2) e riconciliare la scheda del conto demo con la piattaforma (DA-25);
+- eseguire sul Mac lo scaricamento del Gate 2 e pubblicare `XAUUSD_15m.meta.json` e `commitment.json`; riconciliare la scheda del conto demo con la piattaforma (DA-25);
 - prendere le decisioni della proposta della Parte B.
 
 ## Correzioni note ancora da applicare (dopo il via libera)
