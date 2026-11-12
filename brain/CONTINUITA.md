@@ -77,7 +77,9 @@ Il G0 **non** è ancora utilizzabile per decidere: serve la riconciliazione con 
 **Ramo `feat/fix-g0-journal` (non ancora unito a `main`):**
 - 5 correzioni del mandato «Binario A»;
 - 7 correzioni del contro-audit (P-05 contro il limite della prop firm; seconda parte di P-01; validazione all'ingresso del journal; correzioni in `brier()`; impronta esterna dell'ancora; positività in G0; documenti di continuità).
-- TDD: **36/36 test verdi** con `-W error`.
+- 5 correzioni del mandato notturno (commissioni non negative; avvisi P-05 anche a limite personale superato; coerenza di correzioni ed esiti nel journal; dati di sessione e soglie validati; booleani rifiutati come numeri).
+- TDD: **52/52 test verdi** con `-W error`; mutation testing: **44/44 mutanti non equivalenti uccisi** (`guardian/test/mutazioni_g0_journal.py`).
+- Audit su Gemini: il ramo `feat/lab-dati-backtester` non è su GitHub; i 138 hash dichiarati nei materiali di Gemini ricevuti coincidono; l'hash falso del V3.3 citato nel mandato non compare in nessun materiale disponibile (`CONSEGNA_FIX_G0/AUDIT_OSTILE_SU_GEMINI.md`).
 - Consegna in `collaborazione/da-claude/CONSEGNA_FIX_G0/`.
 - L'unione a `main` è una decisione dell'utente.
 
