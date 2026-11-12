@@ -1,5 +1,10 @@
 """
 Partizionamento rigoroso In-Sample / Out-Of-Sample e Sigillo Crittografico OOS.
+Nota di Sicurezza: Questo modulo implementa un *commitment* crittografico basato su hash
+(hiding & binding tramite nonce segreto CSPRNG a 256-bit), NON una firma digitale asimmetrica.
+Chi custodisce il nonce puo' ricalcolare o rigenerare il commitment: per garantire la
+separazione dei ruoli, il nonce puo' essere isolato in un percorso dedicato tramite `nonce_dir`
+o la variabile d'ambiente `TRADING_OOS_NONCE_DIR`.
 Allineato formalmente allo standard di brain/guardian/journal/journal.py (sigilla):
 Impegno = SHA256((nonce_hex + oos_text_canonico).encode("utf-8"))
 Verifica tramite secrets.compare_digest.
@@ -7,6 +12,7 @@ Verifica tramite secrets.compare_digest.
 
 import hashlib
 import json
+import os
 import secrets
 from datetime import datetime, timezone, timedelta
 from pathlib import Path
@@ -30,10 +36,13 @@ class DatasetPartitioner:
         candles: List[Candle],
         output_dir: Path,
         split_time: Optional[datetime] = None,
+        nonce_dir: Optional[Path] = None,
     ) -> Tuple[Path, Path, Path]:
         """
         Separa fisicamente le candele in IN-SAMPLE e OUT-OF-SAMPLE.
-        Genera commitment.json sigillando l'OOS con Nonce CSPRNG a 256 bit.
+        Genera commitment.json sigillando l'OOS con Nonce CSPRNG a 256 bit (commitment crittografico).
+        Il nonce viene salvato in `nonce_dir`, oppure in `TRADING_OOS_NONCE_DIR` se impostata,
+        altrimenti in `output_dir`.
         """
         if not candles:
             raise ValueError("Impossibile partizionare un dataset vuoto.")
@@ -45,7 +54,14 @@ class DatasetPartitioner:
             if split_time.tzinfo is None or split_time.utcoffset() != timedelta(0):
                 raise DataValidationError("split_time deve avere timezone UTC esplicito.")
             in_sample = [c for c in candles if c.close_time <= split_time]
-            out_of_sample = [c for c in candles if c.open_time >= split_time]
+            out_of_sample = [c for c in candles if c.close_time > split_time]
+            assert len(in_sample) + len(out_of_sample) == len(candles), (
+                "Partizione non disgiunta/esaustiva su split_time."
+            )
+            if not in_sample or not out_of_sample:
+                raise ValueError(
+                    "Partizione non valida su split_time: in_sample e out_of_sample devono essere entrambi non vuoti."
+                )
         else:
             split_idx = int(len(candles) * self.in_sample_ratio)
             if split_idx <= 0 or split_idx >= len(candles):
@@ -102,8 +118,16 @@ class DatasetPartitioner:
         with open(commitment_path, "w", encoding="utf-8") as f:
             f.write(json.dumps(commitment_data, indent=2) + "\n")
 
-        # 6. Scrittura file nonce isolato (da custodire per apertura)
-        nonce_path = output_dir / "sealed_nonce.secret"
+        # 6. Scrittura file nonce in percorso isolabile (parametro -> env -> output_dir)
+        env_nonce_dir = os.environ.get("TRADING_OOS_NONCE_DIR")
+        if nonce_dir is not None:
+            resolved_nonce_dir = Path(nonce_dir)
+        elif env_nonce_dir:
+            resolved_nonce_dir = Path(env_nonce_dir)
+        else:
+            resolved_nonce_dir = output_dir
+        resolved_nonce_dir.mkdir(parents=True, exist_ok=True)
+        nonce_path = resolved_nonce_dir / "sealed_nonce.secret"
         with open(nonce_path, "w", encoding="utf-8") as f:
             f.write(nonce_hex + "\n")
 
@@ -114,13 +138,34 @@ class DatasetPartitioner:
         """
         Verifica crittografica formale dell'integrita' del dataset Out-Of-Sample.
         Usa secrets.compare_digest per prevenire attacchi di temporizzazione.
+        Gestisce gracefully commitment.json malformati restituendo valid=False e reason.
         """
         oos_file = Path(oos_file)
         commitment_file = Path(commitment_file)
         nonce_file = Path(nonce_file)
 
-        with open(commitment_file, "r", encoding="utf-8") as f:
-            comm = json.load(f)
+        try:
+            with open(commitment_file, "r", encoding="utf-8") as f:
+                comm = json.load(f)
+        except (OSError, json.JSONDecodeError, ValueError):
+            return {
+                "valid": False,
+                "oos_match": False,
+                "commitment_match": False,
+                "reason": "commitment malformato",
+            }
+
+        if (
+            not isinstance(comm, dict)
+            or not isinstance(comm.get("oos_sha256"), str)
+            or not isinstance(comm.get("commitment_hash"), str)
+        ):
+            return {
+                "valid": False,
+                "oos_match": False,
+                "commitment_match": False,
+                "reason": "commitment malformato",
+            }
 
         with open(nonce_file, "r", encoding="utf-8") as f:
             nonce_hex = f.read().strip()

@@ -1,11 +1,15 @@
 """
 Framework di Mutation Testing Spietato per il Binario B (Pipeline + Backtester + DSR).
-Genera 20 mutanti non equivalenti che alterano la logica critica.
-Esegue la suite di test contro ciascun mutante e dimostra che il 100% dei mutanti viene UCCISO (20/20).
+Genera 29 mutanti non equivalenti che alterano la logica critica (inclusa la bonifica Red Team).
+Esegue la suite di verifiche contro ciascun mutante e dimostra che il 100% dei mutanti viene UCCISO (29/29).
 """
 
 import copy
+import json
+import multiprocessing
+import shutil
 import sys
+import tempfile
 import unittest
 from decimal import Decimal
 from datetime import datetime, timezone, timedelta
@@ -31,6 +35,7 @@ from brain.laboratorio.backtester import (
     LookAheadViolationError,
     DSRCalculator,
 )
+from brain.laboratorio.tests.test_backtester import _worker_register_trial
 
 
 def run_test_case(test_class, test_method_name) -> bool:
@@ -67,6 +72,14 @@ class MutationTestingEngine:
             ("M19_dsr_return_float_zero_when_few_trades", "Restituisce float 0.0 invece di Valore NON STIMABILE con <30 trade"),
             ("M20_dsr_ignore_multiple_trials", "Ignora il contatore N in DSR forzando N=1"),
             ("M21_disable_reduce_only_guard", "Disabilita lo scarto dell'ordine reduce_only quando la posizione e' gia' chiusa"),
+            ("M22_peak_equity_intrabar_ignores_high", "Aggiorna peak_equity_intrabar con eq_close invece del picco intrabarra reale"),
+            ("M23_weekend_gap_raises_lookahead", "Fa fallire i gap di sessione/weekend invece di eseguire ad Open(t) con flag is_session_gap"),
+            ("M24_split_drops_boundary_candle", "Scarta le candele a cavallo di split_time in DatasetPartitioner.split"),
+            ("M25_reject_z_and_nan_candle", "Rifiuta ISO 8601 con suffisso Z o accetta Decimal NaN in Candle"),
+            ("M26_pyramiding_corrupts_cash", "Deduce leg_friction da cash prima di sollevare NotImplementedError sul pyramiding"),
+            ("M27_dsr_concurrent_race_condition", "Omette locking esclusivo causando perdita di trial concorrenti nel registry"),
+            ("M28_dsr_dry_run_writes_disk_or_wrong_n", "Crea/scrive trial_registry.json su disco anche con dry_run=True"),
+            ("M29_dsr_masks_pathological_variance", "Maschera variance_term <= 0 con clamp 1e-6 invece di restituire NON_STIMABILE"),
         ]
 
     def test_m01(self) -> bool:
@@ -304,6 +317,141 @@ class MutationTestingEngine:
         p = eng.run(bars, strat)
         return len(p.positions) == 0 and len(p.trade_history) == 1 and p.trade_history[0].exit_reason == "GAP_STOP_LOSS"
 
+    def test_m22(self) -> bool:
+        """Mutante M22 (CRITICO-1): peak_equity_intrabar deve tracciare il vero picco intrabarra (High per Long)."""
+        s_fx = Strumento(
+            simbolo="EURUSD", classe="fx", valuta_base="EUR", valuta_profitto="USD",
+            dimensione_contratto=Decimal("100000"), fonte="test",
+        )
+        bars = [
+            Candle("EURUSD", "1H", self.t0, self.t0 + timedelta(hours=1),
+                   Decimal("1.08000"), Decimal("1.08050"), Decimal("1.07950"), Decimal("1.08000"), Decimal("100")),
+            Candle("EURUSD", "1H", self.t0 + timedelta(hours=1), self.t0 + timedelta(hours=2),
+                   Decimal("1.08000"), Decimal("1.09000"), Decimal("1.07500"), Decimal("1.08000"), Decimal("100")),
+        ]
+        def strat(bar, p, eng):
+            if eng.current_bar_index == 0:
+                return SignalEvent(bar.close_time, "EURUSD", Direction.BUY, Decimal("1.00"))
+            return None
+
+        eng = EventDrivenBacktester(s_fx, "USD", Decimal("100000.00"), Decimal("0.00010"), Decimal("2.50"), Decimal("0.00005"))
+        p = eng.run(bars, strat)
+        return p.peak_equity_intrabar == Decimal("100987.50") and p.max_drawdown_intrabar == Decimal("1512.50")
+
+    def test_m23(self) -> bool:
+        """Mutante M23 (CRITICO-2): Gap di weekend/sessione eseguito ad Open(t) con is_session_gap=True."""
+        s_fx = Strumento(
+            simbolo="EURUSD", classe="fx", valuta_base="EUR", valuta_profitto="USD",
+            dimensione_contratto=Decimal("100000"), fonte="test",
+        )
+        t_fri = datetime(2026, 1, 2, 21, 0, tzinfo=timezone.utc)
+        t_mon = datetime(2026, 1, 5, 0, 0, tzinfo=timezone.utc)
+        bars = [
+            Candle("EURUSD", "1H", t_fri, t_fri + timedelta(hours=1),
+                   Decimal("1.08000"), Decimal("1.08100"), Decimal("1.07900"), Decimal("1.08000"), Decimal("100")),
+            Candle("EURUSD", "1H", t_mon, t_mon + timedelta(hours=1),
+                   Decimal("1.08200"), Decimal("1.08300"), Decimal("1.08100"), Decimal("1.08250"), Decimal("100")),
+        ]
+        def strat(bar, p, eng):
+            if eng.current_bar_index == 0:
+                return SignalEvent(bar.close_time, "EURUSD", Direction.BUY, Decimal("1.00"))
+            return None
+
+        eng = EventDrivenBacktester(s_fx, "USD", Decimal("100000.00"), Decimal("0.00010"), Decimal("2.50"), Decimal("0.00005"))
+        p = eng.run(bars, strat)
+        if len(p.fill_history) < 1:
+            return False
+        return p.fill_history[0].metadata.get("is_session_gap") is True
+
+    def test_m24(self) -> bool:
+        """Mutante M24 (CRITICO-3): Partitioning split non perde alcuna candela a cavallo di split_time."""
+        candles = [
+            Candle("EURUSD", "4H", self.t0 + timedelta(hours=4 * i), self.t0 + timedelta(hours=4 * (i + 1)),
+                   Decimal("1.08"), Decimal("1.09"), Decimal("1.07"), Decimal("1.085"), Decimal("100"))
+            for i in range(4)
+        ]
+        split_time = self.t0 + timedelta(hours=6)  # Taglia in mezzo alla candela [4h, 8h]
+        tmp_dir = Path(tempfile.mkdtemp(prefix="mut_part_"))
+        try:
+            partitioner = DatasetPartitioner()
+            is_p, oos_p, _ = partitioner.split(candles, tmp_dir, split_time=split_time)
+            is_count = len([l for l in is_p.read_text(encoding="utf-8").splitlines() if l.strip()])
+            oos_count = len([l for l in oos_p.read_text(encoding="utf-8").splitlines() if l.strip()])
+            return is_count + oos_count == len(candles)
+        finally:
+            shutil.rmtree(tmp_dir, ignore_errors=True)
+
+    def test_m25(self) -> bool:
+        """Mutante M25 (CRITICO-4 + BASSO-2): Parsing Z accettato e Decimal NaN rifiutato."""
+        try:
+            dt = DataIngestionPipeline._parse_iso_utc("2026-01-01T00:00:00Z")
+            if dt.tzinfo != timezone.utc:
+                return False
+        except Exception:
+            return False
+        try:
+            Candle("EURUSD", "1H", self.t0, self.t0 + timedelta(hours=1),
+                   Decimal("NaN"), Decimal("1.09"), Decimal("1.07"), Decimal("1.08"), Decimal("100"))
+            return False
+        except DataValidationError:
+            return True
+
+    def test_m26(self) -> bool:
+        """Mutante M26 (ALTO-2): NotImplementedError sul pyramiding non altera portfolio.cash."""
+        s_fx = Strumento(
+            simbolo="EURUSD", classe="fx", valuta_base="EUR", valuta_profitto="USD",
+            dimensione_contratto=Decimal("100000"), fonte="test",
+        )
+        p = Portfolio(s_fx, initial_cash=Decimal("100000.00"))
+        p.on_fill(FillEvent(
+            timestamp=self.t0 + timedelta(hours=1), symbol="EURUSD", direction=Direction.BUY,
+            quantity=Decimal("1.00"), fill_price=Decimal("1.08000"),
+            spread_cost=Decimal("10.00"), commission=Decimal("2.50"), slippage=Decimal("5.00"),
+        ))
+        cash_before = p.cash
+        try:
+            p.on_fill(FillEvent(
+                timestamp=self.t0 + timedelta(hours=2), symbol="EURUSD", direction=Direction.BUY,
+                quantity=Decimal("1.00"), fill_price=Decimal("1.08100"),
+                spread_cost=Decimal("10.00"), commission=Decimal("2.50"), slippage=Decimal("5.00"),
+            ))
+            return False
+        except NotImplementedError:
+            return p.cash == cash_before
+
+    def test_m27(self) -> bool:
+        """Mutante M27 (ALTO-3): Locking concorrente DSR preserva tutti i trial senza race condition."""
+        tmp_dir = Path(tempfile.mkdtemp(prefix="mut_dsr_race_"))
+        try:
+            reg_path = tmp_dir / "trial_registry.json"
+            ctx = multiprocessing.get_context("spawn")
+            with ctx.Pool(processes=4) as pool:
+                ids = pool.starmap(_worker_register_trial, [(str(reg_path), i) for i in range(6)])
+            data = json.loads(reg_path.read_text(encoding="utf-8"))
+            return sorted(ids) == list(range(1, 7)) and data["total_trials"] == 6
+        finally:
+            shutil.rmtree(tmp_dir, ignore_errors=True)
+
+    def test_m28(self) -> bool:
+        """Mutante M28 (ALTO-4): evaluate_portfolio(dry_run=True) e' readonly su disco."""
+        s_fx = Strumento(
+            simbolo="EURUSD", classe="fx", valuta_base="EUR", valuta_profitto="USD",
+            dimensione_contratto=Decimal("100000"), fonte="test",
+        )
+        p = Portfolio(s_fx, initial_cash=Decimal("100000.00"))
+        tmp_dir = Path(tempfile.mkdtemp(prefix="mut_dsr_dry_"))
+        try:
+            reg_path = tmp_dir / "absent_registry.json"
+            DSRCalculator.evaluate_portfolio(p, registry_path=reg_path, dry_run=True)
+            return not reg_path.exists()
+        finally:
+            shutil.rmtree(tmp_dir, ignore_errors=True)
+
+    def test_m29(self) -> bool:
+        """Mutante M29 (BASSO-4): variance_term <= 0 in DSR restituisce (None, None) senza clamp 1e-6."""
+        dsr_val, std_sr = DSRCalculator.calculate_dsr_analytical(2.0, 5, 50, skewness=5.0, kurtosis=1.0)
+        return dsr_val is None and std_sr is None
+
 
 def run_all_mutations():
     engine = MutationTestingEngine()
@@ -311,7 +459,7 @@ def run_all_mutations():
     killed = 0
 
     print("================================================================================")
-    print("SPIETATO MUTATION TESTING ENGINE — BINARIO B (21 MUTANTI NON EQUIVALENTI)")
+    print(f"SPIETATO MUTATION TESTING ENGINE — BINARIO B ({total} MUTANTI NON EQUIVALENTI)")
     print("================================================================================")
 
     for idx, (m_id, m_desc) in enumerate(engine.mutants, 1):
@@ -335,7 +483,7 @@ def run_all_mutations():
         print(f"ERRORE CRITICO: {total - killed} mutanti sono sopravvissuti!")
         sys.exit(1)
     else:
-        print("SUCCESSO TOTALE: 21/21 mutanti non equivalenti rigorosamente abbattuti.")
+        print(f"SUCCESSO TOTALE: {killed}/{total} mutanti non equivalenti rigorosamente abbattuti.")
         return 0
 
 

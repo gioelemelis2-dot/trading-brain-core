@@ -14,7 +14,7 @@ from typing import Dict, List, Tuple, Optional
 
 from brain.guardian.g0.valori import Valore, misura, combina, NON_STIMABILE, ESATTO
 from brain.guardian.g0.strumenti import Strumento
-from .events import Position, PositionType, Direction, FillEvent, TradeRecord
+from .events import Position, PositionType, Direction, FillEvent, OrderEvent, TradeRecord
 
 
 class Portfolio:
@@ -33,7 +33,9 @@ class Portfolio:
         self.cambio_valuta: Optional[Decimal] = cambio_valuta
 
         self.positions: Dict[str, Position] = {}
+        self.fill_history: List[FillEvent] = []
         self.trade_history: List[TradeRecord] = []
+        self.discarded_end_of_data_orders: List[OrderEvent] = []
         self.equity_curve_close: List[Tuple[datetime, Decimal]] = []
         self.equity_curve_intrabar: List[Tuple[datetime, Decimal]] = []
 
@@ -118,6 +120,7 @@ class Portfolio:
         pos = self.positions.get(self.strumento.simbolo)
         if pos is None:
             eq_close = self.cash
+            eq_best_intrabar = self.cash
             eq_worst_intrabar = self.cash
         else:
             # Equity al close
@@ -126,11 +129,19 @@ class Portfolio:
             )
             eq_close = self.cash + unrealized_close
 
-            # Worst-case intrabarra: Low per Long, High per Short, sottraendo i costi stimati di uscita
+            # Best-case intrabarra: High per Long, Low per Short (senza sottrarre costi uscita latenti)
+            # Worst-case intrabarra: Low per Long, High per Short (sottraendo i costi stimati di uscita)
             if pos.position_type == PositionType.LONG:
+                best_price = bar_high
                 worst_price = bar_low
             else:
+                best_price = bar_low
                 worst_price = bar_high
+
+            unrealized_best = self.calcola_pnl_monetario(
+                pos.position_type, pos.entry_price, best_price, pos.quantity
+            )
+            eq_best_intrabar = self.cash + unrealized_best
 
             unrealized_worst = self.calcola_pnl_monetario(
                 pos.position_type, pos.entry_price, worst_price, pos.quantity
@@ -148,9 +159,9 @@ class Portfolio:
         if dd_close > self.max_drawdown_close:
             self.max_drawdown_close = dd_close
 
-        # Max Drawdown Intrabar
-        if eq_close > self.peak_equity_intrabar:
-            self.peak_equity_intrabar = eq_close
+        # Max Drawdown Intrabar (picco vero su eq_best_intrabar)
+        if eq_best_intrabar > self.peak_equity_intrabar:
+            self.peak_equity_intrabar = eq_best_intrabar
         dd_intrabar = self.peak_equity_intrabar - eq_worst_intrabar
         if dd_intrabar > self.max_drawdown_intrabar:
             self.max_drawdown_intrabar = dd_intrabar
@@ -164,6 +175,17 @@ class Portfolio:
         # Regola reduce_only a livello di portafoglio: se non esiste posizione, non può aprire a mercato
         if existing is None and fill.metadata.get("reduce_only", False):
             return None
+
+        # ALTO-2: Verifica supporto operazione (piramidazione non supportata) PRIMA di modificare self.cash
+        if existing is not None:
+            is_closing = (
+                (existing.position_type == PositionType.LONG and fill.direction == Direction.SELL)
+                or (existing.position_type == PositionType.SHORT and fill.direction == Direction.BUY)
+            )
+            if not is_closing:
+                raise NotImplementedError("Piramidazione posizioni non supportata.")
+
+        self.fill_history.append(fill)
 
         # Deduce costi della leg corrente
         leg_friction = fill.commission + fill.spread_cost + fill.slippage
@@ -188,45 +210,41 @@ class Portfolio:
             )
         else:
             # Chiusura posizione esistente
-            if (existing.position_type == PositionType.LONG and fill.direction == Direction.SELL) or \
-               (existing.position_type == PositionType.SHORT and fill.direction == Direction.BUY):
-                
-                gross_pnl = self.calcola_pnl_monetario(
-                    existing.position_type, existing.entry_price, fill.fill_price, existing.quantity
-                )
+            gross_pnl = self.calcola_pnl_monetario(
+                existing.position_type, existing.entry_price, fill.fill_price, existing.quantity
+            )
 
-                total_comm = existing.entry_commission + fill.commission
-                total_spread = existing.entry_spread + fill.spread_cost
-                total_slip = existing.entry_slippage + fill.slippage
-                net_pnl = gross_pnl - total_comm - total_spread - total_slip
+            total_comm = existing.entry_commission + fill.commission
+            total_spread = existing.entry_spread + fill.spread_cost
+            total_slip = existing.entry_slippage + fill.slippage
+            net_pnl = gross_pnl - total_comm - total_spread - total_slip
 
-                self.cash += gross_pnl
+            self.cash += gross_pnl
 
-                condizioni = set(fill.metadata.get("condizioni", []))
-                if fill.metadata.get("is_ambiguous_intrabar", False):
-                    condizioni.add("{H_intrabar_worst_case}")
+            condizioni = set(fill.metadata.get("condizioni", []))
+            if fill.metadata.get("is_ambiguous_intrabar", False):
+                condizioni.add("{H_intrabar_worst_case}")
 
-                trade_record = TradeRecord(
-                    symbol=fill.symbol,
-                    direction=Direction.BUY if existing.position_type == PositionType.LONG else Direction.SELL,
-                    quantity=existing.quantity,
-                    entry_time=existing.entry_time,
-                    entry_price=existing.entry_price,
-                    exit_time=fill.timestamp,
-                    exit_price=fill.fill_price,
-                    gross_pnl=gross_pnl,
-                    net_pnl=net_pnl,
-                    total_commission=total_comm,
-                    total_spread_cost=total_spread,
-                    total_slippage=total_slip,
-                    exit_reason=fill.metadata.get("exit_reason", "SIGNAL"),
-                    is_gap_slippage=fill.is_gap_slippage,
-                    is_ambiguous_intrabar=fill.metadata.get("is_ambiguous_intrabar", False),
-                    condizioni=frozenset(condizioni),
-                )
-                self.trade_history.append(trade_record)
-                del self.positions[fill.symbol]
-            else:
-                raise NotImplementedError("Piramidazione posizioni non supportata.")
+            trade_record = TradeRecord(
+                symbol=fill.symbol,
+                direction=Direction.BUY if existing.position_type == PositionType.LONG else Direction.SELL,
+                quantity=existing.quantity,
+                entry_time=existing.entry_time,
+                entry_price=existing.entry_price,
+                exit_time=fill.timestamp,
+                exit_price=fill.fill_price,
+                gross_pnl=gross_pnl,
+                net_pnl=net_pnl,
+                total_commission=total_comm,
+                total_spread_cost=total_spread,
+                total_slippage=total_slip,
+                exit_reason=fill.metadata.get("exit_reason", "SIGNAL"),
+                is_gap_slippage=fill.is_gap_slippage,
+                is_ambiguous_intrabar=fill.metadata.get("is_ambiguous_intrabar", False),
+                fill_timing=fill.metadata.get("fill_timing", "standard"),
+                condizioni=frozenset(condizioni),
+            )
+            self.trade_history.append(trade_record)
+            del self.positions[fill.symbol]
 
         return trade_record

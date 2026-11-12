@@ -1,11 +1,4 @@
-================================================================================
-LOG DI ESECUZIONE TEST UNITARI E MUTATION TESTING - CONSEGNA LAB V2 ZERO-TRUST
-Data: 2026-11-12T21:57:24Z
-Branch: feat/lab-dati-backtester
-Commit Base: 7a4ca1a
-================================================================================
-
---- FASE 1: TEST UNITARI PIPELINE DATI (9 TEST) ---
+=== UNIT TEST BINARIO B (python3 -s -B -W error) ===
 test_01_valid_candle_creation (brain.dati.tests.test_pipeline.TestDataPipelineZeroTrust) ... ok
 test_02_reject_untimezoned_timestamps (brain.dati.tests.test_pipeline.TestDataPipelineZeroTrust)
 Verifica che timestamp privi di fuso orario sollevino DataValidationError. ... ok
@@ -17,13 +10,14 @@ test_07_reject_anomaly_data_gaps (brain.dati.tests.test_pipeline.TestDataPipelin
 test_08_partitioning_and_sealed_commitment_aligned_to_journal (brain.dati.tests.test_pipeline.TestDataPipelineZeroTrust) ... ok
 test_09_template_riconciliazione_da25_valido_per_scheda_g0 (brain.dati.tests.test_pipeline.TestDataPipelineZeroTrust)
 Verifica che TEMPLATE_RICONCILIAZIONE_DA25.toml sia elaborato da g0.scheda.scheda() senza errori. ... ok
-
-----------------------------------------------------------------------
-Ran 9 tests in 0.016s
-
-OK
-
---- FASE 2: TEST UNITARI BACKTESTER EVENT-DRIVEN (7 TEST) ---
+test_10_split_no_candle_dropped_on_boundary_and_empty_branch_raises (brain.dati.tests.test_pipeline.TestDataPipelineZeroTrust)
+RED TEAM CRITICO-3 + MEDIO-9: nessuna candela persa al confine split_time, e ramo vuoto solleva ValueError. ... ok
+test_11_verify_commitment_malformed_json_returns_false (brain.dati.tests.test_pipeline.TestDataPipelineZeroTrust)
+RED TEAM MEDIO-8: commitment.json malformato deve restituire valid=False con reason, non KeyError. ... ok
+test_12_split_custom_nonce_dir_and_env (brain.dati.tests.test_pipeline.TestDataPipelineZeroTrust)
+RED TEAM Nota Sicurezza: il nonce puo' essere salvato in directory separata o via TRADING_OOS_NONCE_DIR. ... ok
+test_13_iso_utc_z_fractional_seconds_and_non_finite_decimal (brain.dati.tests.test_pipeline.TestDataPipelineZeroTrust)
+RED TEAM CRITICO-4 + BASSO-2: parsing ISO Z / frazioni compatibile 3.9+ e rifiuto Decimal NaN/Infinity. ... ok
 test_01_toy_strategy_fx_all_friction_gt_zero (brain.laboratorio.tests.test_backtester.TestEventDrivenBacktesterZeroTrust)
 STRATEGIA 1: FX EUR/USD su Conto in USD. ... ok
 test_02_toy_strategy_future_es_currency_conversion_gap_down (brain.laboratorio.tests.test_backtester.TestEventDrivenBacktesterZeroTrust)
@@ -38,13 +32,20 @@ test_06_dsr_returns_valore_non_stimabile_when_insufficient_trades (brain.laborat
 DIMOSTRAZIONE RISOLUZIONE BUG 3 & 10: ... ok
 test_07_reduce_only_discards_order_when_position_already_closed_by_gap_stop (brain.laboratorio.tests.test_backtester.TestEventDrivenBacktesterZeroTrust)
 DIMOSTRAZIONE BUG REDUCE_ONLY: ... ok
-
-----------------------------------------------------------------------
-Ran 7 tests in 0.003s
-
-OK
-
---- FASE 3: TEST STATICI ANTI-FRODE (3 TEST) ---
+test_08_intrabar_peak_equity_tracks_bar_high_low_not_close (brain.laboratorio.tests.test_backtester.TestEventDrivenBacktesterZeroTrust)
+RED TEAM CRITICO-1: peak_equity_intrabar deve tracciare eq_best_intrabar (High per LONG) e non solo eq_close. ... ok
+test_09_weekend_session_gap_executes_order_with_metadata (brain.laboratorio.tests.test_backtester.TestEventDrivenBacktesterZeroTrust)
+RED TEAM CRITICO-2: un gap di sessione/weekend esegue l'ordine ad Open(t) con metadata is_session_gap=True. ... ok
+test_10_pyramiding_error_does_not_corrupt_cash (brain.laboratorio.tests.test_backtester.TestEventDrivenBacktesterZeroTrust)
+RED TEAM ALTO-2: piramidazione rifiutata PRIMA di toccare self.cash. ... ok
+test_11_dsr_dry_run_readonly_and_counts_simulated_trial (brain.laboratorio.tests.test_backtester.TestEventDrivenBacktesterZeroTrust)
+RED TEAM ALTO-3 + ALTO-4: dry_run=True e' readonly (non crea trial_registry.json) e usa N = total_trials + 1. ... ok
+test_12_dsr_concurrent_locking_atomicity (brain.laboratorio.tests.test_backtester.TestEventDrivenBacktesterZeroTrust)
+RED TEAM ALTO-3: registrazioni concorrenti su trial_registry.json devono essere atomiche senza perdite. ... ok
+test_13_dsr_pathological_variance_term_returns_non_stimabile (brain.laboratorio.tests.test_backtester.TestEventDrivenBacktesterZeroTrust)
+RED TEAM BASSO-4: se variance_term <= 0, non mascherare con 1e-6 ma restituire NON_STIMABILE. ... ok
+test_14_intrabar_fill_timing_and_discarded_end_of_data_orders (brain.laboratorio.tests.test_backtester.TestEventDrivenBacktesterZeroTrust)
+RED TEAM MEDIO-1 + MEDIO-2: fill_timing='intrabar_close_assumed' e tracciamento discarded_end_of_data_orders. ... ok
 test_01_no_replace_tzinfo_allowed (brain.laboratorio.tests.test_anti_frode_statico.TestAntiFrodeStatico)
 Divieto assoluto di usare .replace(tzinfo=...) per mascherare timestamp senza fuso. ... ok
 test_02_v3_3_hash_strictly_canonical (brain.laboratorio.tests.test_anti_frode_statico.TestAntiFrodeStatico)
@@ -53,61 +54,166 @@ test_03_engine_and_portfolio_import_guardian_g0 (brain.laboratorio.tests.test_an
 Verifica che engine.py e portfolio.py importino Strumento e Valore da brain.guardian.g0. ... ok
 
 ----------------------------------------------------------------------
-Ran 3 tests in 0.015s
+Ran 30 tests in 0.278s
 
 OK
 
---- FASE 4: MUTATION TESTING ENGINE (21 MUTANTI NON EQUIVALENTI) ---
+=== MUTATION TESTING BINARIO B (python3 -s -B -W error) ===
 ================================================================================
-SPIETATO MUTATION TESTING ENGINE — BINARIO B (21 MUTANTI NON EQUIVALENTI)
+SPIETATO MUTATION TESTING ENGINE — BINARIO B (29 MUTANTI NON EQUIVALENTI)
 ================================================================================
-[01/21] M01_allow_float                     -> KILLED (UCCISO)
+[01/29] M01_allow_float                     -> KILLED (UCCISO)
        Descrizione: Permette float in Candle senza sollevare TypeError
-[02/21] M02_allow_untimezoned_ts            -> KILLED (UCCISO)
+[02/29] M02_allow_untimezoned_ts            -> KILLED (UCCISO)
        Descrizione: Accetta timestamp privi di fuso orario UTC esplicito
-[03/21] M03_disable_high_low_check          -> KILLED (UCCISO)
+[03/29] M03_disable_high_low_check          -> KILLED (UCCISO)
        Descrizione: Disabilita validazione Low <= High nelle candele
-[04/21] M04_allow_negative_volume           -> KILLED (UCCISO)
+[04/29] M04_allow_negative_volume           -> KILLED (UCCISO)
        Descrizione: Permette volume negativo nelle candele
-[05/21] M05_disable_monotonicity_check      -> KILLED (UCCISO)
+[05/29] M05_disable_monotonicity_check      -> KILLED (UCCISO)
        Descrizione: Disabilita controllo di monotonia temporale in ingestion
-[06/21] M06_disable_lookahead_cutoff        -> KILLED (UCCISO)
+[06/29] M06_disable_lookahead_cutoff        -> KILLED (UCCISO)
        Descrizione: Disabilita blocco candele future rispetto al cutoff
-[07/21] M07_disable_gap_check               -> KILLED (UCCISO)
+[07/29] M07_disable_gap_check               -> KILLED (UCCISO)
        Descrizione: Disabilita rilevamento di buchi anomali non dichiarati
-[08/21] M08_corrupt_commitment_formula      -> KILLED (UCCISO)
+[08/29] M08_corrupt_commitment_formula      -> KILLED (UCCISO)
        Descrizione: Altera la formula del sigillo OOS omettendo il nonce
-[09/21] M09_same_bar_execution_leak         -> KILLED (UCCISO)
+[09/29] M09_same_bar_execution_leak         -> KILLED (UCCISO)
        Descrizione: Esegue ordini pendenti alla stessa barra di emissione t invece di t+1
-[10/21] M10_disable_target_open_time_check  -> KILLED (UCCISO)
+[10/29] M10_disable_target_open_time_check  -> KILLED (UCCISO)
        Descrizione: Rimuove controllo order.target_bar_open_time == bar.open_time
-[11/21] M11_naive_gap_fill_at_stop_price    -> KILLED (UCCISO)
+[11/29] M11_naive_gap_fill_at_stop_price    -> KILLED (UCCISO)
        Descrizione: Riporta il bug ingenuo: esegue stop al prezzo nominale invece che al prezzo di Gap Open
-[12/21] M12_invert_ambiguity_rule           -> KILLED (UCCISO)
+[12/29] M12_invert_ambiguity_rule           -> KILLED (UCCISO)
        Descrizione: In caso di SL e TP contemporanei, esegue TP invece di SL
-[13/21] M13_process_stops_before_open_orders -> KILLED (UCCISO)
+[13/29] M13_process_stops_before_open_orders -> KILLED (UCCISO)
        Descrizione: Riporta il bug 5: controlla stop prima di eseguire ordini ad Open(t)
-[14/21] M14_zero_spread_cost                -> KILLED (UCCISO)
+[14/29] M14_zero_spread_cost                -> KILLED (UCCISO)
        Descrizione: Azzera il costo dello spread nell'accounting del portafoglio
-[15/21] M15_zero_commission_cost            -> KILLED (UCCISO)
+[15/29] M15_zero_commission_cost            -> KILLED (UCCISO)
        Descrizione: Azzera la commissione fissa nell'accounting del portafoglio
-[16/21] M16_zero_slippage_cost              -> KILLED (UCCISO)
+[16/29] M16_zero_slippage_cost              -> KILLED (UCCISO)
        Descrizione: Azzera il costo di slippage nell'accounting del portafoglio
-[17/21] M17_future_ignore_tick_value        -> KILLED (UCCISO)
+[17/29] M17_future_ignore_tick_value        -> KILLED (UCCISO)
        Descrizione: Ignora valore_tick nel calcolo PnL dei Futures
-[18/21] M18_ignore_currency_conversion      -> KILLED (UCCISO)
+[18/29] M18_ignore_currency_conversion      -> KILLED (UCCISO)
        Descrizione: Omette divisione per cambio_valuta nel PnL cross-currency
-[19/21] M19_dsr_return_float_zero_when_few_trades -> KILLED (UCCISO)
+[19/29] M19_dsr_return_float_zero_when_few_trades -> KILLED (UCCISO)
        Descrizione: Restituisce float 0.0 invece di Valore NON STIMABILE con <30 trade
-[20/21] M20_dsr_ignore_multiple_trials      -> KILLED (UCCISO)
+[20/29] M20_dsr_ignore_multiple_trials      -> KILLED (UCCISO)
        Descrizione: Ignora il contatore N in DSR forzando N=1
-[21/21] M21_disable_reduce_only_guard       -> KILLED (UCCISO)
+[21/29] M21_disable_reduce_only_guard       -> KILLED (UCCISO)
        Descrizione: Disabilita lo scarto dell'ordine reduce_only quando la posizione e' gia' chiusa
+[22/29] M22_peak_equity_intrabar_ignores_high -> KILLED (UCCISO)
+       Descrizione: Aggiorna peak_equity_intrabar con eq_close invece del picco intrabarra reale
+[23/29] M23_weekend_gap_raises_lookahead    -> KILLED (UCCISO)
+       Descrizione: Fa fallire i gap di sessione/weekend invece di eseguire ad Open(t) con flag is_session_gap
+[24/29] M24_split_drops_boundary_candle     -> KILLED (UCCISO)
+       Descrizione: Scarta le candele a cavallo di split_time in DatasetPartitioner.split
+[25/29] M25_reject_z_and_nan_candle         -> KILLED (UCCISO)
+       Descrizione: Rifiuta ISO 8601 con suffisso Z o accetta Decimal NaN in Candle
+[26/29] M26_pyramiding_corrupts_cash        -> KILLED (UCCISO)
+       Descrizione: Deduce leg_friction da cash prima di sollevare NotImplementedError sul pyramiding
+[27/29] M27_dsr_concurrent_race_condition   -> KILLED (UCCISO)
+       Descrizione: Omette locking esclusivo causando perdita di trial concorrenti nel registry
+[28/29] M28_dsr_dry_run_writes_disk_or_wrong_n -> KILLED (UCCISO)
+       Descrizione: Crea/scrive trial_registry.json su disco anche con dry_run=True
+[29/29] M29_dsr_masks_pathological_variance -> KILLED (UCCISO)
+       Descrizione: Maschera variance_term <= 0 con clamp 1e-6 invece di restituire NON_STIMABILE
 --------------------------------------------------------------------------------
-MUTATION SCORE: 21/21 MUTANTI UCCISI (100.0%)
+MUTATION SCORE: 29/29 MUTANTI UCCISI (100.0%)
 ================================================================================
-SUCCESSO TOTALE: 21/21 mutanti non equivalenti rigorosamente abbattuti.
+SUCCESSO TOTALE: 29/29 mutanti non equivalenti rigorosamente abbattuti.
 
-================================================================================
-TUTTE LE FASI COMPLETATE CON SUCCESSO: 19 TEST UNITARI + 21 MUTANTI = 40/40 VERIFICATI
-================================================================================
+=== UNIT TEST GUARDIAN G0/JOURNAL (python3 -s -B -W error) ===
+test_aggiungi_attende_il_lock_esclusivo (test_compatibilita_e_concorrenza.TestLockConcorrente)
+Deterministico: con il lock tenuto da un altro processo, aggiungi() deve ATTENDERE, non scrivere. ... ok
+test_ripiego_senza_fcntl_con_file_di_lock_esclusivo (test_compatibilita_e_concorrenza.TestLockConcorrente)
+Senza fcntl: file di lock creato in modo esclusivo. Un lock rimasto (processo interrotto) produce un errore ... ok
+test_scritture_concorrenti_catena_e_ancora_integre (test_compatibilita_e_concorrenza.TestLockConcorrente)
+6 processi × 15 record in parallelo: 90 righe, id unici, catena e ancora integre. ... ok
+test_stesso_formato_accettato_su_ogni_versione (test_compatibilita_e_concorrenza.TestOrariPortabili)
+Formato unico: AAAA-MM-GGTHH:MM:SS[.frazione da 1 a 6 cifre] seguito da Z o +00:00. Python 3.11+ accetta ... ok
+test_z_e_frazioni_anche_con_fromisoformat_di_python_3_9 (test_compatibilita_e_concorrenza.TestOrariPortabili) ... ok
+test_decimal_finito_in_0_1_accettato_e_registrato (test_compatibilita_e_concorrenza.TestProbabilitaDecimal) ... ok
+test_parser_minimale_rifiuta_cio_che_non_sa_leggere (test_compatibilita_e_concorrenza.TestTomlPortabile)
+Fallire in modo esplicito, mai interpretare a metà: ogni costrutto non gestito è un errore con la riga. ... ok
+test_parser_minimale_uguale_a_tomllib_sui_file_del_brain_e_sul_campione (test_compatibilita_e_concorrenza.TestTomlPortabile)
+Il parser di riserva deve dare ESATTAMENTE il risultato di tomllib sui file usati dal Guardian. ... ok
+test_scheda_e_limiti_usano_il_caricatore_portabile (test_compatibilita_e_concorrenza.TestTomlPortabile)
+Senza tomllib (Python 3.9) scheda e limiti devono funzionare: niente `import tomllib` diretto. ... ok
+test_p05_non_piu_stretto_della_prop_e_avvisi_non_soppressi (test_fix_g0_journal.TestAudit1P05RegolaAurea) ... ok
+test_p01_size_maggiore_dopo_perdita (test_fix_g0_journal.TestAudit2P01SecondaParte) ... ok
+test_numeri_e_orari_validati_all_ingresso (test_fix_g0_journal.TestAudit3ValidazioneJournal) ... ok
+test_brier_applica_le_correzioni (test_fix_g0_journal.TestAudit4BrierCorrezioni) ... ok
+test_verifica_con_impronta_rileva_cancellazione_totale (test_fix_g0_journal.TestAudit5ImprontaEsterna) ... ok
+test_valori_non_positivi_rifiutati (test_fix_g0_journal.TestAudit6Positivita) ... ok
+test_documenti_di_continuita_allineati (test_fix_g0_journal.TestAudit7Continuita) ... ok
+test_avviso_se_lo_stress_viola_il_limite_totale (test_fix_g0_journal.TestFix1StressMargineTotale)
+Conto 2-Step a 91.500: limite giornaliero 86.500 (margine 5.000), limite totale 90.000 (margine 1.500). ... ok
+test_future_senza_dimensione_contratto_fittizia (test_fix_g0_journal.TestFix2MetadatiFutures)
+Un future si descrive con passo e valore del tick: nessuna dimensione del contratto «1» inventata. ... ok
+test_regola_confermata_applicata_e_non_confermate_dichiarate (test_fix_g0_journal.TestFix3RegolePersonali)
+Con P-01 confermata a 0,5% del capitale, il trade previsto dell'esempio (682 USD su 100.000 = 0,682%) ... ok
+test_ancora_rileva_ultima_riga_troncamento_e_riscrittura (test_fix_g0_journal.TestFix4AncoraEsterna) ... ok
+test_decimal_e_frazioni_di_secondo (test_fix_g0_journal.TestFix5IndicatoriDecimal) ... ok
+test_commissioni_negative_o_non_finite_rifiutate (test_fix_g0_journal.TestNotte1Commissioni)
+Commissioni negative (segno invertito in un export) o non finite RIDURREBBERO la perdita allo stop. ... ok
+test_avvisi_trade_e_stress_anche_a_limite_personale_superato (test_fix_g0_journal.TestNotte2P05MarginePersonaleNegativo)
+P-05 a 0,4%: limite personale = 100.400 − 400 = 100.000. Equity 99.900 → margine personale −100 (limite ... ok
+test_corregge_e_chiude_coerenti_e_nessuna_doppia_chiusura (test_fix_g0_journal.TestNotte3SemanticaJournal) ... ok
+test_dati_di_sessione_e_soglie_non_validi (test_fix_g0_journal.TestNotte4DatiSessione)
+Booleani, negativi, NaN, infiniti e ore di sonno oltre 24: dato non valido, mai «regola rispettata» o crash. ... ok
+test_booleani_rifiutati_come_numeri (test_fix_g0_journal.TestNotte5BooleaniJournal)
+In Python True == 1: senza controllo, `probabilita: true`, `esito: true` e `aderenza: true` passerebbero. ... ok
+test_1step_giornaliero_e_trailing (test_g0.TestLimitiFTMO) ... ok
+test_2step_giornaliero_esempio_ufficiale (test_g0.TestLimitiFTMO) ... ok
+test_2step_totale_statico (test_g0.TestLimitiFTMO) ... ok
+test_instant_esempio_ufficiale (test_g0.TestLimitiFTMO) ... ok
+test_limite_e_derivato_dalla_regola_verificata (test_g0.TestLimitiFTMO) ... ok
+test_scenario_di_stress (test_g0.TestMarginiStress) ... ok
+test_stop_residui (test_g0.TestMarginiStress) ... ok
+test_future_tick (test_g0.TestPerditaAlloStop) ... ok
+test_fx_conto_nella_valuta_base_converte_al_prezzo_dello_stop (test_g0.TestPerditaAlloStop) ... ok
+test_fx_conto_nella_valuta_quotata (test_g0.TestPerditaAlloStop) ... ok
+test_fx_terza_valuta_richiede_cambio_misurato (test_g0.TestPerditaAlloStop) ... ok
+test_vendita_allo_scoperto_e_commissioni (test_g0.TestPerditaAlloStop) ... ok
+test_esempio_end_to_end (test_g0.TestScheda) ... ok
+test_posizione_aperta_senza_prezzo_attuale_rifiutata (test_g0.TestScheda) ... ok
+test_non_stimabile_contagioso_e_incertezza_obbligatoria (test_g0.TestSchemaDeiValori) ... ok
+test_propagazione_del_tipo_piu_debole_e_delle_condizioni (test_g0.TestSchemaDeiValori) ... ok
+test_un_numero_senza_tipo_valido_e_rifiutato (test_g0.TestSchemaDeiValori) ... ok
+test_una_stima_non_allarga_mai_un_limite (test_g0.TestSchemaDeiValori) ... ok
+test_r1_spento_senza_parametri_e_attivo_con_parametri (test_journal.TestIndicatori) ... ok
+test_brier (test_journal.TestJournal) ... ok
+test_cancellazione_scoperta (test_journal.TestJournal) ... ok
+test_catena_integra_e_manomissione_scoperta (test_journal.TestJournal) ... ok
+test_sigillo (test_journal.TestJournal) ... ok
+test_validazione (test_journal.TestJournal) ... ok
+test_brier_e_indicatori_con_correzione_di_una_correzione (test_mutanti_g0_journal.TestCorrezioniACatena)
+V29. a → a2 (corregge a) → a3 (corregge a2): vale a3 (0,6). Esito 1: Brier (0,6 − 1)² = 0,16 su n = 1. ... ok
+test_r1_rientro_esattamente_al_limite_e_pareggio (test_mutanti_g0_journal.TestIndicatoriAlLimite)
+V43: R1 = ingresso ENTRO `minuti_max` (≤): 3 minuti con minuti_max = 3 è un caso. ... ok
+test_indicatori_rifiutano_fusi_diversi_da_utc (test_mutanti_g0_journal.TestOrariUTC)
+V42. ... ok
+test_journal_rifiuta_fusi_diversi_da_utc_e_ammette_apertura_uguale_a_chiusura (test_mutanti_g0_journal.TestOrariUTC)
+V36, V37. +01:00 non è UTC (anche se è un orario ISO valido); +00:00 sì. Un trade aperto e chiuso nello ... ok
+test_equity_esattamente_al_limite_non_e_violazione (test_mutanti_g0_journal.TestSoglieAlLimite)
+V23, V27. FTMO: violazione = equity SOTTO il limite. Limite giornaliero 100.400 − 5.000 = 95.400. ... ok
+test_p01_rischio_uguale_alla_soglia_non_la_supera (test_mutanti_g0_journal.TestSoglieAlLimite)
+V19. Trade EURUSD 1 lotto, 200 USD esatti su 100.000 = 0,2%: con soglia 0,2% nessun avviso; 0,19% sì. ... ok
+test_p05_uguale_al_limite_della_prop_non_e_piu_stretto (test_mutanti_g0_journal.TestSoglieAlLimite)
+V18. P-05 = 5% sul 2-Step (limite FTMO 5%): non è PIÙ stretto, va segnalato; 4,99% invece sì. ... ok
+test_p11_e_p14_valore_uguale_alla_soglia_rispetta_la_regola (test_mutanti_g0_journal.TestSoglieAlLimite)
+V20. «Meno di 6 ore di sonno»: 6 ore rispettano la regola, 5,9 no. Pausa di 15 minuti: 15 la rispettano. ... ok
+test_p15_raggiunto_il_massimo_di_perdite_consecutive (test_mutanti_g0_journal.TestSoglieAlLimite)
+V21. «Massimo numero di perdite consecutive prima dello stop» = 3: alla terza perdita la regola scatta. ... ok
+test_le_riserve_entrano_nello_scenario (test_mutanti_g0_journal.TestStressConRiserve)
+V17. Scenario = perdite allo stop + riserve dichiarate; una riserva NON STIMABILE rende lo scenario tale. ... ok
+test_prezzi_quantita_e_cambi_infiniti_rifiutati (test_mutanti_g0_journal.TestValoriNonFiniti)
+V09. Infinity > 0 è vero: senza is_finite() la perdita allo stop diventerebbe infinita senza errore. ... ok
+
+----------------------------------------------------------------------
+Ran 61 tests in 2.033s
+
+OK

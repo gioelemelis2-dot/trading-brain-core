@@ -8,6 +8,8 @@ Verifica Zero-Trust:
 5. Sigillo OOS allineato a journal.sigilla (SHA256(nonce + canonico)).
 """
 
+import json
+import os
 import sys
 import unittest
 import tempfile
@@ -238,19 +240,21 @@ class TestDataPipelineZeroTrust(unittest.TestCase):
 
     def test_09_template_riconciliazione_da25_valido_per_scheda_g0(self):
         """Verifica che TEMPLATE_RICONCILIAZIONE_DA25.toml sia elaborato da g0.scheda.scheda() senza errori."""
-        try:
-            import tomllib
-        except ModuleNotFoundError:
-            import tomli as tomllib
-            sys.modules["tomllib"] = tomllib
-
+        from brain.guardian.g0 import _toml
         from brain.guardian.g0.scheda import scheda
 
         template_path = repo_root / "brain" / "dati" / "reali" / "TEMPLATE_RICONCILIAZIONE_DA25.toml"
         self.assertTrue(template_path.exists(), f"Manca il template {template_path}")
 
-        with open(template_path, "rb") as f:
-            dati = tomllib.load(f)
+        if _toml.MOTORE != "minimale":
+            with open(template_path, "rb") as f:
+                dati = _toml.load(f)
+        else:
+            # Con -s su Python 3.9 tomli e' disabilitato; normalizza la chiave quotata "USD/EUR" per test_09
+            text = template_path.read_text(encoding="utf-8")
+            dati = _toml.loads(text.replace('"USD/EUR"', "USD__EUR"))
+            if "cambi" in dati and "USD__EUR" in dati["cambi"]:
+                dati["cambi"]["USD/EUR"] = dati["cambi"].pop("USD__EUR")
 
         righe = scheda(dati)
         testo = "\n".join(righe)
@@ -259,6 +263,149 @@ class TestDataPipelineZeroTrust(unittest.TestCase):
         self.assertIn("TRADE PREVISTO", testo)
         self.assertIn("SCENARIO DI STRESS", testo)
         self.assertIn("nessuna obiezione dalle regole verificate", testo)
+
+    def test_10_split_no_candle_dropped_on_boundary_and_empty_branch_raises(self):
+        """RED TEAM CRITICO-3 + MEDIO-9: nessuna candela persa al confine split_time, e ramo vuoto solleva ValueError."""
+        candles = []
+        for i in range(5):
+            t_open = self.t0 + timedelta(hours=i)
+            t_close = t_open + timedelta(hours=1)
+            candles.append(
+                Candle(
+                    symbol="EURUSD",
+                    timeframe="1H",
+                    open_time=t_open,
+                    close_time=t_close,
+                    open=Decimal("1.08000"),
+                    high=Decimal("1.08500"),
+                    low=Decimal("1.07900"),
+                    close=Decimal("1.08200"),
+                    volume=Decimal("1000"),
+                )
+            )
+
+        # split_time cade esattamente a meta' della candela indice 2 (02:30 UTC)
+        split_time = self.t0 + timedelta(hours=2, minutes=30)
+        partitioner = DatasetPartitioner(in_sample_ratio=0.7)
+        _, _, comm_path = partitioner.split(candles, output_dir=self.temp_dir / "s1", split_time=split_time)
+
+        with open(comm_path, "r", encoding="utf-8") as f:
+            comm = json.load(f)
+        self.assertEqual(comm["in_sample_count"] + comm["out_of_sample_count"], len(candles))
+        self.assertEqual(comm["in_sample_count"], 2)
+        self.assertEqual(comm["out_of_sample_count"], 3)
+
+        # MEDIO-9: split_time fuori range che produce ramo vuoto deve sollevare ValueError
+        with self.assertRaises(ValueError):
+            partitioner.split(candles, output_dir=self.temp_dir / "s2", split_time=self.t0)
+        with self.assertRaises(ValueError):
+            partitioner.split(candles, output_dir=self.temp_dir / "s3", split_time=self.t0 + timedelta(hours=10))
+
+    def test_11_verify_commitment_malformed_json_returns_false(self):
+        """RED TEAM MEDIO-8: commitment.json malformato deve restituire valid=False con reason, non KeyError."""
+        candles = [
+            Candle(
+                symbol="EURUSD",
+                timeframe="1H",
+                open_time=self.t0 + timedelta(hours=i),
+                close_time=self.t0 + timedelta(hours=i + 1),
+                open=Decimal("1.08"),
+                high=Decimal("1.09"),
+                low=Decimal("1.07"),
+                close=Decimal("1.085"),
+                volume=Decimal("100"),
+            )
+            for i in range(4)
+        ]
+        partitioner = DatasetPartitioner(in_sample_ratio=0.5)
+        _, oos_path, comm_path = partitioner.split(candles, output_dir=self.temp_dir / "m1")
+        nonce_path = self.temp_dir / "m1" / "sealed_nonce.secret"
+
+        # 1. Chiavi mancanti
+        comm_path.write_text(json.dumps({"status": "CORRUPTED"}), encoding="utf-8")
+        res1 = DatasetPartitioner.verify_commitment(oos_path, comm_path, nonce_path)
+        self.assertFalse(res1["valid"])
+        self.assertIn("reason", res1)
+
+        # 2. JSON non dizionario (lista)
+        comm_path.write_text("[1, 2, 3]", encoding="utf-8")
+        res2 = DatasetPartitioner.verify_commitment(oos_path, comm_path, nonce_path)
+        self.assertFalse(res2["valid"])
+        self.assertIn("reason", res2)
+
+    def test_12_split_custom_nonce_dir_and_env(self):
+        """RED TEAM Nota Sicurezza: il nonce puo' essere salvato in directory separata o via TRADING_OOS_NONCE_DIR."""
+        candles = [
+            Candle(
+                symbol="EURUSD",
+                timeframe="1H",
+                open_time=self.t0 + timedelta(hours=i),
+                close_time=self.t0 + timedelta(hours=i + 1),
+                open=Decimal("1.08"),
+                high=Decimal("1.09"),
+                low=Decimal("1.07"),
+                close=Decimal("1.085"),
+                volume=Decimal("100"),
+            )
+            for i in range(4)
+        ]
+        out_dir = self.temp_dir / "out"
+        nonce_dir = self.temp_dir / "isolated_vault"
+        partitioner = DatasetPartitioner(in_sample_ratio=0.5)
+        _, oos_path, comm_path = partitioner.split(candles, output_dir=out_dir, nonce_dir=nonce_dir)
+
+        self.assertFalse((out_dir / "sealed_nonce.secret").exists())
+        self.assertTrue((nonce_dir / "sealed_nonce.secret").exists())
+        res = DatasetPartitioner.verify_commitment(oos_path, comm_path, nonce_dir / "sealed_nonce.secret")
+        self.assertTrue(res["valid"])
+
+        # Verifica variabile d'ambiente TRADING_OOS_NONCE_DIR
+        out_dir2 = self.temp_dir / "out2"
+        env_nonce_dir = self.temp_dir / "env_vault"
+        old_env = os.environ.get("TRADING_OOS_NONCE_DIR")
+        os.environ["TRADING_OOS_NONCE_DIR"] = str(env_nonce_dir)
+        try:
+            partitioner.split(candles, output_dir=out_dir2)
+            self.assertFalse((out_dir2 / "sealed_nonce.secret").exists())
+            self.assertTrue((env_nonce_dir / "sealed_nonce.secret").exists())
+        finally:
+            if old_env is None:
+                os.environ.pop("TRADING_OOS_NONCE_DIR", None)
+            else:
+                os.environ["TRADING_OOS_NONCE_DIR"] = old_env
+
+    def test_13_iso_utc_z_fractional_seconds_and_non_finite_decimal(self):
+        """RED TEAM CRITICO-4 + BASSO-2: parsing ISO Z / frazioni compatibile 3.9+ e rifiuto Decimal NaN/Infinity."""
+        # Test parsing Z e frazioni diverse da 3 o 6 cifre
+        for s in (
+            "2026-01-01T00:00:00Z",
+            "2026-01-01T00:00:00.5Z",
+            "2026-01-01T00:00:00.1234Z",
+            "2026-01-01T00:00:00.123456789Z",
+        ):
+            dt = DataIngestionPipeline._parse_iso_utc(s)
+            self.assertEqual(dt.utcoffset(), timedelta(0))
+
+        c_dict = {
+            "symbol": "EURUSD",
+            "timeframe": "1H",
+            "open_time": "2026-01-01T00:00:00Z",
+            "close_time": "2026-01-01T01:00:00.5Z",
+            "open": "1.08",
+            "high": "1.09",
+            "low": "1.07",
+            "close": "1.085",
+            "volume": "100",
+        }
+        c = Candle.from_dict(c_dict)
+        self.assertEqual(c.open_time, self.t0)
+
+        # Rifiuto NaN e Infinity su qualsiasi campo numerico
+        for bad_val in (Decimal("NaN"), Decimal("Infinity"), Decimal("-Infinity")):
+            with self.assertRaises(DataValidationError):
+                Candle("EURUSD", "1H", self.t0, self.t0 + timedelta(hours=1), bad_val, Decimal("1.09"), Decimal("1.07"), Decimal("1.08"), Decimal("100"))
+            with self.assertRaises(DataValidationError):
+                Candle("EURUSD", "1H", self.t0, self.t0 + timedelta(hours=1), Decimal("1.08"), Decimal("1.09"), Decimal("1.07"), Decimal("1.08"), bad_val)
 
 
 if __name__ == "__main__":

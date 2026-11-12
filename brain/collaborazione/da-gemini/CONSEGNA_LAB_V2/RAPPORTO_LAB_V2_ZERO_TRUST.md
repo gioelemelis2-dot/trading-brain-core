@@ -215,8 +215,28 @@ Tutti i 21 mutanti sono stati intercettati e **uccisi** (KILLED) dalla suite di 
 I seguenti 5 artefatti completano formalmente la Consegna V2 in `brain/collaborazione/da-gemini/CONSEGNA_LAB_V2/`:
 1. `RAPPORTO_LAB_V2_ZERO_TRUST.md` (questo documento)
 2. `AUDIT_OSTILE_SU_CLAUDE.md` (audit critico avversariale su `origin/feat/fix-g0-journal`)
-3. `diff_lab_v2.patch` (diff integrale dal branch base)
-4. `log_test_e_mutazioni_lab_v2.txt` (log di esecuzione dei 17 test unitari + 20 mutazioni)
+3. `diff_lab_v2.patch` (diff integrale dal `main` pre-integrazione Binario B)
+4. `log_test_e_mutazioni_lab_v2.txt` (log di esecuzione: 30 test unitari Binario B + 29 mutanti + 61 test Guardian)
 5. `MANIFEST.sha256` (generato meccanicamente con `shasum -a 256`)
 
-Tutti i requisiti del mandato notturno sono stati adempiuti con autonomia esecutiva totale, verifiche al centesimo e zero compromessi epistemici.
+---
+
+## 7. BONIFICA RED TEAM ESTERNO (BRANCH `fix/red-team-lab`)
+
+Tutti i 7 gruppi di difetti segnalati dall'audit Red Team esterno su `brain/dati/` e `brain/laboratorio/` sono stati risolti in **TDD stretto** (riproduzione iniziale con 11 test rossi verificati `failures=5, errors=6`, poi implementazione dei fix):
+
+| Punto Red Team | File Modificati | Intervento Implementato | Verifica |
+|---|---|---|---|
+| **CRITICO-1** | `brain/laboratorio/backtester/portfolio.py` | `update_equity_bar()` calcola `eq_best_intrabar` (`bar_high` LONG / `bar_low` SHORT senza dedurre costi di uscita latenti) e aggiorna `peak_equity_intrabar = max(peak_equity_intrabar, eq_best_intrabar)`. | `test_08` + `M22` |
+| **CRITICO-2** | `brain/laboratorio/backtester/engine.py` | Controllo anti-lookahead aggiornato a `bar.open_time < order.target_bar_open_time`; i gap di sessione/weekend (`bar.open_time > target`) vengono eseguiti a `Open(t)` con `is_session_gap=True` e `session_gap_delay_seconds` in `FillEvent.metadata`. | `test_09` + `M23` |
+| **CRITICO-3 + MEDIO-8 + MEDIO-9 + Sicurezza** | `brain/dati/pipeline/partitioning.py` | Partizione su `split_time` con `c.close_time <= split_time` (IS) vs `c.close_time > split_time` (OOS), `ValueError` su ramo vuoto, gestione JSON malformato in `verify_commitment()`, supporto `nonce_dir` / `TRADING_OOS_NONCE_DIR` e documentazione esplicita *commitment* vs firma asimmetrica. | `test_10`..`test_12` + `M24` |
+| **CRITICO-4 + BASSO-2** | `brain/dati/pipeline/models.py`, `ingestion.py` | Funzione condivisa `parse_iso_utc()` compatibile Python 3.9+ (`Z` e frazioni variabili senza usare masking del timezone); rifiuto esplicito `Decimal("NaN")` / `Infinity` via `is_finite()` in `Candle.__post_init__`. | `test_13` + `M25` |
+| **ALTO-2** | `brain/laboratorio/backtester/portfolio.py` | Guard contro piramidazione (`NotImplementedError`) spostata PRIMA della deduzione `self.cash -= leg_friction` in `on_fill()`. | `test_10` + `M26` |
+| **ALTO-3 + ALTO-4 + BASSO-4** | `brain/laboratorio/backtester/dsr.py` | Lock esclusivo cross-processo (`fcntl.flock` con fallback `O_EXCL`) e scrittura atomica (`os.replace`); `dry_run=True` rigorosamente readonly con `N = total_trials + 1`; rimosso clamp `1e-6` su `variance_term <= 0` (restituisce `(None, None)` -> `NON_STIMABILE`). | `test_11`..`test_13` + `M27`..`M29` |
+| **MEDIO-1 + MEDIO-2** | `brain/laboratorio/backtester/events.py`, `portfolio.py`, `engine.py` | Chiave `FillEvent.metadata["fill_timing"]` e campo `TradeRecord.fill_timing` (`"intrabar_close_assumed"` per uscite intrabar); tracciamento `discarded_end_of_data_orders` in `Portfolio`. | `test_14` |
+
+### Risultati Esecutivi Post-Bonifica (`python3 -s -B -W error`)
+- **Suite Binario B (`test_pipeline.py`, `test_backtester.py`, `test_anti_frode_statico.py`):** **30/30 OK** (`0` skip, `0` failure, `0` warning).
+- **Mutation Testing (`mutazioni_lab.py`):** **29/29 KILLED (100.0%)**.
+- **Suite Guardian G0/Journal (`brain/guardian/test`):** **61/61 OK** (`brain/guardian/` non modificato).
+- **Totale Unit Test Unificati:** **91/91 OK**.

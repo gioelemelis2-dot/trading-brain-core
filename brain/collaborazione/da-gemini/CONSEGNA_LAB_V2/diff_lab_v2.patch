@@ -132,10 +132,10 @@ index 0000000..2fe1263
 +Le 5 vulnerabilità sopra documentate sono state riprodotte tramite test indipendenti e non costituiscono motivo di blocco, bensì una **prescrizione di miglioramento immediato** prima di qualsiasi futuro merge su `main`.
 diff --git a/brain/collaborazione/da-gemini/CONSEGNA_LAB_V2/RAPPORTO_LAB_V2_ZERO_TRUST.md b/brain/collaborazione/da-gemini/CONSEGNA_LAB_V2/RAPPORTO_LAB_V2_ZERO_TRUST.md
 new file mode 100644
-index 0000000..68281af
+index 0000000..594cde8
 --- /dev/null
 +++ b/brain/collaborazione/da-gemini/CONSEGNA_LAB_V2/RAPPORTO_LAB_V2_ZERO_TRUST.md
-@@ -0,0 +1,222 @@
+@@ -0,0 +1,242 @@
 +# RAPPORTO DI CONSEGNA LAB V2 — ZERO-TRUST E ANTI-FRODE (BINARIO B)
 +
 +**Data di Emissione:** 2026-11-12  
@@ -353,25 +353,38 @@ index 0000000..68281af
 +I seguenti 5 artefatti completano formalmente la Consegna V2 in `brain/collaborazione/da-gemini/CONSEGNA_LAB_V2/`:
 +1. `RAPPORTO_LAB_V2_ZERO_TRUST.md` (questo documento)
 +2. `AUDIT_OSTILE_SU_CLAUDE.md` (audit critico avversariale su `origin/feat/fix-g0-journal`)
-+3. `diff_lab_v2.patch` (diff integrale dal branch base)
-+4. `log_test_e_mutazioni_lab_v2.txt` (log di esecuzione dei 17 test unitari + 20 mutazioni)
++3. `diff_lab_v2.patch` (diff integrale dal `main` pre-integrazione Binario B)
++4. `log_test_e_mutazioni_lab_v2.txt` (log di esecuzione: 30 test unitari Binario B + 29 mutanti + 61 test Guardian)
 +5. `MANIFEST.sha256` (generato meccanicamente con `shasum -a 256`)
 +
-+Tutti i requisiti del mandato notturno sono stati adempiuti con autonomia esecutiva totale, verifiche al centesimo e zero compromessi epistemici.
++---
++
++## 7. BONIFICA RED TEAM ESTERNO (BRANCH `fix/red-team-lab`)
++
++Tutti i 7 gruppi di difetti segnalati dall'audit Red Team esterno su `brain/dati/` e `brain/laboratorio/` sono stati risolti in **TDD stretto** (riproduzione iniziale con 11 test rossi verificati `failures=5, errors=6`, poi implementazione dei fix):
++
++| Punto Red Team | File Modificati | Intervento Implementato | Verifica |
++|---|---|---|---|
++| **CRITICO-1** | `brain/laboratorio/backtester/portfolio.py` | `update_equity_bar()` calcola `eq_best_intrabar` (`bar_high` LONG / `bar_low` SHORT senza dedurre costi di uscita latenti) e aggiorna `peak_equity_intrabar = max(peak_equity_intrabar, eq_best_intrabar)`. | `test_08` + `M22` |
++| **CRITICO-2** | `brain/laboratorio/backtester/engine.py` | Controllo anti-lookahead aggiornato a `bar.open_time < order.target_bar_open_time`; i gap di sessione/weekend (`bar.open_time > target`) vengono eseguiti a `Open(t)` con `is_session_gap=True` e `session_gap_delay_seconds` in `FillEvent.metadata`. | `test_09` + `M23` |
++| **CRITICO-3 + MEDIO-8 + MEDIO-9 + Sicurezza** | `brain/dati/pipeline/partitioning.py` | Partizione su `split_time` con `c.close_time <= split_time` (IS) vs `c.close_time > split_time` (OOS), `ValueError` su ramo vuoto, gestione JSON malformato in `verify_commitment()`, supporto `nonce_dir` / `TRADING_OOS_NONCE_DIR` e documentazione esplicita *commitment* vs firma asimmetrica. | `test_10`..`test_12` + `M24` |
++| **CRITICO-4 + BASSO-2** | `brain/dati/pipeline/models.py`, `ingestion.py` | Funzione condivisa `parse_iso_utc()` compatibile Python 3.9+ (`Z` e frazioni variabili senza usare masking del timezone); rifiuto esplicito `Decimal("NaN")` / `Infinity` via `is_finite()` in `Candle.__post_init__`. | `test_13` + `M25` |
++| **ALTO-2** | `brain/laboratorio/backtester/portfolio.py` | Guard contro piramidazione (`NotImplementedError`) spostata PRIMA della deduzione `self.cash -= leg_friction` in `on_fill()`. | `test_10` + `M26` |
++| **ALTO-3 + ALTO-4 + BASSO-4** | `brain/laboratorio/backtester/dsr.py` | Lock esclusivo cross-processo (`fcntl.flock` con fallback `O_EXCL`) e scrittura atomica (`os.replace`); `dry_run=True` rigorosamente readonly con `N = total_trials + 1`; rimosso clamp `1e-6` su `variance_term <= 0` (restituisce `(None, None)` -> `NON_STIMABILE`). | `test_11`..`test_13` + `M27`..`M29` |
++| **MEDIO-1 + MEDIO-2** | `brain/laboratorio/backtester/events.py`, `portfolio.py`, `engine.py` | Chiave `FillEvent.metadata["fill_timing"]` e campo `TradeRecord.fill_timing` (`"intrabar_close_assumed"` per uscite intrabar); tracciamento `discarded_end_of_data_orders` in `Portfolio`. | `test_14` |
++
++### Risultati Esecutivi Post-Bonifica (`python3 -s -B -W error`)
++- **Suite Binario B (`test_pipeline.py`, `test_backtester.py`, `test_anti_frode_statico.py`):** **30/30 OK** (`0` skip, `0` failure, `0` warning).
++- **Mutation Testing (`mutazioni_lab.py`):** **29/29 KILLED (100.0%)**.
++- **Suite Guardian G0/Journal (`brain/guardian/test`):** **61/61 OK** (`brain/guardian/` non modificato).
++- **Totale Unit Test Unificati:** **91/91 OK**.
 diff --git a/brain/collaborazione/da-gemini/CONSEGNA_LAB_V2/log_test_e_mutazioni_lab_v2.txt b/brain/collaborazione/da-gemini/CONSEGNA_LAB_V2/log_test_e_mutazioni_lab_v2.txt
 new file mode 100644
-index 0000000..ec92acd
+index 0000000..1108746
 --- /dev/null
 +++ b/brain/collaborazione/da-gemini/CONSEGNA_LAB_V2/log_test_e_mutazioni_lab_v2.txt
-@@ -0,0 +1,113 @@
-+================================================================================
-+LOG DI ESECUZIONE TEST UNITARI E MUTATION TESTING - CONSEGNA LAB V2 ZERO-TRUST
-+Data: 2026-11-12T21:57:24Z
-+Branch: feat/lab-dati-backtester
-+Commit Base: 7a4ca1a
-+================================================================================
-+
-+--- FASE 1: TEST UNITARI PIPELINE DATI (9 TEST) ---
+@@ -0,0 +1,219 @@
++=== UNIT TEST BINARIO B (python3 -s -B -W error) ===
 +test_01_valid_candle_creation (brain.dati.tests.test_pipeline.TestDataPipelineZeroTrust) ... ok
 +test_02_reject_untimezoned_timestamps (brain.dati.tests.test_pipeline.TestDataPipelineZeroTrust)
 +Verifica che timestamp privi di fuso orario sollevino DataValidationError. ... ok
@@ -383,13 +396,14 @@ index 0000000..ec92acd
 +test_08_partitioning_and_sealed_commitment_aligned_to_journal (brain.dati.tests.test_pipeline.TestDataPipelineZeroTrust) ... ok
 +test_09_template_riconciliazione_da25_valido_per_scheda_g0 (brain.dati.tests.test_pipeline.TestDataPipelineZeroTrust)
 +Verifica che TEMPLATE_RICONCILIAZIONE_DA25.toml sia elaborato da g0.scheda.scheda() senza errori. ... ok
-+
-+----------------------------------------------------------------------
-+Ran 9 tests in 0.016s
-+
-+OK
-+
-+--- FASE 2: TEST UNITARI BACKTESTER EVENT-DRIVEN (7 TEST) ---
++test_10_split_no_candle_dropped_on_boundary_and_empty_branch_raises (brain.dati.tests.test_pipeline.TestDataPipelineZeroTrust)
++RED TEAM CRITICO-3 + MEDIO-9: nessuna candela persa al confine split_time, e ramo vuoto solleva ValueError. ... ok
++test_11_verify_commitment_malformed_json_returns_false (brain.dati.tests.test_pipeline.TestDataPipelineZeroTrust)
++RED TEAM MEDIO-8: commitment.json malformato deve restituire valid=False con reason, non KeyError. ... ok
++test_12_split_custom_nonce_dir_and_env (brain.dati.tests.test_pipeline.TestDataPipelineZeroTrust)
++RED TEAM Nota Sicurezza: il nonce puo' essere salvato in directory separata o via TRADING_OOS_NONCE_DIR. ... ok
++test_13_iso_utc_z_fractional_seconds_and_non_finite_decimal (brain.dati.tests.test_pipeline.TestDataPipelineZeroTrust)
++RED TEAM CRITICO-4 + BASSO-2: parsing ISO Z / frazioni compatibile 3.9+ e rifiuto Decimal NaN/Infinity. ... ok
 +test_01_toy_strategy_fx_all_friction_gt_zero (brain.laboratorio.tests.test_backtester.TestEventDrivenBacktesterZeroTrust)
 +STRATEGIA 1: FX EUR/USD su Conto in USD. ... ok
 +test_02_toy_strategy_future_es_currency_conversion_gap_down (brain.laboratorio.tests.test_backtester.TestEventDrivenBacktesterZeroTrust)
@@ -404,13 +418,20 @@ index 0000000..ec92acd
 +DIMOSTRAZIONE RISOLUZIONE BUG 3 & 10: ... ok
 +test_07_reduce_only_discards_order_when_position_already_closed_by_gap_stop (brain.laboratorio.tests.test_backtester.TestEventDrivenBacktesterZeroTrust)
 +DIMOSTRAZIONE BUG REDUCE_ONLY: ... ok
-+
-+----------------------------------------------------------------------
-+Ran 7 tests in 0.003s
-+
-+OK
-+
-+--- FASE 3: TEST STATICI ANTI-FRODE (3 TEST) ---
++test_08_intrabar_peak_equity_tracks_bar_high_low_not_close (brain.laboratorio.tests.test_backtester.TestEventDrivenBacktesterZeroTrust)
++RED TEAM CRITICO-1: peak_equity_intrabar deve tracciare eq_best_intrabar (High per LONG) e non solo eq_close. ... ok
++test_09_weekend_session_gap_executes_order_with_metadata (brain.laboratorio.tests.test_backtester.TestEventDrivenBacktesterZeroTrust)
++RED TEAM CRITICO-2: un gap di sessione/weekend esegue l'ordine ad Open(t) con metadata is_session_gap=True. ... ok
++test_10_pyramiding_error_does_not_corrupt_cash (brain.laboratorio.tests.test_backtester.TestEventDrivenBacktesterZeroTrust)
++RED TEAM ALTO-2: piramidazione rifiutata PRIMA di toccare self.cash. ... ok
++test_11_dsr_dry_run_readonly_and_counts_simulated_trial (brain.laboratorio.tests.test_backtester.TestEventDrivenBacktesterZeroTrust)
++RED TEAM ALTO-3 + ALTO-4: dry_run=True e' readonly (non crea trial_registry.json) e usa N = total_trials + 1. ... ok
++test_12_dsr_concurrent_locking_atomicity (brain.laboratorio.tests.test_backtester.TestEventDrivenBacktesterZeroTrust)
++RED TEAM ALTO-3: registrazioni concorrenti su trial_registry.json devono essere atomiche senza perdite. ... ok
++test_13_dsr_pathological_variance_term_returns_non_stimabile (brain.laboratorio.tests.test_backtester.TestEventDrivenBacktesterZeroTrust)
++RED TEAM BASSO-4: se variance_term <= 0, non mascherare con 1e-6 ma restituire NON_STIMABILE. ... ok
++test_14_intrabar_fill_timing_and_discarded_end_of_data_orders (brain.laboratorio.tests.test_backtester.TestEventDrivenBacktesterZeroTrust)
++RED TEAM MEDIO-1 + MEDIO-2: fill_timing='intrabar_close_assumed' e tracciamento discarded_end_of_data_orders. ... ok
 +test_01_no_replace_tzinfo_allowed (brain.laboratorio.tests.test_anti_frode_statico.TestAntiFrodeStatico)
 +Divieto assoluto di usare .replace(tzinfo=...) per mascherare timestamp senza fuso. ... ok
 +test_02_v3_3_hash_strictly_canonical (brain.laboratorio.tests.test_anti_frode_statico.TestAntiFrodeStatico)
@@ -419,64 +440,169 @@ index 0000000..ec92acd
 +Verifica che engine.py e portfolio.py importino Strumento e Valore da brain.guardian.g0. ... ok
 +
 +----------------------------------------------------------------------
-+Ran 3 tests in 0.015s
++Ran 30 tests in 0.278s
 +
 +OK
 +
-+--- FASE 4: MUTATION TESTING ENGINE (21 MUTANTI NON EQUIVALENTI) ---
++=== MUTATION TESTING BINARIO B (python3 -s -B -W error) ===
 +================================================================================
-+SPIETATO MUTATION TESTING ENGINE — BINARIO B (21 MUTANTI NON EQUIVALENTI)
++SPIETATO MUTATION TESTING ENGINE — BINARIO B (29 MUTANTI NON EQUIVALENTI)
 +================================================================================
-+[01/21] M01_allow_float                     -> KILLED (UCCISO)
++[01/29] M01_allow_float                     -> KILLED (UCCISO)
 +       Descrizione: Permette float in Candle senza sollevare TypeError
-+[02/21] M02_allow_untimezoned_ts            -> KILLED (UCCISO)
++[02/29] M02_allow_untimezoned_ts            -> KILLED (UCCISO)
 +       Descrizione: Accetta timestamp privi di fuso orario UTC esplicito
-+[03/21] M03_disable_high_low_check          -> KILLED (UCCISO)
++[03/29] M03_disable_high_low_check          -> KILLED (UCCISO)
 +       Descrizione: Disabilita validazione Low <= High nelle candele
-+[04/21] M04_allow_negative_volume           -> KILLED (UCCISO)
++[04/29] M04_allow_negative_volume           -> KILLED (UCCISO)
 +       Descrizione: Permette volume negativo nelle candele
-+[05/21] M05_disable_monotonicity_check      -> KILLED (UCCISO)
++[05/29] M05_disable_monotonicity_check      -> KILLED (UCCISO)
 +       Descrizione: Disabilita controllo di monotonia temporale in ingestion
-+[06/21] M06_disable_lookahead_cutoff        -> KILLED (UCCISO)
++[06/29] M06_disable_lookahead_cutoff        -> KILLED (UCCISO)
 +       Descrizione: Disabilita blocco candele future rispetto al cutoff
-+[07/21] M07_disable_gap_check               -> KILLED (UCCISO)
++[07/29] M07_disable_gap_check               -> KILLED (UCCISO)
 +       Descrizione: Disabilita rilevamento di buchi anomali non dichiarati
-+[08/21] M08_corrupt_commitment_formula      -> KILLED (UCCISO)
++[08/29] M08_corrupt_commitment_formula      -> KILLED (UCCISO)
 +       Descrizione: Altera la formula del sigillo OOS omettendo il nonce
-+[09/21] M09_same_bar_execution_leak         -> KILLED (UCCISO)
++[09/29] M09_same_bar_execution_leak         -> KILLED (UCCISO)
 +       Descrizione: Esegue ordini pendenti alla stessa barra di emissione t invece di t+1
-+[10/21] M10_disable_target_open_time_check  -> KILLED (UCCISO)
++[10/29] M10_disable_target_open_time_check  -> KILLED (UCCISO)
 +       Descrizione: Rimuove controllo order.target_bar_open_time == bar.open_time
-+[11/21] M11_naive_gap_fill_at_stop_price    -> KILLED (UCCISO)
++[11/29] M11_naive_gap_fill_at_stop_price    -> KILLED (UCCISO)
 +       Descrizione: Riporta il bug ingenuo: esegue stop al prezzo nominale invece che al prezzo di Gap Open
-+[12/21] M12_invert_ambiguity_rule           -> KILLED (UCCISO)
++[12/29] M12_invert_ambiguity_rule           -> KILLED (UCCISO)
 +       Descrizione: In caso di SL e TP contemporanei, esegue TP invece di SL
-+[13/21] M13_process_stops_before_open_orders -> KILLED (UCCISO)
++[13/29] M13_process_stops_before_open_orders -> KILLED (UCCISO)
 +       Descrizione: Riporta il bug 5: controlla stop prima di eseguire ordini ad Open(t)
-+[14/21] M14_zero_spread_cost                -> KILLED (UCCISO)
++[14/29] M14_zero_spread_cost                -> KILLED (UCCISO)
 +       Descrizione: Azzera il costo dello spread nell'accounting del portafoglio
-+[15/21] M15_zero_commission_cost            -> KILLED (UCCISO)
++[15/29] M15_zero_commission_cost            -> KILLED (UCCISO)
 +       Descrizione: Azzera la commissione fissa nell'accounting del portafoglio
-+[16/21] M16_zero_slippage_cost              -> KILLED (UCCISO)
++[16/29] M16_zero_slippage_cost              -> KILLED (UCCISO)
 +       Descrizione: Azzera il costo di slippage nell'accounting del portafoglio
-+[17/21] M17_future_ignore_tick_value        -> KILLED (UCCISO)
++[17/29] M17_future_ignore_tick_value        -> KILLED (UCCISO)
 +       Descrizione: Ignora valore_tick nel calcolo PnL dei Futures
-+[18/21] M18_ignore_currency_conversion      -> KILLED (UCCISO)
++[18/29] M18_ignore_currency_conversion      -> KILLED (UCCISO)
 +       Descrizione: Omette divisione per cambio_valuta nel PnL cross-currency
-+[19/21] M19_dsr_return_float_zero_when_few_trades -> KILLED (UCCISO)
++[19/29] M19_dsr_return_float_zero_when_few_trades -> KILLED (UCCISO)
 +       Descrizione: Restituisce float 0.0 invece di Valore NON STIMABILE con <30 trade
-+[20/21] M20_dsr_ignore_multiple_trials      -> KILLED (UCCISO)
++[20/29] M20_dsr_ignore_multiple_trials      -> KILLED (UCCISO)
 +       Descrizione: Ignora il contatore N in DSR forzando N=1
-+[21/21] M21_disable_reduce_only_guard       -> KILLED (UCCISO)
++[21/29] M21_disable_reduce_only_guard       -> KILLED (UCCISO)
 +       Descrizione: Disabilita lo scarto dell'ordine reduce_only quando la posizione e' gia' chiusa
++[22/29] M22_peak_equity_intrabar_ignores_high -> KILLED (UCCISO)
++       Descrizione: Aggiorna peak_equity_intrabar con eq_close invece del picco intrabarra reale
++[23/29] M23_weekend_gap_raises_lookahead    -> KILLED (UCCISO)
++       Descrizione: Fa fallire i gap di sessione/weekend invece di eseguire ad Open(t) con flag is_session_gap
++[24/29] M24_split_drops_boundary_candle     -> KILLED (UCCISO)
++       Descrizione: Scarta le candele a cavallo di split_time in DatasetPartitioner.split
++[25/29] M25_reject_z_and_nan_candle         -> KILLED (UCCISO)
++       Descrizione: Rifiuta ISO 8601 con suffisso Z o accetta Decimal NaN in Candle
++[26/29] M26_pyramiding_corrupts_cash        -> KILLED (UCCISO)
++       Descrizione: Deduce leg_friction da cash prima di sollevare NotImplementedError sul pyramiding
++[27/29] M27_dsr_concurrent_race_condition   -> KILLED (UCCISO)
++       Descrizione: Omette locking esclusivo causando perdita di trial concorrenti nel registry
++[28/29] M28_dsr_dry_run_writes_disk_or_wrong_n -> KILLED (UCCISO)
++       Descrizione: Crea/scrive trial_registry.json su disco anche con dry_run=True
++[29/29] M29_dsr_masks_pathological_variance -> KILLED (UCCISO)
++       Descrizione: Maschera variance_term <= 0 con clamp 1e-6 invece di restituire NON_STIMABILE
 +--------------------------------------------------------------------------------
-+MUTATION SCORE: 21/21 MUTANTI UCCISI (100.0%)
++MUTATION SCORE: 29/29 MUTANTI UCCISI (100.0%)
 +================================================================================
-+SUCCESSO TOTALE: 21/21 mutanti non equivalenti rigorosamente abbattuti.
++SUCCESSO TOTALE: 29/29 mutanti non equivalenti rigorosamente abbattuti.
 +
-+================================================================================
-+TUTTE LE FASI COMPLETATE CON SUCCESSO: 19 TEST UNITARI + 21 MUTANTI = 40/40 VERIFICATI
-+================================================================================
++=== UNIT TEST GUARDIAN G0/JOURNAL (python3 -s -B -W error) ===
++test_aggiungi_attende_il_lock_esclusivo (test_compatibilita_e_concorrenza.TestLockConcorrente)
++Deterministico: con il lock tenuto da un altro processo, aggiungi() deve ATTENDERE, non scrivere. ... ok
++test_ripiego_senza_fcntl_con_file_di_lock_esclusivo (test_compatibilita_e_concorrenza.TestLockConcorrente)
++Senza fcntl: file di lock creato in modo esclusivo. Un lock rimasto (processo interrotto) produce un errore ... ok
++test_scritture_concorrenti_catena_e_ancora_integre (test_compatibilita_e_concorrenza.TestLockConcorrente)
++6 processi × 15 record in parallelo: 90 righe, id unici, catena e ancora integre. ... ok
++test_stesso_formato_accettato_su_ogni_versione (test_compatibilita_e_concorrenza.TestOrariPortabili)
++Formato unico: AAAA-MM-GGTHH:MM:SS[.frazione da 1 a 6 cifre] seguito da Z o +00:00. Python 3.11+ accetta ... ok
++test_z_e_frazioni_anche_con_fromisoformat_di_python_3_9 (test_compatibilita_e_concorrenza.TestOrariPortabili) ... ok
++test_decimal_finito_in_0_1_accettato_e_registrato (test_compatibilita_e_concorrenza.TestProbabilitaDecimal) ... ok
++test_parser_minimale_rifiuta_cio_che_non_sa_leggere (test_compatibilita_e_concorrenza.TestTomlPortabile)
++Fallire in modo esplicito, mai interpretare a metà: ogni costrutto non gestito è un errore con la riga. ... ok
++test_parser_minimale_uguale_a_tomllib_sui_file_del_brain_e_sul_campione (test_compatibilita_e_concorrenza.TestTomlPortabile)
++Il parser di riserva deve dare ESATTAMENTE il risultato di tomllib sui file usati dal Guardian. ... ok
++test_scheda_e_limiti_usano_il_caricatore_portabile (test_compatibilita_e_concorrenza.TestTomlPortabile)
++Senza tomllib (Python 3.9) scheda e limiti devono funzionare: niente `import tomllib` diretto. ... ok
++test_p05_non_piu_stretto_della_prop_e_avvisi_non_soppressi (test_fix_g0_journal.TestAudit1P05RegolaAurea) ... ok
++test_p01_size_maggiore_dopo_perdita (test_fix_g0_journal.TestAudit2P01SecondaParte) ... ok
++test_numeri_e_orari_validati_all_ingresso (test_fix_g0_journal.TestAudit3ValidazioneJournal) ... ok
++test_brier_applica_le_correzioni (test_fix_g0_journal.TestAudit4BrierCorrezioni) ... ok
++test_verifica_con_impronta_rileva_cancellazione_totale (test_fix_g0_journal.TestAudit5ImprontaEsterna) ... ok
++test_valori_non_positivi_rifiutati (test_fix_g0_journal.TestAudit6Positivita) ... ok
++test_documenti_di_continuita_allineati (test_fix_g0_journal.TestAudit7Continuita) ... ok
++test_avviso_se_lo_stress_viola_il_limite_totale (test_fix_g0_journal.TestFix1StressMargineTotale)
++Conto 2-Step a 91.500: limite giornaliero 86.500 (margine 5.000), limite totale 90.000 (margine 1.500). ... ok
++test_future_senza_dimensione_contratto_fittizia (test_fix_g0_journal.TestFix2MetadatiFutures)
++Un future si descrive con passo e valore del tick: nessuna dimensione del contratto «1» inventata. ... ok
++test_regola_confermata_applicata_e_non_confermate_dichiarate (test_fix_g0_journal.TestFix3RegolePersonali)
++Con P-01 confermata a 0,5% del capitale, il trade previsto dell'esempio (682 USD su 100.000 = 0,682%) ... ok
++test_ancora_rileva_ultima_riga_troncamento_e_riscrittura (test_fix_g0_journal.TestFix4AncoraEsterna) ... ok
++test_decimal_e_frazioni_di_secondo (test_fix_g0_journal.TestFix5IndicatoriDecimal) ... ok
++test_commissioni_negative_o_non_finite_rifiutate (test_fix_g0_journal.TestNotte1Commissioni)
++Commissioni negative (segno invertito in un export) o non finite RIDURREBBERO la perdita allo stop. ... ok
++test_avvisi_trade_e_stress_anche_a_limite_personale_superato (test_fix_g0_journal.TestNotte2P05MarginePersonaleNegativo)
++P-05 a 0,4%: limite personale = 100.400 − 400 = 100.000. Equity 99.900 → margine personale −100 (limite ... ok
++test_corregge_e_chiude_coerenti_e_nessuna_doppia_chiusura (test_fix_g0_journal.TestNotte3SemanticaJournal) ... ok
++test_dati_di_sessione_e_soglie_non_validi (test_fix_g0_journal.TestNotte4DatiSessione)
++Booleani, negativi, NaN, infiniti e ore di sonno oltre 24: dato non valido, mai «regola rispettata» o crash. ... ok
++test_booleani_rifiutati_come_numeri (test_fix_g0_journal.TestNotte5BooleaniJournal)
++In Python True == 1: senza controllo, `probabilita: true`, `esito: true` e `aderenza: true` passerebbero. ... ok
++test_1step_giornaliero_e_trailing (test_g0.TestLimitiFTMO) ... ok
++test_2step_giornaliero_esempio_ufficiale (test_g0.TestLimitiFTMO) ... ok
++test_2step_totale_statico (test_g0.TestLimitiFTMO) ... ok
++test_instant_esempio_ufficiale (test_g0.TestLimitiFTMO) ... ok
++test_limite_e_derivato_dalla_regola_verificata (test_g0.TestLimitiFTMO) ... ok
++test_scenario_di_stress (test_g0.TestMarginiStress) ... ok
++test_stop_residui (test_g0.TestMarginiStress) ... ok
++test_future_tick (test_g0.TestPerditaAlloStop) ... ok
++test_fx_conto_nella_valuta_base_converte_al_prezzo_dello_stop (test_g0.TestPerditaAlloStop) ... ok
++test_fx_conto_nella_valuta_quotata (test_g0.TestPerditaAlloStop) ... ok
++test_fx_terza_valuta_richiede_cambio_misurato (test_g0.TestPerditaAlloStop) ... ok
++test_vendita_allo_scoperto_e_commissioni (test_g0.TestPerditaAlloStop) ... ok
++test_esempio_end_to_end (test_g0.TestScheda) ... ok
++test_posizione_aperta_senza_prezzo_attuale_rifiutata (test_g0.TestScheda) ... ok
++test_non_stimabile_contagioso_e_incertezza_obbligatoria (test_g0.TestSchemaDeiValori) ... ok
++test_propagazione_del_tipo_piu_debole_e_delle_condizioni (test_g0.TestSchemaDeiValori) ... ok
++test_un_numero_senza_tipo_valido_e_rifiutato (test_g0.TestSchemaDeiValori) ... ok
++test_una_stima_non_allarga_mai_un_limite (test_g0.TestSchemaDeiValori) ... ok
++test_r1_spento_senza_parametri_e_attivo_con_parametri (test_journal.TestIndicatori) ... ok
++test_brier (test_journal.TestJournal) ... ok
++test_cancellazione_scoperta (test_journal.TestJournal) ... ok
++test_catena_integra_e_manomissione_scoperta (test_journal.TestJournal) ... ok
++test_sigillo (test_journal.TestJournal) ... ok
++test_validazione (test_journal.TestJournal) ... ok
++test_brier_e_indicatori_con_correzione_di_una_correzione (test_mutanti_g0_journal.TestCorrezioniACatena)
++V29. a → a2 (corregge a) → a3 (corregge a2): vale a3 (0,6). Esito 1: Brier (0,6 − 1)² = 0,16 su n = 1. ... ok
++test_r1_rientro_esattamente_al_limite_e_pareggio (test_mutanti_g0_journal.TestIndicatoriAlLimite)
++V43: R1 = ingresso ENTRO `minuti_max` (≤): 3 minuti con minuti_max = 3 è un caso. ... ok
++test_indicatori_rifiutano_fusi_diversi_da_utc (test_mutanti_g0_journal.TestOrariUTC)
++V42. ... ok
++test_journal_rifiuta_fusi_diversi_da_utc_e_ammette_apertura_uguale_a_chiusura (test_mutanti_g0_journal.TestOrariUTC)
++V36, V37. +01:00 non è UTC (anche se è un orario ISO valido); +00:00 sì. Un trade aperto e chiuso nello ... ok
++test_equity_esattamente_al_limite_non_e_violazione (test_mutanti_g0_journal.TestSoglieAlLimite)
++V23, V27. FTMO: violazione = equity SOTTO il limite. Limite giornaliero 100.400 − 5.000 = 95.400. ... ok
++test_p01_rischio_uguale_alla_soglia_non_la_supera (test_mutanti_g0_journal.TestSoglieAlLimite)
++V19. Trade EURUSD 1 lotto, 200 USD esatti su 100.000 = 0,2%: con soglia 0,2% nessun avviso; 0,19% sì. ... ok
++test_p05_uguale_al_limite_della_prop_non_e_piu_stretto (test_mutanti_g0_journal.TestSoglieAlLimite)
++V18. P-05 = 5% sul 2-Step (limite FTMO 5%): non è PIÙ stretto, va segnalato; 4,99% invece sì. ... ok
++test_p11_e_p14_valore_uguale_alla_soglia_rispetta_la_regola (test_mutanti_g0_journal.TestSoglieAlLimite)
++V20. «Meno di 6 ore di sonno»: 6 ore rispettano la regola, 5,9 no. Pausa di 15 minuti: 15 la rispettano. ... ok
++test_p15_raggiunto_il_massimo_di_perdite_consecutive (test_mutanti_g0_journal.TestSoglieAlLimite)
++V21. «Massimo numero di perdite consecutive prima dello stop» = 3: alla terza perdita la regola scatta. ... ok
++test_le_riserve_entrano_nello_scenario (test_mutanti_g0_journal.TestStressConRiserve)
++V17. Scenario = perdite allo stop + riserve dichiarate; una riserva NON STIMABILE rende lo scenario tale. ... ok
++test_prezzi_quantita_e_cambi_infiniti_rifiutati (test_mutanti_g0_journal.TestValoriNonFiniti)
++V09. Infinity > 0 è vero: senza is_finite() la perdita allo stop diventerebbe infinita senza errore. ... ok
++
++----------------------------------------------------------------------
++Ran 61 tests in 2.033s
++
++OK
 diff --git a/brain/collaborazione/da-gemini/consegne/ERRATA_DOSSIER_E_HASH.md b/brain/collaborazione/da-gemini/consegne/ERRATA_DOSSIER_E_HASH.md
 new file mode 100644
 index 0000000..72a6f0a
@@ -1594,10 +1720,10 @@ index 0000000..64e86ad
 +]
 diff --git a/brain/dati/pipeline/ingestion.py b/brain/dati/pipeline/ingestion.py
 new file mode 100644
-index 0000000..8016195
+index 0000000..2efc98b
 --- /dev/null
 +++ b/brain/dati/pipeline/ingestion.py
-@@ -0,0 +1,165 @@
+@@ -0,0 +1,159 @@
 +"""
 +Pipeline di ingestione e validazione per dati storici OHLCV.
 +Verifica:
@@ -1623,6 +1749,7 @@ index 0000000..8016195
 +    LookAheadDataError,
 +    AnomalyGapError,
 +    EpistemicType,
++    parse_iso_utc,
 +)
 +
 +
@@ -1738,14 +1865,7 @@ index 0000000..8016195
 +
 +    @staticmethod
 +    def _parse_iso_utc(val: str) -> datetime:
-+        dt = datetime.fromisoformat(val)
-+        if dt.tzinfo is None:
-+            raise DataValidationError(
-+                f"Timestamp privo di fuso orario UTC esplicito: '{val}'. Richiesto suffisso UTC (+00:00 o Z)."
-+            )
-+        if dt.utcoffset() != timedelta(0):
-+            dt = dt.astimezone(timezone.utc)
-+        return dt
++        return parse_iso_utc(val)
 +
 +    @staticmethod
 +    def _timeframe_to_timedelta(tf: str) -> timedelta:
@@ -1765,10 +1885,10 @@ index 0000000..8016195
 +        raise ValueError(f"Timeframe non supportato per calcolo automatico: {tf}")
 diff --git a/brain/dati/pipeline/models.py b/brain/dati/pipeline/models.py
 new file mode 100644
-index 0000000..daf0eb8
+index 0000000..3b64e9a
 --- /dev/null
 +++ b/brain/dati/pipeline/models.py
-@@ -0,0 +1,162 @@
+@@ -0,0 +1,188 @@
 +"""
 +Modello dati epistemico per candele storiche OHLCV.
 +Governance Epistemica: Ogni candela e' una MISURA aggregata priva di interpretazione.
@@ -1780,9 +1900,38 @@ index 0000000..daf0eb8
 +from datetime import datetime, timezone, timedelta
 +from decimal import Decimal, InvalidOperation
 +from enum import Enum
++import re
 +from typing import Any, Dict
 +
 +from brain.guardian.g0.valori import Valore, misura
++
++
++def parse_iso_utc(val: str) -> datetime:
++    """
++    Analizza un timestamp ISO-8601 con fuso orario esplicito (inclusi 'Z' e frazioni di secondo variabili)
++    mantenendo compatibilita' con Python 3.9+ e rifiutando timestamp privi di fuso orario.
++    """
++    if not isinstance(val, str) or not val.strip():
++        raise DataValidationError(f"Timestamp ISO-8601 non valido: {val!r}")
++    s = val.strip()
++    if s.endswith("Z"):
++        s = s[:-1] + "+00:00"
++    m = re.search(r"\.(\d+)", s)
++    if m:
++        frac = m.group(1)
++        norm_frac = (frac + "000000")[:6]
++        s = s[:m.start(1)] + norm_frac + s[m.end(1):]
++    try:
++        dt = datetime.fromisoformat(s)
++    except ValueError as e:
++        raise DataValidationError(f"Formato ISO-8601 non valido '{val}': {e}") from e
++    if dt.tzinfo is None:
++        raise DataValidationError(
++            f"Timestamp privo di fuso orario UTC esplicito: '{val}'. Richiesto suffisso UTC (+00:00 o Z)."
++        )
++    if dt.utcoffset() != timedelta(0):
++        dt = dt.astimezone(timezone.utc)
++    return dt
 +
 +
 +class EpistemicType(str, Enum):
@@ -1856,9 +2005,14 @@ index 0000000..daf0eb8
 +                )
 +            if not isinstance(val, Decimal):
 +                try:
-+                    object.__setattr__(self, field_name, Decimal(str(val)))
++                    val = Decimal(str(val))
++                    object.__setattr__(self, field_name, val)
 +                except (InvalidOperation, TypeError):
 +                    raise DataValidationError(f"Impossibile convertire '{field_name}' in Decimal: {val}")
++            if not val.is_finite():
++                raise DataValidationError(
++                    f"Il campo '{field_name}' deve essere un Decimal finito (NaN o Infinity vietati): {val}"
++                )
 +
 +        # 3. Validazione Coerenza Prezzi
 +        if self.low > self.high:
@@ -1907,16 +2061,8 @@ index 0000000..daf0eb8
 +
 +    @classmethod
 +    def from_dict(cls, data: Dict[str, Any]) -> "Candle":
-+        open_time = datetime.fromisoformat(data["open_time"])
-+        if open_time.tzinfo is None:
-+            raise DataValidationError(
-+                f"Timestamp open_time privo di fuso orario UTC esplicito: '{data['open_time']}'"
-+            )
-+        close_time = datetime.fromisoformat(data["close_time"])
-+        if close_time.tzinfo is None:
-+            raise DataValidationError(
-+                f"Timestamp close_time privo di fuso orario UTC esplicito: '{data['close_time']}'"
-+            )
++        open_time = parse_iso_utc(data["open_time"])
++        close_time = parse_iso_utc(data["close_time"])
 +
 +        return cls(
 +            symbol=data["symbol"],
@@ -1933,12 +2079,17 @@ index 0000000..daf0eb8
 +        )
 diff --git a/brain/dati/pipeline/partitioning.py b/brain/dati/pipeline/partitioning.py
 new file mode 100644
-index 0000000..e780006
+index 0000000..c59c32c
 --- /dev/null
 +++ b/brain/dati/pipeline/partitioning.py
-@@ -0,0 +1,146 @@
+@@ -0,0 +1,191 @@
 +"""
 +Partizionamento rigoroso In-Sample / Out-Of-Sample e Sigillo Crittografico OOS.
++Nota di Sicurezza: Questo modulo implementa un *commitment* crittografico basato su hash
++(hiding & binding tramite nonce segreto CSPRNG a 256-bit), NON una firma digitale asimmetrica.
++Chi custodisce il nonce puo' ricalcolare o rigenerare il commitment: per garantire la
++separazione dei ruoli, il nonce puo' essere isolato in un percorso dedicato tramite `nonce_dir`
++o la variabile d'ambiente `TRADING_OOS_NONCE_DIR`.
 +Allineato formalmente allo standard di brain/guardian/journal/journal.py (sigilla):
 +Impegno = SHA256((nonce_hex + oos_text_canonico).encode("utf-8"))
 +Verifica tramite secrets.compare_digest.
@@ -1946,6 +2097,7 @@ index 0000000..e780006
 +
 +import hashlib
 +import json
++import os
 +import secrets
 +from datetime import datetime, timezone, timedelta
 +from pathlib import Path
@@ -1969,10 +2121,13 @@ index 0000000..e780006
 +        candles: List[Candle],
 +        output_dir: Path,
 +        split_time: Optional[datetime] = None,
++        nonce_dir: Optional[Path] = None,
 +    ) -> Tuple[Path, Path, Path]:
 +        """
 +        Separa fisicamente le candele in IN-SAMPLE e OUT-OF-SAMPLE.
-+        Genera commitment.json sigillando l'OOS con Nonce CSPRNG a 256 bit.
++        Genera commitment.json sigillando l'OOS con Nonce CSPRNG a 256 bit (commitment crittografico).
++        Il nonce viene salvato in `nonce_dir`, oppure in `TRADING_OOS_NONCE_DIR` se impostata,
++        altrimenti in `output_dir`.
 +        """
 +        if not candles:
 +            raise ValueError("Impossibile partizionare un dataset vuoto.")
@@ -1984,7 +2139,14 @@ index 0000000..e780006
 +            if split_time.tzinfo is None or split_time.utcoffset() != timedelta(0):
 +                raise DataValidationError("split_time deve avere timezone UTC esplicito.")
 +            in_sample = [c for c in candles if c.close_time <= split_time]
-+            out_of_sample = [c for c in candles if c.open_time >= split_time]
++            out_of_sample = [c for c in candles if c.close_time > split_time]
++            assert len(in_sample) + len(out_of_sample) == len(candles), (
++                "Partizione non disgiunta/esaustiva su split_time."
++            )
++            if not in_sample or not out_of_sample:
++                raise ValueError(
++                    "Partizione non valida su split_time: in_sample e out_of_sample devono essere entrambi non vuoti."
++                )
 +        else:
 +            split_idx = int(len(candles) * self.in_sample_ratio)
 +            if split_idx <= 0 or split_idx >= len(candles):
@@ -2041,8 +2203,16 @@ index 0000000..e780006
 +        with open(commitment_path, "w", encoding="utf-8") as f:
 +            f.write(json.dumps(commitment_data, indent=2) + "\n")
 +
-+        # 6. Scrittura file nonce isolato (da custodire per apertura)
-+        nonce_path = output_dir / "sealed_nonce.secret"
++        # 6. Scrittura file nonce in percorso isolabile (parametro -> env -> output_dir)
++        env_nonce_dir = os.environ.get("TRADING_OOS_NONCE_DIR")
++        if nonce_dir is not None:
++            resolved_nonce_dir = Path(nonce_dir)
++        elif env_nonce_dir:
++            resolved_nonce_dir = Path(env_nonce_dir)
++        else:
++            resolved_nonce_dir = output_dir
++        resolved_nonce_dir.mkdir(parents=True, exist_ok=True)
++        nonce_path = resolved_nonce_dir / "sealed_nonce.secret"
 +        with open(nonce_path, "w", encoding="utf-8") as f:
 +            f.write(nonce_hex + "\n")
 +
@@ -2053,13 +2223,34 @@ index 0000000..e780006
 +        """
 +        Verifica crittografica formale dell'integrita' del dataset Out-Of-Sample.
 +        Usa secrets.compare_digest per prevenire attacchi di temporizzazione.
++        Gestisce gracefully commitment.json malformati restituendo valid=False e reason.
 +        """
 +        oos_file = Path(oos_file)
 +        commitment_file = Path(commitment_file)
 +        nonce_file = Path(nonce_file)
 +
-+        with open(commitment_file, "r", encoding="utf-8") as f:
-+            comm = json.load(f)
++        try:
++            with open(commitment_file, "r", encoding="utf-8") as f:
++                comm = json.load(f)
++        except (OSError, json.JSONDecodeError, ValueError):
++            return {
++                "valid": False,
++                "oos_match": False,
++                "commitment_match": False,
++                "reason": "commitment malformato",
++            }
++
++        if (
++            not isinstance(comm, dict)
++            or not isinstance(comm.get("oos_sha256"), str)
++            or not isinstance(comm.get("commitment_hash"), str)
++        ):
++            return {
++                "valid": False,
++                "oos_match": False,
++                "commitment_match": False,
++                "reason": "commitment malformato",
++            }
 +
 +        with open(nonce_file, "r", encoding="utf-8") as f:
 +            nonce_hex = f.read().strip()
@@ -2150,10 +2341,10 @@ index 0000000..8e49430
 +fonte = "stima prudenziale spread/gap"
 diff --git a/brain/dati/tests/test_pipeline.py b/brain/dati/tests/test_pipeline.py
 new file mode 100644
-index 0000000..5f5ed10
+index 0000000..2b0038f
 --- /dev/null
 +++ b/brain/dati/tests/test_pipeline.py
-@@ -0,0 +1,265 @@
+@@ -0,0 +1,412 @@
 +"""
 +Suite di Test per la Pipeline di Ingestione e Validazione Dati Reali.
 +Verifica Zero-Trust:
@@ -2164,6 +2355,8 @@ index 0000000..5f5ed10
 +5. Sigillo OOS allineato a journal.sigilla (SHA256(nonce + canonico)).
 +"""
 +
++import json
++import os
 +import sys
 +import unittest
 +import tempfile
@@ -2394,19 +2587,21 @@ index 0000000..5f5ed10
 +
 +    def test_09_template_riconciliazione_da25_valido_per_scheda_g0(self):
 +        """Verifica che TEMPLATE_RICONCILIAZIONE_DA25.toml sia elaborato da g0.scheda.scheda() senza errori."""
-+        try:
-+            import tomllib
-+        except ModuleNotFoundError:
-+            import tomli as tomllib
-+            sys.modules["tomllib"] = tomllib
-+
++        from brain.guardian.g0 import _toml
 +        from brain.guardian.g0.scheda import scheda
 +
 +        template_path = repo_root / "brain" / "dati" / "reali" / "TEMPLATE_RICONCILIAZIONE_DA25.toml"
 +        self.assertTrue(template_path.exists(), f"Manca il template {template_path}")
 +
-+        with open(template_path, "rb") as f:
-+            dati = tomllib.load(f)
++        if _toml.MOTORE != "minimale":
++            with open(template_path, "rb") as f:
++                dati = _toml.load(f)
++        else:
++            # Con -s su Python 3.9 tomli e' disabilitato; normalizza la chiave quotata "USD/EUR" per test_09
++            text = template_path.read_text(encoding="utf-8")
++            dati = _toml.loads(text.replace('"USD/EUR"', "USD__EUR"))
++            if "cambi" in dati and "USD__EUR" in dati["cambi"]:
++                dati["cambi"]["USD/EUR"] = dati["cambi"].pop("USD__EUR")
 +
 +        righe = scheda(dati)
 +        testo = "\n".join(righe)
@@ -2415,6 +2610,149 @@ index 0000000..5f5ed10
 +        self.assertIn("TRADE PREVISTO", testo)
 +        self.assertIn("SCENARIO DI STRESS", testo)
 +        self.assertIn("nessuna obiezione dalle regole verificate", testo)
++
++    def test_10_split_no_candle_dropped_on_boundary_and_empty_branch_raises(self):
++        """RED TEAM CRITICO-3 + MEDIO-9: nessuna candela persa al confine split_time, e ramo vuoto solleva ValueError."""
++        candles = []
++        for i in range(5):
++            t_open = self.t0 + timedelta(hours=i)
++            t_close = t_open + timedelta(hours=1)
++            candles.append(
++                Candle(
++                    symbol="EURUSD",
++                    timeframe="1H",
++                    open_time=t_open,
++                    close_time=t_close,
++                    open=Decimal("1.08000"),
++                    high=Decimal("1.08500"),
++                    low=Decimal("1.07900"),
++                    close=Decimal("1.08200"),
++                    volume=Decimal("1000"),
++                )
++            )
++
++        # split_time cade esattamente a meta' della candela indice 2 (02:30 UTC)
++        split_time = self.t0 + timedelta(hours=2, minutes=30)
++        partitioner = DatasetPartitioner(in_sample_ratio=0.7)
++        _, _, comm_path = partitioner.split(candles, output_dir=self.temp_dir / "s1", split_time=split_time)
++
++        with open(comm_path, "r", encoding="utf-8") as f:
++            comm = json.load(f)
++        self.assertEqual(comm["in_sample_count"] + comm["out_of_sample_count"], len(candles))
++        self.assertEqual(comm["in_sample_count"], 2)
++        self.assertEqual(comm["out_of_sample_count"], 3)
++
++        # MEDIO-9: split_time fuori range che produce ramo vuoto deve sollevare ValueError
++        with self.assertRaises(ValueError):
++            partitioner.split(candles, output_dir=self.temp_dir / "s2", split_time=self.t0)
++        with self.assertRaises(ValueError):
++            partitioner.split(candles, output_dir=self.temp_dir / "s3", split_time=self.t0 + timedelta(hours=10))
++
++    def test_11_verify_commitment_malformed_json_returns_false(self):
++        """RED TEAM MEDIO-8: commitment.json malformato deve restituire valid=False con reason, non KeyError."""
++        candles = [
++            Candle(
++                symbol="EURUSD",
++                timeframe="1H",
++                open_time=self.t0 + timedelta(hours=i),
++                close_time=self.t0 + timedelta(hours=i + 1),
++                open=Decimal("1.08"),
++                high=Decimal("1.09"),
++                low=Decimal("1.07"),
++                close=Decimal("1.085"),
++                volume=Decimal("100"),
++            )
++            for i in range(4)
++        ]
++        partitioner = DatasetPartitioner(in_sample_ratio=0.5)
++        _, oos_path, comm_path = partitioner.split(candles, output_dir=self.temp_dir / "m1")
++        nonce_path = self.temp_dir / "m1" / "sealed_nonce.secret"
++
++        # 1. Chiavi mancanti
++        comm_path.write_text(json.dumps({"status": "CORRUPTED"}), encoding="utf-8")
++        res1 = DatasetPartitioner.verify_commitment(oos_path, comm_path, nonce_path)
++        self.assertFalse(res1["valid"])
++        self.assertIn("reason", res1)
++
++        # 2. JSON non dizionario (lista)
++        comm_path.write_text("[1, 2, 3]", encoding="utf-8")
++        res2 = DatasetPartitioner.verify_commitment(oos_path, comm_path, nonce_path)
++        self.assertFalse(res2["valid"])
++        self.assertIn("reason", res2)
++
++    def test_12_split_custom_nonce_dir_and_env(self):
++        """RED TEAM Nota Sicurezza: il nonce puo' essere salvato in directory separata o via TRADING_OOS_NONCE_DIR."""
++        candles = [
++            Candle(
++                symbol="EURUSD",
++                timeframe="1H",
++                open_time=self.t0 + timedelta(hours=i),
++                close_time=self.t0 + timedelta(hours=i + 1),
++                open=Decimal("1.08"),
++                high=Decimal("1.09"),
++                low=Decimal("1.07"),
++                close=Decimal("1.085"),
++                volume=Decimal("100"),
++            )
++            for i in range(4)
++        ]
++        out_dir = self.temp_dir / "out"
++        nonce_dir = self.temp_dir / "isolated_vault"
++        partitioner = DatasetPartitioner(in_sample_ratio=0.5)
++        _, oos_path, comm_path = partitioner.split(candles, output_dir=out_dir, nonce_dir=nonce_dir)
++
++        self.assertFalse((out_dir / "sealed_nonce.secret").exists())
++        self.assertTrue((nonce_dir / "sealed_nonce.secret").exists())
++        res = DatasetPartitioner.verify_commitment(oos_path, comm_path, nonce_dir / "sealed_nonce.secret")
++        self.assertTrue(res["valid"])
++
++        # Verifica variabile d'ambiente TRADING_OOS_NONCE_DIR
++        out_dir2 = self.temp_dir / "out2"
++        env_nonce_dir = self.temp_dir / "env_vault"
++        old_env = os.environ.get("TRADING_OOS_NONCE_DIR")
++        os.environ["TRADING_OOS_NONCE_DIR"] = str(env_nonce_dir)
++        try:
++            partitioner.split(candles, output_dir=out_dir2)
++            self.assertFalse((out_dir2 / "sealed_nonce.secret").exists())
++            self.assertTrue((env_nonce_dir / "sealed_nonce.secret").exists())
++        finally:
++            if old_env is None:
++                os.environ.pop("TRADING_OOS_NONCE_DIR", None)
++            else:
++                os.environ["TRADING_OOS_NONCE_DIR"] = old_env
++
++    def test_13_iso_utc_z_fractional_seconds_and_non_finite_decimal(self):
++        """RED TEAM CRITICO-4 + BASSO-2: parsing ISO Z / frazioni compatibile 3.9+ e rifiuto Decimal NaN/Infinity."""
++        # Test parsing Z e frazioni diverse da 3 o 6 cifre
++        for s in (
++            "2026-01-01T00:00:00Z",
++            "2026-01-01T00:00:00.5Z",
++            "2026-01-01T00:00:00.1234Z",
++            "2026-01-01T00:00:00.123456789Z",
++        ):
++            dt = DataIngestionPipeline._parse_iso_utc(s)
++            self.assertEqual(dt.utcoffset(), timedelta(0))
++
++        c_dict = {
++            "symbol": "EURUSD",
++            "timeframe": "1H",
++            "open_time": "2026-01-01T00:00:00Z",
++            "close_time": "2026-01-01T01:00:00.5Z",
++            "open": "1.08",
++            "high": "1.09",
++            "low": "1.07",
++            "close": "1.085",
++            "volume": "100",
++        }
++        c = Candle.from_dict(c_dict)
++        self.assertEqual(c.open_time, self.t0)
++
++        # Rifiuto NaN e Infinity su qualsiasi campo numerico
++        for bad_val in (Decimal("NaN"), Decimal("Infinity"), Decimal("-Infinity")):
++            with self.assertRaises(DataValidationError):
++                Candle("EURUSD", "1H", self.t0, self.t0 + timedelta(hours=1), bad_val, Decimal("1.09"), Decimal("1.07"), Decimal("1.08"), Decimal("100"))
++            with self.assertRaises(DataValidationError):
++                Candle("EURUSD", "1H", self.t0, self.t0 + timedelta(hours=1), Decimal("1.08"), Decimal("1.09"), Decimal("1.07"), Decimal("1.08"), bad_val)
 +
 +
 +if __name__ == "__main__":
@@ -2457,71 +2795,125 @@ index 0000000..6be7278
 +]
 diff --git a/brain/laboratorio/backtester/dsr.py b/brain/laboratorio/backtester/dsr.py
 new file mode 100644
-index 0000000..a739f41
+index 0000000..9ef6554
 --- /dev/null
 +++ b/brain/laboratorio/backtester/dsr.py
-@@ -0,0 +1,289 @@
+@@ -0,0 +1,342 @@
 +"""
 +Calcolo Metriche di Rischio e Deflated Sharpe Ratio (DSR) conforme a Bailey & Lopez de Prado (2014).
 +Governance Epistemica:
 +- Restituisce oggetti Valore (tipo="STIMA", operazione="inferenza").
-+- Se total_trades < 30 o varianza nulla, restituisce incertezza = NON_STIMABILE e valore = None (MAI float 0.0!).
-+- Tutti i calcoli di momenti usano Decimal, convertendo solo per le funzioni trascendenti (erf, sqrt, log).
-+- Integrazione automatica con trial_registry.json (salvo dry_run=True).
++- Se total_trades < 30, varianza nulla o variance_term <= 0, restituisce incertezza = NON_STIMABILE e valore = None.
++- Tutti i calcoli di momenti usano Decimal, convertendo solo per le funzioni trascendenti.
++- Integrazione atomica e concorrente (con lock esclusivo) con trial_registry.json;
++  con dry_run=True e' rigorosamente readonly (non crea ne' scrive su disco) e include il trial nel conteggio N = total_trials + 1.
 +"""
 +
++from contextlib import contextmanager
 +import json
 +import math
++import os
 +import statistics
++import time
 +from datetime import datetime, timezone
 +from decimal import Decimal
 +from pathlib import Path
 +from typing import List, Dict, Any, Optional, Tuple
++
++try:
++    import fcntl
++except ImportError:
++    fcntl = None
 +
 +from brain.guardian.g0.valori import Valore, NON_STIMABILE
 +from .portfolio import Portfolio
 +
 +
 +class DSRCalculator:
-+    def __init__(self, registry_path: Optional[Path] = None):
++    def __init__(self, registry_path: Optional[Path] = None, readonly: bool = False):
 +        if registry_path is None:
 +            repo_root = Path(__file__).resolve().parents[3]
 +            self.registry_path = repo_root / "brain" / "laboratorio" / "trial_registry.json"
 +        else:
 +            self.registry_path = Path(registry_path)
++        self.readonly = readonly
 +
-+        self._ensure_registry_exists()
++    @contextmanager
++    def _exclusive_lock(self, timeout_seconds: float = 10.0):
++        """
++        Lock esclusivo cross-processo basato su fcntl.flock (Unix) con fallback su file lock O_EXCL.
++        """
++        lock_path = self.registry_path.with_name(self.registry_path.name + ".lock")
++        lock_path.parent.mkdir(parents=True, exist_ok=True)
++        if fcntl is not None:
++            fd = os.open(str(lock_path), os.O_CREAT | os.O_RDWR, 0o600)
++            try:
++                fcntl.flock(fd, fcntl.LOCK_EX)
++                yield
++            finally:
++                try:
++                    fcntl.flock(fd, fcntl.LOCK_UN)
++                finally:
++                    os.close(fd)
++        else:
++            deadline = time.monotonic() + timeout_seconds
++            while True:
++                try:
++                    fd = os.open(str(lock_path), os.O_CREAT | os.O_EXCL | os.O_WRONLY, 0o600)
++                    os.close(fd)
++                    break
++                except FileExistsError:
++                    if time.monotonic() >= deadline:
++                        raise TimeoutError(f"Timeout acquisizione lock su {lock_path}")
++                    time.sleep(0.01)
++            try:
++                yield
++            finally:
++                try:
++                    os.unlink(str(lock_path))
++                except FileNotFoundError:
++                    pass
 +
-+    def _ensure_registry_exists(self):
++    @staticmethod
++    def _default_registry_data() -> Dict[str, Any]:
++        return {
++            "protocol": "TRIAL_REGISTRY_V2",
++            "epistemic_type": "REGOLA",
++            "condition_h": "{H_trial_counter_integro}",
++            "total_trials": 0,
++            "trials": [],
++        }
++
++    def _read_or_init_unlocked(self, create_if_missing: bool) -> Dict[str, Any]:
 +        if not self.registry_path.exists():
-+            self.registry_path.parent.mkdir(parents=True, exist_ok=True)
-+            initial_data = {
-+                "protocol": "TRIAL_REGISTRY_V2",
-+                "epistemic_type": "REGOLA",
-+                "condition_h": "{H_trial_counter_integro}",
-+                "total_trials": 0,
-+                "trials": [],
-+            }
-+            with open(self.registry_path, "w", encoding="utf-8") as f:
-+                json.dump(initial_data, f, indent=2)
++            data = self._default_registry_data()
++            if create_if_missing and not self.readonly:
++                self.registry_path.parent.mkdir(parents=True, exist_ok=True)
++                self._write_atomic_unlocked(data)
++            return data
++        with open(self.registry_path, "r", encoding="utf-8") as f:
++            return json.load(f)
 +
-+    def register_trial(
-+        self,
++    def _write_atomic_unlocked(self, data: Dict[str, Any]) -> None:
++        self.registry_path.parent.mkdir(parents=True, exist_ok=True)
++        tmp_path = self.registry_path.with_name(f".{self.registry_path.name}.{os.getpid()}.tmp")
++        with open(tmp_path, "w", encoding="utf-8") as f:
++            json.dump(data, f, indent=2)
++            f.flush()
++            os.fsync(f.fileno())
++        os.replace(str(tmp_path), str(self.registry_path))
++
++    @staticmethod
++    def _build_record(
++        trial_id: int,
 +        strategy_name: str,
 +        parameters: Dict[str, Any],
 +        metrics: Dict[str, Any],
-+    ) -> int:
-+        with open(self.registry_path, "r", encoding="utf-8") as f:
-+            data = json.load(f)
-+
-+        data["total_trials"] += 1
-+        n = data["total_trials"]
-+
++    ) -> Dict[str, Any]:
 +        sr_val = metrics.get("sharpe_ratio")
 +        dsr_val = metrics.get("deflated_sharpe_ratio")
-+
-+        record = {
-+            "trial_id": n,
++        return {
++            "trial_id": trial_id,
 +            "timestamp_utc": datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
 +            "strategy_name": strategy_name,
 +            "parameters": {k: str(v) if isinstance(v, Decimal) else v for k, v in parameters.items()},
@@ -2529,17 +2921,34 @@ index 0000000..a739f41
 +            "deflated_sharpe_ratio": str(dsr_val.valore) if (isinstance(dsr_val, Valore) and dsr_val.valore is not None) else None,
 +            "total_trades": metrics.get("total_trades", 0),
 +        }
-+        data["trials"].append(record)
 +
-+        with open(self.registry_path, "w", encoding="utf-8") as f:
-+            json.dump(data, f, indent=2)
-+
-+        return n
++    def register_trial(
++        self,
++        strategy_name: str,
++        parameters: Dict[str, Any],
++        metrics: Dict[str, Any],
++    ) -> int:
++        if self.readonly:
++            raise PermissionError("Impossibile registrare trial in modalita' readonly (dry_run=True).")
++        with self._exclusive_lock():
++            data = self._read_or_init_unlocked(create_if_missing=True)
++            data["total_trials"] += 1
++            n = data["total_trials"]
++            record = self._build_record(n, strategy_name, parameters, metrics)
++            data["trials"].append(record)
++            self._write_atomic_unlocked(data)
++            return n
 +
 +    def get_total_trials(self) -> int:
-+        with open(self.registry_path, "r", encoding="utf-8") as f:
-+            data = json.load(f)
-+        return data["total_trials"]
++        if not self.registry_path.exists():
++            return 0
++        if self.readonly:
++            with open(self.registry_path, "r", encoding="utf-8") as f:
++                data = json.load(f)
++            return int(data.get("total_trials", 0))
++        with self._exclusive_lock():
++            data = self._read_or_init_unlocked(create_if_missing=False)
++            return int(data.get("total_trials", 0))
 +
 +    @staticmethod
 +    def calculate_dsr_analytical(
@@ -2549,12 +2958,13 @@ index 0000000..a739f41
 +        skewness: float = 0.0,
 +        kurtosis: float = 3.0,
 +        benchmark_sharpe: float = 0.0,
-+    ) -> Tuple[float, float]:
++    ) -> Tuple[Optional[float], Optional[float]]:
 +        """
-+        Restituisce (dsr_probability, std_error_sr).
++        Restituisce (dsr_probability, std_error_sr), oppure (None, None) in caso patologico
++        (es. variance_term <= 0 o track_record_length <= 1).
 +        """
 +        if track_record_length <= 1:
-+            return 0.0, 1.0
++            return None, None
 +
 +        if num_trials <= 1:
 +            sr_star = benchmark_sharpe
@@ -2566,11 +2976,11 @@ index 0000000..a739f41
 +        sr = sharpe_estimated
 +        variance_term = 1.0 - (skewness * sr) + (((kurtosis - 1.0) / 4.0) * (sr ** 2))
 +        if variance_term <= 0:
-+            variance_term = 1e-6
++            return None, None
 +        std_sr = math.sqrt(variance_term / (track_record_length - 1))
 +
 +        if std_sr <= 0:
-+            return 0.0, 1.0
++            return None, None
 +
 +        z_stat = (sr - sr_star) / std_sr
 +        dsr_prob = 0.5 * (1.0 + math.erf(z_stat / math.sqrt(2.0)))
@@ -2587,8 +2997,9 @@ index 0000000..a739f41
 +    ) -> Dict[str, Any]:
 +        """
 +        Valuta il portafoglio.
-+        Se total_trades < 30 o varianza nulla, restituisce Valore con incertezza NON STIMABILE.
-+        Registra automaticamente in trial_registry.json salvo dry_run=True.
++        Se total_trades < 30, varianza nulla o variance_term <= 0, restituisce Valore con incertezza NON STIMABILE.
++        Con dry_run=True e' readonly (non crea ne' scrive trial_registry.json) e conta N = total_trials + 1.
++        Con dry_run=False legge N, calcola DSR e registra il trial atomicamente sotto lock esclusivo.
 +        """
 +        trades = portfolio.trade_history
 +        t_len = len(trades)
@@ -2608,154 +3019,134 @@ index 0000000..a739f41
 +            Decimal("999.00") if sum_wins > Decimal("0") else Decimal("0.00")
 +        )
 +
-+        calc = cls(registry_path=registry_path)
++        calc = cls(registry_path=registry_path, readonly=dry_run)
 +
-+        # Controllo rigore inferenziale: Minimo 30 trade per validità statistica
-+        if t_len < 30:
-+            sharpe_valore = Valore(
-+                valore=None,
-+                unita="",
-+                tipo="STIMA",
-+                operazione="inferenza",
-+                fonte="DSRCalculator",
-+                incertezza=NON_STIMABILE,
-+                nota=f"Campione insufficiente ({t_len} < 30 trades richiesti per inferenza)",
-+            )
-+            dsr_valore = Valore(
-+                valore=None,
-+                unita="",
-+                tipo="STIMA",
-+                operazione="inferenza",
-+                fonte="DSRCalculator",
-+                incertezza=NON_STIMABILE,
-+                nota=f"Campione insufficiente ({t_len} < 30 trades)",
-+            )
-+            skew_valore = Valore(
-+                valore=None,
-+                unita="",
-+                tipo="STIMA",
-+                operazione="inferenza",
-+                fonte="DSRCalculator",
-+                incertezza=NON_STIMABILE,
-+                nota="Campione insufficiente",
-+            )
-+            kurt_valore = Valore(
-+                valore=None,
-+                unita="",
-+                tipo="STIMA",
-+                operazione="inferenza",
-+                fonte="DSRCalculator",
-+                incertezza=NON_STIMABILE,
-+                nota="Campione insufficiente",
-+            )
-+        else:
-+            # Calcolo momenti su Decimal convertendo a float solo per funzioni trascendenti
++        def _build_inferential_metrics(num_trials: int) -> Tuple[Valore, Valore, Valore, Valore]:
++            if t_len < 30:
++                return (
++                    Valore(
++                        valore=None, unita="", tipo="STIMA", operazione="inferenza",
++                        fonte="DSRCalculator", incertezza=NON_STIMABILE,
++                        nota=f"Campione insufficiente ({t_len} < 30 trades richiesti per inferenza)",
++                    ),
++                    Valore(
++                        valore=None, unita="", tipo="STIMA", operazione="inferenza",
++                        fonte="DSRCalculator", incertezza=NON_STIMABILE,
++                        nota=f"Campione insufficiente ({t_len} < 30 trades)",
++                    ),
++                    Valore(
++                        valore=None, unita="", tipo="STIMA", operazione="inferenza",
++                        fonte="DSRCalculator", incertezza=NON_STIMABILE,
++                        nota="Campione insufficiente",
++                    ),
++                    Valore(
++                        valore=None, unita="", tipo="STIMA", operazione="inferenza",
++                        fonte="DSRCalculator", incertezza=NON_STIMABILE,
++                        nota="Campione insufficiente",
++                    ),
++                )
++
 +            mean_pnl = sum(net_pnls_dec, Decimal("0.00")) / Decimal(t_len)
 +            diffs_sq = [(x - mean_pnl) ** 2 for x in net_pnls_dec]
 +            var_pnl = sum(diffs_sq, Decimal("0.00")) / Decimal(t_len - 1)
 +
 +            if var_pnl <= Decimal("0"):
-+                sharpe_valore = Valore(
-+                    valore=None,
-+                    unita="",
-+                    tipo="STIMA",
-+                    operazione="inferenza",
-+                    fonte="DSRCalculator",
-+                    incertezza=NON_STIMABILE,
-+                    nota="Varianza nulla nei rendimenti",
++                return (
++                    Valore(valore=None, unita="", tipo="STIMA", operazione="inferenza", fonte="DSRCalculator", incertezza=NON_STIMABILE, nota="Varianza nulla nei rendimenti"),
++                    Valore(valore=None, unita="", tipo="STIMA", operazione="inferenza", fonte="DSRCalculator", incertezza=NON_STIMABILE, nota="Varianza nulla nei rendimenti"),
++                    Valore(valore=None, unita="", tipo="STIMA", operazione="inferenza", fonte="DSRCalculator", incertezza=NON_STIMABILE),
++                    Valore(valore=None, unita="", tipo="STIMA", operazione="inferenza", fonte="DSRCalculator", incertezza=NON_STIMABILE),
 +                )
-+                dsr_valore = Valore(
++
++            std_pnl = Decimal(str(math.sqrt(float(var_pnl))))
++            sharpe_float = float(mean_pnl / std_pnl)
++            diffs_norm = [float((x - mean_pnl) / std_pnl) for x in net_pnls_dec]
++            skew_float = sum(x ** 3 for x in diffs_norm) / t_len
++            kurt_float = sum(x ** 4 for x in diffs_norm) / t_len
++
++            dsr_float, std_sr = cls.calculate_dsr_analytical(
++                sharpe_estimated=sharpe_float,
++                num_trials=max(1, num_trials),
++                track_record_length=t_len,
++                skewness=skew_float,
++                kurtosis=kurt_float,
++            )
++
++            skew_v = Valore(
++                valore=Decimal(str(round(skew_float, 4))),
++                unita="", tipo="STIMA", operazione="inferenza", fonte="DSRCalculator",
++                incertezza=f"+/-{round(math.sqrt(6.0 / t_len), 4)}",
++            )
++            kurt_v = Valore(
++                valore=Decimal(str(round(kurt_float, 4))),
++                unita="", tipo="STIMA", operazione="inferenza", fonte="DSRCalculator",
++                incertezza=f"+/-{round(math.sqrt(24.0 / t_len), 4)}",
++            )
++
++            if dsr_float is None or std_sr is None:
++                sharpe_v = Valore(
 +                    valore=None,
-+                    unita="",
-+                    tipo="STIMA",
-+                    operazione="inferenza",
-+                    fonte="DSRCalculator",
++                    unita="", tipo="STIMA", operazione="inferenza", fonte="DSRCalculator",
 +                    incertezza=NON_STIMABILE,
-+                    nota="Varianza nulla nei rendimenti",
++                    nota="Errore standard SR non stimabile (variance_term <= 0)",
 +                )
-+                skew_valore = Valore(valore=None, unita="", tipo="STIMA", operazione="inferenza", fonte="DSRCalculator", incertezza=NON_STIMABILE)
-+                kurt_valore = Valore(valore=None, unita="", tipo="STIMA", operazione="inferenza", fonte="DSRCalculator", incertezza=NON_STIMABILE)
++                dsr_v = Valore(
++                    valore=None, unita="", tipo="STIMA", operazione="inferenza", fonte="DSRCalculator",
++                    incertezza=NON_STIMABILE,
++                    nota="Varianza stimatore DSR patologica (variance_term <= 0)",
++                )
 +            else:
-+                std_pnl = Decimal(str(math.sqrt(float(var_pnl))))
-+                sharpe_float = float(mean_pnl / std_pnl)
-+
-+                diffs_norm = [float((x - mean_pnl) / std_pnl) for x in net_pnls_dec]
-+                skew_float = sum(x ** 3 for x in diffs_norm) / t_len
-+                kurt_float = sum(x ** 4 for x in diffs_norm) / t_len
-+
-+                trials = calc.get_total_trials() + (0 if dry_run else 1)
-+                dsr_float, std_sr = cls.calculate_dsr_analytical(
-+                    sharpe_estimated=sharpe_float,
-+                    num_trials=max(1, trials),
-+                    track_record_length=t_len,
-+                    skewness=skew_float,
-+                    kurtosis=kurt_float,
-+                )
-+
-+                sharpe_valore = Valore(
++                sharpe_v = Valore(
 +                    valore=Decimal(str(round(sharpe_float, 4))),
-+                    unita="",
-+                    tipo="STIMA",
-+                    operazione="inferenza",
-+                    fonte="DSRCalculator",
++                    unita="", tipo="STIMA", operazione="inferenza", fonte="DSRCalculator",
 +                    incertezza=f"+/-{round(std_sr, 4)}",
 +                    nota="Sharpe stimato su PnL netto",
 +                )
-+                dsr_valore = Valore(
++                dsr_v = Valore(
 +                    valore=Decimal(str(round(dsr_float, 6))),
-+                    unita="",
-+                    tipo="STIMA",
-+                    operazione="inferenza",
-+                    fonte="DSRCalculator",
++                    unita="", tipo="STIMA", operazione="inferenza", fonte="DSRCalculator",
 +                    incertezza=f"+/-{round(std_sr, 4)}",
-+                    nota=f"Deflated Sharpe Ratio (N={max(1, trials)} trials)",
++                    nota=f"Deflated Sharpe Ratio (N={max(1, num_trials)} trials)",
 +                )
-+                skew_valore = Valore(
-+                    valore=Decimal(str(round(skew_float, 4))),
-+                    unita="",
-+                    tipo="STIMA",
-+                    operazione="inferenza",
-+                    fonte="DSRCalculator",
-+                    incertezza=f"+/-{round(math.sqrt(6.0 / t_len), 4)}",
-+                )
-+                kurt_valore = Valore(
-+                    valore=Decimal(str(round(kurt_float, 4))),
-+                    unita="",
-+                    tipo="STIMA",
-+                    operazione="inferenza",
-+                    fonte="DSRCalculator",
-+                    incertezza=f"+/-{round(math.sqrt(24.0 / t_len), 4)}",
-+                )
++            return sharpe_v, dsr_v, skew_v, kurt_v
 +
-+        results = {
-+            "total_trades": t_len,
-+            "gross_pnl": gross_pnl_dec,
-+            "net_pnl": net_pnl_dec,
-+            "win_rate": win_rate_dec,
-+            "profit_factor": profit_factor_dec,
-+            "sharpe_ratio": sharpe_valore,
-+            "deflated_sharpe_ratio": dsr_valore,
-+            "skewness": skew_valore,
-+            "kurtosis": kurt_valore,
-+            "max_drawdown_close": portfolio.max_drawdown_close,
-+            "max_drawdown_intrabar": portfolio.max_drawdown_intrabar,
-+        }
++        def _assemble_results(sr_v: Valore, dsr_v: Valore, skew_v: Valore, kurt_v: Valore) -> Dict[str, Any]:
++            return {
++                "total_trades": t_len,
++                "gross_pnl": gross_pnl_dec,
++                "net_pnl": net_pnl_dec,
++                "win_rate": win_rate_dec,
++                "profit_factor": profit_factor_dec,
++                "sharpe_ratio": sr_v,
++                "deflated_sharpe_ratio": dsr_v,
++                "skewness": skew_v,
++                "kurtosis": kurt_v,
++                "max_drawdown_close": portfolio.max_drawdown_close,
++                "max_drawdown_intrabar": portfolio.max_drawdown_intrabar,
++            }
 +
-+        # Registrazione automatica nel trial registry
-+        if not dry_run:
-+            calc.register_trial(
-+                strategy_name=strategy_name,
-+                parameters=parameters,
-+                metrics=results,
-+            )
++        if dry_run:
++            # Readonly: non crea ne' modifica trial_registry.json, usa N = total_trials + 1
++            trials = calc.get_total_trials() + 1
++            sr_v, dsr_v, skew_v, kurt_v = _build_inferential_metrics(trials)
++            return _assemble_results(sr_v, dsr_v, skew_v, kurt_v)
 +
-+        return results
++        # Operazione atomica sotto lock esclusivo: lettura N, calcolo DSR, incremento e scrittura
++        with calc._exclusive_lock():
++            data = calc._read_or_init_unlocked(create_if_missing=True)
++            trials = int(data.get("total_trials", 0)) + 1
++            sr_v, dsr_v, skew_v, kurt_v = _build_inferential_metrics(trials)
++            results = _assemble_results(sr_v, dsr_v, skew_v, kurt_v)
++            data["total_trials"] = trials
++            data["trials"].append(calc._build_record(trials, strategy_name, parameters, results))
++            calc._write_atomic_unlocked(data)
++            return results
 diff --git a/brain/laboratorio/backtester/engine.py b/brain/laboratorio/backtester/engine.py
 new file mode 100644
-index 0000000..402a920
+index 0000000..084c430
 --- /dev/null
 +++ b/brain/laboratorio/backtester/engine.py
-@@ -0,0 +1,360 @@
+@@ -0,0 +1,377 @@
 +"""
 +Motore di Backtest Strictly Event-Driven.
 +Architettura Rigorosa:
@@ -2906,6 +3297,10 @@ index 0000000..402a920
 +        # =============================================================================
 +        self._force_close_at_end_of_data(data_feed[-1])
 +
++        if self.pending_orders:
++            self.portfolio.discarded_end_of_data_orders.extend(self.pending_orders)
++            self.pending_orders.clear()
++
 +        self.is_running = False
 +        return self.portfolio
 +
@@ -2976,12 +3371,19 @@ index 0000000..402a920
 +        self.pending_orders.clear()
 +
 +        for order in orders_to_execute:
-+            # Controllo rigoroso del timestamp target di esecuzione
-+            if order.target_bar_open_time != bar.open_time:
++            # Controllo anti-lookahead su gap di sessione / weekend (CRITICO-2)
++            if bar.open_time < order.target_bar_open_time:
 +                raise LookAheadViolationError(
 +                    f"Violazione Esecutiva: L'ordine pendente richiedeva esecuzione a {order.target_bar_open_time.isoformat()} "
-+                    f"ma la barra corrente apre a {bar.open_time.isoformat()}."
++                    f"ma la barra corrente apre prima ({bar.open_time.isoformat()})."
 +                )
++
++            is_session_gap = bar.open_time > order.target_bar_open_time
++            session_gap_delay = (
++                int((bar.open_time - order.target_bar_open_time).total_seconds())
++                if is_session_gap
++                else 0
++            )
 +
 +            # Regola reduce_only: se l'ordine ha reduce_only=True e la posizione è già stata chiusa
 +            # (es. in Fase 1.A per GAP_STOP_LOSS o GAP_TAKE_PROFIT) oppure non è nella direzione da ridurre,
@@ -3001,6 +3403,15 @@ index 0000000..402a920
 +                self.slippage_points, order.quantity, bar.open
 +            )
 +
++            fill_meta = {
++                "stop_loss": order.stop_loss,
++                "take_profit": order.take_profit,
++                "reduce_only": order.reduce_only,
++                "is_session_gap": is_session_gap,
++            }
++            if is_session_gap:
++                fill_meta["session_gap_delay_seconds"] = session_gap_delay
++
 +            fill = FillEvent(
 +                timestamp=bar.open_time,
 +                symbol=order.symbol,
@@ -3010,11 +3421,7 @@ index 0000000..402a920
 +                commission=self.fixed_commission,
 +                spread_cost=spread_cost,
 +                slippage=slippage_cost,
-+                metadata={
-+                    "stop_loss": order.stop_loss,
-+                    "take_profit": order.take_profit,
-+                    "reduce_only": order.reduce_only,
-+                },
++                metadata=fill_meta,
 +            )
 +            self.portfolio.on_fill(fill)
 +
@@ -3083,6 +3490,7 @@ index 0000000..402a920
 +                metadata={
 +                    "exit_reason": exit_reason,
 +                    "is_ambiguous_intrabar": is_ambiguous,
++                    "fill_timing": "intrabar_close_assumed",
 +                    "condizioni": ["{H_intrabar_worst_case}"] if is_ambiguous else [],
 +                },
 +            )
@@ -3118,10 +3526,10 @@ index 0000000..402a920
 +        self.portfolio.on_fill(fill)
 diff --git a/brain/laboratorio/backtester/events.py b/brain/laboratorio/backtester/events.py
 new file mode 100644
-index 0000000..bc8eb87
+index 0000000..2c651f6
 --- /dev/null
 +++ b/brain/laboratorio/backtester/events.py
-@@ -0,0 +1,114 @@
+@@ -0,0 +1,115 @@
 +"""
 +Eventi e Strutture Dati per il Backtester Event-Driven.
 +Tutti i valori monetari, quantita' e prezzi sono gestiti in Decimal.
@@ -3235,13 +3643,14 @@ index 0000000..bc8eb87
 +    exit_reason: str
 +    is_gap_slippage: bool = False
 +    is_ambiguous_intrabar: bool = False
++    fill_timing: str = "standard"
 +    condizioni: FrozenSet[str] = field(default_factory=frozenset)
 diff --git a/brain/laboratorio/backtester/portfolio.py b/brain/laboratorio/backtester/portfolio.py
 new file mode 100644
-index 0000000..e31943c
+index 0000000..e3e1601
 --- /dev/null
 +++ b/brain/laboratorio/backtester/portfolio.py
-@@ -0,0 +1,232 @@
+@@ -0,0 +1,250 @@
 +"""
 +Gestione Portafoglio ed Equity per il Backtester Event-Driven.
 +Accounting Istituzionale Rigoroso integrato con Strumento e Valore:
@@ -3258,7 +3667,7 @@ index 0000000..e31943c
 +
 +from brain.guardian.g0.valori import Valore, misura, combina, NON_STIMABILE, ESATTO
 +from brain.guardian.g0.strumenti import Strumento
-+from .events import Position, PositionType, Direction, FillEvent, TradeRecord
++from .events import Position, PositionType, Direction, FillEvent, OrderEvent, TradeRecord
 +
 +
 +class Portfolio:
@@ -3277,7 +3686,9 @@ index 0000000..e31943c
 +        self.cambio_valuta: Optional[Decimal] = cambio_valuta
 +
 +        self.positions: Dict[str, Position] = {}
++        self.fill_history: List[FillEvent] = []
 +        self.trade_history: List[TradeRecord] = []
++        self.discarded_end_of_data_orders: List[OrderEvent] = []
 +        self.equity_curve_close: List[Tuple[datetime, Decimal]] = []
 +        self.equity_curve_intrabar: List[Tuple[datetime, Decimal]] = []
 +
@@ -3362,6 +3773,7 @@ index 0000000..e31943c
 +        pos = self.positions.get(self.strumento.simbolo)
 +        if pos is None:
 +            eq_close = self.cash
++            eq_best_intrabar = self.cash
 +            eq_worst_intrabar = self.cash
 +        else:
 +            # Equity al close
@@ -3370,11 +3782,19 @@ index 0000000..e31943c
 +            )
 +            eq_close = self.cash + unrealized_close
 +
-+            # Worst-case intrabarra: Low per Long, High per Short, sottraendo i costi stimati di uscita
++            # Best-case intrabarra: High per Long, Low per Short (senza sottrarre costi uscita latenti)
++            # Worst-case intrabarra: Low per Long, High per Short (sottraendo i costi stimati di uscita)
 +            if pos.position_type == PositionType.LONG:
++                best_price = bar_high
 +                worst_price = bar_low
 +            else:
++                best_price = bar_low
 +                worst_price = bar_high
++
++            unrealized_best = self.calcola_pnl_monetario(
++                pos.position_type, pos.entry_price, best_price, pos.quantity
++            )
++            eq_best_intrabar = self.cash + unrealized_best
 +
 +            unrealized_worst = self.calcola_pnl_monetario(
 +                pos.position_type, pos.entry_price, worst_price, pos.quantity
@@ -3392,9 +3812,9 @@ index 0000000..e31943c
 +        if dd_close > self.max_drawdown_close:
 +            self.max_drawdown_close = dd_close
 +
-+        # Max Drawdown Intrabar
-+        if eq_close > self.peak_equity_intrabar:
-+            self.peak_equity_intrabar = eq_close
++        # Max Drawdown Intrabar (picco vero su eq_best_intrabar)
++        if eq_best_intrabar > self.peak_equity_intrabar:
++            self.peak_equity_intrabar = eq_best_intrabar
 +        dd_intrabar = self.peak_equity_intrabar - eq_worst_intrabar
 +        if dd_intrabar > self.max_drawdown_intrabar:
 +            self.max_drawdown_intrabar = dd_intrabar
@@ -3408,6 +3828,17 @@ index 0000000..e31943c
 +        # Regola reduce_only a livello di portafoglio: se non esiste posizione, non può aprire a mercato
 +        if existing is None and fill.metadata.get("reduce_only", False):
 +            return None
++
++        # ALTO-2: Verifica supporto operazione (piramidazione non supportata) PRIMA di modificare self.cash
++        if existing is not None:
++            is_closing = (
++                (existing.position_type == PositionType.LONG and fill.direction == Direction.SELL)
++                or (existing.position_type == PositionType.SHORT and fill.direction == Direction.BUY)
++            )
++            if not is_closing:
++                raise NotImplementedError("Piramidazione posizioni non supportata.")
++
++        self.fill_history.append(fill)
 +
 +        # Deduce costi della leg corrente
 +        leg_friction = fill.commission + fill.spread_cost + fill.slippage
@@ -3432,62 +3863,62 @@ index 0000000..e31943c
 +            )
 +        else:
 +            # Chiusura posizione esistente
-+            if (existing.position_type == PositionType.LONG and fill.direction == Direction.SELL) or \
-+               (existing.position_type == PositionType.SHORT and fill.direction == Direction.BUY):
-+                
-+                gross_pnl = self.calcola_pnl_monetario(
-+                    existing.position_type, existing.entry_price, fill.fill_price, existing.quantity
-+                )
++            gross_pnl = self.calcola_pnl_monetario(
++                existing.position_type, existing.entry_price, fill.fill_price, existing.quantity
++            )
 +
-+                total_comm = existing.entry_commission + fill.commission
-+                total_spread = existing.entry_spread + fill.spread_cost
-+                total_slip = existing.entry_slippage + fill.slippage
-+                net_pnl = gross_pnl - total_comm - total_spread - total_slip
++            total_comm = existing.entry_commission + fill.commission
++            total_spread = existing.entry_spread + fill.spread_cost
++            total_slip = existing.entry_slippage + fill.slippage
++            net_pnl = gross_pnl - total_comm - total_spread - total_slip
 +
-+                self.cash += gross_pnl
++            self.cash += gross_pnl
 +
-+                condizioni = set(fill.metadata.get("condizioni", []))
-+                if fill.metadata.get("is_ambiguous_intrabar", False):
-+                    condizioni.add("{H_intrabar_worst_case}")
++            condizioni = set(fill.metadata.get("condizioni", []))
++            if fill.metadata.get("is_ambiguous_intrabar", False):
++                condizioni.add("{H_intrabar_worst_case}")
 +
-+                trade_record = TradeRecord(
-+                    symbol=fill.symbol,
-+                    direction=Direction.BUY if existing.position_type == PositionType.LONG else Direction.SELL,
-+                    quantity=existing.quantity,
-+                    entry_time=existing.entry_time,
-+                    entry_price=existing.entry_price,
-+                    exit_time=fill.timestamp,
-+                    exit_price=fill.fill_price,
-+                    gross_pnl=gross_pnl,
-+                    net_pnl=net_pnl,
-+                    total_commission=total_comm,
-+                    total_spread_cost=total_spread,
-+                    total_slippage=total_slip,
-+                    exit_reason=fill.metadata.get("exit_reason", "SIGNAL"),
-+                    is_gap_slippage=fill.is_gap_slippage,
-+                    is_ambiguous_intrabar=fill.metadata.get("is_ambiguous_intrabar", False),
-+                    condizioni=frozenset(condizioni),
-+                )
-+                self.trade_history.append(trade_record)
-+                del self.positions[fill.symbol]
-+            else:
-+                raise NotImplementedError("Piramidazione posizioni non supportata.")
++            trade_record = TradeRecord(
++                symbol=fill.symbol,
++                direction=Direction.BUY if existing.position_type == PositionType.LONG else Direction.SELL,
++                quantity=existing.quantity,
++                entry_time=existing.entry_time,
++                entry_price=existing.entry_price,
++                exit_time=fill.timestamp,
++                exit_price=fill.fill_price,
++                gross_pnl=gross_pnl,
++                net_pnl=net_pnl,
++                total_commission=total_comm,
++                total_spread_cost=total_spread,
++                total_slippage=total_slip,
++                exit_reason=fill.metadata.get("exit_reason", "SIGNAL"),
++                is_gap_slippage=fill.is_gap_slippage,
++                is_ambiguous_intrabar=fill.metadata.get("is_ambiguous_intrabar", False),
++                fill_timing=fill.metadata.get("fill_timing", "standard"),
++                condizioni=frozenset(condizioni),
++            )
++            self.trade_history.append(trade_record)
++            del self.positions[fill.symbol]
 +
 +        return trade_record
 diff --git a/brain/laboratorio/tests/mutazioni_lab.py b/brain/laboratorio/tests/mutazioni_lab.py
 new file mode 100644
-index 0000000..20e693d
+index 0000000..3afdb5c
 --- /dev/null
 +++ b/brain/laboratorio/tests/mutazioni_lab.py
-@@ -0,0 +1,343 @@
+@@ -0,0 +1,491 @@
 +"""
 +Framework di Mutation Testing Spietato per il Binario B (Pipeline + Backtester + DSR).
-+Genera 20 mutanti non equivalenti che alterano la logica critica.
-+Esegue la suite di test contro ciascun mutante e dimostra che il 100% dei mutanti viene UCCISO (20/20).
++Genera 29 mutanti non equivalenti che alterano la logica critica (inclusa la bonifica Red Team).
++Esegue la suite di verifiche contro ciascun mutante e dimostra che il 100% dei mutanti viene UCCISO (29/29).
 +"""
 +
 +import copy
++import json
++import multiprocessing
++import shutil
 +import sys
++import tempfile
 +import unittest
 +from decimal import Decimal
 +from datetime import datetime, timezone, timedelta
@@ -3513,6 +3944,7 @@ index 0000000..20e693d
 +    LookAheadViolationError,
 +    DSRCalculator,
 +)
++from brain.laboratorio.tests.test_backtester import _worker_register_trial
 +
 +
 +def run_test_case(test_class, test_method_name) -> bool:
@@ -3549,6 +3981,14 @@ index 0000000..20e693d
 +            ("M19_dsr_return_float_zero_when_few_trades", "Restituisce float 0.0 invece di Valore NON STIMABILE con <30 trade"),
 +            ("M20_dsr_ignore_multiple_trials", "Ignora il contatore N in DSR forzando N=1"),
 +            ("M21_disable_reduce_only_guard", "Disabilita lo scarto dell'ordine reduce_only quando la posizione e' gia' chiusa"),
++            ("M22_peak_equity_intrabar_ignores_high", "Aggiorna peak_equity_intrabar con eq_close invece del picco intrabarra reale"),
++            ("M23_weekend_gap_raises_lookahead", "Fa fallire i gap di sessione/weekend invece di eseguire ad Open(t) con flag is_session_gap"),
++            ("M24_split_drops_boundary_candle", "Scarta le candele a cavallo di split_time in DatasetPartitioner.split"),
++            ("M25_reject_z_and_nan_candle", "Rifiuta ISO 8601 con suffisso Z o accetta Decimal NaN in Candle"),
++            ("M26_pyramiding_corrupts_cash", "Deduce leg_friction da cash prima di sollevare NotImplementedError sul pyramiding"),
++            ("M27_dsr_concurrent_race_condition", "Omette locking esclusivo causando perdita di trial concorrenti nel registry"),
++            ("M28_dsr_dry_run_writes_disk_or_wrong_n", "Crea/scrive trial_registry.json su disco anche con dry_run=True"),
++            ("M29_dsr_masks_pathological_variance", "Maschera variance_term <= 0 con clamp 1e-6 invece di restituire NON_STIMABILE"),
 +        ]
 +
 +    def test_m01(self) -> bool:
@@ -3786,6 +4226,141 @@ index 0000000..20e693d
 +        p = eng.run(bars, strat)
 +        return len(p.positions) == 0 and len(p.trade_history) == 1 and p.trade_history[0].exit_reason == "GAP_STOP_LOSS"
 +
++    def test_m22(self) -> bool:
++        """Mutante M22 (CRITICO-1): peak_equity_intrabar deve tracciare il vero picco intrabarra (High per Long)."""
++        s_fx = Strumento(
++            simbolo="EURUSD", classe="fx", valuta_base="EUR", valuta_profitto="USD",
++            dimensione_contratto=Decimal("100000"), fonte="test",
++        )
++        bars = [
++            Candle("EURUSD", "1H", self.t0, self.t0 + timedelta(hours=1),
++                   Decimal("1.08000"), Decimal("1.08050"), Decimal("1.07950"), Decimal("1.08000"), Decimal("100")),
++            Candle("EURUSD", "1H", self.t0 + timedelta(hours=1), self.t0 + timedelta(hours=2),
++                   Decimal("1.08000"), Decimal("1.09000"), Decimal("1.07500"), Decimal("1.08000"), Decimal("100")),
++        ]
++        def strat(bar, p, eng):
++            if eng.current_bar_index == 0:
++                return SignalEvent(bar.close_time, "EURUSD", Direction.BUY, Decimal("1.00"))
++            return None
++
++        eng = EventDrivenBacktester(s_fx, "USD", Decimal("100000.00"), Decimal("0.00010"), Decimal("2.50"), Decimal("0.00005"))
++        p = eng.run(bars, strat)
++        return p.peak_equity_intrabar == Decimal("100987.50") and p.max_drawdown_intrabar == Decimal("1512.50")
++
++    def test_m23(self) -> bool:
++        """Mutante M23 (CRITICO-2): Gap di weekend/sessione eseguito ad Open(t) con is_session_gap=True."""
++        s_fx = Strumento(
++            simbolo="EURUSD", classe="fx", valuta_base="EUR", valuta_profitto="USD",
++            dimensione_contratto=Decimal("100000"), fonte="test",
++        )
++        t_fri = datetime(2026, 1, 2, 21, 0, tzinfo=timezone.utc)
++        t_mon = datetime(2026, 1, 5, 0, 0, tzinfo=timezone.utc)
++        bars = [
++            Candle("EURUSD", "1H", t_fri, t_fri + timedelta(hours=1),
++                   Decimal("1.08000"), Decimal("1.08100"), Decimal("1.07900"), Decimal("1.08000"), Decimal("100")),
++            Candle("EURUSD", "1H", t_mon, t_mon + timedelta(hours=1),
++                   Decimal("1.08200"), Decimal("1.08300"), Decimal("1.08100"), Decimal("1.08250"), Decimal("100")),
++        ]
++        def strat(bar, p, eng):
++            if eng.current_bar_index == 0:
++                return SignalEvent(bar.close_time, "EURUSD", Direction.BUY, Decimal("1.00"))
++            return None
++
++        eng = EventDrivenBacktester(s_fx, "USD", Decimal("100000.00"), Decimal("0.00010"), Decimal("2.50"), Decimal("0.00005"))
++        p = eng.run(bars, strat)
++        if len(p.fill_history) < 1:
++            return False
++        return p.fill_history[0].metadata.get("is_session_gap") is True
++
++    def test_m24(self) -> bool:
++        """Mutante M24 (CRITICO-3): Partitioning split non perde alcuna candela a cavallo di split_time."""
++        candles = [
++            Candle("EURUSD", "4H", self.t0 + timedelta(hours=4 * i), self.t0 + timedelta(hours=4 * (i + 1)),
++                   Decimal("1.08"), Decimal("1.09"), Decimal("1.07"), Decimal("1.085"), Decimal("100"))
++            for i in range(4)
++        ]
++        split_time = self.t0 + timedelta(hours=6)  # Taglia in mezzo alla candela [4h, 8h]
++        tmp_dir = Path(tempfile.mkdtemp(prefix="mut_part_"))
++        try:
++            partitioner = DatasetPartitioner()
++            is_p, oos_p, _ = partitioner.split(candles, tmp_dir, split_time=split_time)
++            is_count = len([l for l in is_p.read_text(encoding="utf-8").splitlines() if l.strip()])
++            oos_count = len([l for l in oos_p.read_text(encoding="utf-8").splitlines() if l.strip()])
++            return is_count + oos_count == len(candles)
++        finally:
++            shutil.rmtree(tmp_dir, ignore_errors=True)
++
++    def test_m25(self) -> bool:
++        """Mutante M25 (CRITICO-4 + BASSO-2): Parsing Z accettato e Decimal NaN rifiutato."""
++        try:
++            dt = DataIngestionPipeline._parse_iso_utc("2026-01-01T00:00:00Z")
++            if dt.tzinfo != timezone.utc:
++                return False
++        except Exception:
++            return False
++        try:
++            Candle("EURUSD", "1H", self.t0, self.t0 + timedelta(hours=1),
++                   Decimal("NaN"), Decimal("1.09"), Decimal("1.07"), Decimal("1.08"), Decimal("100"))
++            return False
++        except DataValidationError:
++            return True
++
++    def test_m26(self) -> bool:
++        """Mutante M26 (ALTO-2): NotImplementedError sul pyramiding non altera portfolio.cash."""
++        s_fx = Strumento(
++            simbolo="EURUSD", classe="fx", valuta_base="EUR", valuta_profitto="USD",
++            dimensione_contratto=Decimal("100000"), fonte="test",
++        )
++        p = Portfolio(s_fx, initial_cash=Decimal("100000.00"))
++        p.on_fill(FillEvent(
++            timestamp=self.t0 + timedelta(hours=1), symbol="EURUSD", direction=Direction.BUY,
++            quantity=Decimal("1.00"), fill_price=Decimal("1.08000"),
++            spread_cost=Decimal("10.00"), commission=Decimal("2.50"), slippage=Decimal("5.00"),
++        ))
++        cash_before = p.cash
++        try:
++            p.on_fill(FillEvent(
++                timestamp=self.t0 + timedelta(hours=2), symbol="EURUSD", direction=Direction.BUY,
++                quantity=Decimal("1.00"), fill_price=Decimal("1.08100"),
++                spread_cost=Decimal("10.00"), commission=Decimal("2.50"), slippage=Decimal("5.00"),
++            ))
++            return False
++        except NotImplementedError:
++            return p.cash == cash_before
++
++    def test_m27(self) -> bool:
++        """Mutante M27 (ALTO-3): Locking concorrente DSR preserva tutti i trial senza race condition."""
++        tmp_dir = Path(tempfile.mkdtemp(prefix="mut_dsr_race_"))
++        try:
++            reg_path = tmp_dir / "trial_registry.json"
++            ctx = multiprocessing.get_context("spawn")
++            with ctx.Pool(processes=4) as pool:
++                ids = pool.starmap(_worker_register_trial, [(str(reg_path), i) for i in range(6)])
++            data = json.loads(reg_path.read_text(encoding="utf-8"))
++            return sorted(ids) == list(range(1, 7)) and data["total_trials"] == 6
++        finally:
++            shutil.rmtree(tmp_dir, ignore_errors=True)
++
++    def test_m28(self) -> bool:
++        """Mutante M28 (ALTO-4): evaluate_portfolio(dry_run=True) e' readonly su disco."""
++        s_fx = Strumento(
++            simbolo="EURUSD", classe="fx", valuta_base="EUR", valuta_profitto="USD",
++            dimensione_contratto=Decimal("100000"), fonte="test",
++        )
++        p = Portfolio(s_fx, initial_cash=Decimal("100000.00"))
++        tmp_dir = Path(tempfile.mkdtemp(prefix="mut_dsr_dry_"))
++        try:
++            reg_path = tmp_dir / "absent_registry.json"
++            DSRCalculator.evaluate_portfolio(p, registry_path=reg_path, dry_run=True)
++            return not reg_path.exists()
++        finally:
++            shutil.rmtree(tmp_dir, ignore_errors=True)
++
++    def test_m29(self) -> bool:
++        """Mutante M29 (BASSO-4): variance_term <= 0 in DSR restituisce (None, None) senza clamp 1e-6."""
++        dsr_val, std_sr = DSRCalculator.calculate_dsr_analytical(2.0, 5, 50, skewness=5.0, kurtosis=1.0)
++        return dsr_val is None and std_sr is None
++
 +
 +def run_all_mutations():
 +    engine = MutationTestingEngine()
@@ -3793,7 +4368,7 @@ index 0000000..20e693d
 +    killed = 0
 +
 +    print("================================================================================")
-+    print("SPIETATO MUTATION TESTING ENGINE — BINARIO B (21 MUTANTI NON EQUIVALENTI)")
++    print(f"SPIETATO MUTATION TESTING ENGINE — BINARIO B ({total} MUTANTI NON EQUIVALENTI)")
 +    print("================================================================================")
 +
 +    for idx, (m_id, m_desc) in enumerate(engine.mutants, 1):
@@ -3817,7 +4392,7 @@ index 0000000..20e693d
 +        print(f"ERRORE CRITICO: {total - killed} mutanti sono sopravvissuti!")
 +        sys.exit(1)
 +    else:
-+        print("SUCCESSO TOTALE: 21/21 mutanti non equivalenti rigorosamente abbattuti.")
++        print(f"SUCCESSO TOTALE: {killed}/{total} mutanti non equivalenti rigorosamente abbattuti.")
 +        return 0
 +
 +
@@ -3914,10 +4489,10 @@ index 0000000..4dbbdcb
 +    unittest.main()
 diff --git a/brain/laboratorio/tests/test_backtester.py b/brain/laboratorio/tests/test_backtester.py
 new file mode 100644
-index 0000000..89d4d35
+index 0000000..df5e993
 --- /dev/null
 +++ b/brain/laboratorio/tests/test_backtester.py
-@@ -0,0 +1,593 @@
+@@ -0,0 +1,799 @@
 +"""
 +Suite di Test per il Backtester Strictly Event-Driven e Deflated Sharpe Ratio.
 +Verifiche Zero-Trust e Regola Zero-Parametri-Nulli:
@@ -3929,6 +4504,8 @@ index 0000000..89d4d35
 +6. DSR restituisce Valore con incertezza NON STIMABILE se < 30 trades.
 +"""
 +
++import json
++import multiprocessing
 +import sys
 +import unittest
 +import tempfile
@@ -3948,10 +4525,20 @@ index 0000000..89d4d35
 +    EventDrivenBacktester,
 +    Portfolio,
 +    SignalEvent,
++    FillEvent,
 +    Direction,
 +    LookAheadViolationError,
 +    DSRCalculator,
 +)
++
++
++def _worker_register_trial(reg_path_str: str, worker_id: int) -> int:
++    calc = DSRCalculator(registry_path=Path(reg_path_str))
++    return calc.register_trial(
++        strategy_name=f"Concurrent_{worker_id}",
++        parameters={"w": worker_id},
++        metrics={"total_trades": 30},
++    )
 +
 +
 +class TestEventDrivenBacktesterZeroTrust(unittest.TestCase):
@@ -4507,6 +5094,200 @@ index 0000000..89d4d35
 +        t = portfolio.trade_history[0]
 +        self.assertEqual(t.exit_reason, "GAP_STOP_LOSS")
 +        self.assertEqual(t.exit_price, Decimal("1.07000"))
++
++    def test_08_intrabar_peak_equity_tracks_bar_high_low_not_close(self):
++        """RED TEAM CRITICO-1: peak_equity_intrabar deve tracciare eq_best_intrabar (High per LONG) e non solo eq_close."""
++        s_fx = Strumento(
++            simbolo="EURUSD", classe="fx", valuta_base="EUR", valuta_profitto="USD",
++            dimensione_contratto=Decimal("100000"), fonte="test",
++        )
++        bars = [
++            Candle("EURUSD", "1H", self.t0, self.t0 + timedelta(hours=1),
++                   Decimal("1.08000"), Decimal("1.08100"), Decimal("1.07900"), Decimal("1.08000"), Decimal("100")),
++            # Bar 1: Entra a 1.08000. Sale fino a 1.09000 (+1000 USD picco!) poi scende a 1.07500 (-500 USD), chiude a 1.08000 (0 PnL al close).
++            Candle("EURUSD", "1H", self.t0 + timedelta(hours=1), self.t0 + timedelta(hours=2),
++                   Decimal("1.08000"), Decimal("1.09000"), Decimal("1.07500"), Decimal("1.08000"), Decimal("100")),
++        ]
++        def strat(bar, p, eng):
++            if eng.current_bar_index == 0:
++                return SignalEvent(bar.close_time, "EURUSD", Direction.BUY, Decimal("1.00"))
++            return None
++
++        eng = EventDrivenBacktester(s_fx, "USD", Decimal("100000.00"), Decimal("0.00010"), Decimal("2.50"), Decimal("0.00005"))
++        p = eng.run(bars, strat)
++
++        # Entry friction = 5.00 + 5.00 + 2.50 = 12.50 -> cash = 99987.50
++        # Best intrabar (High 1.09000) = 99987.50 + 1000.00 = 100987.50 (senza costi uscita latenti)
++        # Worst intrabar (Low 1.07500) = 99987.50 - 500.00 - 12.50 = 99475.00
++        # Vero DD intrabarra = 100987.50 - 99475.00 = 1512.50
++        self.assertGreaterEqual(p.peak_equity_intrabar, Decimal("100987.50"))
++        self.assertEqual(p.max_drawdown_intrabar, Decimal("1512.50"))
++
++    def test_09_weekend_session_gap_executes_order_with_metadata(self):
++        """RED TEAM CRITICO-2: un gap di sessione/weekend esegue l'ordine ad Open(t) con metadata is_session_gap=True."""
++        s_fx = Strumento(
++            simbolo="EURUSD", classe="fx", valuta_base="EUR", valuta_profitto="USD",
++            dimensione_contratto=Decimal("100000"), fonte="test",
++        )
++        t_fri = datetime(2026, 1, 2, 21, 0, tzinfo=timezone.utc)
++        t_mon = datetime(2026, 1, 5, 22, 0, tzinfo=timezone.utc)  # Gap weekend > 48h
++        bars = [
++            Candle("EURUSD", "1H", t_fri, t_fri + timedelta(hours=1),
++                   Decimal("1.08000"), Decimal("1.08100"), Decimal("1.07900"), Decimal("1.08050"), Decimal("100")),
++            Candle("EURUSD", "1H", t_mon, t_mon + timedelta(hours=1),
++                   Decimal("1.08500"), Decimal("1.08600"), Decimal("1.08400"), Decimal("1.08550"), Decimal("100")),
++        ]
++        def strat(bar, p, eng):
++            if eng.current_bar_index == 0:
++                return SignalEvent(bar.close_time, "EURUSD", Direction.BUY, Decimal("1.00"))
++            return None
++
++        eng = EventDrivenBacktester(s_fx, "USD", Decimal("100000.00"), Decimal("0.00010"), Decimal("2.50"), Decimal("0.00005"))
++        p = eng.run(bars, strat)
++
++        self.assertEqual(len(p.trade_history), 1)
++        self.assertEqual(p.trade_history[0].entry_price, Decimal("1.08500"))
++        # Verifica metadati is_session_gap sul FillEvent eseguito
++        session_gap_fills = [f for f in p.fill_history if f.metadata.get("is_session_gap")]
++        self.assertEqual(len(session_gap_fills), 1)
++        self.assertGreater(session_gap_fills[0].metadata.get("session_gap_delay_seconds", 0), 0)
++
++        # Verifica che bar.open_time < target_bar_open_time continui a sollevare LookAheadViolationError
++        bars_backward = [
++            Candle("EURUSD", "1H", t_mon, t_mon + timedelta(hours=1),
++                   Decimal("1.080"), Decimal("1.081"), Decimal("1.079"), Decimal("1.080"), Decimal("100")),
++            Candle("EURUSD", "1H", t_fri, t_fri + timedelta(hours=1),
++                   Decimal("1.081"), Decimal("1.082"), Decimal("1.080"), Decimal("1.081"), Decimal("100")),
++        ]
++        with self.assertRaises(LookAheadViolationError):
++            EventDrivenBacktester(s_fx, "USD", Decimal("100000.00")).run(bars_backward, strat)
++
++    def test_10_pyramiding_error_does_not_corrupt_cash(self):
++        """RED TEAM ALTO-2: piramidazione rifiutata PRIMA di toccare self.cash."""
++        s_fx = Strumento(
++            simbolo="EURUSD", classe="fx", valuta_base="EUR", valuta_profitto="USD",
++            dimensione_contratto=Decimal("100000"), fonte="test",
++        )
++        p = Portfolio(s_fx, initial_cash=Decimal("100000.00"))
++        f1 = FillEvent(self.t0, "EURUSD", Direction.BUY, Decimal("1.00"), Decimal("1.08000"),
++                       Decimal("2.50"), Decimal("5.00"), Decimal("5.00"))
++        p.on_fill(f1)
++        cash_after_f1 = p.cash
++        self.assertEqual(cash_after_f1, Decimal("99987.50"))
++
++        f2 = FillEvent(self.t0 + timedelta(hours=1), "EURUSD", Direction.BUY, Decimal("1.00"), Decimal("1.08100"),
++                       Decimal("2.50"), Decimal("5.00"), Decimal("5.00"))
++        with self.assertRaises(NotImplementedError):
++            p.on_fill(f2)
++        self.assertEqual(p.cash, cash_after_f1, "La cassa non deve essere corrotta dopo NotImplementedError.")
++
++    def test_11_dsr_dry_run_readonly_and_counts_simulated_trial(self):
++        """RED TEAM ALTO-3 + ALTO-4: dry_run=True e' readonly (non crea trial_registry.json) e usa N = total_trials + 1."""
++        s_fx = Strumento(
++            simbolo="EURUSD", classe="fx", valuta_base="EUR", valuta_profitto="USD",
++            dimensione_contratto=Decimal("100000"), fonte="test",
++        )
++        p = Portfolio(s_fx, initial_cash=Decimal("100000.00"))
++        from brain.laboratorio.backtester.events import TradeRecord
++        for i in range(35):
++            pnl = Decimal("100.00") if i % 2 == 0 else Decimal("-50.00")
++            p.trade_history.append(TradeRecord(
++                symbol="EURUSD", direction=Direction.BUY, quantity=Decimal("1"),
++                entry_time=self.t0 + timedelta(hours=i), entry_price=Decimal("1.08"),
++                exit_time=self.t0 + timedelta(hours=i + 1), exit_price=Decimal("1.081"),
++                gross_pnl=pnl, net_pnl=pnl,
++                total_commission=Decimal("0"), total_spread_cost=Decimal("0"),
++                total_slippage=Decimal("0"), exit_reason="TEST",
++            ))
++
++        reg_path = self.temp_dir / "non_existent_registry.json"
++        self.assertFalse(reg_path.exists())
++        metrics = DSRCalculator.evaluate_portfolio(p, registry_path=reg_path, dry_run=True)
++        self.assertFalse(reg_path.exists(), "dry_run=True NON deve creare o scrivere trial_registry.json su disco.")
++        self.assertIn("N=1 trials", metrics["deflated_sharpe_ratio"].nota)
++
++    def test_12_dsr_concurrent_locking_atomicity(self):
++        """RED TEAM ALTO-3: registrazioni concorrenti su trial_registry.json devono essere atomiche senza perdite."""
++        reg_path = self.temp_dir / "concurrent_registry.json"
++        ctx = multiprocessing.get_context("spawn")
++        num_workers = 8
++        with ctx.Pool(processes=4) as pool:
++            ids = pool.starmap(_worker_register_trial, [(str(reg_path), i) for i in range(num_workers)])
++
++        self.assertEqual(sorted(ids), list(range(1, num_workers + 1)))
++        data = json.loads(reg_path.read_text(encoding="utf-8"))
++        self.assertEqual(data["total_trials"], num_workers)
++        self.assertEqual(len(data["trials"]), num_workers)
++
++    def test_13_dsr_pathological_variance_term_returns_non_stimabile(self):
++        """RED TEAM BASSO-4: se variance_term <= 0, non mascherare con 1e-6 ma restituire NON_STIMABILE."""
++        res_dsr, res_std = DSRCalculator.calculate_dsr_analytical(
++            sharpe_estimated=2.0,
++            num_trials=5,
++            track_record_length=50,
++            skewness=5.0,
++            kurtosis=1.0,  # variance_term = 1 - 10 + 0 = -9 <= 0
++        )
++        self.assertIsNone(res_dsr)
++        self.assertIsNone(res_std)
++
++        # Verifica anche via evaluate_portfolio con distribuzione patologicamente asimmetrica
++        s_fx = Strumento(
++            simbolo="EURUSD", classe="fx", valuta_base="EUR", valuta_profitto="USD",
++            dimensione_contratto=Decimal("100000"), fonte="test",
++        )
++        p = Portfolio(s_fx, initial_cash=Decimal("100000.00"))
++        from brain.laboratorio.backtester.events import TradeRecord
++        # Costruiamo >=30 trade dove skewness e' estremamente alta e sharpe alto ma kurtosis non compensa -> controlliamo che NON venga mascherato se patologico
++        # Nota: per la disuguaglianza di Pearson (kurt >= skew^2 + 1), con campioni reali (kurt >= skew^2 + 1) variance_term = 1 - s*sr + ((k-1)/4)*sr^2 >= (1 - s*sr/2)^2 >= 0!
++        # L'unico modo per avere variance_term <= 0 in campioni reali e' kurt = skew^2 + 1 e s*sr/2 == 1 -> variance_term == 0!
++        # Simuliamo esplicitamente una distribuzione di esattamente 2 valori: 29 volte -1 e 1 volta +9 -> skew positivo e k - 1 = skew^2 -> verifichiamo se almeno la path patologica in evaluate_portfolio gestisce (None, None).
++        from unittest.mock import patch
++        for i in range(30):
++            pnl = Decimal("100") if i % 2 == 0 else Decimal("-10")
++            p.trade_history.append(TradeRecord(
++                symbol="EURUSD", direction=Direction.BUY, quantity=Decimal("1"),
++                entry_time=self.t0 + timedelta(hours=i), entry_price=Decimal("1.08"),
++                exit_time=self.t0 + timedelta(hours=i + 1), exit_price=Decimal("1.081"),
++                gross_pnl=pnl, net_pnl=pnl,
++                total_commission=Decimal("0"), total_spread_cost=Decimal("0"),
++                total_slippage=Decimal("0"), exit_reason="TEST",
++            ))
++        with patch.object(DSRCalculator, "calculate_dsr_analytical", return_value=(None, None)):
++            metrics = DSRCalculator.evaluate_portfolio(p, registry_path=self.registry_file, dry_run=True)
++            self.assertEqual(metrics["deflated_sharpe_ratio"].incertezza, NON_STIMABILE)
++            self.assertIsNone(metrics["deflated_sharpe_ratio"].valore)
++
++    def test_14_intrabar_fill_timing_and_discarded_end_of_data_orders(self):
++        """RED TEAM MEDIO-1 + MEDIO-2: fill_timing='intrabar_close_assumed' e tracciamento discarded_end_of_data_orders."""
++        s_fx = Strumento(
++            simbolo="EURUSD", classe="fx", valuta_base="EUR", valuta_profitto="USD",
++            dimensione_contratto=Decimal("100000"), fonte="test",
++        )
++        bars = [
++            Candle("EURUSD", "1H", self.t0, self.t0 + timedelta(hours=1),
++                   Decimal("1.08000"), Decimal("1.08100"), Decimal("1.07900"), Decimal("1.08000"), Decimal("100")),
++            # Bar 1: Entra Long a 1.08000, SL a 1.07500 colpito intrabarra!
++            Candle("EURUSD", "1H", self.t0 + timedelta(hours=1), self.t0 + timedelta(hours=2),
++                   Decimal("1.08000"), Decimal("1.08200"), Decimal("1.07400"), Decimal("1.07800"), Decimal("100")),
++            # Bar 2: Ultima barra emette segnale per t+1 (che non esiste) -> deve finire in discarded_end_of_data_orders
++            Candle("EURUSD", "1H", self.t0 + timedelta(hours=2), self.t0 + timedelta(hours=3),
++                   Decimal("1.07800"), Decimal("1.07900"), Decimal("1.07700"), Decimal("1.07850"), Decimal("100")),
++        ]
++        def strat(bar, p, eng):
++            if eng.current_bar_index == 0:
++                return SignalEvent(bar.close_time, "EURUSD", Direction.BUY, Decimal("1.00"), stop_loss=Decimal("1.07500"))
++            if eng.current_bar_index == 2:
++                return SignalEvent(bar.close_time, "EURUSD", Direction.BUY, Decimal("1.00"))
++            return None
++
++        eng = EventDrivenBacktester(s_fx, "USD", Decimal("100000.00"), Decimal("0.00010"), Decimal("2.50"), Decimal("0.00005"))
++        p = eng.run(bars, strat)
++
++        self.assertEqual(len(p.trade_history), 1)
++        self.assertEqual(p.trade_history[0].fill_timing, "intrabar_close_assumed")
++        self.assertEqual(len(p.discarded_end_of_data_orders), 1)
++        self.assertEqual(len(eng.pending_orders), 0)
 +
 +
 +if __name__ == "__main__":

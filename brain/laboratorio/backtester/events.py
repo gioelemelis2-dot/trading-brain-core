@@ -111,4 +111,5 @@ class TradeRecord:
     exit_reason: str
     is_gap_slippage: bool = False
     is_ambiguous_intrabar: bool = False
+    fill_timing: str = "standard"
     condizioni: FrozenSet[str] = field(default_factory=frozenset)
