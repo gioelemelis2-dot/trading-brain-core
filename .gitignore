@@ -1,3 +1,10 @@
 # File generati da Python
 __pycache__/
 *.pyc
+
+# Gate 2: dati di mercato pesanti (licenza da verificare) e segreti, fuori da git.
+# Si versionano solo i metadati (*.meta.json) e il sigillo (commitment.json).
+brain/dati/reali/*.csv
+brain/dati/reali/cache_dukascopy/
+brain/dati/reali/partizioni/**/*.jsonl
+*.secret
