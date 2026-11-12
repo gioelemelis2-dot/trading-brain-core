@@ -226,3 +226,14 @@ Formato: data · versione della base · cosa · perché · file.
   - Lo stesso vale per le suite `brain/dati/tests` e `brain/laboratorio/tests`.
 - Stato di `main`: 75/75 test del Guardian su Python 3.9, 3.11, 3.12 e 3.13; mutanti non equivalenti uccisi 78/78 su 3.13 e 77/77 su 3.9.
 - Nessuna modifica a V3.3, lezioni, materiali di Gemini, `brain/dati/` o `brain/laboratorio/`.
+
+## 2026-11-12 · v1.17 (ALTO-8: race nel recupero del lock orfano del journal)
+
+- Da una revisione esterna. Nel ripiego senza `fcntl`, fra il ricontrollo del lock orfano e la sua rimozione, un altro processo poteva rimuovere l'orfano e creare il proprio lock; la rimozione cancellava allora un lock vivo.
+- Ramo `fix/lock-orfano-toctou`, in TDD:
+  - test rosso (`062cdef`): riproduzione deterministica con due thread; esito osservato: due scrittori nella sezione critica, id duplicato, catena interrotta, ancora disallineata;
+  - correzione (`7a53063`): l'orfano si rimuove solo tenendo `<lock>.recupero`, creato con `O_EXCL`;
+  - unito a `main` su autorizzazione dell'utente.
+- La stessa revisione segnalava come aperto il MEDIO su `versioni_finali`: era già corretto su `main` (`18bd042`); la revisione leggeva una versione precedente.
+- ALTO-2 e ALTO-7 del Binario B restano non verificati: su GitHub non c'è codice del Binario B.
+- Esito: 76/76 test su Python 3.9, 3.11, 3.12 e 3.13; mutanti non equivalenti uccisi 79/79 su 3.13 e 78/78 su 3.9 (nuovo V79).

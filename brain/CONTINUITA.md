@@ -97,9 +97,10 @@ Il G0 **non** è ancora utilizzabile per decidere: serve la riconciliazione con 
   - Restano da verificare quando il codice sarà pubblicato.
 
 **Stato consolidato di `main`:**
-- `brain/guardian/`: 75/75 test verdi con `-W error` su Python 3.9, 3.11, 3.12 e 3.13.
-- Mutanti non equivalenti uccisi: 78/78 su 3.13 e 77/77 su 3.9 (V48 equivalente prima di 3.11, E01 equivalente su tutte le versioni).
-- Rami storici ancora su GitHub: `feat/fix-g0-journal` e `fix/red-team-guardian`, entrambi già uniti.
+- `brain/guardian/`: 76/76 test verdi con `-W error` su Python 3.9, 3.11, 3.12 e 3.13.
+- ALTO-8 (race nel recupero del lock orfano senza `fcntl`, da una revisione esterna) corretto in TDD sul ramo `fix/lock-orfano-toctou` e unito a `main`.
+- Mutanti non equivalenti uccisi: 79/79 su 3.13 e 78/78 su 3.9 (V48 equivalente prima di 3.11, E01 equivalente su tutte le versioni).
+- Rami storici ancora su GitHub: `feat/fix-g0-journal`, `fix/red-team-guardian` e `fix/lock-orfano-toctou`, tutti già uniti.
 
 **Ora: fermo in attesa dell'utente**, per:
 - rispondere alle decisioni di `governance/DECISIONI-APERTE.md`, a partire da quelle bloccanti;
