@@ -38,7 +38,13 @@ def _frazioni(prodotto: str, file_regole: Path = FILE_REGOLE):
             regola(f_t, "frazione del capitale iniziale", fonte + " max_loss", s_t))
 
 
+def _capitale_positivo(capitale_iniziale: Valore) -> None:
+    if not (capitale_iniziale.valore.is_finite() and capitale_iniziale.valore > 0):
+        raise ValueError(f"il capitale iniziale deve essere positivo ({capitale_iniziale.valore})")
+
+
 def limite_giornaliero(prodotto: str, capitale_iniziale: Valore, saldo_mezzanotte: Valore) -> Valore:
+    _capitale_positivo(capitale_iniziale)
     f_g, _ = _frazioni(prodotto)
     v = saldo_mezzanotte.valore - f_g.valore * capitale_iniziale.valore
     return combina([capitale_iniziale, saldo_mezzanotte, f_g], v, capitale_iniziale.unita, "calcolo deterministico",
@@ -48,6 +54,7 @@ def limite_giornaliero(prodotto: str, capitale_iniziale: Valore, saldo_mezzanott
 def limite_totale(prodotto: str, capitale_iniziale: Valore, saldi_di_riferimento: Iterable[Valore] = ()) -> Valore:
     """`saldi_di_riferimento`: 1-Step → saldi alle 00:00 dei giorni precedenti; Instant → saldi dopo ogni chiusura;
     2-Step → ignorati (limite statico)."""
+    _capitale_positivo(capitale_iniziale)
     _, f_t = _frazioni(prodotto)
     saldi = list(saldi_di_riferimento)
     ins = [capitale_iniziale, f_t]
