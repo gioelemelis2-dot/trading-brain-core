@@ -1,0 +1,40 @@
+# Integrita' del pacchetto V3.3 ricevuto (12/11/2026)
+ZIP: 62513 byte (dichiarati 62.513)
+6fb9d76e54daabecd5215aaa255ef3b94f2a0052569b20734b1ac90181627638  57ea5ce6-TRADING_BRAIN_V3_3_PACKAGE.zip
+SHA-256 dichiarato: 6fb9d76e54daabecd5215aaa255ef3b94f2a0052569b20734b1ac90181627638 -> coincide
+
+## sha256sum -c MANIFEST_SHA256_V3_3.txt
+CHECKPOINT_V3_3_CONVERGENCE.md: OK
+CLAUDE_V3_2_RESERVES_RESOLUTION.md: OK
+README.md: OK
+REGISTRO_DIPENDENZE_E_PROVENIENZA_V3_3.md: OK
+V3_3_CHANGELOG.md: OK
+V3_3_MATHEMATICAL_VERIFICATION.md: OK
+V3_3_TEST_REPORT.md: OK
+prop_risk_engine_v3_3.py: OK
+run_simulations_v3_3.py: OK
+simulations_v3_3_raw.json: OK
+test_prop_risk_v3_3.py: OK
+archivio_storico/LEGGIMI_V1.md: OK
+archivio_storico/STR_001_TSMOM_TREND_FOLLOWING.md: OK
+archivio_storico/STR_002_SP500_OPENING_GAP.md: OK
+archivio_storico/prop_risk_engine_v1.py: OK
+archivio_storico/prop_simulations_raw_v1.json: OK
+archivio_storico/rulebook.yaml: OK
+archivio_storico/run_comprehensive_simulations_v1.py: OK
+File non dichiarati: V3_3_MANIFEST.sha256 (copia identica byte per byte di MANIFEST_SHA256_V3_3.txt)
+
+## Archivio storico V3.3 contro V3.2
+MODIFICATO LEGGIMI_V1.md (atteso: correzione S-03)
+identico  STR_001_TSMOM_TREND_FOLLOWING.md
+identico  STR_002_SP500_OPENING_GAP.md
+identico  prop_risk_engine_v1.py
+identico  prop_simulations_raw_v1.json
+identico  rulebook.yaml
+identico  run_comprehensive_simulations_v1.py
+
+## Copie ricevute delle versioni precedenti
+6c64a3a4d3ea9d90fb1ab7d9fdf6ea7ce3cccbeab0f87e1cadb57d0e290f5bb7  3d764e14-TRADING_BRAIN_V3_PACKAGE.zip
+99e8f0bdd1fa3a5511d5eb85fcada9906cc16e750378a0653a5f72e2af3e9cbf  514451a9-TRADING_BRAIN_V3_1_PACKAGE.zip
+989dd288e04cb5601af0012442707b833054001ba48cdc6392bcdd5423643d18  4c14b750-TRADING_BRAIN_V3_2_PACKAGE.zip
+(V3 6c64a3a4..., V3.1 99e8f0bd..., V3.2 989dd288...: coincidono con i dichiarati)

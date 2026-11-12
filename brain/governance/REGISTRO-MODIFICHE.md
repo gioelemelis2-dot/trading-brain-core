@@ -113,3 +113,16 @@ Formato: data · versione della base · cosa · perché · file.
 - Esito: **VALIDATA CON RISERVE**. Mutazioni V02–V12: 11/11 uccise.
 - Riconosciuto che la guardia simmetrica del MAE (S-05) deriva dalla proposta Q-08 di Claude ed è più restrittiva del necessario.
 - Aggiornati `CONTINUITA.md`, `collaborazione/LOCK.md` e questo registro. Nessun file di Antigravity e nessuna lezione modificati.
+
+## 2026-11-12 · v1.7 (revisione V3.3)
+
+- Ricevuti il pacchetto V3.3 (ZIP `6fb9d76e…`, 62.513 byte, entrambi coincidenti; manifest 18/18 OK) e `CONTINUITA_V3_3_PASSAGGIO_A_CLAUDE.md`. Non archiviati nel Brain.
+- Aggiunta `collaborazione/revisione-materiali-gemini/R-CLAUDE-20261112-05-V33/`:
+  - revisione con registro e confronto;
+  - errata T-01…T-05 (non applicato);
+  - strumenti `v33_*` (adattati dalla V3.2, più `v33_f_precisione.py`), uscite e impronte.
+- Esito: **VALIDATA CON RISERVE**.
+  - Riserve S-01…S-09 risolte (S-07 in parte).
+  - Mutazioni dichiarate non riproducibili; con le definizioni di Claude 21/24.
+  - Precisione fittizia dei valori esatti; attribuzione anticipata nel README.
+- Aggiornati `CONTINUITA.md`, `collaborazione/LOCK.md` e questo registro. Nessun file di Antigravity e nessuna lezione modificati.

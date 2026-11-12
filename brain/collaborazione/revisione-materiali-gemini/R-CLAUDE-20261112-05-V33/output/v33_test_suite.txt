@@ -1,0 +1,49 @@
+test_c01_markov_stationary_start (__main__.TestPropRiskV3_3.test_c01_markov_stationary_start)
+C-01: Verifica che il primo trade campioni lo stato da pi (frequenza vittoria = 40% non 70%). ... ok
+test_c02_markov_admissibility (__main__.TestPropRiskV3_3.test_c02_markov_admissibility)
+C-02: Verifica che parametri non ammissibili sollevino ValueError. ... ok
+test_c03_slippage_execution (__main__.TestPropRiskV3_3.test_c03_slippage_execution)
+C-03: Verifica che lo slippage sia eseguito e riduca il tasso di passaggio. ... ok
+test_c12_unlimited_days_ftmo (__main__.TestPropRiskV3_3.test_c12_unlimited_days_ftmo)
+C-12: Verifica che max_days=None azzeri i timeout e porti il pass rate al 99% a rischio 0.25%. ... ok
+test_fase2_esatta_e_prodotto_due_fasi (__main__.TestPropRiskV3_3.test_fase2_esatta_e_prodotto_due_fasi)
+S-01 / S-02 (Uccisione mutante V07): ... ok
+test_mae_profondo_attraverso_motore_rr1 (__main__.TestPropRiskV3_3.test_mae_profondo_attraverso_motore_rr1)
+S-02 (Uccisione mutanti V10 e V03): ... ok
+test_mae_soglia_mu_quasi_zero (__main__.TestPropRiskV3_3.test_mae_soglia_mu_quasi_zero)
+S-07 (Uccisione mutante V22): ... ok
+test_momenti_slippage_forma_chiusa (__main__.TestPropRiskV3_3.test_momenti_slippage_forma_chiusa)
+S-07: Verifica della media campionaria dello slippage contro il momento teorico esatto in forma chiusa: ... ok
+test_p01_crn_coupling_invariance (__main__.TestPropRiskV3_3.test_p01_crn_coupling_invariance)
+P-01: Dimostra che l'accoppiamento CRN per-sfida impedisce qualsiasi desincronizzazione. ... ok
+test_p02_mae_generalization_multi_scenario (__main__.TestPropRiskV3_3.test_p02_mae_generalization_multi_scenario)
+P-02: Verifica generalizzazione analitica del MAE per scenari con WR ed R:R diversi. ... ok
+test_p05_barrier_priority_ordering (__main__.TestPropRiskV3_3.test_p05_barrier_priority_ordering)
+P-05: Verifica che l'ordine delle barriere a chiusura posizione sia: ... ok
+test_q01_kelly_confidence_interval_at_95_and_68 (__main__.TestPropRiskV3_3.test_q01_kelly_confidence_interval_at_95_and_68)
+Q-01: Verifica calcolo analitico dell'intervallo di confidenza dell'edge: ... ok
+test_q02_barrier_priority_during_trade_mae (__main__.TestPropRiskV3_3.test_q02_barrier_priority_during_trade_mae)
+Q-02.2 (Uccisione mutanti V04 e V08): ... ok
+test_q02_exact_concordance_group_a_multi_config (__main__.TestPropRiskV3_3.test_q02_exact_concordance_group_a_multi_config)
+Q-02.5: Concordanza con il calcolo esatto analitico sulle configurazioni del Gruppo A: ... ok
+test_q02_mae_through_engine_rr_diff_2 (__main__.TestPropRiskV3_3.test_q02_mae_through_engine_rr_diff_2)
+Q-02.3: MAE browniano attraverso il motore con R:R != 2 (configurazione WR=0.50, RR=1.0, pavimento 5%). ... ok
+test_q02_min_days_regression_freezes_risk (__main__.TestPropRiskV3_3.test_q02_min_days_regression_freezes_risk)
+Q-02.1 (Uccisione mutante V12): ... ok
+test_s05_mae_asymmetric_guards_extreme_values (__main__.TestPropRiskV3_3.test_s05_mae_asymmetric_guards_extreme_values)
+S-05: Verifica della protezione anti-overflow asimmetrica: ... ok
+test_s06_comprehensive_input_validation (__main__.TestPropRiskV3_3.test_s06_comprehensive_input_validation)
+S-06: Validazione sistematica degli input fuori dal MAE. ... ok
+test_slippage_deterministico (__main__.TestPropRiskV3_3.test_slippage_deterministico)
+S-07 (Uccisione mutanti V19 e V20): ... ok
+test_wilson_valori_noti (__main__.TestPropRiskV3_3.test_wilson_valori_noti)
+S-04 / S-07 (Uccisione mutante V21): ... ok
+
+----------------------------------------------------------------------
+Ran 20 tests in 1.644s
+
+OK
+
+real	0m1.735s
+user	0m1.674s
+sys	0m0.016s

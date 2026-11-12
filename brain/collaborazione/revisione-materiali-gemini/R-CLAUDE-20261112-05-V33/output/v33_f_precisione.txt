@@ -1,0 +1,10 @@
+(1) Campionatore V3.3 contro F(d) in precisione decimale (9 valori di u per configurazione)
+  WR 0.4 R:R 2.0 mu +0.09748: errore massimo 1.09e-15 su 9 punti
+  WR 0.99 R:R 500.0 mu +2.30259: errore massimo 6.34e-17 su 9 punti
+  WR 0.9999995 R:R 50.0 mu +7.25433: errore massimo 1.85e-16 su 9 punti
+  WR 0.05 R:R 0.1 mu -14.97866: errore massimo 1.51e-16 su 9 punti
+  WR 0.9 R:R 0.02 mu -2.62078: errore massimo 1.73e-15 su 9 punti
+  WR 0.999 R:R 2.0 mu +3.45388: errore massimo 2.70e-16 su 9 punti
+
+(2) Valori esatti, cifre complete
+  Fase 1 0.7799848423 (dichiarato 0,780000)  Fase 2 0.8571714612 (dichiarato 0,857200)  prodotto 0.6685807470 (dichiarato 0,668616)

@@ -1,0 +1,4 @@
+# Runner V1 secondo archivio_storico/LEGGIMI_V1.md della V3.3 (copie in cartelle separate)
+Modalita' A: a6781b7ea00bf772c11688f0396fbe68ceb8d8d7dc5692022ecc321e326cc081  (atteso a6781b7e... -> coincide)
+Modalita' B: a6781b7ea00bf772c11688f0396fbe68ceb8d8d7dc5692022ecc321e326cc081  (atteso a6781b7e... -> coincide)
+Nota: la modalita' B inserisce in sys.path un percorso assoluto del Mac; qui ha funzionato perche' i due file erano nella cartella corrente.

@@ -30,8 +30,19 @@ Ultimo aggiornamento: **2026-11-11**, dopo l'audit architetturale. Leggere quest
   - Proposte **non applicate** (eventuale V3.3 minore).
 - Q-07 e Q-09 fuori perimetro.
 
+**Revisione V3.3: completata il 12/11/2026.**
+- Cartella: `collaborazione/revisione-materiali-gemini/R-CLAUDE-20261112-05-V33/`.
+- Pacchetto ricevuto: ZIP `6fb9d76e…`, manifest 18/18. Non archiviato nel Brain.
+- Esito: **VALIDATA CON RISERVE**.
+  - S-01…S-09 risolte (S-07 in parte); software corretto; risultati identici alla V3.2.
+  - Riserve nuove T-01…T-05, documentali e di copertura:
+    - T-01: mutazioni dichiarate «21/21» non riproducibili; V22 sopravvive; con le definizioni di Claude 21/24;
+    - T-02: precisione fittizia dei valori esatti;
+    - T-03: README attribuisce a Claude la revisione V3.3 prima che esista.
+  - Proposto un errata, non un nuovo ciclo.
+
 **Ora: fermo in attesa dell'utente**, per:
-- valutare la revisione V3.2 e decidere se chiedere una V3.3 o accettare la V3.2 con riserve;
+- valutare la revisione V3.3 e decidere se applicare l'errata (T-01…T-05) all'inizio della fase successiva;
 - avviare Q-09 (Trading Guardian) e Q-07;
 - prendere le decisioni della proposta della Parte B.
 
