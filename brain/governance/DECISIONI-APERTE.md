@@ -26,13 +26,14 @@ DA-15 dati ──► DA-17 strategie
 DA-13 rulebook (Q-09) ──► DA-11 G0 minimo ──► DA-12 indicatori comportamentali
 ```
 
-**Bloccanti:** DA-01, DA-03, DA-15. Le altre possono attendere senza costi rilevanti.
+**Bloccanti:** DA-01, DA-03 e DA-15, **decise il 12/11/2026** insieme a DA-11 (D-19…D-22). Le altre possono attendere senza costi rilevanti.
 
 ---
 
 ## A. Fondamenta
 
 ### DA-01 · Fonte di verità unica, sincronizzazione e archivio delle consegne · **bloccante**
+**Decisa il 12/11/2026 → D-19.** Il testo sotto resta come storia.
 - **Situazione verificata:**
   - il Brain versionato è sul ramo GitHub `claude/vibrant-cannon-5uunho` del repository `l-Altro`, che sugli altri rami contiene un'applicazione TypeScript estranea;
   - Gemini lavora su una copia locale (dichiarato da Gemini; non verificabile da Claude);
@@ -62,6 +63,7 @@ DA-13 rulebook (Q-09) ──► DA-11 G0 minimo ──► DA-12 indicatori compo
 - **Collegate:** D-09.
 
 ### DA-03 · Sospensione dello sviluppo (D-10, D-12) · **bloccante**
+**Decisa il 12/11/2026 → D-20.** Il testo sotto resta come storia.
 - **Situazione:** D-12 sospende ogni nuovo modulo in attesa del dossier di revisione di Gemini sulle lezioni (`GEMINI_PEER_REVIEW_CLAUDE.md`, richiesta R-001), **mai consegnato**. Restano congelate le lezioni L2.4–L2.6 e sospesi:
   - unità 2.2–2.3;
   - traccia 10.1;
@@ -130,6 +132,7 @@ DA-13 rulebook (Q-09) ──► DA-11 G0 minimo ──► DA-12 indicatori compo
 ## C. Rischio e Trading Guardian
 
 ### DA-11 · G0 minimo anticipato e collocazione di T-01…T-05
+**Decisa il 12/11/2026 → D-22.** Il testo sotto resta come storia.
 - **Contesto:** D-17 rende T-01…T-05 requisiti di ingresso della «successiva fase tecnica». Se il G0 minimo è il primo software, l'errata va chiusa **prima** di scriverlo, oppure si decide esplicitamente il contrario.
 - **Alternative:**
   - **A.** errata T-01…T-05, poi G0 minimo (perdita a stop con H_esec, margini, somma dei rischi a stop, journal) subito dopo Q-09;
@@ -164,6 +167,7 @@ DA-13 rulebook (Q-09) ──► DA-11 G0 minimo ──► DA-12 indicatori compo
 ## D. Dati
 
 ### DA-15 · Fornitore, budget, licenze e perimetro dei dati · **bloccante**
+**Decisa il 12/11/2026 → D-21.** Il testo sotto resta come storia.
 - **Situazione:**
   - dalla rete dell'ambiente di Claude sono rifiutati FRED, Yahoo, Stooq, Crossref e doi.org; la rete si può configurare nelle impostazioni dell'ambiente;
   - STR-001 richiede futures giornalieri 2005–2026 su 10 mercati;
@@ -207,10 +211,33 @@ DA-13 rulebook (Q-09) ──► DA-11 G0 minimo ──► DA-12 indicatori compo
 
 ---
 
+## G. Decisioni aggiunte dalla revisione esterna (ChatGPT, 12/11/2026, §8)
+
+### DA-19 · Conteggio delle prove di ricerca
+- **Proposta:** si contano **tutte le varianti eseguite e registrate**, da entrambi i modelli e in tutte le sessioni, in un registro unico. Non si contano pensieri non osservabili.
+- Il conteggio alimenta il DSR (DA-20).
+
+### DA-20 · Criterio di promozione da ricerca a «candidata forward»
+- **Proposta:** un criterio unico, definito prima dei test: DSR calcolato sul conteggio di DA-19, calcolo di potenza per l'ipotesi specifica, robustezza ai parametri, costi realistici, criteri di falsificazione.
+- Nessuna soglia fissa universale (né t > 3, né 594 trade).
+
+### DA-21 · Dati point-in-time
+- **Da decidere:** regole per revisioni dei dati macro (versioni storiche), contratti continui e roll, cambi di sessione e ora legale.
+
+### DA-22 · Limiti di accesso ai registri dei due modelli
+- **Da decidere:** come impedire che un centro legga il registro dell'altro prima del proprio impegno sigillato (DA-07).
+- **Nota:** impegno con nonce casuale segreto di 256 bit; registro append-only con data affidabile; l'hash non è una firma e non prova l'autore.
+
+### DA-23 · Modifica delle regole personali
+- **Da decidere:** procedura per cambiare una regola personale: solo a mercato chiuso, con motivazione scritta, periodo di attesa e versione registrata.
+
+---
+
 ## Fonti di questo registro
 - `audit/AUDIT-ARCH-20261111/RELAZIONE-AUDIT.md` §5;
 - `collaborazione/da-claude/CLAUDE_QUANTITATIVE_BRAIN_PROPOSAL.md` §10;
 - `collaborazione/revisione-materiali-gemini/R-CLAUDE-20261112-06-ARCH-V2/CLAUDE_INDEPENDENT_ARCHITECTURE_AUDIT_V1.md` §10;
 - `collaborazione/revisione-materiali-gemini/R-CLAUDE-20261112-07-CONTROVERIFICA-GEMINI/CLAUDE_EVALUATION_OF_GEMINI_COUNTERCHECK_V1.md` §7;
 - `TRADING_BRAIN_UNRESOLVED_DECISIONS_V1.md` di Gemini (non archiviato nel Brain: vedi DA-01);
-- `CONTINUITA.md`.
+- `CONTINUITA.md`;
+- `collaborazione/revisione-materiali-gemini/R-CLAUDE-20261112-08-REVISIONE-ESTERNA/REVISIONE_ESTERNA_TRADING_BRAIN_CHATGPT.md` §8.
