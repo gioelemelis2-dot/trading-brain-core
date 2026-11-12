@@ -242,3 +242,107 @@ class TestAudit7Continuita(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+# ---------------------------------------------------------------------------------------------------------------
+# Mandato notturno del 12/11/2026: 4 difetti residui in 357e48d, più 1 trovato in auto-audit (test scritti PRIMA)
+# ---------------------------------------------------------------------------------------------------------------
+
+def _avvisi(testo):
+    return testo.split("\nAVVISI\n")[1].split("\nREGOLE PERSONALI\n")[0]
+
+
+class TestNotte1Commissioni(unittest.TestCase):
+    def test_commissioni_negative_o_non_finite_rifiutate(self):
+        """Commissioni negative (segno invertito in un export) o non finite RIDURREBBERO la perdita allo stop."""
+        fx = Strumento("EURUSD", "fx", "USD", D(100000), "t", valuta_base="EUR")
+        m = lambda x, u="prezzo": misura(x, u, "t")
+        base = perdita_allo_stop(fx, m("1.085"), m("1.083"), m("1", "lotti"), "USD")
+        self.assertEqual(base.valore, D("200"))
+        self.assertEqual(perdita_allo_stop(fx, m("1.085"), m("1.083"), m("1", "lotti"), "USD",
+                                           commissioni=m("0", "USD")).valore, D("200"))     # spread-only: ammesso
+        self.assertEqual(perdita_allo_stop(fx, m("1.085"), m("1.083"), m("1", "lotti"), "USD",
+                                           commissioni=m("7", "USD")).valore, D("207"))
+        for c in ("-200", "-0.01", "NaN", "Infinity", "-Infinity"):
+            with self.assertRaises(ValueError, msg=f"commissioni={c}"):
+                perdita_allo_stop(fx, m("1.085"), m("1.083"), m("1", "lotti"), "USD", commissioni=m(c, "USD"))
+
+
+class TestNotte2P05MarginePersonaleNegativo(unittest.TestCase):
+    def test_avvisi_trade_e_stress_anche_a_limite_personale_superato(self):
+        """P-05 a 0,4%: limite personale = 100.400 − 400 = 100.000. Equity 99.900 → margine personale −100 (limite
+        personale superato, FTMO no: limite 95.400). Trade 682 e stress 842,50 vanno segnalati comunque."""
+        d = esempio()
+        d["conto"]["equity"] = "99900"
+        avvisi = _avvisi("\n".join(SCH.scheda(d, regole_personali=regole_con(P_05="0.004"))))
+        self.assertIn("P-05: limite personale giornaliero già superato", avvisi)
+        self.assertIn("P-05: se lo stop del trade previsto viene colpito", avvisi)
+        self.assertIn("P-05: nello scenario di stress", avvisi)
+
+
+class TestNotte3SemanticaJournal(unittest.TestCase):
+    def test_corregge_e_chiude_coerenti_e_nessuna_doppia_chiusura(self):
+        base = {"autore": "claude", "evento": "A", "scadenza_utc": "2026-12-01T00:00:00Z", "fonte": "t"}
+        esito = lambda pid, x, **k: dict({"autore": "utente", "fonte": "t", "chiude": pid, "esito": x}, **k)
+        with tempfile.TemporaryDirectory() as tmp:
+            d = Path(tmp)
+            a = J.aggiungi("previsione", dict(base, probabilita=0.8), d)["id"]
+            a2 = J.aggiungi("previsione", dict(base, probabilita=0.7, corregge=a), d)["id"]   # correzione valida
+            b = J.aggiungi("previsione", dict(base, evento="B", probabilita=0.3), d)["id"]
+            e = J.aggiungi("previsione", esito(a, 1), d)["id"]
+            casi = {
+                "(a) esito che corregge una previsione": esito(b, 1, corregge=a),
+                "(a) previsione che corregge un esito": dict(base, probabilita=0.5, corregge=e),
+                "(b) chiude punta a un esito": esito(e, 1),
+                "(b) chiude punta a una correzione, non alla radice": esito(a2, 0),
+                "(c) secondo esito senza corregge sulla stessa previsione": esito(a, 0),
+                "(c) correzione di esito che sposta la chiusura su un'altra previsione": esito(b, 0, corregge=e),
+            }
+            for nome, dati in casi.items():
+                with self.assertRaises(ValueError, msg=nome):
+                    J.aggiungi("previsione", dati, d)
+            J.aggiungi("previsione", esito(a, 0, corregge=e), d)                              # correzione valida
+            J.aggiungi("previsione", esito(b, 1), d)                                          # chiusura valida
+            self.assertEqual(J.verifica(d), [])
+            # Un file scritto a mano (catena di hash ricostruita) con una doppia chiusura: verifica() la segnala.
+            path = d / "previsione.jsonl"
+            righe = J._righe(path)
+            rec = {"schema": J.SCHEMA, "registro": "previsione", "id": f"PRE-{len(righe) + 1:05d}",
+                   "registrato_utc": "2026-11-12T22:00:00Z", "prec_hash": J._sha(righe[-1]), "dati": esito(a, 1)}
+            with open(path, "a", encoding="utf-8") as f:
+                f.write(J._canonico(rec) + "\n")
+            self.assertTrue(any("già chiusa" in p for p in J.verifica(d)), J.verifica(d))
+
+
+class TestNotte4DatiSessione(unittest.TestCase):
+    def test_dati_di_sessione_e_soglie_non_validi(self):
+        """Booleani, negativi, NaN, infiniti e ore di sonno oltre 24: dato non valido, mai «regola rispettata» o crash."""
+        casi = [("P_14", "6", "ore_sonno", True), ("P_14", "6", "ore_sonno", "25"), ("P_14", "6", "ore_sonno", "-1"),
+                ("P_11", "15", "minuti_da_ultima_perdita", "-5"), ("P_11", "15", "minuti_da_ultima_perdita", "NaN"),
+                ("P_15", "3", "perdite_consecutive_oggi", "-1"), ("P_15", "3", "perdite_consecutive_oggi", "1.5"),
+                ("P_15", "3", "perdite_consecutive_oggi", "Infinity")]
+        for rid, soglia, chiave, x in casi:
+            d = esempio()
+            d["sessione"] = {chiave: x}
+            avvisi = _avvisi("\n".join(SCH.scheda(d, regole_personali=regole_con(**{rid: soglia}))))
+            self.assertIn(f"{rid.replace('_', '-')}: dato «sessione.{chiave}» non valido", avvisi, f"{chiave}={x!r}")
+        for rid, soglia in (("P_14", "NaN"), ("P_11", "-15"), ("P_15", "Infinity"), ("P_01", "NaN"), ("P_05", "0")):
+            d = esempio()
+            d["sessione"] = {"ore_sonno": "8", "minuti_da_ultima_perdita": "30", "perdite_consecutive_oggi": "0"}
+            avvisi = _avvisi("\n".join(SCH.scheda(d, regole_personali=regole_con(**{rid: soglia}))))
+            self.assertIn(f"{rid.replace('_', '-')}: regola confermata senza valore numerico valido", avvisi, soglia)
+
+
+class TestNotte5BooleaniJournal(unittest.TestCase):
+    def test_booleani_rifiutati_come_numeri(self):
+        """In Python True == 1: senza controllo, `probabilita: true`, `esito: true` e `aderenza: true` passerebbero."""
+        P = {"autore": "claude", "evento": "x", "scadenza_utc": "2026-12-01T00:00:00Z", "fonte": "t"}
+        T = {"simbolo": "EURUSD", "direzione": "long", "aperto_utc": "2026-11-12T09:00:00Z", "ingresso": "1.085",
+             "stop": "1.083", "quantita": "1", "fonte": "t"}
+        for registro, dati in (("previsione", dict(P, probabilita=True)), ("previsione", dict(P, probabilita=False)),
+                               ("previsione", {"autore": "u", "fonte": "t", "chiude": "PRE-00001", "esito": True}),
+                               ("trade", dict(T, aderenza=True)), ("trade", dict(T, quantita=True))):
+            with self.assertRaises(ValueError, msg=str(dati)):
+                J.valida(registro, dati)
+        J.valida("previsione", dict(P, probabilita=1))                          # interi 0 e 1 restano ammessi
+        J.valida("previsione", {"autore": "u", "fonte": "t", "chiude": "PRE-00001", "esito": 0})
