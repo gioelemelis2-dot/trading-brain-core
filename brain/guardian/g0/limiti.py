@@ -68,13 +68,17 @@ def limite_totale(prodotto: str, capitale_iniziale: Valore, saldi_di_riferimento
 
 def margine(equity: Valore, limite: Valore) -> Valore:
     """Distanza dell'equity dal limite. Negativo = limite già violato."""
-    return combina([equity, limite], equity.valore - limite.valore, equity.unita, "calcolo deterministico",
+    v = equity.valore - limite.valore if equity.stimabile and limite.stimabile else None   # NON STIMABILE: propagato
+    return combina([equity, limite], v, equity.unita, "calcolo deterministico",
                    fonte=f"margine({limite.fonte})")
 
 
 def stop_residui(margine_: Valore, perdita_per_stop: Valore) -> Valore:
     """Quanti stop pieni si possono subire restando sopra il limite (l'equity può arrivare AL limite, non sotto).
-    Condizionato alle condizioni della perdita (H_esec)."""
+    Condizionato alle condizioni della perdita (H_esec). Se un input è NON STIMABILE, lo è anche il risultato
+    (condizioni e stato di verifica propagati da `combina`), invece di un TypeError."""
+    if not (margine_.stimabile and perdita_per_stop.stimabile):
+        return combina([margine_, perdita_per_stop], None, "stop", "calcolo deterministico", fonte="stop_residui")
     if perdita_per_stop.valore <= 0:
         raise ValueError("la perdita per stop deve essere positiva")
     n = max(0, int(margine_.valore // perdita_per_stop.valore)) if margine_.valore >= 0 else 0

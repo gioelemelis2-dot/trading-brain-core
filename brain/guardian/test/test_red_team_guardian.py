@@ -206,11 +206,12 @@ class TestMedio5e6e7Lock(unittest.TestCase):
                 mock.patch.object(J, "ATTESA_LOCK_S", 0.3):
             d = Path(tmp)
             lock = J.percorso_lock(d)
-            for nome, contenuto in (("processo ancora attivo", {"pid": os.getpid(), "host": host, "t": vecchio}),
-                                    ("lock recente", {"pid": int(morto), "host": host, "t": time.time()}),
-                                    ("altro host", {"pid": int(morto), "host": host + "-altro", "t": vecchio}),
-                                    ("contenuto illeggibile", "non è json")):
-                lock.write_text(contenuto if isinstance(contenuto, str) else json.dumps(contenuto), encoding="utf-8")
+            for nome, contenuto in (("processo ancora attivo", lambda: {"pid": os.getpid(), "host": host, "t": vecchio}),
+                                    ("lock recente", lambda: {"pid": int(morto), "host": host, "t": time.time()}),
+                                    ("altro host", lambda: {"pid": int(morto), "host": host + "-altro", "t": vecchio}),
+                                    ("contenuto illeggibile", lambda: "non è json")):
+                x = contenuto()                                        # orario generato al momento della scrittura
+                lock.write_text(x if isinstance(x, str) else json.dumps(x), encoding="utf-8")
                 with self.assertRaises(TimeoutError, msg=nome):
                     J.aggiungi("trade", self.T, d)
                 self.assertTrue(lock.exists(), nome)

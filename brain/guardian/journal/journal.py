@@ -36,6 +36,7 @@ import json
 import os
 import re
 import secrets
+import socket
 import sys
 import time
 from contextlib import contextmanager
@@ -83,16 +84,64 @@ def percorso_lock(cartella: Path) -> Path:
     return cartella / FILE_LOCK
 
 
+def _pid_attivo(pid: int) -> bool:
+    """Il processo `pid` è ancora in esecuzione su questa macchina? Nel dubbio: sì (un lock non si ruba).
+    Unix: os.kill(pid, 0). Windows: OpenProcess/GetExitCodeProcess (os.kill su Windows TERMINEREBBE il processo)."""
+    if os.name == "nt":                                          # non verificato in questo repository (nessun Windows)
+        import ctypes
+        k = ctypes.windll.kernel32
+        h = k.OpenProcess(0x1000, False, pid)                    # PROCESS_QUERY_LIMITED_INFORMATION
+        if not h:
+            return k.GetLastError() == 5                         # accesso negato: il processo esiste
+        try:
+            codice = ctypes.c_ulong()
+            return not k.GetExitCodeProcess(h, ctypes.byref(codice)) or codice.value == 259   # STILL_ACTIVE
+        finally:
+            k.CloseHandle(h)
+    try:
+        os.kill(pid, 0)
+    except ProcessLookupError:
+        return False
+    except OSError:                                              # per esempio PermissionError: esiste
+        return True
+    return True
+
+
+def _lock_orfano(path: Path):
+    """Contenuto del file di lock se è ORFANO e recuperabile in sicurezza, altrimenti None. Recuperabile solo se:
+    contenuto leggibile, stesso host, processo non più attivo e lock più vecchio di 2 × ATTESA_LOCK_S."""
+    try:
+        testo = path.read_text(encoding="utf-8")
+        info = json.loads(testo)
+        pid, host, t = info["pid"], info["host"], float(info["t"])
+    except (OSError, ValueError, KeyError, TypeError):
+        return None
+    if not isinstance(pid, int) or isinstance(pid, bool) or pid <= 0 or host != socket.gethostname():
+        return None
+    if time.time() - t <= 2 * ATTESA_LOCK_S or _pid_attivo(pid):
+        return None
+    return testo
+
+
 @contextmanager
-def _lock_esclusivo(cartella: Path):
+def _lock_esclusivo(cartella: Path, facoltativo: bool = False):
     """Lock esclusivo sulla cartella dei dati, con attesa massima ATTESA_LOCK_S e poi TimeoutError (mai una scrittura
-    non protetta). Unix: `fcntl.flock`, rilasciato anche se il processo termina. Altrimenti: file creato con O_EXCL
-    (atomico anche su Windows) e rimosso alla fine; se un'interruzione lo lascia, l'errore dice di rimuoverlo a mano."""
-    cartella.mkdir(parents=True, exist_ok=True)
+    non protetta). Unix: `fcntl.flock` su un file aperto con O_CLOEXEC, rilasciato anche se il processo termina.
+    Altrimenti: file creato con O_EXCL (atomico anche su Windows) con PID, host e orario, rimosso alla fine; un lock
+    ORFANO (stesso host, processo terminato, più vecchio di 2 × ATTESA_LOCK_S) è recuperato, ogni altro lock si attende.
+    `facoltativo`: se il file di lock non si può creare (cartella in sola lettura), si procede senza lock."""
+    if not facoltativo:
+        cartella.mkdir(parents=True, exist_ok=True)
     path = percorso_lock(cartella)
     scadenza = time.monotonic() + ATTESA_LOCK_S
     if fcntl is not None:
-        fd = os.open(path, os.O_RDWR | os.O_CREAT, 0o600)
+        try:
+            fd = os.open(path, os.O_RDWR | os.O_CREAT | getattr(os, "O_CLOEXEC", 0), 0o600)
+        except OSError:
+            if not facoltativo:
+                raise
+            yield
+            return
         try:
             while True:
                 try:
@@ -113,7 +162,20 @@ def _lock_esclusivo(cartella: Path):
         try:
             fd = os.open(path, os.O_CREAT | os.O_EXCL | os.O_WRONLY, 0o600)
             break
+        except PermissionError:
+            if not facoltativo:
+                raise
+            yield
+            return
         except FileExistsError:
+            orfano = _lock_orfano(path)
+            if orfano is not None:
+                try:                                             # ricontrollo: si rimuove solo il lock giudicato orfano
+                    if path.read_text(encoding="utf-8") == orfano:
+                        path.unlink()
+                except OSError:
+                    pass
+                continue
             if time.monotonic() >= scadenza:
                 raise TimeoutError(f"journal bloccato: esiste {path}. Un altro processo sta scrivendo, oppure "
                                    f"un'interruzione ha lasciato il lock: se nessun processo è attivo, rimuoverlo "
@@ -121,7 +183,7 @@ def _lock_esclusivo(cartella: Path):
             time.sleep(0.02)
     try:
         try:
-            os.write(fd, f"{os.getpid()}\n".encode("ascii"))
+            os.write(fd, json.dumps({"pid": os.getpid(), "host": socket.gethostname(), "t": time.time()}).encode("utf-8"))
         finally:
             os.close(fd)
         yield
@@ -234,6 +296,8 @@ def valida(registro: str, dati: dict) -> None:
         p = dati["probabilita"]
         if not isinstance(p, (int, float, Decimal, str)) or not 0 <= _decimale("probabilita", p) <= 1:     # _decimale rifiuta i booleani
             raise ValueError("probabilita: numero finito tra 0 e 1 (int, float, Decimal o testo numerico; non un booleano)")
+    if registro == "previsione" and "chiude" not in dati and ({"esito", "esito_utc"} & set(dati)):
+        raise ValueError("esito ed esito_utc stanno solo in un record di esito (con chiude), non in una previsione")
     if registro == "previsione" and "esito" in dati:
         if type(dati["esito"]) is not int or dati["esito"] not in (0, 1):
             raise ValueError("esito: intero 0 o 1 (non un booleano)")
@@ -325,8 +389,16 @@ def aggiungi(registro: str, dati: dict, cartella: Path | None = None) -> dict:
 def verifica(cartella: Path | None = None, impronta_attesa: str | None = None) -> list[str]:
     """Controlla la catena di hash, lo schema di ogni registro e l'ancora. Con `impronta_attesa` (annotata fuori dal
     journal con `ancora`) rileva anche la cancellazione totale di dati e ancora o la loro sostituzione.
-    Restituisce l'elenco dei problemi (vuoto = integro)."""
+    Restituisce l'elenco dei problemi (vuoto = integro). Lavora sotto lo stesso lock di `aggiungi`, così non vede una
+    scrittura a metà (riga scritta, ancora non ancora aggiornata)."""
     cartella = cartella or cartella_dati()
+    if not cartella.is_dir():
+        return _verifica(cartella, impronta_attesa)
+    with _lock_esclusivo(cartella, facoltativo=True):
+        return _verifica(cartella, impronta_attesa)
+
+
+def _verifica(cartella: Path, impronta_attesa: str | None) -> list[str]:
     problemi = []
     if impronta_attesa is not None:
         ancora = _leggi_ancora(percorso_ancora(cartella))
@@ -387,14 +459,25 @@ def impronta_ancora(cartella: Path | None = None) -> str:
 def versioni_finali(path: Path) -> dict:
     """Applica le correzioni: per ogni record originale restituisce l'ultima versione dei dati.
     Una correzione (`corregge`) può puntare all'originale o a una correzione precedente: si risale all'originale.
-    Chiave: id dell'originale. Anche `chiude` è ricondotto all'originale."""
-    radice, finali = {}, {}
+    Chiave: id dell'originale. Anche `chiude` è ricondotto all'originale.
+    Solleva ValueError se il file contiene riferimenti fantasma (un id non ancora presente) o incoerenti (correzione
+    fra record di natura diversa, esito che chiude un esito): file manomesso o scritto a mano."""
+    radice, esito, finali = {}, {}, {}
     for riga in _righe(path):
         rec = json.loads(riga)
         d = rec["dati"]
-        r = radice.get(d["corregge"], d["corregge"]) if "corregge" in d else rec["id"]
-        radice[rec["id"]] = r
-        finali[r] = dict(d, chiude=radice.get(d["chiude"], d["chiude"])) if "chiude" in d else d
+        e = "chiude" in d
+        for rif in ("corregge", "chiude"):
+            if rif in d and d[rif] not in radice:
+                raise ValueError(f"{path.name} {rec['id']}: {rif} {d[rif]!r} non precede il record "
+                                 f"(riferimento fantasma o file manomesso)")
+        if "corregge" in d and esito[d["corregge"]] != e:
+            raise ValueError(f"{path.name} {rec['id']}: corregge {d['corregge']!r}, record di natura diversa")
+        if e and esito[d["chiude"]]:
+            raise ValueError(f"{path.name} {rec['id']}: chiude {d['chiude']!r}, che è un esito e non una previsione")
+        r = radice[d["corregge"]] if "corregge" in d else rec["id"]
+        radice[rec["id"]], esito[rec["id"]] = r, e
+        finali[r] = dict(d, chiude=radice[d["chiude"]]) if e else d
     return finali
 
 
