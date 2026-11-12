@@ -1,6 +1,6 @@
 # Documento di continuità
 
-Ultimo aggiornamento: **2026-11-11**, dopo l'audit architetturale. Leggere questo file per primo (vale anche per Gemini, insieme a `collaborazione/HANDOFF-GEMINI.md`).
+Ultimo aggiornamento: **2026-11-12**, dopo la chiusura dell'audit Red Team sul Guardian (vedi «Stato consolidato di `main`»). Leggere questo file per primo (vale anche per Gemini, insieme a `collaborazione/HANDOFF-GEMINI.md`).
 
 ## Stato
 - **Sviluppo sospeso** (D-12): nessun nuovo modulo, nessuno sviluppo del motore quantitativo, nessuna modifica a L2.1–L2.6 né ai materiali di Antigravity, nessuna migrazione o riorganizzazione.
@@ -88,11 +88,26 @@ Il G0 **non** è ancora utilizzabile per decidere: serve la riconciliazione con 
   - lock esclusivo in `aggiungi()`, che corregge anche una collisione reale fra scrittori concorrenti sul file temporaneo dell'ancora.
   - 61/61 test su Python 3.9, 3.11, 3.12 e 3.13; mutanti non equivalenti uccisi: 58/58 su 3.13 e 57/57 su 3.9 (V48 equivalente prima di 3.11).
 
+**Audit esterno «Red Team» sul Guardian: chiuso per `brain/guardian/`.**
+- Bonifica sul ramo `fix/red-team-guardian`, unito a `main` (`fd14834`): 13 rilievi in TDD (NON STIMABILE in limiti e scheda, trade sovrapposti in R1, stringhe dello strumento e rumore float nel tick, `versioni_finali` ed esiti senza `chiude`, lock con O_CLOEXEC, lock orfani e `verifica` sotto lock, `fmt` con esponenti estremi, P-01 con capitale nullo, chiavi TOML tra virgolette).
+- Audit di verifica: 0 CRITICO e 0 ALTO nei 7 file del Guardian; 1 MEDIO (`versioni_finali` accettava `chiude` verso una correzione), corretto in TDD su `main` (`3372072` rosso, `18bd042` verde).
+- **Non verificati:** i 6 file del Binario B (`dsr`, `engine`, `ingestion`, `models`, `partitioning`, `portfolio`) e i due ALTO che l'audit vi attribuisce (ALTO-2 residuo in `portfolio.on_fill`, ALTO-7 in `engine` dopo un gap).
+  - Al 12/11/2026 22:46 UTC, `origin/main` è identico a `main` locale (verificato con `git ls-remote`).
+  - `brain/laboratorio/` non esiste e `brain/dati/` contiene solo i README: nessun codice né test del Binario B su GitHub.
+  - Restano da verificare quando il codice sarà pubblicato.
+
+**Stato consolidato di `main`:**
+- `brain/guardian/`: 76/76 test verdi con `-W error` su Python 3.9, 3.11, 3.12 e 3.13.
+- ALTO-8 (race nel recupero del lock orfano senza `fcntl`, da una revisione esterna) corretto in TDD sul ramo `fix/lock-orfano-toctou` e unito a `main`.
+- Mutanti non equivalenti uccisi: 79/79 su 3.13 e 78/78 su 3.9 (V48 equivalente prima di 3.11, E01 equivalente su tutte le versioni).
+- Rami storici ancora su GitHub: `feat/fix-g0-journal`, `fix/red-team-guardian` e `fix/lock-orfano-toctou`, tutti già uniti.
+
 **Ora: fermo in attesa dell'utente**, per:
 - rispondere alle decisioni di `governance/DECISIONI-APERTE.md`, a partire da quelle bloccanti;
 - valutare la revisione V3.3 e decidere se applicare l'errata (T-01…T-05) all'inizio della fase successiva;
 - prendere le decisioni elencate nell'audit architetturale (§10) e nella valutazione della controverifica (§7);
 - avviare Q-09 (Trading Guardian) e Q-07;
+- pubblicare il codice del Binario B su GitHub, per verificare ALTO-2 e ALTO-7 ed eseguire `brain/dati/tests` e `brain/laboratorio/tests`;
 - prendere le decisioni della proposta della Parte B.
 
 ## Correzioni note ancora da applicare (dopo il via libera)

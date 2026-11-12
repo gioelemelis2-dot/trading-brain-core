@@ -174,6 +174,10 @@ M = {
     "V76 P-01: capitale non positivo non controllato (divisione per zero)": [
         (SC, "if cap.stimabile and cap.valore <= 0:", "if False:")],
     "V77 TOML minimale: chiavi tra virgolette non gestite": [(TO, '''if s[0] in "\\"'":''', "if False:")],
+    "V78 versioni_finali: chiude verso una correzione accettato": [
+        (JO, 'if e and radice[d["chiude"]] != d["chiude"]:', "if False:")],
+    "V79 recupero dell'orfano senza lock di recupero esclusivo (TOCTOU, ALTO-8)": [
+        (JO, "os.O_WRONLY | os.O_CREAT | os.O_EXCL", "os.O_WRONLY | os.O_CREAT")],
     # --- equivalenti dichiarati ---
     "E01 ancora: confronto del numero di righe rimosso (EQUIVALENTE)": [
         (JO, 'if a["righe"] != len(righe) or a["ultimo_hash"] != ultimo:', 'if a["ultimo_hash"] != ultimo:')],

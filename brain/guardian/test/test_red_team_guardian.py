@@ -139,6 +139,22 @@ class TestMedio3e4VersioniFinali(unittest.TestCase):
             _scrivi_previsioni(path, [dict(P, probabilita=0.5), esito])
             self.assertEqual(len(J.versioni_finali(path)), 2)                          # file coerente: nessun errore
 
+    def test_versioni_finali_rifiuta_chiude_verso_una_correzione(self):
+        """MEDIO (audit di verifica): `chiude` deve puntare all'id RADICE della previsione, come in
+        controlla_riferimenti(). In un file scritto a mano un esito che chiude la correzione PRE-00002 veniva accettato."""
+        esito = {"autore": "utente", "fonte": "t", "esito": 1}
+        with tempfile.TemporaryDirectory() as tmp:
+            path = Path(tmp) / "previsione.jsonl"
+            _scrivi_previsioni(path, [dict(P, probabilita=0.8), dict(P, probabilita=0.6, corregge="PRE-00001"),
+                                      dict(esito, chiude="PRE-00002")])
+            with self.assertRaises(ValueError):
+                J.versioni_finali(path)
+            with self.assertRaises(ValueError):
+                J.brier(Path(tmp))
+            _scrivi_previsioni(path, [dict(P, probabilita=0.8), dict(P, probabilita=0.6, corregge="PRE-00001"),
+                                      dict(esito, chiude="PRE-00001")])
+            self.assertAlmostEqual(J.brier(Path(tmp))["claude"]["brier"], (0.6 - 1) ** 2)   # radice: valido
+
     def test_previsione_con_esito_senza_chiude_rifiutata(self):
         for extra in ({"esito": 1}, {"esito_utc": "2026-12-01T00:00:00Z"}):
             with self.assertRaises(ValueError, msg=str(extra)):
@@ -218,6 +234,69 @@ class TestMedio5e6e7Lock(unittest.TestCase):
             lock.write_text(json.dumps({"pid": int(morto), "host": host, "t": vecchio}), encoding="utf-8")
             J.aggiungi("trade", self.T, d)                                              # orfano: recuperato
             self.assertFalse(lock.exists())
+            self.assertEqual(J.verifica(d), [])
+
+
+class TestAlto8RecuperoLockOrfano(unittest.TestCase):
+    """ALTO-8 (revisione esterna): nel ripiego senza fcntl, fra il ricontrollo del lock orfano e la sua rimozione un
+    altro processo può rimuovere l'orfano e creare il PROPRIO lock; la rimozione cancella allora un lock vivo e due
+    scrittori entrano insieme. Riproduzione deterministica con due thread: il thread A si ferma esattamente nella
+    finestra (dopo il secondo controllo del contenuto, prima della rimozione) mentre il thread B scrive."""
+
+    T = {"simbolo": "EURUSD", "direzione": "long", "aperto_utc": "2026-11-12T09:00:00Z", "ingresso": "1.085",
+         "stop": "1.083", "quantita": "1", "fonte": "t"}
+
+    def test_al_massimo_uno_scrittore_nella_sezione_critica(self):
+        import threading
+        morto = int(subprocess.run([sys.executable, "-c", "import os; print(os.getpid())"], capture_output=True,
+                                   text=True).stdout.strip())
+        orfano = json.dumps({"pid": morto, "host": socket.gethostname(), "t": time.time() - 100})
+        stato = {"dentro": 0, "massimo": 0, "letture_A": 0}
+        guardia, errori = threading.Lock(), []
+        originale_read = Path.read_text
+        originale_contr = J.controlla_riferimenti
+
+        def scrivi():
+            try:
+                J.aggiungi("trade", self.T, d)
+            except Exception as e:                                       # noqa: BLE001
+                errori.append(repr(e))
+
+        def read_text(self_path, *a, **k):
+            testo = originale_read(self_path, *a, **k)
+            if self_path.name == J.FILE_LOCK and threading.current_thread().name == "A" and testo == orfano:
+                stato["letture_A"] += 1
+                if stato["letture_A"] == 2:                              # A è nella finestra: ricontrollo fatto
+                    tb.start()
+                    time.sleep(0.6)                                      # ... e B intanto agisce
+            return testo
+
+        def controlla(*a, **k):                                         # eseguito dentro la sezione critica
+            with guardia:
+                stato["dentro"] += 1
+                stato["massimo"] = max(stato["massimo"], stato["dentro"])
+            try:
+                if threading.current_thread().name == "B":
+                    time.sleep(1.0)
+                return originale_contr(*a, **k)
+            finally:
+                with guardia:
+                    stato["dentro"] -= 1
+
+        with tempfile.TemporaryDirectory() as tmp, mock.patch.object(J, "fcntl", None), \
+                mock.patch.object(J, "ATTESA_LOCK_S", 10.0), mock.patch.object(Path, "read_text", read_text), \
+                mock.patch.object(J, "controlla_riferimenti", controlla):
+            d = Path(tmp)
+            J.percorso_lock(d).write_text(orfano, encoding="utf-8")
+            ta, tb = threading.Thread(target=scrivi, name="A"), threading.Thread(target=scrivi, name="B")
+            ta.start()
+            ta.join(30)
+            if tb.is_alive() or tb.ident is not None:
+                tb.join(30)
+            self.assertEqual(errori, [])
+            self.assertEqual(stato["massimo"], 1, "due scrittori insieme nella sezione critica")
+            righe = J._righe(d / "trade.jsonl")
+            self.assertEqual(len({json.loads(r)["id"] for r in righe}), 2)
             self.assertEqual(J.verifica(d), [])
 
 
