@@ -196,3 +196,33 @@ Formato: data · versione della base · cosa · perché · file.
   - Su 3.9 il primo giro dava 55/58: V54 e V58 sopravvivevano perché il parser TOML minimale era controllato solo contro `tomllib`, assente proprio su 3.9; ora un risultato atteso scritto nel test lo controlla anche lì.
   - V48 è equivalente prima di 3.11. Risultato finale su 3.9: 57/57.
 - Nessuna modifica a V3.3, lezioni o materiali di Gemini.
+
+## 2026-11-12 · v1.15 (bonifica dei rilievi del Red Team esterno su `brain/guardian/`)
+
+- Ramo `fix/red-team-guardian` da `main`, solo `brain/guardian/`, in TDD.
+  - 13 test rossi (commit `e78cc00`), poi le correzioni (`54ac980`).
+  - Unito a `main` il 12/11/2026 (`fd14834`).
+- Rilievi:
+  - ALTO-1: NON STIMABILE propagato da margine e stop_residui; avviso «controllo non verificabile» nella scheda invece di un `TypeError`;
+  - ALTO-5: trade sovrapposti esclusi da R1;
+  - ALTO-6/BASSO-1: stringhe dello strumento non vuote; tolleranza di 1e-9 tick sul rumore float;
+  - MEDIO-3/4: `versioni_finali` rifiuta riferimenti fantasma; esito senza `chiude` rifiutato;
+  - MEDIO-5/6/7: O_CLOEXEC esplicito; recupero dei soli lock orfani sicuri; `verifica` sotto lock;
+  - MEDIO-10/11: `fmt` con esponenti estremi; P-01 con capitale nullo; chiavi TOML tra virgolette.
+- Scostamenti motivati:
+  - il costrutto `Valore(..., "divisione intera", ...)` suggerito non è valido nello schema: usato `combina`;
+  - O_CLOEXEC era già garantito dalla PEP 446;
+  - `TEMPLATE_RICONCILIAZIONE_DA25.toml` non esiste.
+- Esito: 74/74 test su Python 3.9-3.13; mutanti non equivalenti uccisi 77/77 su 3.13 e 76/76 su 3.9.
+- Questa voce è registrata qui e non prima: il mandato era limitato a `brain/guardian/`.
+
+## 2026-11-12 · v1.16 (chiusura dell'audit Red Team sul Guardian e stato consolidato di `main`)
+
+- Audit di verifica sui 13 file aggiornati:
+  - nei 7 file del Guardian, 0 CRITICO e 0 ALTO;
+  - 1 MEDIO corretto in TDD su `main`: `versioni_finali` ora rifiuta un esito con `chiude` verso una correzione invece dell'id radice, come `controlla_riferimenti` (`3372072` rosso, `18bd042` verde; nuovo mutante V78).
+- **Binario B non verificato:** al 12/11/2026 22:46 UTC `origin/main` coincide con `main` locale e non contiene `brain/laboratorio/` né test in `brain/dati/`.
+  - ALTO-2 residuo (`portfolio.on_fill`) e ALTO-7 (`engine`, ordine eseguito dopo un gap con lo stop del segnale) restano non verificati.
+  - Lo stesso vale per le suite `brain/dati/tests` e `brain/laboratorio/tests`.
+- Stato di `main`: 75/75 test del Guardian su Python 3.9, 3.11, 3.12 e 3.13; mutanti non equivalenti uccisi 78/78 su 3.13 e 77/77 su 3.9.
+- Nessuna modifica a V3.3, lezioni, materiali di Gemini, `brain/dati/` o `brain/laboratorio/`.
