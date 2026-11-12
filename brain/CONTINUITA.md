@@ -57,7 +57,10 @@ Ultimo aggiornamento: **2026-11-11**, dopo l'audit architetturale. Leggere quest
 
 **Valutazione della controverifica di Gemini: completata il 12/11/2026** (`R-CLAUDE-20261112-07-CONTROVERIFICA-GEMINI/`): utile come riconoscimento degli errori, insufficiente come verifica indipendente (Area G e autocritica assenti, nessun disaccordo, proposte trasformate in decisioni). Decisioni consolidate in §7.
 
+**Registro unico delle decisioni aperte: creato il 12/11/2026** (`governance/DECISIONI-APERTE.md`, DA-01…DA-18; bloccanti DA-01, DA-03, DA-15). Decisioni dell'utente del 12/11 registrate in `governance/DECISIONI.md` (D-14…D-18). Pacchetto per la revisione esterna consegnato in chat (istruzioni in `collaborazione/revisione-materiali-gemini/R-CLAUDE-20261112-08-REVISIONE-ESTERNA/`).
+
 **Ora: fermo in attesa dell'utente**, per:
+- rispondere alle decisioni di `governance/DECISIONI-APERTE.md`, a partire da quelle bloccanti;
 - valutare la revisione V3.3 e decidere se applicare l'errata (T-01…T-05) all'inizio della fase successiva;
 - prendere le decisioni elencate nell'audit architetturale (§10) e nella valutazione della controverifica (§7);
 - avviare Q-09 (Trading Guardian) e Q-07;

@@ -138,3 +138,12 @@ Formato: data · versione della base · cosa · perché · file.
   - pacchetto per una revisione esterna (`PACCHETTO_AUDIT_ARCHITETTURA_V2_PER_CHAT.md` e `.zip`).
 - Riconosciuti due errori di Claude (D-03 ρ = 1; D-04 limiti «deterministici» senza H_esec).
 - Commit autorizzato dall'utente il 12/11/2026. Aggiornati `CONTINUITA.md`, `collaborazione/LOCK.md` e questo registro. Nessun file di Gemini, nessuna lezione e nessun codice modificati.
+
+## 2026-11-12 · v1.9 (controverifica di Gemini, registro delle decisioni, revisione esterna)
+
+- Ricevuto il pacchetto di controverifica di Gemini (ZIP `c0bb94a5…`, manifest 4/4 OK). Non archiviato nel Brain (DA-01).
+- `R-CLAUDE-20261112-07-CONTROVERIFICA-GEMINI/`: valutazione critica (G-01…G-17), con 10 correzioni dopo una verifica fattuale (§9).
+- `governance/DECISIONI.md`: aggiunte D-14…D-18, decisioni dell'utente del 12/11 (ecosistema e autonomia bounded; simmetria e indipendenza dai fornitori; Guardian G0 consultivo; V3.3 congelata; TradingView e motore indipendente).
+- Nuovo `governance/DECISIONI-APERTE.md`: registro unico delle decisioni aperte DA-01…DA-18, raccolte da cinque documenti.
+- `R-CLAUDE-20261112-08-REVISIONE-ESTERNA/`: istruzioni per un revisore esterno, indice e manifest. Lo ZIP con le copie dei documenti di Gemini è stato consegnato in chat e non è archiviato nel repository.
+- Aggiornato `CONTINUITA.md`. Nessun file di Gemini, nessuna lezione e nessun codice modificati.
