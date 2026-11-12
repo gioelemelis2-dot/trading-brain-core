@@ -152,6 +152,18 @@ EQUIVALENTI = {
 }
 
 
+# Equivalenti solo su alcune versioni di Python: (versione minima in cui il mutante è rilevabile, motivazione).
+EQUIVALENTI_PER_VERSIONE = {
+    "V48": ((3, 11), "Prima di Python 3.11 date.fromisoformat accetta già soltanto AAAA-MM-GG: il controllo con la "
+                     "regex serve da 3.11 in poi, dove si accetterebbero anche '20261112' o '2026-W46-4'."),
+}
+
+
+def equivalente(mid: str) -> bool:
+    return mid in EQUIVALENTI or (mid in EQUIVALENTI_PER_VERSIONE
+                                  and sys.version_info[:2] < EQUIVALENTI_PER_VERSIONE[mid][0])
+
+
 def copia(dest: Path) -> Path:
     if dest.exists():
         shutil.rmtree(dest)
@@ -204,22 +216,27 @@ for nome, subs in M.items():
         assert p.read_text(encoding="utf-8") != (GUARDIAN / f).read_text(encoding="utf-8"), nome
         importato(g, f, a, b)
     rc, falliti, _ = esegui(g)
-    esito = "UCCISO" if rc else ("EQUIVALENTE" if mid in EQUIVALENTI else "SOPRAVVISSUTO")
+    esito = "UCCISO" if rc else ("EQUIVALENTE" if equivalente(mid) else "SOPRAVVISSUTO")
     ris.append((mid, esito))
     file_ = ", ".join(sorted({f for f, _, _ in subs}))
     print(f"{esito:13s} {nome}  ({file_})" + (f"  [{', '.join(falliti)}]" if falliti else ""))
     shutil.rmtree(OUT / mid)
 shutil.rmtree(OUT / "M00")
 
-non_eq = [x for x in ris if x[0] not in EQUIVALENTI]
+non_eq = [x for x in ris if not equivalente(x[0])]
 uccisi = sum(1 for _, e in non_eq if e == "UCCISO")
 print()
 for k, v in EQUIVALENTI.items():
     print(f"{k} equivalente: {v}")
+for k, (versione, v) in EQUIVALENTI_PER_VERSIONE.items():
+    if equivalente(k):
+        print(f"{k} equivalente su Python {sys.version_info[0]}.{sys.version_info[1]} (rilevabile da "
+              f"{versione[0]}.{versione[1]}): {v}")
+print(f"Python {sys.version.split()[0]}")
 print(f"\nMutanti non equivalenti uccisi: {uccisi}/{len(non_eq)}")
 per_file = {}
 for (mid, e), subs in zip(ris, M.values()):
-    if mid not in EQUIVALENTI:
+    if not equivalente(mid):
         for f in {f for f, _, _ in subs}:
             t = per_file.setdefault(f, [0, 0])
             t[0] += e == "UCCISO"

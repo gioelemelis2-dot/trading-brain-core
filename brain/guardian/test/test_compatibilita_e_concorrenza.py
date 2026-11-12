@@ -69,6 +69,17 @@ k = "v"
 '''
 
 
+# Risultato atteso del campione, scritto a mano: serve su Python 3.9, dove tomllib non esiste e il parser minimale è
+# proprio quello in uso. Su 3.11+ il test controlla anche che tomllib dia esattamente questo risultato.
+ATTESO_CAMPIONE = {
+    "titolo": 'con # cancelletto, "virgolette" e \\ barra', "letterale": r"C:\percorso\senza\escape",
+    "intero": 42, "negativo": -7, "decimale": 0.10, "esponente": 0.001, "separatori": 1000, "vero": True,
+    "falso": False, "vuoto": [], "lista": [1, 2, 3], "stringhe": ["a", "b # non è un commento", "c"],
+    "unicode": "caffè àè", "sezione": {"sotto": {"chiave-con-trattino": "x"}},
+    "voci": [{"n": 1}, {"n": 2, "dettaglio": {"k": "v"}}],
+}
+
+
 class _Datetime39(datetime):
     """`datetime.fromisoformat` come in Python 3.9/3.10: niente `Z`, frazioni di secondo solo a 3 o 6 cifre."""
 
@@ -92,8 +103,9 @@ class TestTomlPortabile(unittest.TestCase):
             minimale = _toml.loads_minimale(testo)
             if TOMLLIB_STD is not None:
                 self.assertEqual(minimale, TOMLLIB_STD.loads(testo), f.name)
+        self.assertEqual(_toml.loads_minimale(CAMPIONE_TOML), ATTESO_CAMPIONE)             # anche su Python 3.9
         if TOMLLIB_STD is not None:
-            self.assertEqual(_toml.loads_minimale(CAMPIONE_TOML), TOMLLIB_STD.loads(CAMPIONE_TOML))
+            self.assertEqual(TOMLLIB_STD.loads(CAMPIONE_TOML), ATTESO_CAMPIONE)             # il letterale è giusto
         regole = _toml.loads_minimale((GUARDIAN / "regole" / "regole_personali.toml").read_text(encoding="utf-8"))
         self.assertEqual(len(regole["regola"]), 15)                  # anche senza tomllib: valori noti
         ftmo = _toml.loads_minimale((GUARDIAN / "regole" / "prop_firm_ftmo.toml").read_text(encoding="utf-8"))
