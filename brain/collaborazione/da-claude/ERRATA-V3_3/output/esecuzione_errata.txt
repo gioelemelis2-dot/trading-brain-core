@@ -1,0 +1,40 @@
+# Errata V3.3: esecuzioni del 12/11/2026 (Python 3.13.18)
+Motore e suite di Gemini (copie verificate):
+b20608ca8ccdaf2ed90a7a93968ad48f57d5e32ffafb747b317c2be559dbda12  prop_risk_engine_v3_3.py
+bb43b35943b480ac2806b86e06b2994a3cc062e0577099cc3a6cefc9ae2d41c0  test_prop_risk_v3_3.py
+
+## Test dell'errata sul motore originale
+Ran 4 tests in 0.001s
+
+OK (expected failures=1)
+
+## Mutazioni (suite di Gemini + test dell'errata)
+SOPRAVVISSUTO V01 fase 2 senza nuovi generatori (accoppiamento parziale)
+UCCISO        V02 deriva fissa 0,09754 (P-02 annullata)  [G:test_p02_mae_generalization_multi_scenario, G:test_s05_mae_asymmetric_guards_extreme_values, E:test_t04_v16_configurazione_irraggiungibile, E:test_t04_v24_deriva_negativa]
+UCCISO        V03 il motore passa R:R 2 fisso al campionatore MAE  [G:test_mae_profondo_attraverso_motore_rr1, G:test_q02_mae_through_engine_rr_diff_2]
+UCCISO        V04 durante il trade daily loss prima del max loss (P-05 annullata)  [G:test_q02_barrier_priority_during_trade_mae]
+UCCISO        V05 costi ignorati  [G:test_fase2_esatta_e_prodotto_due_fasi, G:test_q02_exact_concordance_group_a_multi_config]
+UCCISO        V06 Markov: partenza sempre da vincita (C-01 annullata)  [G:test_c01_markov_stationary_start, G:test_q02_exact_concordance_group_a_multi_config]
+UCCISO        V07 fase 2 con il target della fase 1  [G:test_fase2_esatta_e_prodotto_due_fasi, G:test_q02_exact_concordance_group_a_multi_config]
+UCCISO        V08 nessun controllo daily loss durante il trade  [G:test_mae_profondo_attraverso_motore_rr1, G:test_q02_barrier_priority_during_trade_mae, G:test_q02_mae_through_engine_rr_diff_2]
+UCCISO        V09 pavimento giornaliero statico  [G:test_c12_unlimited_days_ftmo, G:test_fase2_esatta_e_prodotto_due_fasi, G:test_q02_exact_concordance_group_a_multi_config]
+UCCISO        V10 MAE troncato a -0,5R (escursioni profonde perse)  [G:test_mae_profondo_attraverso_motore_rr1, G:test_q02_barrier_priority_during_trade_mae, E:test_t01_v22_campionatore_deriva_piccola]
+UCCISO        V11 MAE: fattore 2 dimenticato nell'inversione  [G:test_mae_soglia_mu_quasi_zero, G:test_p02_mae_generalization_multi_scenario, G:test_q02_exact_concordance_group_a_multi_config, G:test_s05_mae_asymmetric_guards_extreme_values, E:test_t01_v22_campionatore_deriva_piccola]
+UCCISO        V12 bug min_days della V1 reintrodotto  [G:test_q02_exact_concordance_group_a_multi_config, G:test_q02_min_days_regression_freezes_risk]
+UCCISO        V13 IC di Kelly al 95% calcolato con z=1 (N-01 reintrodotto)  [G:test_q01_kelly_confidence_interval_at_95_and_68]
+UCCISO        V14 SE di E[R] senza il fattore (R:R+1)  [G:test_q01_kelly_confidence_interval_at_95_and_68]
+UCCISO        V15 IC di Kelly: costo ignorato nel valore atteso  [G:test_q01_kelly_confidence_interval_at_95_and_68]
+UCCISO        V16 risolutore MAE senza controlli di ammissibilita e convergenza  [E:test_t04_v16_configurazione_irraggiungibile]
+UCCISO        V17 giorni minimi ignorati (pass al raggiungimento del target)  [G:test_q02_min_days_regression_freezes_risk]
+UCCISO        V18 Markov: P(L|W) = 1 - P(L|L) (stazionarieta persa)  [G:test_c01_markov_stationary_start, G:test_q02_exact_concordance_group_a_multi_config]
+UCCISO        V19 Lomax: esponente -alpha invece di -1/alpha  [G:test_slippage_deterministico]
+UCCISO        V20 Lomax: tetto 3R ignorato  [G:test_slippage_deterministico]
+UCCISO        V21 Wilson: z=1 al posto di 1,96 (IC 95% del JSON)  [G:test_wilson_valori_noti]
+UCCISO        V22 campionatore MAE: soglia mu~0 a 0,1 (disallineata dal risolutore)  [E:test_t01_v22_campionatore_deriva_piccola]
+UCCISO        V23 campionatore riscritto: term1 = c1 invece di c1*A  [G:test_mae_soglia_mu_quasi_zero, G:test_p01_crn_coupling_invariance, G:test_p02_mae_generalization_multi_scenario, G:test_q02_barrier_priority_during_trade_mae, G:test_s05_mae_asymmetric_guards_extreme_values, E:test_t01_v22_campionatore_deriva_piccola]
+UCCISO        V24 guardia asimmetrica: ramo mu<0 senza il fattore R:R  [E:test_t04_v16_configurazione_irraggiungibile, E:test_t04_v24_deriva_negativa]
+UCCISO        V25 validazione max_days < min_days rimossa  [G:test_s06_comprehensive_input_validation]
+
+Legenda: G = suite di Gemini, E = test dell'errata
+Mutanti V02-V25 (non equivalenti) uccisi: 24/24
+Tutti i mutanti V01-V25 uccisi: 24/25
