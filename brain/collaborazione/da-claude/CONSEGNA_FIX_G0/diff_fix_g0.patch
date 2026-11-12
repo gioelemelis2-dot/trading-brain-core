@@ -1,0 +1,591 @@
+diff --git a/brain/guardian/LEGGIMI.md b/brain/guardian/LEGGIMI.md
+index bf41c2c..c1bb8c0 100644
+--- a/brain/guardian/LEGGIMI.md
++++ b/brain/guardian/LEGGIMI.md
+@@ -8,15 +8,18 @@
+ |---|---|---|
+ | Regole della prop firm FTMO (`regole/prop_firm_ftmo.toml`) | verificate sulla fonte ufficiale il 12/11/2026 | dettagli dei tipi di conto Standard e Swing (FAQ); prossima verifica 12/02/2027 |
+ | Regole personali (`regole/regole_personali.toml`) | **proposta** | conferma dell'utente, regola per regola |
+-| Calcoli G0 (`g0/`) | implementati e testati (18 test unitari) | **validazione**: riconciliazione con un estratto conto reale e con le specifiche del broker |
+-| Journal (`journal/`) | implementato e testato (6 test: catena di hash, validazione, Brier, sigilli, R1) | scelta di dove conservare i dati (`journal/LEGGIMI.md`, alternative A/B/C) |
++| Calcoli G0 (`g0/`) | implementati e testati (21 test unitari) | **validazione**: riconciliazione con un estratto conto reale e con le specifiche del broker |
++| Journal (`journal/`) | implementato e testato (8 test: catena di hash, ancora di integrità, validazione, Brier, sigilli, R1, Decimal e orari ISO-8601) | scelta di dove conservare i dati (`journal/LEGGIMI.md`, alternative A/B/C) |
+ | Uso per decidere | **NON AUTORIZZATO** | la scheda lo dichiara in prima riga finché `riconciliato = false` |
+ 
+ ## Componenti
+ - `g0/valori.py`: schema dei valori. Un numero senza tipo, fonte e stato di verifica non si può costruire. Propaga tipo, condizioni, verifica e NON STIMABILE. Una stima non può allargare un limite.
+-- `g0/strumenti.py`: perdita allo stop per FX, futures e CFD, con conversione nella valuta del conto. È un DERIVATO condizionato a H_esec: gap, slippage e lato del trigger sono esclusi e vanno in una riserva separata.
++- `g0/strumenti.py`: perdita allo stop per FX, futures e CFD, con conversione nella valuta del conto. I futures si descrivono **solo** con passo e valore del tick (nessuna dimensione del contratto fittizia); FX e CFD richiedono la dimensione del contratto. È un DERIVATO condizionato a H_esec: gap, slippage e lato del trigger sono esclusi e vanno in una riserva separata.
+ - `g0/limiti.py`: limiti FTMO (2-Step, 1-Step, Instant) esattamente come nelle regole ufficiali; margini; stop residui; scenario di stress (tutte le posizioni allo stop).
+-- `g0/scheda.py`: scheda consultiva in ordine fisso (misure → regole → limiti → trade previsto → stress → riserve → avvisi → raccomandazione → decisione).
++- `g0/scheda.py`: scheda consultiva in ordine fisso (misure → regole → limiti → trade previsto → stress → riserve → avvisi → regole personali → raccomandazione → decisione).
++  - Lo stress è confrontato con il limite **giornaliero e con quello totale**.
++  - Le regole personali si leggono da `regole/regole_personali.toml`: si applicano **solo** quelle con `confermata = true`. P-01, P-05, P-11, P-14 e P-15 hanno un controllo automatico; le altre restano domande della checklist; i dati di sessione mancanti sono dichiarati.
++  - I dati di sessione facoltativi stanno nella sezione `[sessione]`: `minuti_da_ultima_perdita`, `ore_sonno`, `perdite_consecutive_oggi`.
+ 
+ ## Uso
+ Dalla cartella `guardian/`:
+@@ -26,7 +29,7 @@ python3 -s -B -m g0.scheda esempi/situazione_esempio.toml
+ ```bash
+ python3 -s -B -m unittest discover -s test -v
+ ```
+-Risultato al 12/11/2026: **24 test, tutti superati** (18 G0, 6 journal).
++Risultato: **29 test, tutti superati** (18 G0 e 6 journal originari, più 5 test delle correzioni in `test/test_fix_g0_journal.py`; dettaglio in `collaborazione/da-claude/CONSEGNA_FIX_G0/`).
+ Requisiti: Python 3.11 o successivo, sola libreria standard.
+ 
+ ## Limiti dichiarati
+diff --git a/brain/guardian/g0/scheda.py b/brain/guardian/g0/scheda.py
+index 53dbd6e..a035def 100644
+--- a/brain/guardian/g0/scheda.py
++++ b/brain/guardian/g0/scheda.py
+@@ -9,13 +9,23 @@ from __future__ import annotations
+ 
+ import sys
+ import tomllib
+-from decimal import Decimal, ROUND_HALF_UP
++from decimal import Decimal, InvalidOperation, ROUND_HALF_UP
++from pathlib import Path
+ 
+ from . import limiti as L
+ from .strumenti import H_ESEC, Strumento, perdita_allo_stop
+ from .valori import Valore, combina, ipotesi, misura
+ 
+ ABBREV = {H_ESEC: "H_esec"}
++FILE_REGOLE_PERSONALI = Path(__file__).resolve().parent.parent / "regole" / "regole_personali.toml"
++# Regole personali con controllo automatico: id → (parametro atteso, dato richiesto)
++CONTROLLI_PERSONALI = {
++    "P-01": ("rischio_per_trade_frazione", "trade previsto"),
++    "P-05": ("limite_personale_giornaliero_frazione", "conto"),
++    "P-11": ("pausa_dopo_perdita_minuti", "sessione.minuti_da_ultima_perdita"),
++    "P-14": ("ore_sonno_minime", "sessione.ore_sonno"),
++    "P-15": ("perdite_consecutive_max", "sessione.perdite_consecutive_oggi"),
++}
+ 
+ 
+ def fmt(v: Valore, etichetta: str) -> str:
+@@ -34,7 +44,8 @@ def _strumenti(dati):
+     out = {}
+     for s in dati.get("strumento", []):
+         out[s["simbolo"]] = Strumento(
+-            s["simbolo"], s["classe"], s["valuta_profitto"], Decimal(str(s.get("dimensione_contratto", 1))),
++            s["simbolo"], s["classe"], s["valuta_profitto"],
++            Decimal(str(s["dimensione_contratto"])) if "dimensione_contratto" in s else None,
+             s["fonte"], s.get("stato_verifica", "C"), s.get("valuta_base"),
+             Decimal(str(s["passo_tick"])) if "passo_tick" in s else None,
+             Decimal(str(s["valore_tick"])) if "valore_tick" in s else None)
+@@ -59,7 +70,78 @@ def _perdita(p, strumenti, valuta, cambi, fonte, aperta=False):
+                              misura(p["quantita"], "lotti/contratti", fonte), valuta, cambio, comm)
+ 
+ 
+-def scheda(dati: dict) -> list[str]:
++def _numero(x):
++    try:
++        return Decimal(str(x))
++    except (InvalidOperation, ValueError):
++        return None
++
++
++def _pct(x: Decimal) -> str:
++    return f"{(x * 100).quantize(Decimal('0.001'), ROUND_HALF_UP)}%".replace(".", ",")
++
++
++def _regole_personali(regole: dict, dati: dict, cap, saldo0, eq, pt, st):
++    """Applica SOLO le regole con `confermata = true`. Restituisce (avvisi, righe della sezione).
++    Le regole confermate senza controllo automatico restano domande della checklist; i dati di sessione mancanti
++    sono dichiarati, non inventati."""
++    elenco = regole.get("regola", [])
++    conf = [r for r in elenco if r.get("confermata") is True]
++    avvisi, righe = [], [f"{len(conf)} regole personali confermate su {len(elenco)} (le altre sono una proposta, non applicate)"]
++    sess = dati.get("sessione", {})
++    fonte = "regole_personali.toml"
++    for r in conf:
++        rid = r["id"]
++        if rid not in CONTROLLI_PERSONALI:
++            righe.append(f"{rid} confermata: controllo non automatico (domanda della checklist)")
++            continue
++        param, serve = CONTROLLI_PERSONALI[rid]
++        v = _numero(r.get("valore"))
++        if r.get("parametro") != param or v is None:
++            avvisi.append(f"{rid}: regola confermata senza valore numerico per «{param}»: non applicata")
++            continue
++        soglia = Valore(v, param, "REGOLA", "norma", f"{fonte} {rid}", stato_verifica="V")
++        if rid == "P-01":
++            if pt is None:
++                righe.append(f"{rid}: nessun trade previsto da controllare")
++                continue
++            frac = combina([pt, cap, soglia], pt.valore / cap.valore, "frazione del capitale", "calcolo deterministico",
++                           fonte=f"{rid} rischio del trade previsto")
++            righe.append(fmt(frac, f"{rid} rischio del trade previsto (soglia {_pct(v)})"))
++            if frac.valore > v:
++                avvisi.append(f"{rid}: il trade previsto rischia {_pct(frac.valore)} del capitale iniziale, "
++                              f"oltre il limite personale di {_pct(v)}.")
++        elif rid == "P-05":
++            margine_p = combina([eq, saldo0, cap, soglia], eq.valore - (saldo0.valore - v * cap.valore), eq.unita,
++                                "calcolo deterministico", fonte=f"{rid} margine personale giornaliero")
++            righe.append(fmt(margine_p, f"{rid} margine rispetto al limite personale giornaliero ({_pct(v)})"))
++            if margine_p.valore < 0:
++                avvisi.append(f"{rid}: limite personale giornaliero già superato: kill switch personale.")
++            elif pt is not None and pt.valore > margine_p.valore:
++                avvisi.append(f"{rid}: se lo stop del trade previsto viene colpito, il limite personale giornaliero viene superato.")
++            elif st is not None and st.valore > margine_p.valore:
++                avvisi.append(f"{rid}: nello scenario di stress il limite personale giornaliero viene superato.")
++        else:
++            chiave = serve.split(".")[1]
++            if chiave not in sess:
++                righe.append(f"{rid} confermata: dato «{serve}» non fornito, regola non verificata")
++                continue
++            x = _numero(sess[chiave])
++            if x is None:
++                avvisi.append(f"{rid}: dato «{serve}» non numerico")
++                continue
++            violata = (x < v) if rid in ("P-11", "P-14") else (x >= v)
++            righe.append(f"{rid}: {chiave} = {x} (soglia {v}){' → regola violata' if violata else ''}")
++            if violata:
++                avvisi.append(f"{rid}: {r['testo']}")
++    return avvisi, righe
++
++
++def scheda(dati: dict, regole_personali: dict | None = None) -> list[str]:
++    """`regole_personali`: contenuto del file delle regole personali; se assente si legge FILE_REGOLE_PERSONALI."""
++    if regole_personali is None:
++        with open(FILE_REGOLE_PERSONALI, "rb") as f:
++            regole_personali = tomllib.load(f)
+     c = dati["conto"]
+     valuta, prodotto, fonte = c["valuta"], c["prodotto"], c["fonte"]
+     righe = []
+@@ -89,6 +171,7 @@ def scheda(dati: dict) -> list[str]:
+         avvisi.append("Equity già sotto un limite della prop firm: verificare subito sulla piattaforma.")
+     perdite_aperte = [_perdita(p, strumenti, valuta, cambi, fonte, aperta=True) for p in dati.get("posizione", [])]
+     tp = dati.get("trade_previsto")
++    pt = st = None
+     if tp:
+         pt = _perdita(tp, strumenti, valuta, cambi, fonte)
+         sr = L.stop_residui(mg, pt)
+@@ -96,23 +179,30 @@ def scheda(dati: dict) -> list[str]:
+                   fmt(sr, "stop pieni di questa dimensione, dato il margine attuale (posizioni aperte escluse)")]
+         if pt.valore > mg.valore:
+             avvisi.append("Se lo stop del trade previsto viene colpito, il limite giornaliero viene violato.")
++        if pt.valore > mt.valore:
++            avvisi.append("Se lo stop del trade previsto viene colpito, il limite totale viene violato.")
+     tutte = perdite_aperte + ([pt] if tp else [])
+     if tutte:
+         st = L.scenario_di_stress(tutte)
+         eq_dopo = combina([eq, st], eq.valore - st.valore, valuta, "calcolo deterministico",
+                           fonte="equity dopo lo scenario di stress")
+-        dopo = L.margine(eq_dopo, lg)
++        dopo, dopo_t = L.margine(eq_dopo, lg), L.margine(eq_dopo, lt)
+         righe += ["", "SCENARIO DI STRESS (tutte le posizioni allo stop, incluso il trade previsto)",
+-                  fmt(st, "perdita nello scenario"), fmt(dopo, "margine giornaliero dopo lo scenario")]
++                  fmt(st, "perdita nello scenario"), fmt(dopo, "margine giornaliero dopo lo scenario"),
++                  fmt(dopo_t, "margine totale dopo lo scenario")]
+         if dopo.valore < 0:
+             avvisi.append("Nello scenario di stress il limite giornaliero viene violato.")
++        if dopo_t.valore < 0:
++            avvisi.append("Nello scenario di stress il limite totale viene violato.")
+     rg = dati.get("riserva_gap")
+     riserva = ipotesi(rg["valore"] if rg else None, valuta, (rg or {}).get("fonte", "nessun dato di esecuzione"),
+                       "H_gap: riserva per gap e slippage oltre lo stop")
+     righe += ["", "RISERVE (non deterministiche)", fmt(riserva, "riserva per gap e slippage")]
+ 
+-    righe += ["", "AVVISI"] + (avvisi or ["nessun avviso dalle regole della prop firm"])
+-    righe += ["", "REGOLE PERSONALI", "nessuna regola personale attiva: sono una proposta da confermare (regole/regole_personali.toml)"]
++    avvisi_p, righe_p = _regole_personali(regole_personali, dati, cap, saldo0, eq, pt, st)
++    avvisi += avvisi_p
++    righe += ["", "AVVISI"] + (avvisi or ["nessun avviso dalle regole verificate"])
++    righe += ["", "REGOLE PERSONALI"] + righe_p
+     righe += ["", "RACCOMANDAZIONE", "non entrare" if avvisi else "nessuna obiezione dalle regole verificate",
+               "", "DECISIONE: dell'utente, da registrare nel journal (con eventuale deroga e motivo)"]
+     return righe
+diff --git a/brain/guardian/g0/strumenti.py b/brain/guardian/g0/strumenti.py
+index 325cfb0..440ad58 100644
+--- a/brain/guardian/g0/strumenti.py
++++ b/brain/guardian/g0/strumenti.py
+@@ -27,7 +27,7 @@ class Strumento:
+     simbolo: str
+     classe: str                        # "fx" | "future" | "cfd"
+     valuta_profitto: str               # FX: valuta quotata; future/CFD: valuta del contratto
+-    dimensione_contratto: Decimal      # FX/CFD: unità per lotto; future: non usato (vedi tick)
++    dimensione_contratto: Optional[Decimal]  # FX/CFD: unità per lotto (obbligatoria); future: None (si usa il tick)
+     fonte: str                         # specifica del broker o dell'exchange, con data
+     stato_verifica: str = "C"          # V solo se la specifica è stata letta sulla fonte del broker
+     valuta_base: Optional[str] = None  # solo FX
+@@ -41,13 +41,23 @@ class Strumento:
+             raise ValueError("per una coppia FX serve la valuta base")
+         if self.classe == "future" and (self.passo_tick is None or self.valore_tick is None):
+             raise ValueError("per un future servono passo e valore del tick")
++        if self.classe in ("fx", "cfd") and self.dimensione_contratto is None:
++            raise ValueError(f"per uno strumento {self.classe} serve la dimensione del contratto (unità per lotto)")
+ 
+ 
+ def perdita_allo_stop(s: Strumento, ingresso: Valore, stop: Valore, quantita: Valore, valuta_conto: str,
+                       cambio: Optional[Valore] = None, commissioni: Optional[Valore] = None) -> Valore:
+     """Perdita nella valuta del conto se lo stop viene eseguito al suo prezzo (DERIVATO | H_esec).
+     `quantita`: lotti (FX/CFD) o contratti (future). `commissioni`: costo totale previsto in valuta del conto."""
+-    spec = Valore(s.dimensione_contratto, "unità", "REGOLA", "norma", s.fonte, stato_verifica=s.stato_verifica)
++    # Specifiche del contratto come REGOLE del broker/exchange: solo quelle effettivamente usate dal calcolo,
++    # con lo stato di verifica dichiarato per lo strumento (nessun valore inventato).
++    if s.classe == "future":
++        specifiche = [Valore(s.passo_tick, "passo del tick", "REGOLA", "norma", s.fonte, stato_verifica=s.stato_verifica),
++                      Valore(s.valore_tick, f"{s.valuta_profitto} per tick", "REGOLA", "norma", s.fonte,
++                             stato_verifica=s.stato_verifica)]
++    else:
++        specifiche = [Valore(s.dimensione_contratto, "unità per lotto", "REGOLA", "norma", s.fonte,
++                             stato_verifica=s.stato_verifica)]
+     distanza = abs(ingresso.valore - stop.valore)
+     if s.classe == "future":
+         tick = distanza / s.passo_tick
+@@ -56,7 +66,7 @@ def perdita_allo_stop(s: Strumento, ingresso: Valore, stop: Valore, quantita: Va
+         perdita_prof = tick * s.valore_tick * quantita.valore
+     else:
+         perdita_prof = distanza * s.dimensione_contratto * quantita.valore
+-    ins = [ingresso, stop, quantita, spec]
++    ins = [ingresso, stop, quantita] + specifiche
+ 
+     if s.valuta_profitto == valuta_conto:
+         perdita = perdita_prof
+diff --git a/brain/guardian/journal/LEGGIMI.md b/brain/guardian/journal/LEGGIMI.md
+index 4557e7b..7778b56 100644
+--- a/brain/guardian/journal/LEGGIMI.md
++++ b/brain/guardian/journal/LEGGIMI.md
+@@ -10,9 +10,15 @@ Creato da Claude (D-23) e affidato all'utente per la compilazione, con l'aiuto d
+ | `stato` | ore di sonno, stato emotivo, note | **dati personali sensibili**, facoltativi |
+ | `previsione` | previsioni probabilistiche di utente, Claude e Gemini, con scadenza e poi esito | per il Brier score e la calibrazione |
+ 
++Orari: ISO-8601 in UTC (`…Z` o `+00:00`), anche con frazioni di secondo. Gli indicatori calcolano con `Decimal`, mai con `float`.
++
+ ## Garanzie
+ - **Sola aggiunta.** Una correzione è un nuovo record con `corregge` = id del record corretto.
+-- **Catena di hash.** Ogni riga contiene l'hash della precedente; `verifica` scopre modifiche e cancellazioni.
++- **Catena di hash.** Ogni riga contiene l'hash della precedente: scopre modifiche e cancellazioni delle righe che hanno un successore. Da sola **non** scopre la modifica dell'ultima riga, il troncamento della coda né una riscrittura completa.
++- **Ancora di integrità** (`ancora_integrita.json`): numero di righe e SHA-256 dell'ultima riga di ogni registro, aggiornata da `aggiungi` e controllata da `verifica`. Scopre anche i tre casi precedenti.
++  - **Limite:** se l'ancora sta nella stessa cartella dei dati, chi riscrive deliberatamente i dati può riscrivere anche l'ancora.
++  - Per questo l'ancora può stare in un percorso separato (`TRADING_JOURNAL_ANCHOR`), e `python3 -m journal.journal ancora` stampa un'impronta da annotare fuori dal journal (commit, messaggio, nota).
++  - Se un'interruzione avviene tra la scrittura della riga e quella dell'ancora, `verifica` segnala la discrepanza: si controlla l'ultima riga e si riallinea l'ancora solo dopo averla verificata.
+ - **Impegni sigillati** (DA-07): `sigilla` produce un impegno SHA-256 con nonce segreto di 256 bit. Non è una firma e non prova chi l'ha creato.
+ - **Indicatori comportamentali** (`indicatori.py`): metriche oggettive come DERIVATI. Il pattern R1 è un'IPOTESI («compatibile con un rientro impulsivo») ed è **spento** finché l'utente non fissa i parametri.
+ 
+diff --git a/brain/guardian/journal/indicatori.py b/brain/guardian/journal/indicatori.py
+index 5dac82b..5974bec 100644
+--- a/brain/guardian/journal/indicatori.py
++++ b/brain/guardian/journal/indicatori.py
+@@ -11,13 +11,29 @@
+ from __future__ import annotations
+ 
+ import json
+-from datetime import datetime
++from datetime import datetime, timedelta, timezone
++from decimal import Decimal
+ from pathlib import Path
+ from typing import Optional
+ 
+ 
+ def _t(s: str) -> datetime:
+-    return datetime.strptime(s, "%Y-%m-%dT%H:%M:%SZ")
++    """Orario UTC in ISO-8601: `2026-11-12T09:30:00Z`, con o senza frazioni di secondo (`…:00.120Z`), oppure con
++    offset esplicito `+00:00`. Orari senza fuso o con fuso diverso da UTC sono rifiutati."""
++    t = datetime.fromisoformat(s)
++    if t.tzinfo is None or t.utcoffset() != timedelta(0):
++        raise ValueError(f"orario non in UTC: {s!r}")
++    return t.astimezone(timezone.utc)
++
++
++def _dec(x) -> Decimal:
++    """Numero del journal come Decimal, dalla sua rappresentazione testuale (niente float)."""
++    return x if isinstance(x, Decimal) else Decimal(str(x))
++
++
++def _secondi(d: timedelta) -> Decimal:
++    """Durata esatta in secondi (giorni, secondi e microsecondi interi: nessun arrotondamento binario)."""
++    return Decimal(d.days * 86400 + d.seconds) + Decimal(d.microseconds) / Decimal(1_000_000)
+ 
+ 
+ def trade_da_journal(path: Path) -> list[dict]:
+@@ -43,19 +59,20 @@ def metriche_dopo_perdita(trades: list[dict]) -> list[dict]:
+     """Per ogni trade che segue una perdita: minuti dalla chiusura della perdita e rapporto tra le size."""
+     out = []
+     for prec, succ in zip(trades, trades[1:]):
+-        if float(prec["pnl_conto"]) < 0:
+-            minuti = (_t(succ["aperto_utc"]) - _t(prec["chiuso_utc"])).total_seconds() / 60
++        if _dec(prec["pnl_conto"]) < 0:
++            minuti = _secondi(_t(succ["aperto_utc"]) - _t(prec["chiuso_utc"])) / Decimal(60)
+             out.append({"trade": succ.get("id_piattaforma", succ["aperto_utc"]), "tipo": "DERIVATO",
+-                        "minuti_dopo_perdita": round(minuti, 2),
+-                        "rapporto_size": float(succ["quantita"]) / float(prec["quantita"])})
++                        "minuti_dopo_perdita": minuti,
++                        "rapporto_size": _dec(succ["quantita"]) / _dec(prec["quantita"])})
+     return out
+ 
+ 
+-def pattern_r1(trades: list[dict], minuti_max: Optional[float], rapporto_min: Optional[float]) -> dict:
++def pattern_r1(trades: list[dict], minuti_max: Optional[Decimal], rapporto_min: Optional[Decimal]) -> dict:
+     """R1: ingresso entro `minuti_max` minuti dalla chiusura di una perdita, con size >= `rapporto_min` volte la
+     precedente. Restituisce i casi come IPOTESI, oppure lo stato «spento» se i parametri non sono definiti."""
+     if minuti_max is None or rapporto_min is None:
+         return {"stato": "spento", "motivo": "parametri non definiti dall'utente (regole_personali.toml, P-11 e P-01)"}
++    minuti_max, rapporto_min = _dec(minuti_max), _dec(rapporto_min)
+     casi = [dict(m, tipo="IPOTESI", interpretazione="compatibile con un rientro impulsivo (R1), non una diagnosi")
+             for m in metriche_dopo_perdita(trades)
+             if m["minuti_dopo_perdita"] <= minuti_max and m["rapporto_size"] >= rapporto_min]
+diff --git a/brain/guardian/journal/journal.py b/brain/guardian/journal/journal.py
+index cf791cf..f585160 100644
+--- a/brain/guardian/journal/journal.py
++++ b/brain/guardian/journal/journal.py
+@@ -9,12 +9,19 @@ Registri (un file JSON Lines ciascuno, nella cartella dati):
+ 
+ Regole:
+ - nessuna riga si modifica: una correzione è un nuovo record con `corregge` = id del record corretto;
+-- ogni riga contiene `prec_hash` (SHA-256 della riga precedente): `verifica` scopre modifiche e cancellazioni;
++- ogni riga contiene `prec_hash` (SHA-256 della riga precedente): la catena scopre modifiche e cancellazioni
++  delle righe che hanno un successore;
++- ANCORA DI INTEGRITÀ (`ancora_integrita.json`): per ogni registro, numero di righe e SHA-256 dell'ultima riga,
++  aggiornata da `aggiungi` e controllata da `verifica`. Scopre anche modifica dell'ultima riga, troncamento della
++  coda e riscrittura completa della catena. LIMITE: se l'ancora sta nella stessa cartella dei dati, chi riscrive
++  i dati può riscrivere anche l'ancora. Per una protezione contro la manomissione deliberata, tenere l'ancora in
++  un percorso separato (TRADING_JOURNAL_ANCHOR) e annotare altrove l'impronta stampata da `ancora`;
+ - i dati stanno in `dati/` (esclusa da git) o nella cartella indicata da TRADING_JOURNAL_DIR.
+ 
+ Uso:
+   python3 -m journal.journal aggiungi <registro> '<json>'
+   python3 -m journal.journal verifica
++  python3 -m journal.journal ancora                   (impronta dell'ancora, da annotare fuori dal journal)
+   python3 -m journal.journal brier
+   python3 -m journal.journal sigilla '<json>'          (impegno per una stima sigillata, DA-07)
+ """
+@@ -29,6 +36,8 @@ from datetime import datetime, timezone
+ from pathlib import Path
+ 
+ SCHEMA = "journal/1"
++SCHEMA_ANCORA = "ancora/1"
++FILE_ANCORA = "ancora_integrita.json"
+ GENESI = "0" * 64
+ REGISTRI = {
+     "trade": {"simbolo", "direzione", "aperto_utc", "ingresso", "stop", "quantita", "fonte"},
+@@ -49,6 +58,28 @@ def cartella_dati() -> Path:
+     return Path(os.environ.get("TRADING_JOURNAL_DIR", Path(__file__).resolve().parent / "dati"))
+ 
+ 
++def percorso_ancora(cartella: Path) -> Path:
++    """TRADING_JOURNAL_ANCHOR (file) se impostata; altrimenti `ancora_integrita.json` nella cartella dei dati."""
++    env = os.environ.get("TRADING_JOURNAL_ANCHOR")
++    return Path(env) if env else cartella / FILE_ANCORA
++
++
++def _leggi_ancora(path: Path):
++    if not path.exists():
++        return None
++    with open(path, encoding="utf-8") as f:
++        return json.load(f)
++
++
++def _scrivi_ancora(path: Path, ancora: dict) -> None:
++    """Scrittura atomica: file temporaneo e poi sostituzione."""
++    path.parent.mkdir(parents=True, exist_ok=True)
++    tmp = path.with_name(path.name + ".tmp")
++    with open(tmp, "w", encoding="utf-8") as f:
++        f.write(json.dumps(ancora, ensure_ascii=False, sort_keys=True, indent=2) + "\n")
++    os.replace(tmp, path)
++
++
+ def _canonico(obj) -> str:
+     return json.dumps(obj, ensure_ascii=False, sort_keys=True, separators=(",", ":"))
+ 
+@@ -102,8 +133,14 @@ def aggiungi(registro: str, dati: dict, cartella: Path | None = None) -> dict:
+     rec = {"schema": SCHEMA, "registro": registro, "id": f"{registro[:3].upper()}-{len(righe) + 1:05d}",
+            "registrato_utc": datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
+            "prec_hash": _sha(righe[-1]) if righe else GENESI, "dati": dati}
++    riga = _canonico(rec)
+     with open(path, "a", encoding="utf-8") as f:
+-        f.write(_canonico(rec) + "\n")
++        f.write(riga + "\n")
++    pa = percorso_ancora(cartella)
++    ancora = _leggi_ancora(pa) or {"schema": SCHEMA_ANCORA, "registri": {}}
++    ancora["registri"][registro] = {"righe": len(righe) + 1, "ultimo_hash": _sha(riga)}
++    ancora["aggiornato_utc"] = rec["registrato_utc"]
++    _scrivi_ancora(pa, ancora)
+     return rec
+ 
+ 
+@@ -124,9 +161,41 @@ def verifica(cartella: Path | None = None) -> list[str]:
+             if rec.get("prec_hash") != prec:
+                 problemi.append(f"{registro} riga {i}: catena interrotta (riga precedente modificata o rimossa)")
+             prec = _sha(riga)
++    problemi += _verifica_ancora(cartella)
+     return problemi
+ 
+ 
++def _verifica_ancora(cartella: Path) -> list[str]:
++    """Confronta ogni registro con l'ancora: numero di righe e hash dell'ultima riga."""
++    ancora = _leggi_ancora(percorso_ancora(cartella))
++    presenti = {r for r in REGISTRI if _righe(cartella / f"{r}.jsonl")}
++    if ancora is None:
++        return [f"ancora di integrità assente ({percorso_ancora(cartella)}): impossibile controllare ultima riga, "
++                f"troncamento e riscrittura"] if presenti else []
++    problemi = []
++    attesi = ancora.get("registri", {})
++    for registro in sorted(presenti | set(attesi)):
++        righe = _righe(cartella / f"{registro}.jsonl")
++        a = attesi.get(registro)
++        if a is None:
++            problemi.append(f"{registro}: registro non presente nell'ancora")
++            continue
++        ultimo = _sha(righe[-1]) if righe else None
++        if a["righe"] != len(righe) or a["ultimo_hash"] != ultimo:
++            problemi.append(f"{registro}: non coincide con l'ancora ({len(righe)} righe contro {a['righe']} attese"
++                            f"{'' if a['ultimo_hash'] == ultimo else '; ultima riga diversa'}): ultima riga "
++                            f"modificata, coda troncata o registro riscritto")
++    return problemi
++
++
++def impronta_ancora(cartella: Path | None = None) -> str:
++    """SHA-256 dell'ancora in forma canonica: da annotare fuori dal journal (commit, messaggio, nota)."""
++    ancora = _leggi_ancora(percorso_ancora(cartella or cartella_dati()))
++    if ancora is None:
++        raise ValueError("nessuna ancora: il journal è vuoto o l'ancora è stata rimossa")
++    return _sha(_canonico(ancora))
++
++
+ def brier(cartella: Path | None = None) -> dict:
+     """Brier score per autore, sulle previsioni risolte. Esiti da record con `chiude` = id della previsione."""
+     cartella = cartella or cartella_dati()
+@@ -164,6 +233,8 @@ def main(argv=None) -> int:
+         p = verifica()
+         print("\n".join(p) if p else "journal integro")
+         return 1 if p else 0
++    elif a == ["ancora"]:
++        print(impronta_ancora())
+     elif a == ["brier"]:
+         print(json.dumps(brier(), ensure_ascii=False, indent=2))
+     elif a[:1] == ["sigilla"] and len(a) == 2:
+diff --git a/brain/guardian/test/test_fix_g0_journal.py b/brain/guardian/test/test_fix_g0_journal.py
+new file mode 100644
+index 0000000..8dd206f
+--- /dev/null
++++ b/brain/guardian/test/test_fix_g0_journal.py
+@@ -0,0 +1,127 @@
++"""Test dei 5 difetti del G0 e del journal (mandato «Binario A», 12/11/2026), scritti PRIMA delle correzioni (TDD).
++Uso (dalla cartella guardian/): python3 -s -B -m unittest discover -s test -v
++"""
++import copy
++import json
++import sys
++import tempfile
++import tomllib
++import unittest
++from decimal import Decimal as D
++from pathlib import Path
++
++sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
++
++from g0 import scheda as SCH                      # noqa: E402
++from g0.strumenti import Strumento, perdita_allo_stop  # noqa: E402
++from g0.valori import misura                       # noqa: E402
++from journal import journal as J                   # noqa: E402
++from journal.indicatori import metriche_dopo_perdita, pattern_r1  # noqa: E402
++
++ESEMPIO = Path(__file__).resolve().parent.parent / "esempi" / "situazione_esempio.toml"
++
++
++def esempio():
++    with open(ESEMPIO, "rb") as f:
++        return tomllib.load(f)
++
++
++class TestFix1StressMargineTotale(unittest.TestCase):
++    def test_avviso_se_lo_stress_viola_il_limite_totale(self):
++        """Conto 2-Step a 91.500: limite giornaliero 86.500 (margine 5.000), limite totale 90.000 (margine 1.500).
++        Posizione aperta EURUSD 1,5 lotti dal prezzo attuale 1,08400 allo stop 1,08300 = 150 USD + 10,50 → ma con 15
++        lotti = 1.510,50 USD: il giornaliero regge, il totale no. Serve l'avviso sul limite totale."""
++        d = esempio()
++        d["conto"].update(saldo_mezzanotte="91500", equity="91500")
++        d["posizione"][0]["quantita"] = "15"
++        d.pop("trade_previsto")
++        testo = "\n".join(SCH.scheda(d))
++        self.assertIn("margine totale dopo lo scenario", testo)
++        self.assertIn("Nello scenario di stress il limite totale viene violato.", testo)
++        self.assertNotIn("Nello scenario di stress il limite giornaliero viene violato.", testo)
++
++
++class TestFix2MetadatiFutures(unittest.TestCase):
++    def test_future_senza_dimensione_contratto_fittizia(self):
++        """Un future si descrive con passo e valore del tick: nessuna dimensione del contratto «1» inventata."""
++        es = Strumento("ES", "future", "USD", None, "specifica CME (test)", "V",
++                       passo_tick=D("0.25"), valore_tick=D("12.50"))
++        p = perdita_allo_stop(es, misura("5000.00", "prezzo", "t"), misura("4990.00", "prezzo", "t"),
++                              misura("2", "contratti", "t"), "USD")
++        self.assertEqual(p.valore, D(1000))
++        dati = {"strumento": [{"simbolo": "ES", "classe": "future", "valuta_profitto": "USD", "passo_tick": "0.25",
++                               "valore_tick": "12.50", "fonte": "t", "stato_verifica": "C"}]}
++        self.assertIsNone(SCH._strumenti(dati)["ES"].dimensione_contratto)
++        with self.assertRaises(ValueError):                    # FX senza dimensione del contratto: errore esplicito
++            Strumento("EURUSD", "fx", "USD", None, "t", valuta_base="EUR")
++
++
++class TestFix3RegolePersonali(unittest.TestCase):
++    def test_regola_confermata_applicata_e_non_confermate_dichiarate(self):
++        """Con P-01 confermata a 0,5% del capitale, il trade previsto dell'esempio (682 USD su 100.000 = 0,682%)
++        deve produrre un avviso P-01. Senza conferme la scheda lo dichiara, senza stringhe fisse."""
++        with open(SCH.FILE_REGOLE_PERSONALI, "rb") as f:
++            regole = tomllib.load(f)
++        nessuna = "\n".join(SCH.scheda(esempio(), regole_personali=regole))
++        self.assertIn("0 regole personali confermate su 15", nessuna)
++        conf = copy.deepcopy(regole)
++        p01 = next(r for r in conf["regola"] if r["id"] == "P-01")
++        p01.update(confermata=True, valore="0.005")
++        testo = "\n".join(SCH.scheda(esempio(), regole_personali=conf))
++        self.assertIn("1 regole personali confermate su 15", testo)
++        self.assertIn("P-01", testo.split("AVVISI")[1])
++
++
++class TestFix4AncoraEsterna(unittest.TestCase):
++    def test_ancora_rileva_ultima_riga_troncamento_e_riscrittura(self):
++        T = {"simbolo": "EURUSD", "direzione": "long", "aperto_utc": "2026-11-12T09:00:00Z", "ingresso": "1.085",
++             "stop": "1.083", "quantita": "1", "fonte": "t"}
++
++        def nuovo():
++            d = Path(tempfile.mkdtemp())
++            for q in ("1", "2", "3"):
++                J.aggiungi("trade", dict(T, quantita=q), d)
++            return d, d / "trade.jsonl"
++
++        d, f = nuovo()
++        self.assertTrue((d / "ancora_integrita.json").exists())
++        self.assertEqual(J.verifica(d), [])
++        r = f.read_text().splitlines()
++        r[2] = r[2].replace('"quantita":"3"', '"quantita":"9"')            # ultima riga modificata
++        f.write_text("\n".join(r) + "\n")
++        self.assertTrue(J.verifica(d))
++
++        d, f = nuovo()
++        f.write_text("\n".join(f.read_text().splitlines()[:2]) + "\n")      # coda troncata
++        self.assertTrue(J.verifica(d))
++
++        d, f = nuovo()
++        recs = [json.loads(x) for x in f.read_text().splitlines()]
++        recs[0]["dati"]["quantita"] = "9"
++        prec, out = J.GENESI, []
++        for rec in recs:                                                    # riscrittura coerente della catena
++            rec["prec_hash"] = prec
++            s = J._canonico(rec)
++            out.append(s)
++            prec = J._sha(s)
++        f.write_text("\n".join(out) + "\n")
++        self.assertTrue(J.verifica(d))
++
++
++class TestFix5IndicatoriDecimal(unittest.TestCase):
++    def test_decimal_e_frazioni_di_secondo(self):
++        base = {"simbolo": "EURUSD", "direzione": "long", "ingresso": "1.085", "stop": "1.083", "fonte": "t"}
++        t1 = dict(base, aperto_utc="2026-11-12T09:00:00Z", chiuso_utc="2026-11-12T09:30:00Z", quantita="0.1",
++                  pnl_conto="-20.10")
++        t2 = dict(base, aperto_utc="2026-11-12T09:33:00.120Z", chiuso_utc="2026-11-12T10:00:00.5Z", quantita="0.3",
++                  pnl_conto="15")
++        m = metriche_dopo_perdita([t1, t2])
++        self.assertIsInstance(m[0]["minuti_dopo_perdita"], D)
++        self.assertEqual(m[0]["minuti_dopo_perdita"], D("3.002"))          # 180,12 s
++        self.assertEqual(m[0]["rapporto_size"], D("3"))                    # 0,3 / 0,1 (in float: 2,9999…)
++        r = pattern_r1([t1, t2], minuti_max=D("5"), rapporto_min=D("2"))
++        self.assertEqual(len(r["casi"]), 1)
++
++
++if __name__ == "__main__":
++    unittest.main()
