@@ -232,7 +232,7 @@ def valida(registro: str, dati: dict) -> None:
         raise ValueError("una deroga richiede il motivo")
     if registro == "previsione" and "chiude" not in dati:
         p = dati["probabilita"]
-        if isinstance(p, bool) or not isinstance(p, (int, float, Decimal, str)) or not 0 <= _decimale("probabilita", p) <= 1:
+        if not isinstance(p, (int, float, Decimal, str)) or not 0 <= _decimale("probabilita", p) <= 1:     # _decimale rifiuta i booleani
             raise ValueError("probabilita: numero finito tra 0 e 1 (int, float, Decimal o testo numerico; non un booleano)")
     if registro == "previsione" and "esito" in dati:
         if type(dati["esito"]) is not int or dati["esito"] not in (0, 1):
