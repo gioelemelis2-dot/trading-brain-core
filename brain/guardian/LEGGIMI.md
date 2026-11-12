@@ -8,8 +8,8 @@
 |---|---|---|
 | Regole della prop firm FTMO (`regole/prop_firm_ftmo.toml`) | verificate sulla fonte ufficiale il 12/11/2026 | dettagli dei tipi di conto Standard e Swing (FAQ); prossima verifica 12/02/2027 |
 | Regole personali (`regole/regole_personali.toml`) | **proposta** | conferma dell'utente, regola per regola |
-| Calcoli G0 (`g0/`) | implementati e testati (27 test unitari) | **validazione**: riconciliazione con un estratto conto reale e con le specifiche del broker |
-| Journal (`journal/`) | implementato e testato (14 test: catena di hash, ancora e impronta esterna, validazione all'ingresso, coerenza di correzioni ed esiti, Brier con correzioni, sigilli, R1, Decimal e orari ISO-8601) | scelta di dove conservare i dati (`journal/LEGGIMI.md`, alternative A/B/C) |
+| Calcoli G0 (`g0/`) | implementati e testati (34 test unitari) | **validazione**: riconciliazione con un estratto conto reale e con le specifiche del broker |
+| Journal (`journal/`) | implementato e testato (18 test: catena di hash, ancora e impronta esterna, validazione all'ingresso, coerenza di correzioni ed esiti, Brier con correzioni, sigilli, R1, Decimal e orari ISO-8601) | scelta di dove conservare i dati (`journal/LEGGIMI.md`, alternative A/B/C) |
 | Uso per decidere | **NON AUTORIZZATO** | la scheda lo dichiara in prima riga finché `riconciliato = false` |
 
 ## Componenti
@@ -29,7 +29,16 @@ python3 -s -B -m g0.scheda esempi/situazione_esempio.toml
 ```bash
 python3 -s -B -m unittest discover -s test -v
 ```
-Risultato: **41 test, tutti superati** con `-W error` (18 G0 e 6 journal originari; 5 test del mandato «Binario A», 7 del contro-audit e 5 del mandato notturno in `test/test_fix_g0_journal.py`; dettaglio in `collaborazione/da-claude/CONSEGNA_FIX_G0/`).
+Risultato: **52 test, tutti superati** con `-W error`:
+- 18 G0 e 6 journal originari;
+- 17 in `test/test_fix_g0_journal.py`: 5 del mandato «Binario A», 7 del contro-audit e 5 del mandato notturno;
+- 11 in `test/test_mutanti_g0_journal.py`, aggiunti per uccidere i mutanti sopravvissuti.
+
+Mutation testing (dalla cartella `guardian/test/`, con una cartella temporanea per le copie):
+```bash
+python3 -s -B mutazioni_g0_journal.py /tmp/mutanti_g0
+```
+Risultato: **44/44 mutanti non equivalenti uccisi**, su tutti e 6 i file operativi; 1 mutante equivalente, dichiarato con la motivazione. Con i soli 41 test precedenti erano 30/44. Dettaglio in `collaborazione/da-claude/CONSEGNA_FIX_G0/`.
 Requisiti: Python 3.11 o successivo, sola libreria standard.
 
 ## Limiti dichiarati
