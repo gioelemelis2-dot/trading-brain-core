@@ -178,6 +178,8 @@ M = {
         (JO, 'if e and radice[d["chiude"]] != d["chiude"]:', "if False:")],
     "V79 recupero dell'orfano senza lock di recupero esclusivo (TOCTOU, ALTO-8)": [
         (JO, "os.O_WRONLY | os.O_CREAT | os.O_EXCL", "os.O_WRONLY | os.O_CREAT")],
+    "V80 fmt: frazioni arrotondate a 2 decimali (P-01 0,005 letto come 0,01)": [
+        (SC, 'Decimal("0.001") if v.unita.startswith("frazione")', 'Decimal("0.01") if v.unita.startswith("frazione")')],
     # --- equivalenti dichiarati ---
     "E01 ancora: confronto del numero di righe rimosso (EQUIVALENTE)": [
         (JO, 'if a["righe"] != len(righe) or a["ultimo_hash"] != ultimo:', 'if a["ultimo_hash"] != ultimo:')],

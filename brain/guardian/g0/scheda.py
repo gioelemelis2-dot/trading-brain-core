@@ -57,7 +57,8 @@ def fmt(v: Valore, etichetta: str) -> str:
     elif not v.valore.is_finite():
         num = f"{v.valore} {v.unita}"
     else:
-        q = Decimal("0.01") if v.unita not in ("stop",) else Decimal("1")
+        # Stop: interi. Frazioni (rischio P-01, regole): 3 decimali, per non leggere 0,005 come «0,01». Importi: 2.
+        q = Decimal("1") if v.unita == "stop" else Decimal("0.001") if v.unita.startswith("frazione") else Decimal("0.01")
         num = f"{_quantizza(v.valore, q):,}".replace(",", "_").replace(".", ",").replace("_", ".") + f" {v.unita}"
     inc = "" if v.incertezza in ("esatto", "NON STIMABILE") else f" [{v.incertezza}]"
     return f"[{testa}] {etichetta}: {num}{inc}  (verifica: {v.stato_verifica})"
