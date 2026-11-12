@@ -66,7 +66,20 @@ Ultimo aggiornamento: **2026-11-11**, dopo l'audit architetturale. Leggere quest
 - modello epistemico (`governance/MODELLO-EPISTEMICO.md`);
 - **G0 minimo** e **journal** (`guardian/`, 24 test superati).
 
-Il G0 **non** è ancora utilizzabile per decidere: serve la riconciliazione con un estratto conto (DA-25). Il repository nuovo e privato (D-19) va creato dall'utente; poi va spostato il Brain e archiviate le consegne di Gemini.
+Il G0 **non** è ancora utilizzabile per decidere: serve la riconciliazione con un estratto conto (DA-25).
+
+**Migrazione al repository canonico (D-19): eseguita il 12/11/2026.**
+- Il Brain vive ora in `gioelemelis2-dot/trading-brain-core` (privato).
+- `main` contiene la storia della sola `brain/` (23 commit, albero identico all'origine: `7422e1fc…`) più la configurazione del repository.
+- Il ramo `claude/vibrant-cannon-5uunho` di `l-Altro` resta come copia storica, non più aggiornata.
+- Da fare: archiviare le consegne di Gemini nel nuovo repository.
+
+**Ramo `feat/fix-g0-journal` (non ancora unito a `main`):**
+- 5 correzioni del mandato «Binario A»;
+- 7 correzioni del contro-audit (P-05 contro il limite della prop firm; seconda parte di P-01; validazione all'ingresso del journal; correzioni in `brier()`; impronta esterna dell'ancora; positività in G0; documenti di continuità).
+- TDD: **36/36 test verdi** con `-W error`.
+- Consegna in `collaborazione/da-claude/CONSEGNA_FIX_G0/`.
+- L'unione a `main` è una decisione dell'utente.
 
 **Ora: fermo in attesa dell'utente**, per:
 - rispondere alle decisioni di `governance/DECISIONI-APERTE.md`, a partire da quelle bloccanti;
@@ -84,5 +97,5 @@ Prompt pronto in [`PROMPT-RIPRESA.md`](PROMPT-RIPRESA.md). Regola: prima di un l
 
 ## Convenzioni da mantenere
 - Lingua: italiano. Mai segnare una fonte come V senza averla letta; mai una padronanza senza cancello superato dichiarato dall'utente; mai dati simulati presentati come reali.
-- Branch di lavoro: `claude/vibrant-cannon-5uunho` del repository `l-Altro`, cartella `brain/` (migrazione sospesa).
+- Repository: `gioelemelis2-dot/trading-brain-core` (D-19), ramo `main` più rami di lavoro dedicati (per esempio `feat/fix-g0-journal`); il vecchio ramo di `l-Altro` è solo storico.
 - Gemini scrive solo in `collaborazione/da-gemini/`; Claude non modifica mai i materiali di Gemini.

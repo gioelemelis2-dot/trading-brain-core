@@ -33,7 +33,7 @@ DA-13 rulebook (Q-09) ──► DA-11 G0 minimo ──► DA-12 indicatori compo
 ## A. Fondamenta
 
 ### DA-01 · Fonte di verità unica, sincronizzazione e archivio delle consegne · **bloccante**
-**Decisa il 12/11/2026 → D-19.** Il testo sotto resta come storia.
+**Decisa il 12/11/2026 → D-19. Eseguita il 12/11/2026:** repository privato `gioelemelis2-dot/trading-brain-core`; storia della sola `brain/` migrata su `main` (albero identico, `7422e1fc…`). Restano da fare: test di scrittura di Gemini sul nuovo repository e archivio delle sue consegne. Il testo sotto resta come storia.
 - **Situazione verificata:**
   - il Brain versionato è sul ramo GitHub `claude/vibrant-cannon-5uunho` del repository `l-Altro`, che sugli altri rami contiene un'applicazione TypeScript estranea;
   - Gemini lavora su una copia locale (dichiarato da Gemini; non verificabile da Claude);

@@ -81,7 +81,7 @@ def _pct(x: Decimal) -> str:
     return f"{(x * 100).quantize(Decimal('0.001'), ROUND_HALF_UP)}%".replace(".", ",")
 
 
-def _regole_personali(regole: dict, dati: dict, cap, saldo0, eq, pt, st):
+def _regole_personali(regole: dict, dati: dict, cap, saldo0, eq, pt, st, f_g, tp):
     """Applica SOLO le regole con `confermata = true`. Restituisce (avvisi, righe della sezione).
     Le regole confermate senza controllo automatico restano domande della checklist; i dati di sessione mancanti
     sono dichiarati, non inventati."""
@@ -111,16 +111,33 @@ def _regole_personali(regole: dict, dati: dict, cap, saldo0, eq, pt, st):
             if frac.valore > v:
                 avvisi.append(f"{rid}: il trade previsto rischia {_pct(frac.valore)} del capitale iniziale, "
                               f"oltre il limite personale di {_pct(v)}.")
+            # Seconda parte di P-01 (regole_personali.toml): «size maggiore del trade precedente dopo una perdita»
+            in_perdita, size_prec = sess.get("ultima_operazione_in_perdita"), sess.get("size_precedente")
+            if in_perdita is None or size_prec is None:
+                righe.append(f"{rid} (seconda parte) non verificata: servono sessione.ultima_operazione_in_perdita "
+                             f"e sessione.size_precedente")
+            elif not isinstance(in_perdita, bool) or _numero(size_prec) is None or _numero(size_prec) <= 0:
+                avvisi.append(f"{rid}: dati di sessione non validi per la seconda parte (vero/falso e size positiva)")
+            elif in_perdita and _numero(tp["quantita"]) > _numero(size_prec):
+                avvisi.append(f"{rid}: size maggiore della precedente dopo una perdita "
+                              f"({_numero(tp['quantita'])} contro {_numero(size_prec)}).")
+            else:
+                righe.append(f"{rid} (seconda parte): verificata, nessuna violazione")
         elif rid == "P-05":
+            # Regola aurea: un limite personale può solo restringere quello della prop firm, mai allargarlo.
+            if v >= f_g.valore:
+                avvisi.append(f"{rid}: il limite personale giornaliero ({_pct(v)}) non è più stretto del limite della "
+                              f"prop firm ({_pct(f_g.valore)}): vale il limite della prop firm; correggere la regola.")
             margine_p = combina([eq, saldo0, cap, soglia], eq.valore - (saldo0.valore - v * cap.valore), eq.unita,
                                 "calcolo deterministico", fonte=f"{rid} margine personale giornaliero")
             righe.append(fmt(margine_p, f"{rid} margine rispetto al limite personale giornaliero ({_pct(v)})"))
             if margine_p.valore < 0:
                 avvisi.append(f"{rid}: limite personale giornaliero già superato: kill switch personale.")
-            elif pt is not None and pt.valore > margine_p.valore:
-                avvisi.append(f"{rid}: se lo stop del trade previsto viene colpito, il limite personale giornaliero viene superato.")
-            elif st is not None and st.valore > margine_p.valore:
-                avvisi.append(f"{rid}: nello scenario di stress il limite personale giornaliero viene superato.")
+            else:
+                if pt is not None and pt.valore > margine_p.valore:
+                    avvisi.append(f"{rid}: se lo stop del trade previsto viene colpito, il limite personale giornaliero viene superato.")
+                if st is not None and st.valore > margine_p.valore:
+                    avvisi.append(f"{rid}: nello scenario di stress il limite personale giornaliero viene superato.")
         else:
             chiave = serve.split(".")[1]
             if chiave not in sess:
@@ -199,7 +216,7 @@ def scheda(dati: dict, regole_personali: dict | None = None) -> list[str]:
                       "H_gap: riserva per gap e slippage oltre lo stop")
     righe += ["", "RISERVE (non deterministiche)", fmt(riserva, "riserva per gap e slippage")]
 
-    avvisi_p, righe_p = _regole_personali(regole_personali, dati, cap, saldo0, eq, pt, st)
+    avvisi_p, righe_p = _regole_personali(regole_personali, dati, cap, saldo0, eq, pt, st, f_g, tp)
     avvisi += avvisi_p
     righe += ["", "AVVISI"] + (avvisi or ["nessun avviso dalle regole verificate"])
     righe += ["", "REGOLE PERSONALI"] + righe_p

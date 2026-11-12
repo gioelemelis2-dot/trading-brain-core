@@ -10,7 +10,6 @@
 """
 from __future__ import annotations
 
-import json
 from datetime import datetime, timedelta, timezone
 from decimal import Decimal
 from pathlib import Path
@@ -37,22 +36,13 @@ def _secondi(d: timedelta) -> Decimal:
 
 
 def trade_da_journal(path: Path) -> list[dict]:
-    """Trade chiusi, in ordine di apertura; applica le correzioni (`corregge`) sostituendo il record corretto."""
+    """Trade chiusi, in ordine di apertura, nell'ultima versione (correzioni applicate con journal.versioni_finali,
+    anche quando una correzione corregge una correzione precedente)."""
+    from .journal import versioni_finali
     if not path.exists():
         return []
-    per_id, ordine = {}, []
-    with open(path, encoding="utf-8") as f:
-        for riga in f:
-            if not riga.strip():
-                continue
-            rec = json.loads(riga)
-            d = rec["dati"]
-            bersaglio = d.get("corregge", rec["id"])
-            if bersaglio not in per_id:
-                ordine.append(bersaglio)
-            per_id[bersaglio] = d
-    chiusi = [per_id[i] for i in ordine if "chiuso_utc" in per_id[i] and "pnl_conto" in per_id[i]]
-    return sorted(chiusi, key=lambda d: d["aperto_utc"])
+    chiusi = [d for d in versioni_finali(path).values() if "chiuso_utc" in d and "pnl_conto" in d]
+    return sorted(chiusi, key=lambda d: _t(d["aperto_utc"]))
 
 
 def metriche_dopo_perdita(trades: list[dict]) -> list[dict]:

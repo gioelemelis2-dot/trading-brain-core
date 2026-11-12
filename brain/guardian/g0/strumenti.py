@@ -43,12 +43,22 @@ class Strumento:
             raise ValueError("per un future servono passo e valore del tick")
         if self.classe in ("fx", "cfd") and self.dimensione_contratto is None:
             raise ValueError(f"per uno strumento {self.classe} serve la dimensione del contratto (unità per lotto)")
+        for nome in ("dimensione_contratto", "passo_tick", "valore_tick"):
+            x = getattr(self, nome)
+            if x is not None and not (x.is_finite() and x > 0):
+                raise ValueError(f"{self.simbolo}: {nome} deve essere un numero positivo ({x})")
 
 
 def perdita_allo_stop(s: Strumento, ingresso: Valore, stop: Valore, quantita: Valore, valuta_conto: str,
                       cambio: Optional[Valore] = None, commissioni: Optional[Valore] = None) -> Valore:
     """Perdita nella valuta del conto se lo stop viene eseguito al suo prezzo (DERIVATO | H_esec).
-    `quantita`: lotti (FX/CFD) o contratti (future). `commissioni`: costo totale previsto in valuta del conto."""
+    `quantita`: lotti (FX/CFD) o contratti (future). `commissioni`: costo totale previsto in valuta del conto.
+    Rifiuta prezzi, quantità e cambi non positivi e uno stop uguale al prezzo di partenza."""
+    for nome, v in (("ingresso", ingresso), ("stop", stop), ("quantita", quantita)) + ((("cambio", cambio),) if cambio else ()):
+        if not (v.valore.is_finite() and v.valore > 0):
+            raise ValueError(f"{nome} deve essere un numero positivo ({v.valore})")
+    if ingresso.valore == stop.valore:
+        raise ValueError("lo stop coincide con il prezzo di partenza: perdita allo stop nulla, dato probabilmente errato")
     # Specifiche del contratto come REGOLE del broker/exchange: solo quelle effettivamente usate dal calcolo,
     # con lo stato di verifica dichiarato per lo strumento (nessun valore inventato).
     if s.classe == "future":
