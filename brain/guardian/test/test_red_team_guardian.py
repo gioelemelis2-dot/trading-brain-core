@@ -307,6 +307,15 @@ class TestMedio10e11Toml(unittest.TestCase):
                           ("Infinity", "[MISURA] x: Infinity USD")):
             self.assertTrue(SCH.fmt(Valore(D(x), "USD", "MISURA", "osservazione", "t"), "x").startswith(atteso), x)
 
+    def test_frazioni_mostrate_con_tre_decimali(self):
+        """Rifinitura Gate 1: il rischio P-01 (250,70 / 50.000 = 0,005014) si leggeva «0,01» perché fmt arrotondava
+        ogni unità a 2 decimali. Le frazioni si mostrano con 3 decimali; gli importi restano a 2."""
+        frac = Valore(D("0.005014"), "frazione del capitale", "DERIVATO", "calcolo deterministico", "t")
+        self.assertIn(": 0,005 frazione del capitale", SCH.fmt(frac, "P-01 rischio del trade previsto"))
+        self.assertIn(": 0,050 frazione del capitale iniziale",
+                      SCH.fmt(Valore(D("0.05"), "frazione del capitale iniziale", "REGOLA", "norma", "t"), "x"))
+        self.assertIn(": 250,70 USD", SCH.fmt(misura("250.7014", "USD", "t"), "x"))
+
     def test_p01_con_capitale_non_positivo(self):
         d = esempio()
         cap, saldo0, eq = (misura(x, "USD", "t") for x in ("0", "100400", "100150"))
