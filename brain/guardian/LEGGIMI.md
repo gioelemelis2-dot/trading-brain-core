@@ -39,7 +39,17 @@ Mutation testing (dalla cartella `guardian/test/`, con una cartella temporanea p
 ```bash
 python3 -s -B mutazioni_g0_journal.py /tmp/mutanti_g0
 ```
-Risultato: **44/44 mutanti non equivalenti uccisi**, su tutti e 6 i file operativi; 1 mutante equivalente, dichiarato con la motivazione. Con i soli 41 test precedenti erano 30/44. Dettaglio in `collaborazione/da-claude/CONSEGNA_FIX_G0/`.
+Risultato, su tutti e 7 i file operativi (compreso `g0/_toml.py`):
+- con Python 3.13: **58/58 mutanti non equivalenti uccisi**;
+- con Python 3.9: **57/57**. V48 lì è equivalente: prima di 3.11 `date.fromisoformat` accetta già solo `AAAA-MM-GG`; lo script lo dichiara con la versione minima.
+
+In più c'è 1 mutante equivalente su ogni versione (E01), dichiarato con la motivazione.
+
+Storia:
+- 30/44 con 41 test;
+- 44/44 con 52;
+- dopo la rifinitura per Python 3.9: 58/58 su 3.13, ma 55/58 su 3.9;
+- il parser TOML minimale era controllato solo contro `tomllib`, assente proprio su 3.9: con un risultato atteso scritto nel test, 57/57. Dettaglio in `collaborazione/da-claude/CONSEGNA_FIX_G0/`.
 Requisiti: Python 3.9 o successivo, sola libreria standard.
 - Il TOML si legge con `tomllib` (3.11+), altrimenti con `tomli` se installato, altrimenti con il parser minimale di `g0/_toml.py`.
 - Il parser minimale copre solo il sottoinsieme usato dai file del Guardian; ogni altro costrutto è un errore esplicito con il numero di riga.

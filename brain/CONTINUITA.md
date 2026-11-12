@@ -74,14 +74,19 @@ Il G0 **non** è ancora utilizzabile per decidere: serve la riconciliazione con 
 - Il ramo `claude/vibrant-cannon-5uunho` di `l-Altro` resta come copia storica, non più aggiornata.
 - Da fare: archiviare le consegne di Gemini nel nuovo repository.
 
-**Ramo `feat/fix-g0-journal` (non ancora unito a `main`):**
+**Ramo `feat/fix-g0-journal`:**
 - 5 correzioni del mandato «Binario A»;
 - 7 correzioni del contro-audit (P-05 contro il limite della prop firm; seconda parte di P-01; validazione all'ingresso del journal; correzioni in `brier()`; impronta esterna dell'ancora; positività in G0; documenti di continuità).
 - 5 correzioni del mandato notturno (commissioni non negative; avvisi P-05 anche a limite personale superato; coerenza di correzioni ed esiti nel journal; dati di sessione e soglie validati; booleani rifiutati come numeri).
 - TDD: **52/52 test verdi** con `-W error`; mutation testing: **44/44 mutanti non equivalenti uccisi** (`guardian/test/mutazioni_g0_journal.py`).
 - Audit su Gemini: il ramo `feat/lab-dati-backtester` non è su GitHub; i 138 hash dichiarati nei materiali di Gemini ricevuti coincidono; l'hash falso del V3.3 citato nel mandato non compare in nessun materiale disponibile (`CONSEGNA_FIX_G0/AUDIT_OSTILE_SU_GEMINI.md`).
 - Consegna in `collaborazione/da-claude/CONSEGNA_FIX_G0/`.
-- L'unione a `main` è una decisione dell'utente.
+- Unito a `main` il 12/11/2026 (commit `138daf3`), su autorizzazione dell'utente.
+- Rifinitura dopo l'audit incrociato con Gemini (macOS, Python 3.9.6):
+  - Python 3.9+ (TOML portabile in `g0/_toml.py`; orari in un formato unico su ogni versione);
+  - `probabilita` anche come `Decimal`;
+  - lock esclusivo in `aggiungi()`, che corregge anche una collisione reale fra scrittori concorrenti sul file temporaneo dell'ancora.
+  - 61/61 test su Python 3.9, 3.11, 3.12 e 3.13; mutanti non equivalenti uccisi: 58/58 su 3.13 e 57/57 su 3.9 (V48 equivalente prima di 3.11).
 
 **Ora: fermo in attesa dell'utente**, per:
 - rispondere alle decisioni di `governance/DECISIONI-APERTE.md`, a partire da quelle bloccanti;
