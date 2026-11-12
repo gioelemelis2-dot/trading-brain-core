@@ -101,3 +101,4 @@ Formato: data · versione della base · cosa · perché · file.
 - Aggiunta `collaborazione/revisione-materiali-gemini/R-CLAUDE-20261112-03-V31/`: revisione, proposte Q-01…Q-09 (non applicate), 4 strumenti `v31_*`, uscite, impronte. Novità metodologica: **effetto esatto del MAE** (prima solo simulato).
 - Esito: motore corretto; pacchetto non validato (N-01, N-02).
 - Rimossa una cartella `__pycache__` locale. Aggiornati `CONTINUITA.md`, `collaborazione/LOCK.md` e questo registro. Nessun file di Antigravity e nessuna lezione modificati.
+- Aggiunta `collaborazione/da-claude/CLAUDE_QUANTITATIVE_BRAIN_PROPOSAL.md` (proposta, non implementata). Nessuna modifica al Brain principale, al Master Mission o al protocollo.

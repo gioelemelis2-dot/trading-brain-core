@@ -15,7 +15,8 @@ Ultimo aggiornamento: **2026-11-11**, dopo l'audit architetturale. Leggere quest
 
 ## Prossima azione esatta
 **Parte A (revisione V3.1): completata il 12/11/2026.** `collaborazione/revisione-materiali-gemini/R-CLAUDE-20261112-03-V31/`: motore corretto e riproducibile; pacchetto **non validato** (N-01 intervallo di Kelly etichettato 95% ma ±1 errore standard; N-02 test 5/12 mutanti). Proposte Q-01…Q-09 **non applicate**, da sottoporre ad Antigravity dopo l'approvazione dell'utente.
-**Parte B (in corso):** proposta `CLAUDE_QUANTITATIVE_BRAIN_PROPOSAL.md`. Documento di progetto, **non implementato**; nessuna modifica al Brain principale, al Master Mission o al protocollo. Poi fermarsi in attesa dell'utente.
+**Parte B: completata il 12/11/2026.** `collaborazione/da-claude/CLAUDE_QUANTITATIVE_BRAIN_PROPOSAL.md` (proposta, **non implementata**; 5 decisioni richieste all'utente, §10).
+**Ora: fermo in attesa dell'utente** (valutazione della revisione V3.1, proposte Q-01…Q-09, decisioni della proposta).
 
 ## Correzioni note ancora da applicare (dopo il via libera)
 - Contestazione, punto C-04: il rimando "(§3, C-05)" va corretto in "(§3, C-06)".
