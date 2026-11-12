@@ -1,0 +1,54 @@
+# SCHEDA OPERATIVA GATE 1 — CONTO DEMO BROKER ECN · METATRADER 5 · 50.000 USD · XAU/USD
+# Incubazione pre-prop firm: conto DEMO, nessun denaro reale.
+#
+# Il broker non impone limiti di perdita. Le regole di protezione 5% giornaliero / 10% totale sono SIMULATE
+# INTERNAMENTE dal G0 con lo schema del prodotto "ftmo_2step":
+#   limite giornaliero = saldo alle 00:00 CE(S)T − 5% del capitale iniziale (2.500 USD);
+#   limite totale statico = capitale iniziale − 10% (5.000 USD).
+# La scheda le mostra sotto «REGOLE DELLA PROP FIRM» con la fonte prop_firm_ftmo.toml: qui sono regole INTERNE.
+#
+# Parametri iniziali pre-operativi: nessuna posizione aperta, nessun trade previsto. Da riconciliare con la
+# piattaforma (DA-25) prima di usare i numeri per decidere.
+
+[conto]
+prodotto = "ftmo_2step"     # schema delle regole interne 5% / 10% (vedi intestazione)
+valuta = "USD"
+capitale_iniziale = "50000.00"
+saldo_mezzanotte = "50000.00"
+equity = "50000.00"
+saldi_riferimento = []
+fonte = "configurazione iniziale del conto demo broker ECN MT5 50K (da riconciliare con la piattaforma)"
+riconciliato = false
+
+[[strumento]]
+simbolo = "XAU/USD"
+classe = "cfd"
+valuta_profitto = "USD"
+dimensione_contratto = "100"     # once troy per lotto
+passo_tick = "0.01"
+valore_tick = "1.00"             # 0,01 USD × 100 once
+fonte = "specifiche standard CFD oro su MT5 (da verificare sul broker)"
+stato_verifica = "C"
+
+[cambi]
+
+[costi]
+# Commissione ECN standard round-turn (apertura + chiusura), per lotto. Nella scheda entra nel trade previsto come
+# commissioni = 7,00 × lotti (per esempio 0,10 lotti → commissioni = "0.70"). Da verificare sul broker.
+commissione_round_turn_usd_per_lotto = "7.00"
+stato_verifica = "C"
+
+[regole_interne_gate1]
+limite_giornaliero_frazione = "0.05"
+limite_giornaliero_usd = "2500.00"
+limite_totale_frazione = "0.10"
+limite_totale_usd = "5000.00"
+# Regole personali confermate dall'utente il 12/11/2026 (guardian/regole/regole_personali.toml):
+rischio_max_trade_frazione = "0.005"               # P-01: 250 USD su 50.000
+perdita_giornaliera_interna_frazione = "0.015"     # P-05: 750 USD su 50.000
+
+[meta]
+data_rilevazione_utc = "2026-11-12T23:08:00Z"
+conto = "MT5-DEMO-BROKER-ECN-50K-XAUUSD"
+piattaforma = "MetaTrader 5"
+titolare = "utente"

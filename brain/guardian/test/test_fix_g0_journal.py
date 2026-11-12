@@ -63,6 +63,8 @@ class TestFix3RegolePersonali(unittest.TestCase):
         deve produrre un avviso P-01. Senza conferme la scheda lo dichiara, senza stringhe fisse."""
         with open(SCH.FILE_REGOLE_PERSONALI, "rb") as f:
             regole = tomllib.load(f)
+        for r in regole["regola"]:                     # base fissa: il test non dipende dalle conferme dell'utente
+            r["confermata"] = False
         nessuna = "\n".join(SCH.scheda(esempio(), regole_personali=regole))
         self.assertIn("0 regole personali confermate su 15", nessuna)
         conf = copy.deepcopy(regole)
@@ -134,6 +136,7 @@ def regole_con(**conferme):
     with open(SCH.FILE_REGOLE_PERSONALI, "rb") as f:
         regole = tomllib.load(f)
     for r in regole["regola"]:
+        r["confermata"] = False                   # base fissa, indipendente dalle conferme reali
         if r["id"].replace("-", "_") in conferme:
             r.update(confermata=True, valore=conferme[r["id"].replace("-", "_")])
     return regole

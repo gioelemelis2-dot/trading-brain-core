@@ -47,6 +47,7 @@ def regole_con(**conferme):
     with open(SCH.FILE_REGOLE_PERSONALI, "rb") as f:
         regole = _toml.load(f)
     for r in regole["regola"]:
+        r["confermata"] = False                   # base fissa, indipendente dalle conferme reali
         if r["id"].replace("-", "_") in conferme:
             r.update(confermata=True, valore=conferme[r["id"].replace("-", "_")])
     return regole

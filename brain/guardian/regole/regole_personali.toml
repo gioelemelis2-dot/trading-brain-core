@@ -1,6 +1,6 @@
 # Regole personali dell'utente, tipo REGOLA (origine: personale).
 # STATO DEL FILE: PROPOSTA, da confermare dall'utente regola per regola. Nessuna regola qui è attiva finché
-# l'utente non la conferma (campo `confermata`).
+# l'utente non la conferma (campo `confermata`). Confermate al 12/11/2026: P-01 (0,5%) e P-05 (1,5%).
 #
 # Provenienza di ogni regola:
 #   "manuale" = Manuale v1 dell'utente (brain/originale/manuale-v1.txt), cioè regole già scritte dall'utente;
@@ -12,7 +12,7 @@
 
 [meta]
 schema = "guardian-regole-personali/1"
-stato = "proposta"
+stato = "proposta, con P-01 e P-05 confermate dall'utente il 12/11/2026 (Gate 1); le altre restano proposta"
 data = "2026-11-12"
 modifica = "solo a mercato chiuso, per iscritto, con versione (Manuale v1, Lezione 8; procedura completa: DA-23)"
 
@@ -21,10 +21,11 @@ id = "P-01"
 testo = "Rischio per trade fisso e piccolo. Mai aumentarlo per recuperare."
 provenienza = "manuale, Lezione 8, regola 1"
 parametro = "rischio_per_trade_frazione"
-valore = "DA DEFINIRE"
+valore = "0.005"
+conferma = "utente, 12/11/2026, Gate 1 (conto demo broker ECN MT5 50.000 USD: 0,5% = 250 USD per trade)"
 proposte_esistenti = "rulebook-gemini: 0,75% swing su prop, 0,50% intraday su prop, 1,00% conto personale (non giustificate da dati)"
 controllo_g0 = "rischio del trade previsto > parametro; size maggiore del trade precedente dopo una perdita"
-confermata = false
+confermata = true
 
 [[regola]]
 id = "P-02"
@@ -52,10 +53,11 @@ id = "P-05"
 testo = "Kill switch: raggiunto il limite di perdita giornaliera, chiudo la piattaforma."
 provenienza = "manuale, Lezione 8, regola 5; Lezione 21"
 parametro = "limite_personale_giornaliero_frazione"
-valore = "DA DEFINIRE (deve essere più stretto del limite della prop firm)"
+valore = "0.015"
+conferma = "utente, 12/11/2026, Gate 1 (1,5% = 750 USD al giorno su 50.000; più stretto del 5% interno)"
 proposte_esistenti = "rulebook-gemini: 4,0% giornaliero e 8,5% totale (buffer rispetto al 5% e 10% FTMO 2-Step; non adatti al 1-Step, dove il giornaliero è 3%)"
 controllo_g0 = "avviso al raggiungimento; registrazione dei trade successivi come deviazione"
-confermata = false
+confermata = true
 
 [[regola]]
 id = "P-06"

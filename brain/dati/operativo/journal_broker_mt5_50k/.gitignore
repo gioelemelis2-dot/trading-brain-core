@@ -1,0 +1,5 @@
+# Dati del journal del conto demo: personali (trade, decisioni, stato), NON si versionano (DA-16).
+# Restano solo in locale; nel repository c'è solo questa cartella con il suo LEGGIMI.
+*
+!.gitignore
+!LEGGIMI.md
