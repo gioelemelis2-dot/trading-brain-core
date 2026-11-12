@@ -1,0 +1,35 @@
+=== AVVIO SIMULAZIONI QUANTITATIVE V3.2 (CRN INVARIANTE) ===
+Parametri Globali: Seed=42, Simulazioni per scenario=10,000, Costo=0.05R
+
+--- 1. Regime Moderno Prop Firm (Orizzonte Illimitato, No Time Limit) ---
+Risk 0.25%: Pass=99.45%, ML=0.55%, DL=0.00%, Giorni Mediani Passaggio=184
+Risk 0.50%: Pass=90.89%, ML=9.11%, DL=0.00%, Giorni Mediani Passaggio=81
+Risk 0.75%: Pass=79.27%, ML=20.73%, DL=0.00%, Giorni Mediani Passaggio=45
+Risk 1.00%: Pass=70.65%, ML=29.35%, DL=0.00%, Giorni Mediani Passaggio=29
+
+--- 2. Regime Storico Legacy (Max 60 giorni per fase) ---
+Risk 0.25%: Pass=6.73%, Timeout=93.27%
+Risk 0.50%: Pass=48.01%, Timeout=47.78%
+Risk 0.75%: Pass=65.64%, Timeout=17.26%
+Risk 1.00%: Pass=67.17%, Timeout=4.88%
+
+--- 3. Confronto Accoppiato CRN Invariante: Impatto MAE Browniano su Intraday 1% (25 giorni) ---
+Base Intraday 1%: Pass=41.82%, DL=52.12%, ML=5.95%
+Con MAE Browniano: Pass=39.43%, DL=54.69%, ML=5.78%
+Delta Effettivo MAE: Pass=-2.39%, Daily Loss=+2.57%, Max Loss=-0.17%
+Controllo Invarianza CRN: Sfide passate SOLO con MAE = 0 (deve essere 0)
+
+--- 4. Confronto Accoppiato CRN: Impatto Slippage Pareto su Swing 1% ---
+Base Swing 1%: Pass=67.17%, ML=27.95%
+Con Slippage Pareto: Pass=57.28%, ML=36.13%
+Delta Slippage: -9.89%
+
+--- 5. Impatto Clustering Markov Stazionario P(L|L)=0.80 su Swing 1% ---
+Markov P(L|L)=0.80: Pass=43.97%, ML=55.86%
+Delta vs i.i.d.: -23.20%
+
+[OK] Risultati grezzi V3.2 esportati con successo in: <cartella di lavoro>/esecuzione/simulations_v3_2_raw.json
+
+real	0m8.450s
+user	0m8.320s
+sys	0m0.012s

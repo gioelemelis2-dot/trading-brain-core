@@ -102,3 +102,14 @@ Formato: data · versione della base · cosa · perché · file.
 - Esito: motore corretto; pacchetto non validato (N-01, N-02).
 - Rimossa una cartella `__pycache__` locale. Aggiornati `CONTINUITA.md`, `collaborazione/LOCK.md` e questo registro. Nessun file di Antigravity e nessuna lezione modificati.
 - Aggiunta `collaborazione/da-claude/CLAUDE_QUANTITATIVE_BRAIN_PROPOSAL.md` (proposta, non implementata). Nessuna modifica al Brain principale, al Master Mission o al protocollo.
+
+## 2026-11-12 · v1.6 (revisione V3.2)
+
+- Ricevuti il pacchetto V3.2 (ZIP `989dd288…`, coincide con il dichiarato; dimensione reale 47.977 byte contro 41.696 dichiarati; manifest 15/15 OK) e `CONTINUITA_V3_2_PASSAGGIO_A_CLAUDE.md`. Non archiviati nel Brain (decisione pendente).
+- Aggiunta `collaborazione/revisione-materiali-gemini/R-CLAUDE-20261112-04-V32/`:
+  - revisione, proposte S-01…S-09 (non applicate), registro delle verifiche, confronto delle affermazioni;
+  - 4 strumenti `v32_*` e i test di accettazione proposti;
+  - uscite e impronte.
+- Esito: **VALIDATA CON RISERVE**. Mutazioni V02–V12: 11/11 uccise.
+- Riconosciuto che la guardia simmetrica del MAE (S-05) deriva dalla proposta Q-08 di Claude ed è più restrittiva del necessario.
+- Aggiornati `CONTINUITA.md`, `collaborazione/LOCK.md` e questo registro. Nessun file di Antigravity e nessuna lezione modificati.

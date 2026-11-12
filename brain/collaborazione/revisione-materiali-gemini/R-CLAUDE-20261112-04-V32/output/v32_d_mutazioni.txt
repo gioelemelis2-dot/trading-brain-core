@@ -1,0 +1,29 @@
+SOPRAVVISSUTO V01 fase 2 senza nuovi generatori (accoppiamento parziale)
+UCCISO        V02 deriva fissa 0,09754 (P-02 annullata)  [test_p02_mae_generalization_multi_scenario, test_q08_mae_parameter_validation_and_overflow_guard]
+UCCISO        V03 il motore passa R:R 2 fisso al campionatore MAE  [test_q02_mae_through_engine_rr_diff_2]
+UCCISO        V04 durante il trade daily loss prima del max loss (P-05 annullata)  [test_q02_barrier_priority_during_trade_mae]
+UCCISO        V05 costi ignorati  [test_q02_exact_concordance_group_a_multi_config, test_q02_phase2_target_concordance]
+UCCISO        V06 Markov: partenza sempre da vincita (C-01 annullata)  [test_c01_markov_stationary_start, test_q02_exact_concordance_group_a_multi_config]
+UCCISO        V07 fase 2 con il target della fase 1  [test_q02_exact_concordance_group_a_multi_config]
+UCCISO        V08 nessun controllo daily loss durante il trade  [test_q02_barrier_priority_during_trade_mae, test_q02_mae_through_engine_rr_diff_2]
+UCCISO        V09 pavimento giornaliero statico  [test_c12_unlimited_days_ftmo, test_q02_exact_concordance_group_a_multi_config, test_q02_phase2_target_concordance]
+UCCISO        V10 MAE troncato a -0,5R (escursioni profonde perse)  [test_q02_barrier_priority_during_trade_mae]
+UCCISO        V11 MAE: fattore 2 dimenticato nell'inversione  [test_p02_mae_generalization_multi_scenario, test_q02_exact_concordance_group_a_multi_config]
+UCCISO        V12 bug min_days della V1 reintrodotto  [test_q02_exact_concordance_group_a_multi_config, test_q02_min_days_regression_freezes_risk]
+UCCISO        V13 IC di Kelly al 95% calcolato con z=1 (N-01 reintrodotto)  [test_q01_kelly_confidence_interval_at_95_and_68]
+UCCISO        V14 SE di E[R] senza il fattore (R:R+1)  [test_q01_kelly_confidence_interval_at_95_and_68]
+UCCISO        V15 IC di Kelly: costo ignorato nel valore atteso  [test_q01_kelly_confidence_interval_at_95_and_68]
+UCCISO        V16 risolutore MAE senza controlli di ammissibilita e convergenza  [test_q08_mae_parameter_validation_and_overflow_guard]
+UCCISO        V17 giorni minimi ignorati (pass al raggiungimento del target)  [test_q02_min_days_regression_freezes_risk]
+UCCISO        V18 Markov: P(L|W) = 1 - P(L|L) (stazionarieta persa)  [test_c01_markov_stationary_start, test_q02_exact_concordance_group_a_multi_config]
+SOPRAVVISSUTO V19 Lomax: esponente -alpha invece di -1/alpha
+SOPRAVVISSUTO V20 Lomax: tetto 3R ignorato
+SOPRAVVISSUTO V21 Wilson: z=1 al posto di 1,96 (IC 95% del JSON)
+SOPRAVVISSUTO V22 campionatore MAE: soglia mu~0 a 0,1 (disallineata dal risolutore)
+
+Mutanti V02-V12 (non equivalenti della revisione V3.1) uccisi: 11/11
+Tutti i mutanti V01-V22 uccisi: 17/22
+
+real	0m32.993s
+user	0m32.249s
+sys	0m0.338s

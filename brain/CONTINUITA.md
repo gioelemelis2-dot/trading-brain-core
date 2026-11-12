@@ -14,9 +14,26 @@ Ultimo aggiornamento: **2026-11-11**, dopo l'audit architetturale. Leggere quest
 - Master Mission e Protocollo comune: non ancora ricevuti; protocollo operativo provvisorio (D-09).
 
 ## Prossima azione esatta
-**Parte A (revisione V3.1): completata il 12/11/2026.** `collaborazione/revisione-materiali-gemini/R-CLAUDE-20261112-03-V31/`: motore corretto e riproducibile; pacchetto **non validato** (N-01 intervallo di Kelly etichettato 95% ma ±1 errore standard; N-02 test 5/12 mutanti). Proposte Q-01…Q-09 **non applicate**, da sottoporre ad Antigravity dopo l'approvazione dell'utente.
+**Revisione V3.1: completata il 12/11/2026.**
+- Cartella: `collaborazione/revisione-materiali-gemini/R-CLAUDE-20261112-03-V31/`.
+- Esito: motore corretto, pacchetto non validato (N-01, N-02).
+- Antigravity ha risposto con la V3.2.
+
 **Parte B: completata il 12/11/2026.** `collaborazione/da-claude/CLAUDE_QUANTITATIVE_BRAIN_PROPOSAL.md` (proposta, **non implementata**; 5 decisioni richieste all'utente, §10).
-**Ora: fermo in attesa dell'utente** (valutazione della revisione V3.1, proposte Q-01…Q-09, decisioni della proposta).
+
+**Revisione V3.2: completata il 12/11/2026.**
+- Cartella: `collaborazione/revisione-materiali-gemini/R-CLAUDE-20261112-04-V32/`.
+- Pacchetto ricevuto: ZIP `989dd288…`, manifest 15/15. Non archiviato nel Brain.
+- Esito: **VALIDATA CON RISERVE**.
+  - Q-01, Q-02 (V02–V12 11/11), Q-03, Q-04, Q-05 e Q-08 risolti; Q-06 in parte.
+  - Riserve non bloccanti S-01…S-09; la più rilevante è S-01: il valore simulato 0,8596 chiamato «benchmark analitico» (l'esatto è 0,8572).
+  - Proposte **non applicate** (eventuale V3.3 minore).
+- Q-07 e Q-09 fuori perimetro.
+
+**Ora: fermo in attesa dell'utente**, per:
+- valutare la revisione V3.2 e decidere se chiedere una V3.3 o accettare la V3.2 con riserve;
+- avviare Q-09 (Trading Guardian) e Q-07;
+- prendere le decisioni della proposta della Parte B.
 
 ## Correzioni note ancora da applicare (dopo il via libera)
 - Contestazione, punto C-04: il rimando "(§3, C-05)" va corretto in "(§3, C-06)".

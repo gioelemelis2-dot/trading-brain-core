@@ -1,0 +1,58 @@
+Q-01 · Intervallo dell'edge, N=300, WR 0,40, R:R 2, costo 0,05
+  E[R] 0.150000  SE 0.084853  (controllo: sqrt(Var[R]/N) = 0.084853, Var[R] = 2.1600)
+  ±1 SE: [+0.0651, +0.2349]   IC 95% (z 1.959964): [-0.0163, +0.3163]
+  f* ai limiti di ±1 SE: [0.201%, 0.726%]; al limite inferiore 95%: -0.050% (negativo)
+  Motore V3.2 (95%): E 0.150000 SE 0.084853 IC [-0.016308, +0.316308]
+  Quantile usato dal motore per altri livelli, contro il valore esatto:
+    livello 0.6827: z motore 1.0000  z esatto 1.0000
+    livello 0.6750: z motore 1.0000  z esatto 0.9842
+    livello 0.6900: z motore 1.0000  z esatto 1.0152
+    livello 0.8000: z motore 1.2817  z esatto 1.2816
+    livello 0.9000: z motore 1.6452  z esatto 1.6449
+    livello 0.9900: z motore 2.5758  z esatto 2.5758
+  Wilson del motore a livelli diversi da 0,95 (k=50, n=100):
+    livello 0.9: motore [0.3753, 0.6247]  corretto [0.4188, 0.5812]
+    livello 0.95: motore [0.4038, 0.5962]  corretto [0.4038, 0.5962]
+    livello 0.99: motore [0.3753, 0.6247]  corretto [0.3753, 0.6247]
+
+Q-03 · Slippage Lomax (alpha 1,8, scala 0,05R, tetto 3R) applicato alle perdite: momenti in forma chiusa
+  E[S] 0.060169  E[S^2] 0.025869  Var[S] 0.022249  P(S >= tetto) 0.000612
+  E[R netto] 0.113899  Var[R] 2.260861  f* 0.3363%   (V3.2 dichiara 0,0602 / 0,0222 / 0,1139 / 2,2609 / 0,3363%)
+  Controllo Monte Carlo della formula del motore (n=2e6): E[S] 0.06017  Var[S] 0.02216
+
+Q-08 · Casi estremi del MAE (costruttore; se accettato: errore di P_win e confronto del campionatore con F(d) esatto)
+  WR 0.4        R:R 50    : mu +0.255413  |P_win - WR| 5.6e-17  campionatore vs F(d): max |z| 1.95
+  WR 0.99       R:R 2     : mu +2.30254  |P_win - WR| 0.0e+00  campionatore vs F(d): max |z| 2.06
+  WR 0.99       R:R 50    : mu +2.30259  |P_win - WR| 1.1e-16  campionatore vs F(d): max |z| 2.05
+  WR 0.999      R:R 2     : mu +3.45388  |P_win - WR| 0.0e+00  campionatore vs F(d): max |z| 2.34
+  WR 0.4        R:R 24    : mu +0.255412  |P_win - WR| 0.0e+00  campionatore vs F(d): max |z| 1.95
+  WR 0.4        R:R 100   : mu +0.255413  |P_win - WR| 0.0e+00  campionatore vs F(d): max |z| 1.95
+  WR 0.4        R:R 500   : mu +0.255413  |P_win - WR| 0.0e+00  campionatore vs F(d): max |z| 1.95
+  WR 0.99       R:R 500   : ValueError: Configurazione MAE browniano non realizzabile senza overflow esponenziale: WR=0.9900 non c
+  WR 0.9999995  R:R 50    : ValueError: Configurazione MAE browniano non realizzabile senza overflow esponenziale: WR=1.0000 non c
+  WR 0.05       R:R 0.1   : mu -14.9787  |P_win - WR| 0.0e+00  campionatore vs F(d): max |z| 2.35
+  WR 0.4        R:R 0.001 : ValueError: Configurazione MAE browniano non realizzabile senza overflow esponenziale: WR=0.4000 non c
+  WR 0.9        R:R 0.02  : mu -2.62078  |P_win - WR| 2.2e-16  campionatore vs F(d): max |z| 2.60
+  WR 0.33333334 R:R 2     : mu +0  |P_win - WR| 1.0e-08  campionatore vs F(d): max |z| 1.91
+  WR 0.33333353 R:R 2     : mu +2.99973e-07  |P_win - WR| 2.4e-12  campionatore vs F(d): max |z| 1.91
+  WR 0.33333303 R:R 2     : mu -4.4999e-07  |P_win - WR| 2.2e-11  campionatore vs F(d): max |z| 1.91
+  Continuita' alla soglia mu~0 (R:R 2): F(0,5) con mu 0 e con mu 1,01e-7, 1e-6: 0.400000000, 0.400000000, 0.400000000
+
+Input non validati (rilevati, non intercettati)
+  R:R = nan, 1 sfida, 30 giorni: esito ['timeout']
+  R:R = inf, 1 sfida: esito ['pass']
+  costo = nan: esito ['timeout']
+  rischio = -1%: esito ['max_loss', 'pass', 'timeout', 'timeout', 'timeout']
+  alpha slippage = 0: ZeroDivisionError: float division by zero
+  max_days 3 < min_days 4, target istantaneo: esito ('pass', 4, 0.1)
+
+Semi CRN: collisioni tra flussi (sfida i, flusso k) per seme 42
+  n 2500: collisioni 0
+  n 3000: collisioni 0
+  n 10000: collisioni 0
+  n 20000: collisioni 0
+  Distanza minima tra sfide perche' due flussi coincidano (qualsiasi seme): 439306784
+
+real	0m1.005s
+user	0m0.968s
+sys	0m0.028s

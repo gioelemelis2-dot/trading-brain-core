@@ -1,0 +1,40 @@
+=== motore: esecuzione
+FAIL: test_wilson_valori_noti (__main__.TestPropostiClaude.test_wilson_valori_noti)
+Ran 5 tests in 0.312s
+FAILED (failures=1)
+=== motore: mutanti/V03
+FAIL: test_mae_profondo_attraverso_motore_rr1 (__main__.TestPropostiClaude.test_mae_profondo_attraverso_motore_rr1)
+FAIL: test_wilson_valori_noti (__main__.TestPropostiClaude.test_wilson_valori_noti)
+Ran 5 tests in 0.329s
+FAILED (failures=2)
+=== motore: mutanti/V07
+FAIL: test_fase2_esatta_e_prodotto_due_fasi (__main__.TestPropostiClaude.test_fase2_esatta_e_prodotto_due_fasi)
+FAIL: test_wilson_valori_noti (__main__.TestPropostiClaude.test_wilson_valori_noti)
+Ran 5 tests in 0.320s
+FAILED (failures=2)
+=== motore: mutanti/V10
+FAIL: test_mae_profondo_attraverso_motore_rr1 (__main__.TestPropostiClaude.test_mae_profondo_attraverso_motore_rr1)
+FAIL: test_wilson_valori_noti (__main__.TestPropostiClaude.test_wilson_valori_noti)
+Ran 5 tests in 0.322s
+FAILED (failures=2)
+=== motore: mutanti/V19
+FAIL: test_slippage_deterministico (__main__.TestPropostiClaude.test_slippage_deterministico)
+FAIL: test_wilson_valori_noti (__main__.TestPropostiClaude.test_wilson_valori_noti)
+Ran 5 tests in 0.315s
+FAILED (failures=2)
+=== motore: mutanti/V20
+FAIL: test_slippage_deterministico (__main__.TestPropostiClaude.test_slippage_deterministico)
+FAIL: test_wilson_valori_noti (__main__.TestPropostiClaude.test_wilson_valori_noti)
+Ran 5 tests in 0.315s
+FAILED (failures=2)
+=== motore: mutanti/V21
+FAIL: test_wilson_valori_noti (__main__.TestPropostiClaude.test_wilson_valori_noti)
+Ran 5 tests in 0.300s
+FAILED (failures=1)
+=== motore con Wilson corretto (copia di lavoro di Claude, non il pacchetto)
+Ran 5 tests in 0.327s
+OK
+=== motore con Wilson corretto-V21 (copia di lavoro di Claude, non il pacchetto)
+FAIL: test_wilson_valori_noti (__main__.TestPropostiClaude.test_wilson_valori_noti)
+Ran 5 tests in 0.331s
+FAILED (failures=1)

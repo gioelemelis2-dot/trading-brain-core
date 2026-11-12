@@ -1,0 +1,37 @@
+# Integrita' del pacchetto V3.2 ricevuto (12/11/2026)
+ZIP: 47977 byte (dichiarati 41.696)
+989dd288e04cb5601af0012442707b833054001ba48cdc6392bcdd5423643d18  4c14b750-TRADING_BRAIN_V3_2_PACKAGE.zip
+SHA-256 dichiarato: 989dd288e04cb5601af0012442707b833054001ba48cdc6392bcdd5423643d18 -> coincide
+
+## sha256sum -c MANIFEST_SHA256_V3_2.txt
+ANTIGRAVITY_RESPONSE_TO_CLAUDE_FINAL_REVIEW_V3_1.md: OK
+CHECKPOINT_V3_2_CONVERGENCE.md: OK
+README.md: OK
+REGISTRO_DIPENDENZE_E_PROVENIENZA_V3_2.md: OK
+prop_risk_engine_v3_2.py: OK
+run_simulations_v3_2.py: OK
+simulations_v3_2_raw.json: OK
+test_prop_risk_v3_2.py: OK
+archivio_storico/LEGGIMI_V1.md: OK
+archivio_storico/STR_001_TSMOM_TREND_FOLLOWING.md: OK
+archivio_storico/STR_002_SP500_OPENING_GAP.md: OK
+archivio_storico/prop_risk_engine_v1.py: OK
+archivio_storico/prop_simulations_raw_v1.json: OK
+archivio_storico/rulebook.yaml: OK
+archivio_storico/run_comprehensive_simulations_v1.py: OK
+File presenti non dichiarati nel manifest: nessuno (oltre al manifest stesso)
+
+## Archivio storico V3.2 contro archivio storico V3.1 (cmp byte per byte)
+identico  STR_001_TSMOM_TREND_FOLLOWING.md
+identico  STR_002_SP500_OPENING_GAP.md
+identico  prop_risk_engine_v1.py
+identico  prop_simulations_raw_v1.json
+identico  rulebook.yaml
+identico  run_comprehensive_simulations_v1.py
+
+## Copie ricevute delle versioni precedenti
+6c64a3a4d3ea9d90fb1ab7d9fdf6ea7ce3cccbeab0f87e1cadb57d0e290f5bb7  3d764e14-TRADING_BRAIN_V3_PACKAGE.zip
+99e8f0bdd1fa3a5511d5eb85fcada9906cc16e750378a0653a5f72e2af3e9cbf  514451a9-TRADING_BRAIN_V3_1_PACKAGE.zip
+manifest V3: tutti OK
+manifest V3.1: tutti OK
+V2: 5/5 file coincidono con MANIFEST_SHA256.txt

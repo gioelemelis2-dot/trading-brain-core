@@ -1,0 +1,20 @@
+(1) Seme della suite (42)
+  Gruppo A Senza limite 0,50%   tasso 0.9090  z -0.35
+  Gruppo A Senza limite 1,00%   tasso 0.7083  z +0.59
+  Gruppo A Swing 60 g 1,00%     tasso 0.6770  z +0.98
+  Gruppo A Markov swing 1%      tasso 0.4557  z +1.67
+  Gruppo A Intraday 1% MAE      tasso 0.3960  z +0.85
+  Test R:R 1 (1/6): tasso 0.1662  z -0.13
+  Test fase 2: P1 0.7790  P2 0.8610 (esatti 0,7800 / 0,8572; il test confronta P2 con 0,8596 ± 0,025)
+
+(2) Motore originale, 40 semi alternativi (1001-1040)
+  Gruppo A: semi con almeno un |z| >= 4: 0/40; |z| massimo osservato 2.86
+  Test R:R 1 (soglia |z| < 3): fallimenti 0/40
+  Test fase 2: fallimenti 0/40
+
+(3) Mutante V10 con 40 semi: intercettato dal Gruppo A (|z| >= 4) o dal test R:R 1 (|z| >= 3)?
+  Gruppo A: 0/40 semi; test R:R 1: 0/40 semi (atteso ~0: in quel test V10 e' indistinguibile per costruzione)
+
+real	1m15.100s
+user	1m14.272s
+sys	0m0.008s
