@@ -1,7 +1,7 @@
 """
 Pipeline di ingestione e validazione per dati storici OHLCV.
 Verifica:
-1. Formato temporale UTC nativo.
+1. Formato temporale UTC nativo con offset esplicito (vietato mascheramento di timezone tramite replace).
 2. Distinzione rigorosa tra open_time e close_time (anti look-ahead bias).
 3. Monotonia stretta della sequenza cronologica.
 4. Assenza di sovrapposizioni temporali (overlap) o inversioni.
@@ -36,17 +36,13 @@ class DataIngestionPipeline:
     ):
         self.symbol = symbol
         self.timeframe = timeframe
+        if max_allowed_utc is not None:
+            if max_allowed_utc.tzinfo is None or max_allowed_utc.utcoffset() != timedelta(0):
+                raise DataValidationError("max_allowed_utc deve avere timezone UTC esplicito.")
         self.max_allowed_utc = max_allowed_utc
-        if self.max_allowed_utc and self.max_allowed_utc.tzinfo is None:
-            self.max_allowed_utc = self.max_allowed_utc.replace(tzinfo=timezone.utc)
         self.max_gap_seconds = max_gap_seconds
 
     def parse_csv_stream(self, file_path: Union[str, Path]) -> List[Candle]:
-        """
-        Legge un file CSV contenente colonne:
-        open_time,close_time,open,high,low,close,volume
-        oppure open_time,open,high,low,close,volume (in tal caso close_time e' calcolato dal timeframe).
-        """
         candles: List[Candle] = []
         path = Path(file_path)
         if not path.exists():
@@ -80,7 +76,6 @@ class DataIngestionPipeline:
         return self.validate_sequence(candles)
 
     def parse_jsonl(self, file_path: Union[str, Path]) -> List[Candle]:
-        """Legge un file in formato JSON Lines."""
         candles: List[Candle] = []
         path = Path(file_path)
         if not path.exists():
@@ -100,9 +95,6 @@ class DataIngestionPipeline:
         return self.validate_sequence(candles)
 
     def validate_sequence(self, candles: List[Candle]) -> List[Candle]:
-        """
-        Valida la coerenza globale e cronologica dell'intera sequenza di candele.
-        """
         if not candles:
             return []
 
@@ -118,7 +110,6 @@ class DataIngestionPipeline:
 
             # 2. Verifica sequenzialita' e monotonia
             if prev_candle is not None:
-                # La nuova candela non puo' aprirsi prima della chiusura della precedente
                 if candle.open_time < prev_candle.close_time:
                     raise MonotonicityError(
                         f"Inversione/Sovrapposizione cronologica alla candela {idx}: "
@@ -149,8 +140,12 @@ class DataIngestionPipeline:
     def _parse_iso_utc(val: str) -> datetime:
         dt = datetime.fromisoformat(val)
         if dt.tzinfo is None:
-            return dt.replace(tzinfo=timezone.utc)
-        return dt.astimezone(timezone.utc)
+            raise DataValidationError(
+                f"Timestamp privo di fuso orario UTC esplicito: '{val}'. Richiesto suffisso UTC (+00:00 o Z)."
+            )
+        if dt.utcoffset() != timedelta(0):
+            dt = dt.astimezone(timezone.utc)
+        return dt
 
     @staticmethod
     def _timeframe_to_timedelta(tf: str) -> timedelta:

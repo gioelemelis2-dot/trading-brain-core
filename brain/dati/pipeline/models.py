@@ -2,13 +2,16 @@
 Modello dati epistemico per candele storiche OHLCV.
 Governance Epistemica: Ogni candela e' una MISURA aggregata priva di interpretazione.
 Tutti i valori monetari e di prezzo utilizzano esclusivamente Decimal per prevenire errori di floating point.
+Tutti i timestamp richiedono obbligatoriamente un fuso orario UTC esplicito (divieto assoluto di mascheramento di timezone tramite replace).
 """
 
 from dataclasses import dataclass, field
-from datetime import datetime, timezone
+from datetime import datetime, timezone, timedelta
 from decimal import Decimal, InvalidOperation
 from enum import Enum
 from typing import Any, Dict
+
+from brain.guardian.g0.valori import Valore, misura
 
 
 class EpistemicType(str, Enum):
@@ -54,14 +57,18 @@ class Candle:
     condition_h: str = field(default="{H_feed_integro}")
 
     def __post_init__(self):
-        # 1. Validazione Tipi e Timestamp UTC
+        # 1. Validazione Tipi e Timestamp UTC Esplicito
         if not isinstance(self.open_time, datetime) or not isinstance(self.close_time, datetime):
             raise DataValidationError("open_time e close_time devono essere oggetti datetime.")
         
-        if self.open_time.tzinfo is None or self.open_time.tzinfo != timezone.utc:
-            raise DataValidationError(f"open_time deve avere timezone UTC esplicito. Trovato: {self.open_time.tzinfo}")
-        if self.close_time.tzinfo is None or self.close_time.tzinfo != timezone.utc:
-            raise DataValidationError(f"close_time deve avere timezone UTC esplicito. Trovato: {self.close_time.tzinfo}")
+        if self.open_time.tzinfo is None or self.open_time.utcoffset() != timedelta(0):
+            raise DataValidationError(
+                f"open_time deve avere timezone UTC esplicito (+00:00 o Z). Trovato: {self.open_time.tzinfo}"
+            )
+        if self.close_time.tzinfo is None or self.close_time.utcoffset() != timedelta(0):
+            raise DataValidationError(
+                f"close_time deve avere timezone UTC esplicito (+00:00 o Z). Trovato: {self.close_time.tzinfo}"
+            )
 
         if self.open_time >= self.close_time:
             raise DataValidationError(
@@ -92,6 +99,26 @@ class Candle:
         if self.volume < Decimal("0"):
             raise DataValidationError(f"Volume negativo non consentito: {self.volume}")
 
+    @property
+    def open_valore(self) -> Valore:
+        return misura(self.open, unita="price", fonte=f"feed:{self.symbol}:{self.timeframe}")
+
+    @property
+    def high_valore(self) -> Valore:
+        return misura(self.high, unita="price", fonte=f"feed:{self.symbol}:{self.timeframe}")
+
+    @property
+    def low_valore(self) -> Valore:
+        return misura(self.low, unita="price", fonte=f"feed:{self.symbol}:{self.timeframe}")
+
+    @property
+    def close_valore(self) -> Valore:
+        return misura(self.close, unita="price", fonte=f"feed:{self.symbol}:{self.timeframe}")
+
+    @property
+    def volume_valore(self) -> Valore:
+        return misura(self.volume, unita="volume", fonte=f"feed:{self.symbol}:{self.timeframe}")
+
     def to_dict(self) -> Dict[str, Any]:
         return {
             "symbol": self.symbol,
@@ -111,10 +138,14 @@ class Candle:
     def from_dict(cls, data: Dict[str, Any]) -> "Candle":
         open_time = datetime.fromisoformat(data["open_time"])
         if open_time.tzinfo is None:
-            open_time = open_time.replace(tzinfo=timezone.utc)
+            raise DataValidationError(
+                f"Timestamp open_time privo di fuso orario UTC esplicito: '{data['open_time']}'"
+            )
         close_time = datetime.fromisoformat(data["close_time"])
         if close_time.tzinfo is None:
-            close_time = close_time.replace(tzinfo=timezone.utc)
+            raise DataValidationError(
+                f"Timestamp close_time privo di fuso orario UTC esplicito: '{data['close_time']}'"
+            )
 
         return cls(
             symbol=data["symbol"],

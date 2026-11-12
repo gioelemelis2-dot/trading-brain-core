@@ -1,13 +1,14 @@
 """
 Eventi e Strutture Dati per il Backtester Event-Driven.
 Tutti i valori monetari, quantita' e prezzi sono gestiti in Decimal.
+Include flag per ambiguità intrabarra e tracciamento delle condizioni epistemiche.
 """
 
 from dataclasses import dataclass, field
 from datetime import datetime
 from decimal import Decimal
 from enum import Enum
-from typing import Optional, Dict, Any
+from typing import Optional, Dict, Any, FrozenSet
 
 
 class OrderType(str, Enum):
@@ -67,8 +68,8 @@ class FillEvent:
     quantity: Decimal
     fill_price: Decimal
     commission: Decimal
-    slippage: Decimal
     spread_cost: Decimal
+    slippage: Decimal
     is_gap_slippage: bool = False
     pnl_realized: Decimal = Decimal("0.00")
     metadata: Dict[str, Any] = field(default_factory=dict)
@@ -87,12 +88,8 @@ class Position:
     stop_loss: Optional[Decimal] = None
     take_profit: Optional[Decimal] = None
 
-    def unrealized_pnl(self, current_price: Decimal) -> Decimal:
-        if self.position_type == PositionType.LONG:
-            return (current_price - self.entry_price) * self.quantity
-        elif self.position_type == PositionType.SHORT:
-            return (self.entry_price - current_price) * self.quantity
-        return Decimal("0.00")
+    def unrealized_pnl(self, current_price: Decimal, calc_pnl_func) -> Decimal:
+        return calc_pnl_func(self.position_type, self.entry_price, current_price, self.quantity)
 
 
 @dataclass(frozen=True)
@@ -111,3 +108,5 @@ class TradeRecord:
     total_slippage: Decimal
     exit_reason: str
     is_gap_slippage: bool = False
+    is_ambiguous_intrabar: bool = False
+    condizioni: FrozenSet[str] = field(default_factory=frozenset)

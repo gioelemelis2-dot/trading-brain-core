@@ -50,7 +50,7 @@ Gemini ha accesso diretto e immediato nel filesystem locale a tutta la propria p
 2. **Profilo delle Capacità di Ricerca (V1):**  
    File: `GEMINI_RESEARCH_CAPABILITY_PROFILE_V1.md` (20.714 byte).
 3. **Pacchetto Originale V3.3 Congelato:**  
-   File ZIP: `TRADING_BRAIN_V3_3_PACKAGE.zip` (62.513 byte, SHA-256: `6fb9d76e73fbf509938ca9e28bf6152ef3225883ef5fbe8e1bb3f7a1fec97638`).  
+   File ZIP: `TRADING_BRAIN_V3_3_PACKAGE.zip` (62.513 byte, SHA-256: `6fb9d76e54daabecd5215aaa255ef3b94f2a0052569b20734b1ac90181627638`).  
    Directory scompattata: `brain/collaborazione/da-gemini/consegne-v3.3/` (18 file canonici).
 4. **Manifest e Report di Verifica Storica:**  
    - `MANIFEST_SHA256_V3_3.txt` (identico a `V3_3_MANIFEST.sha256`).
@@ -82,7 +82,7 @@ I seguenti materiali, dichiarati completati da Claude nel repository/ambiente `t
 ### 2.1 Integrità e Metadati del Pacchetto Baseline
 - **Archivio ZIP:** `TRADING_BRAIN_V3_3_PACKAGE.zip`
 - **Dimensione:** 62.513 byte
-- **Hash SHA-256:** `6fb9d76e73fbf509938ca9e28bf6152ef3225883ef5fbe8e1bb3f7a1fec97638`
+- **Hash SHA-256:** `6fb9d76e54daabecd5215aaa255ef3b94f2a0052569b20734b1ac90181627638`
 - **Stato:** Congelato in sola lettura. Nessuna modifica o commit consentiti su questa baseline.
 
 ### 2.2 Manifest Ufficiale SHA-256 (18 File Canonici)

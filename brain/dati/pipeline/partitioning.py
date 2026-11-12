@@ -1,19 +1,22 @@
 """
 Partizionamento rigoroso In-Sample / Out-Of-Sample e Sigillo Crittografico OOS.
-Previene:
-1. Data snooping e contaminazione da ricerca.
-2. Manomissione retroattiva del dataset Out-Of-Sample.
-Genera un commitment crittografico con Nonce casuale a 256-bit (CSPRNG).
+Allineato formalmente allo standard di brain/guardian/journal/journal.py (sigilla):
+Impegno = SHA256((nonce_hex + oos_text_canonico).encode("utf-8"))
+Verifica tramite secrets.compare_digest.
 """
 
 import hashlib
 import json
 import secrets
-from datetime import datetime, timezone
+from datetime import datetime, timezone, timedelta
 from pathlib import Path
 from typing import List, Tuple, Dict, Any, Optional
 
-from .models import Candle
+from .models import Candle, DataValidationError
+
+
+def _canonico(obj) -> str:
+    return json.dumps(obj, ensure_ascii=False, sort_keys=True, separators=(",", ":"))
 
 
 class DatasetPartitioner:
@@ -30,8 +33,7 @@ class DatasetPartitioner:
     ) -> Tuple[Path, Path, Path]:
         """
         Separa fisicamente le candele in IN-SAMPLE e OUT-OF-SAMPLE.
-        Genera commitment.json sigillando l'OOS con Nonce a 256 bit.
-        Restituisce: (in_sample_path, out_of_sample_path, commitment_path)
+        Genera commitment.json sigillando l'OOS con Nonce CSPRNG a 256 bit.
         """
         if not candles:
             raise ValueError("Impossibile partizionare un dataset vuoto.")
@@ -40,8 +42,8 @@ class DatasetPartitioner:
         output_dir.mkdir(parents=True, exist_ok=True)
 
         if split_time is not None:
-            if split_time.tzinfo is None:
-                split_time = split_time.replace(tzinfo=timezone.utc)
+            if split_time.tzinfo is None or split_time.utcoffset() != timedelta(0):
+                raise DataValidationError("split_time deve avere timezone UTC esplicito.")
             in_sample = [c for c in candles if c.close_time <= split_time]
             out_of_sample = [c for c in candles if c.open_time >= split_time]
         else:
@@ -55,37 +57,36 @@ class DatasetPartitioner:
         is_path = output_dir / "in_sample.jsonl"
         with open(is_path, "w", encoding="utf-8") as f:
             for c in in_sample:
-                f.write(json.dumps(c.to_dict()) + "\n")
+                f.write(_canonico(c.to_dict()) + "\n")
 
-        # 2. Scrittura Out-Of-Sample JSONL (canonico deterministico)
+        # 2. Scrittura Out-Of-Sample JSONL Canonico
         oos_path = output_dir / "out_of_sample.jsonl"
-        oos_bytes = bytearray()
-        with open(oos_path, "wb") as f:
+        oos_canonical_lines = []
+        with open(oos_path, "w", encoding="utf-8") as f:
             for c in out_of_sample:
-                line_bytes = (json.dumps(c.to_dict(), sort_keys=True) + "\n").encode("utf-8")
-                f.write(line_bytes)
-                oos_bytes.extend(line_bytes)
+                line = _canonico(c.to_dict())
+                f.write(line + "\n")
+                oos_canonical_lines.append(line)
 
-        # 3. Generazione Nonce Casuale a 256-bit (32 byte hex)
+        oos_text_canonico = "\n".join(oos_canonical_lines) + "\n"
+
+        # 3. Generazione Nonce Casuale a 256-bit (32 byte hex) CSPRNG
         nonce_hex = secrets.token_hex(32)
-        nonce_bytes = bytes.fromhex(nonce_hex)
 
-        # 4. Calcolo Sigillo Crittografico SHA-256
-        oos_sha256 = hashlib.sha256(oos_bytes).hexdigest()
-        nonce_sha256 = hashlib.sha256(nonce_bytes).hexdigest()
-        
-        # Commitment: SHA256( OOS_bytes || Nonce_bytes )
+        # 4. Calcolo Sigillo Crittografico SHA-256 standard Journal
+        # Formula journal.sigilla: SHA256((nonce_hex + payload_text).encode("utf-8"))
         hasher = hashlib.sha256()
-        hasher.update(oos_bytes)
-        hasher.update(nonce_bytes)
+        hasher.update((nonce_hex + oos_text_canonico).encode("utf-8"))
         commitment_hash = hasher.hexdigest()
+
+        oos_sha256 = hashlib.sha256(oos_text_canonico.encode("utf-8")).hexdigest()
 
         # 5. Scrittura commitment.json
         commitment_data = {
-            "protocol": "SEALED_OOS_RESEARCH_COMMITMENT_V1",
+            "protocol": "SEALED_OOS_RESEARCH_COMMITMENT_V2",
             "epistemic_type": "REGOLA",
             "condition_h": "{H_oos_sigillato}",
-            "created_at_utc": datetime.now(timezone.utc).isoformat(),
+            "created_at_utc": datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
             "symbol": candles[0].symbol,
             "timeframe": candles[0].timeframe,
             "total_records": len(candles),
@@ -93,14 +94,13 @@ class DatasetPartitioner:
             "out_of_sample_count": len(out_of_sample),
             "split_boundary_utc": in_sample[-1].close_time.isoformat(),
             "oos_sha256": oos_sha256,
-            "nonce_sha256": nonce_sha256,
             "commitment_hash": commitment_hash,
             "status": "SEALED_LOCKED",
         }
 
         commitment_path = output_dir / "commitment.json"
         with open(commitment_path, "w", encoding="utf-8") as f:
-            json.dump(commitment_data, f, indent=2)
+            f.write(json.dumps(commitment_data, indent=2) + "\n")
 
         # 6. Scrittura file nonce isolato (da custodire per apertura)
         nonce_path = output_dir / "sealed_nonce.secret"
@@ -113,7 +113,7 @@ class DatasetPartitioner:
     def verify_commitment(oos_file: Path, commitment_file: Path, nonce_file: Path) -> Dict[str, Any]:
         """
         Verifica crittografica formale dell'integrita' del dataset Out-Of-Sample.
-        Controlla se l'OOS o il commitment sono stati manomessi.
+        Usa secrets.compare_digest per prevenire attacchi di temporizzazione.
         """
         oos_file = Path(oos_file)
         commitment_file = Path(commitment_file)
@@ -124,27 +124,22 @@ class DatasetPartitioner:
 
         with open(nonce_file, "r", encoding="utf-8") as f:
             nonce_hex = f.read().strip()
-        nonce_bytes = bytes.fromhex(nonce_hex)
 
-        with open(oos_file, "rb") as f:
-            oos_bytes = f.read()
+        with open(oos_file, "r", encoding="utf-8") as f:
+            oos_text = f.read()
 
-        computed_oos_sha = hashlib.sha256(oos_bytes).hexdigest()
-        computed_nonce_sha = hashlib.sha256(nonce_bytes).hexdigest()
+        computed_oos_sha = hashlib.sha256(oos_text.encode("utf-8")).hexdigest()
 
         hasher = hashlib.sha256()
-        hasher.update(oos_bytes)
-        hasher.update(nonce_bytes)
+        hasher.update((nonce_hex + oos_text).encode("utf-8"))
         computed_commitment = hasher.hexdigest()
 
-        is_oos_valid = (computed_oos_sha == comm["oos_sha256"])
-        is_nonce_valid = (computed_nonce_sha == comm["nonce_sha256"])
-        is_commitment_valid = (computed_commitment == comm["commitment_hash"])
+        is_oos_valid = secrets.compare_digest(computed_oos_sha, comm["oos_sha256"])
+        is_commitment_valid = secrets.compare_digest(computed_commitment, comm["commitment_hash"])
 
         return {
-            "valid": is_oos_valid and is_nonce_valid and is_commitment_valid,
+            "valid": is_oos_valid and is_commitment_valid,
             "oos_match": is_oos_valid,
-            "nonce_match": is_nonce_valid,
             "commitment_match": is_commitment_valid,
             "expected_commitment": comm["commitment_hash"],
             "computed_commitment": computed_commitment,
