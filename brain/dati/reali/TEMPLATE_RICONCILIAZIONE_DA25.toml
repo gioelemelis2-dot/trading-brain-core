@@ -1,0 +1,59 @@
+# TEMPLATE DI RICONCILIAZIONE ESTRATTO CONTO PER GUARDIAN G0 (DA-25)
+# Riconciliazione canonica pre-trade conforme alla scheda del Guardian G0.
+# Governance Epistemica: Ogni grandezza è MISURA broker o REGOLA verificata.
+
+[conto]
+prodotto = "ftmo_2step"
+valuta = "EUR"
+capitale_iniziale = "100000.00"
+saldo_mezzanotte = "100250.00"
+equity = "100420.00"
+saldi_riferimento = []
+fonte = "estratto conto broker MT5 demo FTMO"
+riconciliato = false
+
+[[strumento]]
+simbolo = "EURUSD"
+classe = "fx"
+valuta_base = "EUR"
+valuta_profitto = "USD"
+dimensione_contratto = "100000"
+fonte = "specifiche contrattuali MT5"
+stato_verifica = "V"
+
+[[strumento]]
+simbolo = "ES"
+classe = "future"
+valuta_profitto = "USD"
+passo_tick = "0.25"
+valore_tick = "12.50"
+fonte = "specifiche contrattuali CME / MT5"
+stato_verifica = "V"
+
+[cambi]
+"USD/EUR" = "1.0870"
+
+[[posizione]]
+simbolo = "EURUSD"
+ingresso = "1.08500"
+stop = "1.08100"
+prezzo_attuale = "1.08420"
+quantita = "1.0"
+commissioni = "5.00"
+
+[trade_previsto]
+simbolo = "ES"
+ingresso = "5000.00"
+stop = "4990.00"
+quantita = "1"
+commissioni = "4.00"
+
+[sessione]
+data_rilevazione_utc = "2026-11-12T22:00:00Z"
+operatore = "Gioele Melis"
+conto_id = "FTMO-DEMO-2STEP-100K"
+piattaforma = "MetaTrader 5"
+
+[riserva_gap]
+valore = "150.00"
+fonte = "stima prudenziale spread/gap"
