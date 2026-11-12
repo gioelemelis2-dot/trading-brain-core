@@ -20,6 +20,9 @@ from typing import Optional
 from .valori import Valore, combina
 
 H_ESEC = "H_esec: stop eseguito esattamente al prezzo indicato (nessun gap, slippage o mancata esecuzione)"
+# Tolleranza sul numero di tick: assorbe il rumore di un Decimal costruito da un float (ordine di 1e-12 tick), non un
+# prezzo davvero fuori tick (almeno una frazione apprezzabile di tick).
+TOLLERANZA_TICK = Decimal("1e-9")
 
 
 @dataclass(frozen=True)
@@ -35,6 +38,10 @@ class Strumento:
     valore_tick: Optional[Decimal] = None
 
     def __post_init__(self):
+        for nome in ("simbolo", "fonte", "valuta_profitto"):
+            x = getattr(self, nome)
+            if not isinstance(x, str) or not x.strip():
+                raise ValueError(f"strumento: {nome} deve essere un testo non vuoto ({x!r})")
         if self.classe not in ("fx", "future", "cfd"):
             raise ValueError(f"classe di strumento non gestita: {self.classe}")
         if self.classe == "fx" and not self.valuta_base:
@@ -72,8 +79,10 @@ def perdita_allo_stop(s: Strumento, ingresso: Valore, stop: Valore, quantita: Va
     distanza = abs(ingresso.valore - stop.valore)
     if s.classe == "future":
         tick = distanza / s.passo_tick
-        if tick != tick.to_integral_value():
+        intero = tick.to_integral_value()
+        if abs(tick - intero) > TOLLERANZA_TICK:
             raise ValueError(f"la distanza {distanza} non è multipla del tick {s.passo_tick}")
+        tick = intero
         perdita_prof = tick * s.valore_tick * quantita.valore
     else:
         perdita_prof = distanza * s.dimensione_contratto * quantita.valore

@@ -44,11 +44,15 @@ def trade_da_journal(path: Path) -> list[dict]:
 
 
 def metriche_dopo_perdita(trades: list[dict]) -> list[dict]:
-    """Per ogni trade che segue una perdita: minuti dalla chiusura della perdita e rapporto tra le size."""
+    """Per ogni trade che segue una perdita: minuti dalla chiusura della perdita e rapporto tra le size.
+    Solo trade SEQUENZIALI: un trade aperto prima della chiusura della perdita (sovrapposto) non è un rientro «dopo»
+    la perdita ed è escluso (avrebbe minuti negativi e passerebbe per un rientro immediato). Vale anche per R1."""
     out = []
     for prec, succ in zip(trades, trades[1:]):
         if _dec(prec["pnl_conto"]) < 0:
             minuti = _secondi(_t(succ["aperto_utc"]) - _t(prec["chiuso_utc"])) / Decimal(60)
+            if minuti < 0:
+                continue
             out.append({"trade": succ.get("id_piattaforma", succ["aperto_utc"]), "tipo": "DERIVATO",
                         "minuti_dopo_perdita": minuti,
                         "rapporto_size": _dec(succ["quantita"]) / _dec(prec["quantita"])})
