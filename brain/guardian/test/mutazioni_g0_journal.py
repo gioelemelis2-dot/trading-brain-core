@@ -174,6 +174,8 @@ M = {
     "V76 P-01: capitale non positivo non controllato (divisione per zero)": [
         (SC, "if cap.stimabile and cap.valore <= 0:", "if False:")],
     "V77 TOML minimale: chiavi tra virgolette non gestite": [(TO, '''if s[0] in "\\"'":''', "if False:")],
+    "V78 versioni_finali: chiude verso una correzione accettato": [
+        (JO, 'if e and radice[d["chiude"]] != d["chiude"]:', "if False:")],
     # --- equivalenti dichiarati ---
     "E01 ancora: confronto del numero di righe rimosso (EQUIVALENTE)": [
         (JO, 'if a["righe"] != len(righe) or a["ultimo_hash"] != ultimo:', 'if a["ultimo_hash"] != ultimo:')],

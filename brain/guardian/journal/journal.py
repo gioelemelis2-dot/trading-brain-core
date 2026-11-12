@@ -461,7 +461,8 @@ def versioni_finali(path: Path) -> dict:
     Una correzione (`corregge`) può puntare all'originale o a una correzione precedente: si risale all'originale.
     Chiave: id dell'originale. Anche `chiude` è ricondotto all'originale.
     Solleva ValueError se il file contiene riferimenti fantasma (un id non ancora presente) o incoerenti (correzione
-    fra record di natura diversa, esito che chiude un esito): file manomesso o scritto a mano."""
+    fra record di natura diversa, esito che chiude un esito o una correzione invece dell'id radice della previsione,
+    come in controlla_riferimenti): file manomesso o scritto a mano."""
     radice, esito, finali = {}, {}, {}
     for riga in _righe(path):
         rec = json.loads(riga)
@@ -475,6 +476,9 @@ def versioni_finali(path: Path) -> dict:
             raise ValueError(f"{path.name} {rec['id']}: corregge {d['corregge']!r}, record di natura diversa")
         if e and esito[d["chiude"]]:
             raise ValueError(f"{path.name} {rec['id']}: chiude {d['chiude']!r}, che è un esito e non una previsione")
+        if e and radice[d["chiude"]] != d["chiude"]:
+            raise ValueError(f"{path.name} {rec['id']}: chiude {d['chiude']!r}, che è una correzione; serve l'id radice "
+                             f"{radice[d['chiude']]!r}")
         r = radice[d["corregge"]] if "corregge" in d else rec["id"]
         radice[rec["id"]], esito[rec["id"]] = r, e
         finali[r] = dict(d, chiude=radice[d["chiude"]]) if e else d
