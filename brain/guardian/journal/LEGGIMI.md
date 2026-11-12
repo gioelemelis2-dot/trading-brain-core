@@ -14,6 +14,11 @@ Validazione **all'ingresso** (`valida`, chiamata da `aggiungi`): un record malfo
 - Orari: ISO-8601 in UTC (`…Z` o `+00:00`), anche con frazioni di secondo; `chiuso_utc` non precede `aperto_utc`.
 - Numeri: finiti (niente testo, NaN o infiniti). `ingresso`, `stop`, `quantita`, `uscita` e `target` maggiori di zero; `ore_sonno` tra 0 e 24; `data` come data ISO-8601.
 - Riferimenti: `corregge` e `chiude` devono puntare a un record esistente dello stesso registro.
+- Previsioni ed esiti (`controlla_riferimenti`, applicato da `aggiungi` e ripetuto da `verifica`):
+  - `corregge` collega record della stessa natura (previsione → previsione, esito → esito);
+  - `chiude` punta all'id **radice** di una previsione, non a una sua correzione né a un esito;
+  - una previsione ha un solo esito originale: per cambiarlo si scrive una correzione (`corregge`), che chiude la stessa previsione.
+- Booleani: `true`/`false` non valgono come numeri (`probabilita`, `esito`, `aderenza`, prezzi e quantità), anche se in Python `True == 1`.
 - Gli indicatori calcolano con `Decimal`, mai con `float`.
 
 Correzioni: `versioni_finali` applica `corregge`, anche a catena (una correzione di una correzione). Brier score e indicatori usano sempre l'ultima versione.

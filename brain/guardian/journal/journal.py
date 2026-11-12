@@ -142,7 +142,8 @@ def valida(registro: str, dati: dict) -> None:
         raise ValueError(f"campi non previsti: {sorted(ignoti)}")
     if registro == "trade" and dati["direzione"] not in ("long", "short"):
         raise ValueError("direzione: long o short")
-    if registro == "trade" and "aderenza" in dati and dati["aderenza"] not in (1, 2, 3, 4, 5):
+    # `type(x) is int`: in Python True == 1, quindi un booleano passerebbe per un intero.
+    if registro == "trade" and "aderenza" in dati and (type(dati["aderenza"]) is not int or dati["aderenza"] not in range(1, 6)):
         raise ValueError("aderenza: intero da 1 a 5")
     if registro == "decisione" and not isinstance(dati["deroga"], bool):
         raise ValueError("deroga: vero o falso")
@@ -150,11 +151,11 @@ def valida(registro: str, dati: dict) -> None:
         raise ValueError("una deroga richiede il motivo")
     if registro == "previsione" and "chiude" not in dati:
         p = dati["probabilita"]
-        if not isinstance(p, (int, float)) or not 0 <= p <= 1:
-            raise ValueError("probabilita: numero tra 0 e 1")
+        if isinstance(p, bool) or not isinstance(p, (int, float)) or not 0 <= p <= 1:
+            raise ValueError("probabilita: numero tra 0 e 1 (non un booleano)")
     if registro == "previsione" and "esito" in dati:
-        if dati["esito"] not in (0, 1):
-            raise ValueError("esito: 0 o 1")
+        if type(dati["esito"]) is not int or dati["esito"] not in (0, 1):
+            raise ValueError("esito: intero 0 o 1 (non un booleano)")
     for campo in POSITIVI.get(registro, ()):
         if campo in dati and _decimale(campo, dati[campo]) <= 0:
             raise ValueError(f"{campo}: deve essere maggiore di zero ({dati[campo]!r})")
@@ -173,6 +174,46 @@ def valida(registro: str, dati: dict) -> None:
             raise ValueError("ore_sonno: tra 0 e 24")
 
 
+def controlla_riferimenti(registro: str, dati: dict, precedenti: list[dict]) -> None:
+    """Coerenza di `corregge` e `chiude` rispetto ai record precedenti dello stesso registro (`precedenti`: record
+    completi, in ordine). Regole:
+    - `corregge` e `chiude` puntano a un record esistente;
+    - nel registro delle previsioni un record è una PREVISIONE (senza `chiude`) o un ESITO (con `chiude`):
+      (a) `corregge` collega record della stessa natura (previsione → previsione, esito → esito);
+      (b) `chiude` punta all'id RADICE di una previsione (l'originale, non una sua correzione né un esito);
+      (c) una previsione ha al più un esito originale: un esito successivo deve usare `corregge`, e la correzione
+          di un esito chiude la stessa previsione dell'esito corretto (non sposta la chiusura)."""
+    per_id = {r["id"]: r["dati"] for r in precedenti}
+    for rif in ("corregge", "chiude"):
+        if rif in dati and dati[rif] not in per_id:
+            raise ValueError(f"{rif}: il record {dati[rif]!r} non esiste nel registro {registro}")
+    if registro != "previsione":
+        return
+    esito = "chiude" in dati
+    if "corregge" in dati:
+        corretto = per_id[dati["corregge"]]
+        if ("chiude" in corretto) != esito:
+            natura = lambda e: "un esito" if e else "una previsione"
+            raise ValueError(f"corregge: {natura(esito)} non può correggere {natura('chiude' in corretto)} "
+                             f"({dati['corregge']})")
+    if not esito:
+        return
+    bersaglio = per_id[dati["chiude"]]
+    if "chiude" in bersaglio:
+        raise ValueError(f"chiude: {dati['chiude']} è un esito, non una previsione")
+    if "corregge" in bersaglio:
+        raise ValueError(f"chiude: {dati['chiude']} è una correzione; indicare l'id radice della previsione "
+                         f"({bersaglio['corregge']} o il suo originale)")
+    if "corregge" in dati:
+        if per_id[dati["corregge"]]["chiude"] != dati["chiude"]:
+            raise ValueError(f"la correzione di un esito deve chiudere la stessa previsione "
+                             f"({per_id[dati['corregge']]['chiude']}), non {dati['chiude']}")
+        return
+    gia = [r["id"] for r in precedenti if r["dati"].get("chiude") == dati["chiude"] and "corregge" not in r["dati"]]
+    if gia:
+        raise ValueError(f"previsione {dati['chiude']} già chiusa da {gia[0]}: per cambiare l'esito usare corregge")
+
+
 def aggiungi(registro: str, dati: dict, cartella: Path | None = None) -> dict:
     """Aggiunge un record validato, con id, data di registrazione e hash della riga precedente."""
     valida(registro, dati)
@@ -180,10 +221,7 @@ def aggiungi(registro: str, dati: dict, cartella: Path | None = None) -> dict:
     cartella.mkdir(parents=True, exist_ok=True)
     path = cartella / f"{registro}.jsonl"
     righe = _righe(path)
-    ids = {json.loads(r)["id"] for r in righe}
-    for rif in ("corregge", "chiude"):
-        if rif in dati and dati[rif] not in ids:
-            raise ValueError(f"{rif}: il record {dati[rif]!r} non esiste nel registro {registro}")
+    controlla_riferimenti(registro, dati, [json.loads(r) for r in righe])
     rec = {"schema": SCHEMA, "registro": registro, "id": f"{registro[:3].upper()}-{len(righe) + 1:05d}",
            "registrato_utc": datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
            "prec_hash": _sha(righe[-1]) if righe else GENESI, "dati": dati}
@@ -211,11 +249,13 @@ def verifica(cartella: Path | None = None, impronta_attesa: str | None = None) -
         elif _sha(_canonico(ancora)) != impronta_attesa:
             problemi.append("l'impronta dell'ancora non coincide con quella annotata: journal modificato dopo l'annotazione")
     for registro in REGISTRI:
-        prec = GENESI
+        prec, letti = GENESI, []
         for i, riga in enumerate(_righe(cartella / f"{registro}.jsonl"), 1):
             try:
                 rec = json.loads(riga)
                 valida(registro, rec["dati"])
+                controlla_riferimenti(registro, rec["dati"], letti)
+                letti.append(rec)
             except (ValueError, KeyError) as e:
                 problemi.append(f"{registro} riga {i}: {e}")
                 prec = _sha(riga)

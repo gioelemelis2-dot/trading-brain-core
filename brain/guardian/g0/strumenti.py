@@ -53,7 +53,8 @@ def perdita_allo_stop(s: Strumento, ingresso: Valore, stop: Valore, quantita: Va
                       cambio: Optional[Valore] = None, commissioni: Optional[Valore] = None) -> Valore:
     """Perdita nella valuta del conto se lo stop viene eseguito al suo prezzo (DERIVATO | H_esec).
     `quantita`: lotti (FX/CFD) o contratti (future). `commissioni`: costo totale previsto in valuta del conto.
-    Rifiuta prezzi, quantità e cambi non positivi e uno stop uguale al prezzo di partenza."""
+    Rifiuta prezzi, quantità e cambi non positivi, commissioni negative o non finite (ridurrebbero la perdita)
+    e uno stop uguale al prezzo di partenza."""
     for nome, v in (("ingresso", ingresso), ("stop", stop), ("quantita", quantita)) + ((("cambio", cambio),) if cambio else ()):
         if not (v.valore.is_finite() and v.valore > 0):
             raise ValueError(f"{nome} deve essere un numero positivo ({v.valore})")
@@ -90,6 +91,9 @@ def perdita_allo_stop(s: Strumento, ingresso: Valore, stop: Valore, quantita: Va
         perdita = perdita_prof / cambio.valore
         ins.append(cambio)
     if commissioni is not None:
+        if not (commissioni.valore.is_finite() and commissioni.valore >= 0):
+            raise ValueError(f"commissioni: numero finito e non negativo (0 per i conti solo spread), non "
+                             f"{commissioni.valore}: un valore negativo ridurrebbe la perdita allo stop")
         if commissioni.unita != valuta_conto:
             raise ValueError("commissioni in una valuta diversa da quella del conto")
         perdita += commissioni.valore

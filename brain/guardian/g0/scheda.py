@@ -71,10 +71,40 @@ def _perdita(p, strumenti, valuta, cambi, fonte, aperta=False):
 
 
 def _numero(x):
+    """Numero finito come Decimal, oppure None. Rifiuta booleani (in TOML `true` non è un numero), testo non numerico,
+    NaN e infiniti, come `journal._decimale`."""
+    if isinstance(x, bool):
+        return None
     try:
-        return Decimal(str(x))
+        d = Decimal(str(x))
     except (InvalidOperation, ValueError):
         return None
+    return d if d.is_finite() else None
+
+
+def _soglia_valida(rid: str, v) -> bool:
+    """Soglia di una regola personale: positiva; le frazioni (P-01, P-05) sotto 1; le ore di sonno al massimo 24;
+    le perdite consecutive un intero."""
+    if v is None or v <= 0:
+        return False
+    if rid in ("P-01", "P-05"):
+        return v < 1
+    if rid == "P-14":
+        return v <= 24
+    if rid == "P-15":
+        return v == v.to_integral_value()
+    return True
+
+
+def _dato_sessione_valido(rid: str, x) -> bool:
+    """Dato di sessione: non negativo; ore di sonno al massimo 24; perdite consecutive un intero."""
+    if x is None or x < 0:
+        return False
+    if rid == "P-14":
+        return x <= 24
+    if rid == "P-15":
+        return x == x.to_integral_value()
+    return True
 
 
 def _pct(x: Decimal) -> str:
@@ -97,8 +127,9 @@ def _regole_personali(regole: dict, dati: dict, cap, saldo0, eq, pt, st, f_g, tp
             continue
         param, serve = CONTROLLI_PERSONALI[rid]
         v = _numero(r.get("valore"))
-        if r.get("parametro") != param or v is None:
-            avvisi.append(f"{rid}: regola confermata senza valore numerico per «{param}»: non applicata")
+        if r.get("parametro") != param or not _soglia_valida(rid, v):
+            avvisi.append(f"{rid}: regola confermata senza valore numerico valido per «{param}» "
+                          f"({r.get('valore')!r}): non applicata")
             continue
         soglia = Valore(v, param, "REGOLA", "norma", f"{fonte} {rid}", stato_verifica="V")
         if rid == "P-01":
@@ -131,21 +162,21 @@ def _regole_personali(regole: dict, dati: dict, cap, saldo0, eq, pt, st, f_g, tp
             margine_p = combina([eq, saldo0, cap, soglia], eq.valore - (saldo0.valore - v * cap.valore), eq.unita,
                                 "calcolo deterministico", fonte=f"{rid} margine personale giornaliero")
             righe.append(fmt(margine_p, f"{rid} margine rispetto al limite personale giornaliero ({_pct(v)})"))
+            # Controlli indipendenti: anche a limite personale già superato, trade e stress vanno segnalati.
             if margine_p.valore < 0:
                 avvisi.append(f"{rid}: limite personale giornaliero già superato: kill switch personale.")
-            else:
-                if pt is not None and pt.valore > margine_p.valore:
-                    avvisi.append(f"{rid}: se lo stop del trade previsto viene colpito, il limite personale giornaliero viene superato.")
-                if st is not None and st.valore > margine_p.valore:
-                    avvisi.append(f"{rid}: nello scenario di stress il limite personale giornaliero viene superato.")
+            if pt is not None and pt.valore > margine_p.valore:
+                avvisi.append(f"{rid}: se lo stop del trade previsto viene colpito, il limite personale giornaliero viene superato.")
+            if st is not None and st.valore > margine_p.valore:
+                avvisi.append(f"{rid}: nello scenario di stress il limite personale giornaliero viene superato.")
         else:
             chiave = serve.split(".")[1]
             if chiave not in sess:
                 righe.append(f"{rid} confermata: dato «{serve}» non fornito, regola non verificata")
                 continue
             x = _numero(sess[chiave])
-            if x is None:
-                avvisi.append(f"{rid}: dato «{serve}» non numerico")
+            if not _dato_sessione_valido(rid, x):
+                avvisi.append(f"{rid}: dato «{serve}» non valido ({sess[chiave]!r}): regola non verificata")
                 continue
             violata = (x < v) if rid in ("P-11", "P-14") else (x >= v)
             righe.append(f"{rid}: {chiave} = {x} (soglia {v}){' → regola violata' if violata else ''}")
