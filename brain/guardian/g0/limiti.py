@@ -9,11 +9,11 @@ Definizioni FTMO (pagine ufficiali, 12/11/2026):
 """
 from __future__ import annotations
 
-import tomllib
 from decimal import Decimal
 from pathlib import Path
 from typing import Iterable
 
+from . import _toml
 from .valori import Valore, combina, regola
 
 FILE_REGOLE = Path(__file__).resolve().parent.parent / "regole" / "prop_firm_ftmo.toml"
@@ -25,7 +25,7 @@ def _frazioni(prodotto: str, file_regole: Path = FILE_REGOLE):
     if prodotto not in PRODOTTI:
         raise ValueError(f"prodotto non gestito: {prodotto}")
     with open(file_regole, "rb") as f:
-        dati = tomllib.load(f)
+        dati = _toml.load(f)
     p = dati["prodotti"][prodotto]
     fonte = f"{file_regole.name} [{prodotto}] consultato {dati['meta']['consultato']}"
     mdl = p["max_daily_loss"]

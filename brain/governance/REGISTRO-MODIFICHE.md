@@ -180,5 +180,19 @@ Formato: data · versione della base · cosa · perché · file.
   - 5 correzioni: commissioni finite e non negative; avvisi P-05 su trade e stress anche a limite personale superato; `controlla_riferimenti` nel journal (stessa natura per `corregge`, `chiude` solo sulla radice di una previsione, nessuna doppia chiusura), applicato anche da `verifica`; soglie e dati di sessione validati; booleani rifiutati come numeri;
   - `guardian/test/mutazioni_g0_journal.py`: 44 mutanti non equivalenti sui 6 file operativi, più 1 equivalente dichiarato. Erano 30/44 uccisi con 41 test; con 11 test aggiunti sono 44/44;
   - 52/52 test verdi.
+- **Merge su `main`** (commit `138daf3`), autorizzato dall'utente dopo l'audit (52/52 test, 44/44 mutanti).
 - **Audit su Gemini** (`CONSEGNA_FIX_G0/AUDIT_OSTILE_SU_GEMINI.md`): nessun ramo del Binario B su GitHub; 138/138 hash dichiarati coincidono; l'hash falso del V3.3 non compare nei materiali disponibili ed è quasi certamente ricostruito dall'abbreviazione `6fb9d76e…7638`.
+- Nessuna modifica a V3.3, lezioni o materiali di Gemini.
+
+## 2026-11-12 · v1.14 (compatibilità Python 3.9, probabilità Decimal, lock concorrente)
+
+- Dall'audit incrociato con Gemini (macOS, Python 3.9.6 di sistema), in TDD sul ramo `feat/fix-g0-journal`:
+  - 9 test rossi (commit `6e9aca8`), poi le correzioni;
+  - TOML portabile (`g0/_toml.py`: `tomllib`, poi `tomli`, poi un parser minimale identico a `tomllib` sui file del Guardian, con errore esplicito su ogni altro costrutto);
+  - orari in un formato unico su ogni versione (`Z` convertita in `+00:00` e frazione portata a 6 cifre prima di `fromisoformat`; senza formato unico un journal scritto con 3.13 sarebbe invalido su 3.9);
+  - `probabilita` anche come `Decimal` finito, registrato come testo;
+  - lock esclusivo in `aggiungi()` (`fcntl.flock`, altrimenti un file di lock esclusivo, con attesa massima); la fase rossa ha mostrato una collisione reale fra scrittori concorrenti sul file temporaneo dell'ancora.
+- Esito: 61/61 test su Python 3.9.25, 3.11, 3.12 e 3.13, con `-W error`. Mutation testing con 14 mutanti nuovi: 58/58 non equivalenti uccisi su 3.13.
+  - Su 3.9 il primo giro dava 55/58: V54 e V58 sopravvivevano perché il parser TOML minimale era controllato solo contro `tomllib`, assente proprio su 3.9; ora un risultato atteso scritto nel test lo controlla anche lì.
+  - V48 è equivalente prima di 3.11. Risultato finale su 3.9: 57/57.
 - Nessuna modifica a V3.3, lezioni o materiali di Gemini.

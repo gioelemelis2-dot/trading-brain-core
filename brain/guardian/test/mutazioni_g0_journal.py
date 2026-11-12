@@ -1,8 +1,8 @@
 """Mutation testing del Guardian G0 e del journal (mandato notturno, 12/11/2026), modellato su mutazioni_v3_3.py.
 
-Ogni mutante è una copia di `guardian/` con UN difetto in UNO dei 6 file operativi (g0/valori.py, g0/strumenti.py,
-g0/limiti.py, g0/scheda.py, journal/journal.py, journal/indicatori.py), in una cartella separata; l'originale non è
-toccato. Nella copia ci sono anche i 3 documenti di continuità letti da TestAudit7 (altrimenti fallirebbe per ogni
+Ogni mutante è una copia di `guardian/` con UN difetto in UNO dei 7 file operativi (g0/valori.py, g0/strumenti.py,
+g0/limiti.py, g0/scheda.py, g0/_toml.py, journal/journal.py, journal/indicatori.py), in una cartella separata;
+l'originale non è toccato. Nella copia ci sono anche i 3 documenti di continuità letti da TestAudit7 (altrimenti fallirebbe per ogni
 mutante e lo «ucciderebbe» per il motivo sbagliato).
 
 Controlli prima di contare un mutante:
@@ -29,8 +29,8 @@ else:
     sys.exit(__doc__)
 GUARDIAN = BRAIN / "guardian"
 DOCUMENTI = ("CONTINUITA.md", "governance/DECISIONI-APERTE.md", "governance/REGISTRO-MODIFICHE.md")
-VA, ST, LI, SC, JO, IN = ("g0/valori.py", "g0/strumenti.py", "g0/limiti.py", "g0/scheda.py",
-                          "journal/journal.py", "journal/indicatori.py")
+VA, ST, LI, SC, JO, IN, TO = ("g0/valori.py", "g0/strumenti.py", "g0/limiti.py", "g0/scheda.py",
+                              "journal/journal.py", "journal/indicatori.py", "g0/_toml.py")
 
 M = {
     # --- g0/valori.py: schema epistemico ---
@@ -99,13 +99,13 @@ M = {
     "V33 corregge fra record di natura diversa ammesso": [(JO, 'if ("chiude" in corretto) != esito:', "if False:")],
     "V34 catena di hash non controllata": [(JO, 'if rec.get("prec_hash") != prec:', "if False:")],
     "V35 Brier: errore assoluto invece del quadrato": [
-        (JO, '(d["probabilita"] - esiti[pid]) ** 2', 'abs(d["probabilita"] - esiti[pid])')],
-    "V36 journal: orari non UTC ammessi": [
-        (JO, "if t.tzinfo is None or t.utcoffset() != timedelta(0):", "if t.tzinfo is None:")],
+        (JO, "(p - esiti[pid]) ** 2", "abs(p - esiti[pid])")],
+    "V36 journal: qualsiasi fuso ammesso e trattato come UTC": [
+        (JO, r'(?:Z|\+00:00)")', r'(?:Z|[+-][0-9]{2}:[0-9]{2})")')],
     "V37 journal: chiusura nello stesso istante dell'apertura rifiutata (< diventa <=)": [
         (JO, 'orari["chiuso_utc"] < orari["aperto_utc"]', 'orari["chiuso_utc"] <= orari["aperto_utc"]')],
-    "V38 journal: probabilità booleana ammessa": [
-        (JO, "if isinstance(p, bool) or not isinstance(p, (int, float))", "if not isinstance(p, (int, float))")],
+    "V38 journal: esito booleano ammesso (True == 1)": [
+        (JO, 'if type(dati["esito"]) is not int or dati["esito"] not in (0, 1):', 'if dati["esito"] not in (0, 1):')],
     "V39 sigillo verificato senza nonce": [
         (JO, "return secrets.compare_digest(impegno, _sha(nonce + _canonico(payload)))",
          "return secrets.compare_digest(impegno, _sha(_canonico(payload)))")],
@@ -113,12 +113,33 @@ M = {
     # --- journal/indicatori.py ---
     "V41 indicatori: microsecondi ignorati nelle durate": [
         (IN, " + Decimal(d.microseconds) / Decimal(1_000_000)", "")],
-    "V42 indicatori: orari non UTC ammessi": [
-        (IN, "if t.tzinfo is None or t.utcoffset() != timedelta(0):", "if t.tzinfo is None:")],
+    "V42 indicatori: _t con fromisoformat diretto (formato non unico, Z rifiutata su 3.9)": [
+        (IN, 'return orario_utc("orario", s)', "return datetime.fromisoformat(s)")],
     "V43 R1: < invece di <= sui minuti (rientro esattamente al limite escluso)": [
         (IN, 'm["minuti_dopo_perdita"] <= minuti_max', 'm["minuti_dopo_perdita"] < minuti_max')],
     "V44 indicatori: un pareggio conta come perdita": [
         (IN, 'if _dec(prec["pnl_conto"]) < 0:', 'if _dec(prec["pnl_conto"]) <= 0:')],
+    # --- rifinitura Python 3.9, probabilità Decimal, lock (audit incrociato con Gemini) ---
+    "V45 orari: Z non convertita in +00:00 prima di fromisoformat (Python 3.9/3.10)": [
+        (JO, 'return datetime.fromisoformat(f"{m.group(1)}T{m.group(2)}.{frazione}+00:00")',
+         "return datetime.fromisoformat(s)")],
+    "V46 orari: frazione di secondo non portata a 6 cifre": [(JO, '(m.group(3) or "").ljust(6, "0")', '(m.group(3) or "")')],
+    "V47 orari: separatore spazio ammesso (formato non unico)": [
+        (JO, r"[0-9]{2})T([0-9]{2}", r"[0-9]{2})[T ]([0-9]{2}")],
+    "V48 date: formato AAAA-MM-GG non imposto": [(JO, 'if not _DATA.fullmatch(str(dati["data"])):', "if False:")],
+    "V49 probabilità Decimal non convertita in testo (JSON non serializzabile)": [(JO, "    dati = _in_testo(dati)\n", "")],
+    "V50 probabilità: limite superiore 1 non controllato": [
+        (JO, 'not 0 <= _decimale("probabilita", p) <= 1', 'not 0 <= _decimale("probabilita", p)')],
+    "V51 lock preso su un percorso diverso da quello condiviso": [
+        (JO, "with _lock_esclusivo(cartella):", 'with _lock_esclusivo(cartella / "altro"):')],
+    "V52 ripiego: file di lock non esclusivo (lock rimasto ignorato)": [
+        (JO, "os.O_CREAT | os.O_EXCL | os.O_WRONLY", "os.O_CREAT | os.O_WRONLY")],
+    "V53 ripiego: file di lock non rimosso a fine scrittura": [(JO, "        path.unlink()\n", "        pass\n")],
+    "V54 TOML minimale: escape \\\" non gestito": [(TO, "_ESCAPE = {'\"': '\"', ", "_ESCAPE = {")],
+    "V55 TOML minimale: chiave duplicata ammessa": [(TO, "if chiave in corrente:", "if False:")],
+    "V56 TOML minimale: decimali restituiti come testo": [(TO, 'return float(t.replace("_", "")), i + len(t)', "return t, i + len(t)")],
+    "V57 TOML minimale: tabella definita due volte ammessa": [(TO, "if id(t) in definite:", "if False:")],
+    "V58 TOML minimale: sottotabella agganciata al PRIMO elemento dell'array di tabelle": [(TO, "x = x[-1]", "x = x[0]")],
     # --- equivalenti dichiarati ---
     "E01 ancora: confronto del numero di righe rimosso (EQUIVALENTE)": [
         (JO, 'if a["righe"] != len(righe) or a["ultimo_hash"] != ultimo:', 'if a["ultimo_hash"] != ultimo:')],
@@ -129,6 +150,18 @@ EQUIVALENTI = {
            "hash ma un numero di righe diverso rompe la catena, che verifica() segnala comunque. Cambia solo il "
            "testo del messaggio, non l'esito della verifica (salvo collisioni di SHA-256).",
 }
+
+
+# Equivalenti solo su alcune versioni di Python: (versione minima in cui il mutante è rilevabile, motivazione).
+EQUIVALENTI_PER_VERSIONE = {
+    "V48": ((3, 11), "Prima di Python 3.11 date.fromisoformat accetta già soltanto AAAA-MM-GG: il controllo con la "
+                     "regex serve da 3.11 in poi, dove si accetterebbero anche '20261112' o '2026-W46-4'."),
+}
+
+
+def equivalente(mid: str) -> bool:
+    return mid in EQUIVALENTI or (mid in EQUIVALENTI_PER_VERSIONE
+                                  and sys.version_info[:2] < EQUIVALENTI_PER_VERSIONE[mid][0])
 
 
 def copia(dest: Path) -> Path:
@@ -183,22 +216,27 @@ for nome, subs in M.items():
         assert p.read_text(encoding="utf-8") != (GUARDIAN / f).read_text(encoding="utf-8"), nome
         importato(g, f, a, b)
     rc, falliti, _ = esegui(g)
-    esito = "UCCISO" if rc else ("EQUIVALENTE" if mid in EQUIVALENTI else "SOPRAVVISSUTO")
+    esito = "UCCISO" if rc else ("EQUIVALENTE" if equivalente(mid) else "SOPRAVVISSUTO")
     ris.append((mid, esito))
     file_ = ", ".join(sorted({f for f, _, _ in subs}))
     print(f"{esito:13s} {nome}  ({file_})" + (f"  [{', '.join(falliti)}]" if falliti else ""))
     shutil.rmtree(OUT / mid)
 shutil.rmtree(OUT / "M00")
 
-non_eq = [x for x in ris if x[0] not in EQUIVALENTI]
+non_eq = [x for x in ris if not equivalente(x[0])]
 uccisi = sum(1 for _, e in non_eq if e == "UCCISO")
 print()
 for k, v in EQUIVALENTI.items():
     print(f"{k} equivalente: {v}")
+for k, (versione, v) in EQUIVALENTI_PER_VERSIONE.items():
+    if equivalente(k):
+        print(f"{k} equivalente su Python {sys.version_info[0]}.{sys.version_info[1]} (rilevabile da "
+              f"{versione[0]}.{versione[1]}): {v}")
+print(f"Python {sys.version.split()[0]}")
 print(f"\nMutanti non equivalenti uccisi: {uccisi}/{len(non_eq)}")
 per_file = {}
 for (mid, e), subs in zip(ris, M.values()):
-    if mid not in EQUIVALENTI:
+    if not equivalente(mid):
         for f in {f for f, _, _ in subs}:
             t = per_file.setdefault(f, [0, 0])
             t[0] += e == "UCCISO"
