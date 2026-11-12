@@ -1,7 +1,9 @@
 # Log dei test — correzioni G0 e journal (ramo feat/fix-g0-journal)
-# Data: 2026-11-12T20:30Z · Python 3.13.18 · comando (da brain/guardian): python3 -s -B -W error -m unittest discover -s test -v
+# Data: 2026-11-12T20:42Z · Python 3.13.18 · comando (da brain/guardian): python3 -s -B -W error -m unittest discover -s test -v
+# Ogni fase è stata rieseguita sul commit indicato, in una copia di lavoro separata (git worktree).
+# Nelle fasi rosse: per ogni test, la prima riga dell'eccezione; i messaggi oltre 300 caratteri sono troncati e marcati.
 
-## 1. Fase rossa (TDD): commit 9ff30e2, nuovi test prima delle correzioni
+## 1. Prima fase rossa (mandato «Binario A»): commit 9ff30e2, 5 test prima delle correzioni
 ERROR: test_future_senza_dimensione_contratto_fittizia (test_fix_g0_journal.TestFix2MetadatiFutures.test_future_senza_dimensione_contratto_fittizia)
 ValueError: valore assente se e solo se l'incertezza è NON STIMABILE
 ERROR: test_regola_confermata_applicata_e_non_confermate_dichiarate (test_fix_g0_journal.TestFix3RegolePersonali.test_regola_confermata_applicata_e_non_confermate_dichiarate)
@@ -9,13 +11,38 @@ AttributeError: module 'g0.scheda' has no attribute 'FILE_REGOLE_PERSONALI'
 ERROR: test_decimal_e_frazioni_di_secondo (test_fix_g0_journal.TestFix5IndicatoriDecimal.test_decimal_e_frazioni_di_secondo)
 ValueError: time data '2026-11-12T09:33:00.120Z' does not match format '%Y-%m-%dT%H:%M:%SZ'
 FAIL: test_avviso_se_lo_stress_viola_il_limite_totale (test_fix_g0_journal.TestFix1StressMargineTotale.test_avviso_se_lo_stress_viola_il_limite_totale)
-AssertionError: 'margine totale dopo lo scenario' not found in "G0 · CONSULTIVO · NON RICONCILIATO con un estratto conto reale: NON usare questi numeri per decidere.\n\nMISURE\n[MISURA] capitale iniziale: 100.000,00 USD  (verifica: V)\n[MISURA] saldo alle 00:00 CE(S)T: 91.500,00 USD  (verifica: V)\n[MISURA] equity attuale: 91.500,00 USD  (verifica: V)\n\nREGOLE DELLA PROP FIRM\n[REGOLA] perdita giornaliera massima (ftmo_2step): 0,05 frazione del capitale iniziale  (verifica: V)\n[REGOLA] perdita massima (ftmo_2step): 0,10 frazione del capitale iniziale  (verifica: V)\n\nLIMITI DETERMINISTICI (prima di ogni stima)\n[DERIVATO] limite giornaliero: 86.500,00 USD  (verifica: V)\n[DERIVATO] margine giornaliero: 5.000,00 USD  (verifica: V)\n[DERIVATO] limite totale: 90.000,00 USD  (verifica: V)\n[DERIVATO] margine totale: 1.500,00 USD  (verifica: V)\n\nSCENARIO DI STRESS (tutte le posizioni allo stop, incluso il trade previsto)\n[DERIVATO | H_esec, scenario di stress] perdita nello scenario: 1.510,50 USD  (verifica: C)\n[DERIVATO | H_esec, scenario di stress] margine giornaliero dopo lo scenario: 3.489,50 USD  (verifica: C)\n\nRISERVE (non deterministiche)\n[IPOTESI | H_gap] riserva per gap e slippage: NON STIMABILE  (verifica: C)\n\nAVVISI\nnessun avviso dalle regole della prop firm\n\nREGOLE PERSONALI\nnessuna regola personale attiva: sono una proposta da confermare (regole/regole_personali.toml)\n\nRACCOMANDAZIONE\nnessuna obiezione dalle regole verificate\n\nDECISIONE: dell'utente, da registrare nel journal (con eventuale deroga e motivo)"
+AssertionError: 'margine totale dopo lo scenario' not found in "G0 · CONSULTIVO · NON RICONCILIATO con un estratto conto reale: NON usare questi numeri per decidere.\n\nMISURE\n[MISURA] capitale iniziale: 100.000,00 USD  (verifica: V)\n[MISURA] saldo alle 00:00 CE(S)T: 91.500,00 USD  (verifica: V) […troncato]
 FAIL: test_ancora_rileva_ultima_riga_troncamento_e_riscrittura (test_fix_g0_journal.TestFix4AncoraEsterna.test_ancora_rileva_ultima_riga_troncamento_e_riscrittura)
 AssertionError: False is not true
-Ran 29 tests in 0.024s
+Ran 29 tests in 0.023s
 FAILED (failures=2, errors=3)
 
-## 2. Fase verde: commit 7e56023, dopo le correzioni
+## 2. Seconda fase rossa (contro-audit): commit 2dcb9aa, 7 test prima delle correzioni
+ERROR: test_verifica_con_impronta_rileva_cancellazione_totale (test_fix_g0_journal.TestAudit5ImprontaEsterna.test_verifica_con_impronta_rileva_cancellazione_totale)
+TypeError: verifica() got an unexpected keyword argument 'impronta_attesa'
+FAIL: test_p05_non_piu_stretto_della_prop_e_avvisi_non_soppressi (test_fix_g0_journal.TestAudit1P05RegolaAurea.test_p05_non_piu_stretto_della_prop_e_avvisi_non_soppressi)
+AssertionError: 'non è più stretto del limite della prop firm' not found in "G0 · CONSULTIVO · NON RICONCILIATO con un estratto conto reale: NON usare questi numeri per decidere.\n\nMISURE\n[MISURA] capitale iniziale: 100.000,00 USD  (verifica: V)\n[MISURA] saldo alle 00:00 CE(S)T: 100.400,00 US […troncato]
+FAIL: test_p01_size_maggiore_dopo_perdita (test_fix_g0_journal.TestAudit2P01SecondaParte.test_p01_size_maggiore_dopo_perdita)
+AssertionError: 'P-01 (seconda parte) non verificata' not found in "G0 · CONSULTIVO · NON RICONCILIATO con un estratto conto reale: NON usare questi numeri per decidere.\n\nMISURE\n[MISURA] capitale iniziale: 100.000,00 USD  (verifica: V)\n[MISURA] saldo alle 00:00 CE(S)T: 100.400,00 USD  (verific […troncato]
+FAIL: test_numeri_e_orari_validati_all_ingresso (test_fix_g0_journal.TestAudit3ValidazioneJournal.test_numeri_e_orari_validati_all_ingresso)
+AssertionError: ValueError not raised : aperto_utc=ieri
+FAIL: test_brier_applica_le_correzioni (test_fix_g0_journal.TestAudit4BrierCorrezioni.test_brier_applica_le_correzioni)
+AssertionError: 0.03999999999999998 != 0.16000000000000003 within 7 places (0.12000000000000005 difference)
+FAIL: test_valori_non_positivi_rifiutati (test_fix_g0_journal.TestAudit6Positivita.test_valori_non_positivi_rifiutati)
+AssertionError: ValueError not raised : caso 0
+FAIL: test_documenti_di_continuita_allineati (test_fix_g0_journal.TestAudit7Continuita.test_documenti_di_continuita_allineati)
+AssertionError: 'trading-brain-core' not found in '# Documento di continuità\n\nUltimo aggiornamento: **2026-11-11**, dopo l\'audit architetturale. Leggere questo file per primo (vale anche per Gemini, insieme a `collaborazione/HANDOFF-GEMINI.md`).\n\n## Stato\n- **Sviluppo sospeso** (D-12): nessun […troncato]
+Ran 36 tests in 0.038s
+FAILED (failures=6, errors=1)
+
+## 3. Fase verde: commit 357e48d, dopo tutte le correzioni
+test_p05_non_piu_stretto_della_prop_e_avvisi_non_soppressi (test_fix_g0_journal.TestAudit1P05RegolaAurea.test_p05_non_piu_stretto_della_prop_e_avvisi_non_soppressi) ... ok
+test_p01_size_maggiore_dopo_perdita (test_fix_g0_journal.TestAudit2P01SecondaParte.test_p01_size_maggiore_dopo_perdita) ... ok
+test_numeri_e_orari_validati_all_ingresso (test_fix_g0_journal.TestAudit3ValidazioneJournal.test_numeri_e_orari_validati_all_ingresso) ... ok
+test_brier_applica_le_correzioni (test_fix_g0_journal.TestAudit4BrierCorrezioni.test_brier_applica_le_correzioni) ... ok
+test_verifica_con_impronta_rileva_cancellazione_totale (test_fix_g0_journal.TestAudit5ImprontaEsterna.test_verifica_con_impronta_rileva_cancellazione_totale) ... ok
+test_valori_non_positivi_rifiutati (test_fix_g0_journal.TestAudit6Positivita.test_valori_non_positivi_rifiutati) ... ok
+test_documenti_di_continuita_allineati (test_fix_g0_journal.TestAudit7Continuita.test_documenti_di_continuita_allineati) ... ok
 test_avviso_se_lo_stress_viola_il_limite_totale (test_fix_g0_journal.TestFix1StressMargineTotale.test_avviso_se_lo_stress_viola_il_limite_totale)
 Conto 2-Step a 91.500: limite giornaliero 86.500 (margine 5.000), limite totale 90.000 (margine 1.500). ... ok
 test_future_senza_dimensione_contratto_fittizia (test_fix_g0_journal.TestFix2MetadatiFutures.test_future_senza_dimensione_contratto_fittizia)
@@ -50,6 +77,6 @@ test_sigillo (test_journal.TestJournal.test_sigillo) ... ok
 test_validazione (test_journal.TestJournal.test_validazione) ... ok
 
 ----------------------------------------------------------------------
-Ran 29 tests in 0.035s
+Ran 36 tests in 0.041s
 
 OK

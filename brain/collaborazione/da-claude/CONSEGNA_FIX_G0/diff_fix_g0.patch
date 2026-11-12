@@ -1,5 +1,69 @@
+diff --git a/brain/CONTINUITA.md b/brain/CONTINUITA.md
+index 015d79c..2c6fa66 100644
+--- a/brain/CONTINUITA.md
++++ b/brain/CONTINUITA.md
+@@ -66,7 +66,20 @@ Ultimo aggiornamento: **2026-11-11**, dopo l'audit architetturale. Leggere quest
+ - modello epistemico (`governance/MODELLO-EPISTEMICO.md`);
+ - **G0 minimo** e **journal** (`guardian/`, 24 test superati).
+ 
+-Il G0 **non** è ancora utilizzabile per decidere: serve la riconciliazione con un estratto conto (DA-25). Il repository nuovo e privato (D-19) va creato dall'utente; poi va spostato il Brain e archiviate le consegne di Gemini.
++Il G0 **non** è ancora utilizzabile per decidere: serve la riconciliazione con un estratto conto (DA-25).
++
++**Migrazione al repository canonico (D-19): eseguita il 12/11/2026.**
++- Il Brain vive ora in `gioelemelis2-dot/trading-brain-core` (privato).
++- `main` contiene la storia della sola `brain/` (23 commit, albero identico all'origine: `7422e1fc…`) più la configurazione del repository.
++- Il ramo `claude/vibrant-cannon-5uunho` di `l-Altro` resta come copia storica, non più aggiornata.
++- Da fare: archiviare le consegne di Gemini nel nuovo repository.
++
++**Ramo `feat/fix-g0-journal` (non ancora unito a `main`):**
++- 5 correzioni del mandato «Binario A»;
++- 7 correzioni del contro-audit (P-05 contro il limite della prop firm; seconda parte di P-01; validazione all'ingresso del journal; correzioni in `brier()`; impronta esterna dell'ancora; positività in G0; documenti di continuità).
++- TDD: **36/36 test verdi** con `-W error`.
++- Consegna in `collaborazione/da-claude/CONSEGNA_FIX_G0/`.
++- L'unione a `main` è una decisione dell'utente.
+ 
+ **Ora: fermo in attesa dell'utente**, per:
+ - rispondere alle decisioni di `governance/DECISIONI-APERTE.md`, a partire da quelle bloccanti;
+@@ -84,5 +97,5 @@ Prompt pronto in [`PROMPT-RIPRESA.md`](PROMPT-RIPRESA.md). Regola: prima di un l
+ 
+ ## Convenzioni da mantenere
+ - Lingua: italiano. Mai segnare una fonte come V senza averla letta; mai una padronanza senza cancello superato dichiarato dall'utente; mai dati simulati presentati come reali.
+-- Branch di lavoro: `claude/vibrant-cannon-5uunho` del repository `l-Altro`, cartella `brain/` (migrazione sospesa).
++- Repository: `gioelemelis2-dot/trading-brain-core` (D-19), ramo `main` più rami di lavoro dedicati (per esempio `feat/fix-g0-journal`); il vecchio ramo di `l-Altro` è solo storico.
+ - Gemini scrive solo in `collaborazione/da-gemini/`; Claude non modifica mai i materiali di Gemini.
+diff --git a/brain/governance/DECISIONI-APERTE.md b/brain/governance/DECISIONI-APERTE.md
+index 609b9c1..038919b 100644
+--- a/brain/governance/DECISIONI-APERTE.md
++++ b/brain/governance/DECISIONI-APERTE.md
+@@ -33,7 +33,7 @@ DA-13 rulebook (Q-09) ──► DA-11 G0 minimo ──► DA-12 indicatori compo
+ ## A. Fondamenta
+ 
+ ### DA-01 · Fonte di verità unica, sincronizzazione e archivio delle consegne · **bloccante**
+-**Decisa il 12/11/2026 → D-19.** Il testo sotto resta come storia.
++**Decisa il 12/11/2026 → D-19. Eseguita il 12/11/2026:** repository privato `gioelemelis2-dot/trading-brain-core`; storia della sola `brain/` migrata su `main` (albero identico, `7422e1fc…`). Restano da fare: test di scrittura di Gemini sul nuovo repository e archivio delle sue consegne. Il testo sotto resta come storia.
+ - **Situazione verificata:**
+   - il Brain versionato è sul ramo GitHub `claude/vibrant-cannon-5uunho` del repository `l-Altro`, che sugli altri rami contiene un'applicazione TypeScript estranea;
+   - Gemini lavora su una copia locale (dichiarato da Gemini; non verificabile da Claude);
+diff --git a/brain/governance/REGISTRO-MODIFICHE.md b/brain/governance/REGISTRO-MODIFICHE.md
+index 69e512e..8f63979 100644
+--- a/brain/governance/REGISTRO-MODIFICHE.md
++++ b/brain/governance/REGISTRO-MODIFICHE.md
+@@ -163,3 +163,13 @@ Formato: data · versione della base · cosa · perché · file.
+ - `governance/MODELLO-EPISTEMICO.md`: schema dei valori e mappatura verso `STANDARD.md` (proposta DA-06, usata dal G0).
+ - `guardian/g0/`: G0 minimo consultivo (schema dei valori, perdita allo stop per FX/futures/CFD, limiti FTMO, scenario di stress, scheda); `guardian/journal/`: journal di sola aggiunta con catena di hash, Brier score, impegni sigillati, indicatore R1 spento finché i parametri non sono definiti. 24 test superati.
+ - `DECISIONI-APERTE.md`: aggiunte DA-24 (conservazione dei dati del journal) e DA-25 (dati del conto per la riconciliazione).
++
++## 2026-11-12 · v1.12 (repository canonico, correzioni G0 e journal)
++
++- **Migrazione (D-19)** a `gioelemelis2-dot/trading-brain-core` (privato). Storia della sola `brain/` dal ramo `claude/vibrant-cannon-5uunho` di `l-Altro` (commit `f6a2824`), filtrata con `git filter-branch`: 23 commit, albero `brain/` identico (`7422e1fc…`). Su `main` anche il commit di configurazione (`README.md` e `.gitignore` alla radice).
++- **Ramo `feat/fix-g0-journal`**, in TDD:
++  - mandato «Binario A»: stress contro il limite totale; futures senza dimensione fittizia; regole personali confermate applicate; ancora di integrità del journal; Decimal e orari ISO-8601 negli indicatori;
++  - contro-audit: P-05 confrontato con il limite giornaliero della prop firm e avvisi non soppressi; seconda parte di P-01 (size dopo una perdita); validazione di numeri e orari all'ingresso del journal e riferimenti `corregge`/`chiude` esistenti; correzioni applicate in `brier()` e negli indicatori (`versioni_finali`); `verifica --impronta`; positività in G0;
++  - 36/36 test verdi.
++- Aggiornati `CONTINUITA.md`, `DECISIONI-APERTE.md` (DA-01 eseguita) e questo registro (autorizzazione del contro-audit, punto 7).
++- Nessuna modifica a V3.3, lezioni o materiali di Gemini.
 diff --git a/brain/guardian/LEGGIMI.md b/brain/guardian/LEGGIMI.md
-index bf41c2c..c1bb8c0 100644
+index bf41c2c..455551b 100644
 --- a/brain/guardian/LEGGIMI.md
 +++ b/brain/guardian/LEGGIMI.md
 @@ -8,15 +8,18 @@
@@ -8,20 +72,20 @@ index bf41c2c..c1bb8c0 100644
  | Regole personali (`regole/regole_personali.toml`) | **proposta** | conferma dell'utente, regola per regola |
 -| Calcoli G0 (`g0/`) | implementati e testati (18 test unitari) | **validazione**: riconciliazione con un estratto conto reale e con le specifiche del broker |
 -| Journal (`journal/`) | implementato e testato (6 test: catena di hash, validazione, Brier, sigilli, R1) | scelta di dove conservare i dati (`journal/LEGGIMI.md`, alternative A/B/C) |
-+| Calcoli G0 (`g0/`) | implementati e testati (21 test unitari) | **validazione**: riconciliazione con un estratto conto reale e con le specifiche del broker |
-+| Journal (`journal/`) | implementato e testato (8 test: catena di hash, ancora di integrità, validazione, Brier, sigilli, R1, Decimal e orari ISO-8601) | scelta di dove conservare i dati (`journal/LEGGIMI.md`, alternative A/B/C) |
++| Calcoli G0 (`g0/`) | implementati e testati (24 test unitari) | **validazione**: riconciliazione con un estratto conto reale e con le specifiche del broker |
++| Journal (`journal/`) | implementato e testato (12 test: catena di hash, ancora e impronta esterna, validazione all'ingresso, Brier con correzioni, sigilli, R1, Decimal e orari ISO-8601) | scelta di dove conservare i dati (`journal/LEGGIMI.md`, alternative A/B/C) |
  | Uso per decidere | **NON AUTORIZZATO** | la scheda lo dichiara in prima riga finché `riconciliato = false` |
  
  ## Componenti
  - `g0/valori.py`: schema dei valori. Un numero senza tipo, fonte e stato di verifica non si può costruire. Propaga tipo, condizioni, verifica e NON STIMABILE. Una stima non può allargare un limite.
 -- `g0/strumenti.py`: perdita allo stop per FX, futures e CFD, con conversione nella valuta del conto. È un DERIVATO condizionato a H_esec: gap, slippage e lato del trigger sono esclusi e vanno in una riserva separata.
-+- `g0/strumenti.py`: perdita allo stop per FX, futures e CFD, con conversione nella valuta del conto. I futures si descrivono **solo** con passo e valore del tick (nessuna dimensione del contratto fittizia); FX e CFD richiedono la dimensione del contratto. È un DERIVATO condizionato a H_esec: gap, slippage e lato del trigger sono esclusi e vanno in una riserva separata.
++- `g0/strumenti.py`: perdita allo stop per FX, futures e CFD, con conversione nella valuta del conto. I futures si descrivono **solo** con passo e valore del tick (nessuna dimensione del contratto fittizia); FX e CFD richiedono la dimensione del contratto. Prezzi, quantità, cambi, specifiche e capitale iniziale devono essere positivi; uno stop uguale al prezzo di partenza è rifiutato. È un DERIVATO condizionato a H_esec: gap, slippage e lato del trigger sono esclusi e vanno in una riserva separata.
  - `g0/limiti.py`: limiti FTMO (2-Step, 1-Step, Instant) esattamente come nelle regole ufficiali; margini; stop residui; scenario di stress (tutte le posizioni allo stop).
 -- `g0/scheda.py`: scheda consultiva in ordine fisso (misure → regole → limiti → trade previsto → stress → riserve → avvisi → raccomandazione → decisione).
 +- `g0/scheda.py`: scheda consultiva in ordine fisso (misure → regole → limiti → trade previsto → stress → riserve → avvisi → regole personali → raccomandazione → decisione).
 +  - Lo stress è confrontato con il limite **giornaliero e con quello totale**.
-+  - Le regole personali si leggono da `regole/regole_personali.toml`: si applicano **solo** quelle con `confermata = true`. P-01, P-05, P-11, P-14 e P-15 hanno un controllo automatico; le altre restano domande della checklist; i dati di sessione mancanti sono dichiarati.
-+  - I dati di sessione facoltativi stanno nella sezione `[sessione]`: `minuti_da_ultima_perdita`, `ore_sonno`, `perdite_consecutive_oggi`.
++  - Le regole personali si leggono da `regole/regole_personali.toml`: si applicano **solo** quelle con `confermata = true`. P-01 (rischio del trade e size dopo una perdita), P-05 (limite personale giornaliero, segnalato se non è più stretto di quello della prop firm), P-11, P-14 e P-15 hanno un controllo automatico; le altre restano domande della checklist; i dati di sessione mancanti sono dichiarati.
++  - I dati di sessione facoltativi stanno nella sezione `[sessione]`: `minuti_da_ultima_perdita`, `ore_sonno`, `perdite_consecutive_oggi`, `ultima_operazione_in_perdita` (vero/falso), `size_precedente`.
  
  ## Uso
  Dalla cartella `guardian/`:
@@ -30,12 +94,38 @@ index bf41c2c..c1bb8c0 100644
  python3 -s -B -m unittest discover -s test -v
  ```
 -Risultato al 12/11/2026: **24 test, tutti superati** (18 G0, 6 journal).
-+Risultato: **29 test, tutti superati** (18 G0 e 6 journal originari, più 5 test delle correzioni in `test/test_fix_g0_journal.py`; dettaglio in `collaborazione/da-claude/CONSEGNA_FIX_G0/`).
++Risultato: **36 test, tutti superati** con `-W error` (18 G0 e 6 journal originari; 5 test del mandato «Binario A» e 7 del contro-audit in `test/test_fix_g0_journal.py`; dettaglio in `collaborazione/da-claude/CONSEGNA_FIX_G0/`).
  Requisiti: Python 3.11 o successivo, sola libreria standard.
  
  ## Limiti dichiarati
+diff --git a/brain/guardian/g0/limiti.py b/brain/guardian/g0/limiti.py
+index 4ec25b2..fab0009 100644
+--- a/brain/guardian/g0/limiti.py
++++ b/brain/guardian/g0/limiti.py
+@@ -38,7 +38,13 @@ def _frazioni(prodotto: str, file_regole: Path = FILE_REGOLE):
+             regola(f_t, "frazione del capitale iniziale", fonte + " max_loss", s_t))
+ 
+ 
++def _capitale_positivo(capitale_iniziale: Valore) -> None:
++    if not (capitale_iniziale.valore.is_finite() and capitale_iniziale.valore > 0):
++        raise ValueError(f"il capitale iniziale deve essere positivo ({capitale_iniziale.valore})")
++
++
+ def limite_giornaliero(prodotto: str, capitale_iniziale: Valore, saldo_mezzanotte: Valore) -> Valore:
++    _capitale_positivo(capitale_iniziale)
+     f_g, _ = _frazioni(prodotto)
+     v = saldo_mezzanotte.valore - f_g.valore * capitale_iniziale.valore
+     return combina([capitale_iniziale, saldo_mezzanotte, f_g], v, capitale_iniziale.unita, "calcolo deterministico",
+@@ -48,6 +54,7 @@ def limite_giornaliero(prodotto: str, capitale_iniziale: Valore, saldo_mezzanott
+ def limite_totale(prodotto: str, capitale_iniziale: Valore, saldi_di_riferimento: Iterable[Valore] = ()) -> Valore:
+     """`saldi_di_riferimento`: 1-Step → saldi alle 00:00 dei giorni precedenti; Instant → saldi dopo ogni chiusura;
+     2-Step → ignorati (limite statico)."""
++    _capitale_positivo(capitale_iniziale)
+     _, f_t = _frazioni(prodotto)
+     saldi = list(saldi_di_riferimento)
+     ins = [capitale_iniziale, f_t]
 diff --git a/brain/guardian/g0/scheda.py b/brain/guardian/g0/scheda.py
-index 53dbd6e..a035def 100644
+index 53dbd6e..3fb6a61 100644
 --- a/brain/guardian/g0/scheda.py
 +++ b/brain/guardian/g0/scheda.py
 @@ -9,13 +9,23 @@ from __future__ import annotations
@@ -73,7 +163,7 @@ index 53dbd6e..a035def 100644
              s["fonte"], s.get("stato_verifica", "C"), s.get("valuta_base"),
              Decimal(str(s["passo_tick"])) if "passo_tick" in s else None,
              Decimal(str(s["valore_tick"])) if "valore_tick" in s else None)
-@@ -59,7 +70,78 @@ def _perdita(p, strumenti, valuta, cambi, fonte, aperta=False):
+@@ -59,7 +70,95 @@ def _perdita(p, strumenti, valuta, cambi, fonte, aperta=False):
                               misura(p["quantita"], "lotti/contratti", fonte), valuta, cambio, comm)
  
  
@@ -89,7 +179,7 @@ index 53dbd6e..a035def 100644
 +    return f"{(x * 100).quantize(Decimal('0.001'), ROUND_HALF_UP)}%".replace(".", ",")
 +
 +
-+def _regole_personali(regole: dict, dati: dict, cap, saldo0, eq, pt, st):
++def _regole_personali(regole: dict, dati: dict, cap, saldo0, eq, pt, st, f_g, tp):
 +    """Applica SOLO le regole con `confermata = true`. Restituisce (avvisi, righe della sezione).
 +    Le regole confermate senza controllo automatico restano domande della checklist; i dati di sessione mancanti
 +    sono dichiarati, non inventati."""
@@ -119,16 +209,33 @@ index 53dbd6e..a035def 100644
 +            if frac.valore > v:
 +                avvisi.append(f"{rid}: il trade previsto rischia {_pct(frac.valore)} del capitale iniziale, "
 +                              f"oltre il limite personale di {_pct(v)}.")
++            # Seconda parte di P-01 (regole_personali.toml): «size maggiore del trade precedente dopo una perdita»
++            in_perdita, size_prec = sess.get("ultima_operazione_in_perdita"), sess.get("size_precedente")
++            if in_perdita is None or size_prec is None:
++                righe.append(f"{rid} (seconda parte) non verificata: servono sessione.ultima_operazione_in_perdita "
++                             f"e sessione.size_precedente")
++            elif not isinstance(in_perdita, bool) or _numero(size_prec) is None or _numero(size_prec) <= 0:
++                avvisi.append(f"{rid}: dati di sessione non validi per la seconda parte (vero/falso e size positiva)")
++            elif in_perdita and _numero(tp["quantita"]) > _numero(size_prec):
++                avvisi.append(f"{rid}: size maggiore della precedente dopo una perdita "
++                              f"({_numero(tp['quantita'])} contro {_numero(size_prec)}).")
++            else:
++                righe.append(f"{rid} (seconda parte): verificata, nessuna violazione")
 +        elif rid == "P-05":
++            # Regola aurea: un limite personale può solo restringere quello della prop firm, mai allargarlo.
++            if v >= f_g.valore:
++                avvisi.append(f"{rid}: il limite personale giornaliero ({_pct(v)}) non è più stretto del limite della "
++                              f"prop firm ({_pct(f_g.valore)}): vale il limite della prop firm; correggere la regola.")
 +            margine_p = combina([eq, saldo0, cap, soglia], eq.valore - (saldo0.valore - v * cap.valore), eq.unita,
 +                                "calcolo deterministico", fonte=f"{rid} margine personale giornaliero")
 +            righe.append(fmt(margine_p, f"{rid} margine rispetto al limite personale giornaliero ({_pct(v)})"))
 +            if margine_p.valore < 0:
 +                avvisi.append(f"{rid}: limite personale giornaliero già superato: kill switch personale.")
-+            elif pt is not None and pt.valore > margine_p.valore:
-+                avvisi.append(f"{rid}: se lo stop del trade previsto viene colpito, il limite personale giornaliero viene superato.")
-+            elif st is not None and st.valore > margine_p.valore:
-+                avvisi.append(f"{rid}: nello scenario di stress il limite personale giornaliero viene superato.")
++            else:
++                if pt is not None and pt.valore > margine_p.valore:
++                    avvisi.append(f"{rid}: se lo stop del trade previsto viene colpito, il limite personale giornaliero viene superato.")
++                if st is not None and st.valore > margine_p.valore:
++                    avvisi.append(f"{rid}: nello scenario di stress il limite personale giornaliero viene superato.")
 +        else:
 +            chiave = serve.split(".")[1]
 +            if chiave not in sess:
@@ -153,7 +260,7 @@ index 53dbd6e..a035def 100644
      c = dati["conto"]
      valuta, prodotto, fonte = c["valuta"], c["prodotto"], c["fonte"]
      righe = []
-@@ -89,6 +171,7 @@ def scheda(dati: dict) -> list[str]:
+@@ -89,6 +188,7 @@ def scheda(dati: dict) -> list[str]:
          avvisi.append("Equity già sotto un limite della prop firm: verificare subito sulla piattaforma.")
      perdite_aperte = [_perdita(p, strumenti, valuta, cambi, fonte, aperta=True) for p in dati.get("posizione", [])]
      tp = dati.get("trade_previsto")
@@ -161,7 +268,7 @@ index 53dbd6e..a035def 100644
      if tp:
          pt = _perdita(tp, strumenti, valuta, cambi, fonte)
          sr = L.stop_residui(mg, pt)
-@@ -96,23 +179,30 @@ def scheda(dati: dict) -> list[str]:
+@@ -96,23 +196,30 @@ def scheda(dati: dict) -> list[str]:
                    fmt(sr, "stop pieni di questa dimensione, dato il margine attuale (posizioni aperte escluse)")]
          if pt.valore > mg.valore:
              avvisi.append("Se lo stop del trade previsto viene colpito, il limite giornaliero viene violato.")
@@ -189,7 +296,7 @@ index 53dbd6e..a035def 100644
  
 -    righe += ["", "AVVISI"] + (avvisi or ["nessun avviso dalle regole della prop firm"])
 -    righe += ["", "REGOLE PERSONALI", "nessuna regola personale attiva: sono una proposta da confermare (regole/regole_personali.toml)"]
-+    avvisi_p, righe_p = _regole_personali(regole_personali, dati, cap, saldo0, eq, pt, st)
++    avvisi_p, righe_p = _regole_personali(regole_personali, dati, cap, saldo0, eq, pt, st, f_g, tp)
 +    avvisi += avvisi_p
 +    righe += ["", "AVVISI"] + (avvisi or ["nessun avviso dalle regole verificate"])
 +    righe += ["", "REGOLE PERSONALI"] + righe_p
@@ -197,7 +304,7 @@ index 53dbd6e..a035def 100644
                "", "DECISIONE: dell'utente, da registrare nel journal (con eventuale deroga e motivo)"]
      return righe
 diff --git a/brain/guardian/g0/strumenti.py b/brain/guardian/g0/strumenti.py
-index 325cfb0..440ad58 100644
+index 325cfb0..4db006f 100644
 --- a/brain/guardian/g0/strumenti.py
 +++ b/brain/guardian/g0/strumenti.py
 @@ -27,7 +27,7 @@ class Strumento:
@@ -209,19 +316,30 @@ index 325cfb0..440ad58 100644
      fonte: str                         # specifica del broker o dell'exchange, con data
      stato_verifica: str = "C"          # V solo se la specifica è stata letta sulla fonte del broker
      valuta_base: Optional[str] = None  # solo FX
-@@ -41,13 +41,23 @@ class Strumento:
+@@ -41,13 +41,33 @@ class Strumento:
              raise ValueError("per una coppia FX serve la valuta base")
          if self.classe == "future" and (self.passo_tick is None or self.valore_tick is None):
              raise ValueError("per un future servono passo e valore del tick")
 +        if self.classe in ("fx", "cfd") and self.dimensione_contratto is None:
 +            raise ValueError(f"per uno strumento {self.classe} serve la dimensione del contratto (unità per lotto)")
++        for nome in ("dimensione_contratto", "passo_tick", "valore_tick"):
++            x = getattr(self, nome)
++            if x is not None and not (x.is_finite() and x > 0):
++                raise ValueError(f"{self.simbolo}: {nome} deve essere un numero positivo ({x})")
  
  
  def perdita_allo_stop(s: Strumento, ingresso: Valore, stop: Valore, quantita: Valore, valuta_conto: str,
                        cambio: Optional[Valore] = None, commissioni: Optional[Valore] = None) -> Valore:
      """Perdita nella valuta del conto se lo stop viene eseguito al suo prezzo (DERIVATO | H_esec).
-     `quantita`: lotti (FX/CFD) o contratti (future). `commissioni`: costo totale previsto in valuta del conto."""
+-    `quantita`: lotti (FX/CFD) o contratti (future). `commissioni`: costo totale previsto in valuta del conto."""
 -    spec = Valore(s.dimensione_contratto, "unità", "REGOLA", "norma", s.fonte, stato_verifica=s.stato_verifica)
++    `quantita`: lotti (FX/CFD) o contratti (future). `commissioni`: costo totale previsto in valuta del conto.
++    Rifiuta prezzi, quantità e cambi non positivi e uno stop uguale al prezzo di partenza."""
++    for nome, v in (("ingresso", ingresso), ("stop", stop), ("quantita", quantita)) + ((("cambio", cambio),) if cambio else ()):
++        if not (v.valore.is_finite() and v.valore > 0):
++            raise ValueError(f"{nome} deve essere un numero positivo ({v.valore})")
++    if ingresso.valore == stop.valore:
++        raise ValueError("lo stop coincide con il prezzo di partenza: perdita allo stop nulla, dato probabilmente errato")
 +    # Specifiche del contratto come REGOLE del broker/exchange: solo quelle effettivamente usate dal calcolo,
 +    # con lo stato di verifica dichiarato per lo strumento (nessun valore inventato).
 +    if s.classe == "future":
@@ -234,7 +352,7 @@ index 325cfb0..440ad58 100644
      distanza = abs(ingresso.valore - stop.valore)
      if s.classe == "future":
          tick = distanza / s.passo_tick
-@@ -56,7 +66,7 @@ def perdita_allo_stop(s: Strumento, ingresso: Valore, stop: Valore, quantita: Va
+@@ -56,7 +76,7 @@ def perdita_allo_stop(s: Strumento, ingresso: Valore, stop: Valore, quantita: Va
          perdita_prof = tick * s.valore_tick * quantita.valore
      else:
          perdita_prof = distanza * s.dimensione_contratto * quantita.valore
@@ -244,14 +362,20 @@ index 325cfb0..440ad58 100644
      if s.valuta_profitto == valuta_conto:
          perdita = perdita_prof
 diff --git a/brain/guardian/journal/LEGGIMI.md b/brain/guardian/journal/LEGGIMI.md
-index 4557e7b..7778b56 100644
+index 4557e7b..e9776ee 100644
 --- a/brain/guardian/journal/LEGGIMI.md
 +++ b/brain/guardian/journal/LEGGIMI.md
-@@ -10,9 +10,15 @@ Creato da Claude (D-23) e affidato all'utente per la compilazione, con l'aiuto d
+@@ -10,9 +10,23 @@ Creato da Claude (D-23) e affidato all'utente per la compilazione, con l'aiuto d
  | `stato` | ore di sonno, stato emotivo, note | **dati personali sensibili**, facoltativi |
  | `previsione` | previsioni probabilistiche di utente, Claude e Gemini, con scadenza e poi esito | per il Brier score e la calibrazione |
  
-+Orari: ISO-8601 in UTC (`…Z` o `+00:00`), anche con frazioni di secondo. Gli indicatori calcolano con `Decimal`, mai con `float`.
++Validazione **all'ingresso** (`valida`, chiamata da `aggiungi`): un record malformato, una volta nella catena, non si può più togliere.
++- Orari: ISO-8601 in UTC (`…Z` o `+00:00`), anche con frazioni di secondo; `chiuso_utc` non precede `aperto_utc`.
++- Numeri: finiti (niente testo, NaN o infiniti). `ingresso`, `stop`, `quantita`, `uscita` e `target` maggiori di zero; `ore_sonno` tra 0 e 24; `data` come data ISO-8601.
++- Riferimenti: `corregge` e `chiude` devono puntare a un record esistente dello stesso registro.
++- Gli indicatori calcolano con `Decimal`, mai con `float`.
++
++Correzioni: `versioni_finali` applica `corregge`, anche a catena (una correzione di una correzione). Brier score e indicatori usano sempre l'ultima versione.
 +
  ## Garanzie
  - **Sola aggiunta.** Una correzione è un nuovo record con `corregge` = id del record corretto.
@@ -260,18 +384,21 @@ index 4557e7b..7778b56 100644
 +- **Ancora di integrità** (`ancora_integrita.json`): numero di righe e SHA-256 dell'ultima riga di ogni registro, aggiornata da `aggiungi` e controllata da `verifica`. Scopre anche i tre casi precedenti.
 +  - **Limite:** se l'ancora sta nella stessa cartella dei dati, chi riscrive deliberatamente i dati può riscrivere anche l'ancora.
 +  - Per questo l'ancora può stare in un percorso separato (`TRADING_JOURNAL_ANCHOR`), e `python3 -m journal.journal ancora` stampa un'impronta da annotare fuori dal journal (commit, messaggio, nota).
++  - `python3 -m journal.journal verifica --impronta <sha256>` confronta l'ancora con l'impronta annotata: rileva anche la **cancellazione totale** di dati e ancora, che senza impronta passerebbe per un journal vuoto e integro.
++  - L'impronta cambia a ogni `aggiungi`: va annotata di nuovo dopo ogni registrazione, o almeno a fine sessione.
 +  - Se un'interruzione avviene tra la scrittura della riga e quella dell'ancora, `verifica` segnala la discrepanza: si controlla l'ultima riga e si riallinea l'ancora solo dopo averla verificata.
  - **Impegni sigillati** (DA-07): `sigilla` produce un impegno SHA-256 con nonce segreto di 256 bit. Non è una firma e non prova chi l'ha creato.
  - **Indicatori comportamentali** (`indicatori.py`): metriche oggettive come DERIVATI. Il pattern R1 è un'IPOTESI («compatibile con un rientro impulsivo») ed è **spento** finché l'utente non fissa i parametri.
  
 diff --git a/brain/guardian/journal/indicatori.py b/brain/guardian/journal/indicatori.py
-index 5dac82b..5974bec 100644
+index 5dac82b..558cee7 100644
 --- a/brain/guardian/journal/indicatori.py
 +++ b/brain/guardian/journal/indicatori.py
-@@ -11,13 +11,29 @@
+@@ -10,52 +10,59 @@
+ """
  from __future__ import annotations
  
- import json
+-import json
 -from datetime import datetime
 +from datetime import datetime, timedelta, timezone
 +from decimal import Decimal
@@ -300,7 +427,30 @@ index 5dac82b..5974bec 100644
  
  
  def trade_da_journal(path: Path) -> list[dict]:
-@@ -43,19 +59,20 @@ def metriche_dopo_perdita(trades: list[dict]) -> list[dict]:
+-    """Trade chiusi, in ordine di apertura; applica le correzioni (`corregge`) sostituendo il record corretto."""
++    """Trade chiusi, in ordine di apertura, nell'ultima versione (correzioni applicate con journal.versioni_finali,
++    anche quando una correzione corregge una correzione precedente)."""
++    from .journal import versioni_finali
+     if not path.exists():
+         return []
+-    per_id, ordine = {}, []
+-    with open(path, encoding="utf-8") as f:
+-        for riga in f:
+-            if not riga.strip():
+-                continue
+-            rec = json.loads(riga)
+-            d = rec["dati"]
+-            bersaglio = d.get("corregge", rec["id"])
+-            if bersaglio not in per_id:
+-                ordine.append(bersaglio)
+-            per_id[bersaglio] = d
+-    chiusi = [per_id[i] for i in ordine if "chiuso_utc" in per_id[i] and "pnl_conto" in per_id[i]]
+-    return sorted(chiusi, key=lambda d: d["aperto_utc"])
++    chiusi = [d for d in versioni_finali(path).values() if "chiuso_utc" in d and "pnl_conto" in d]
++    return sorted(chiusi, key=lambda d: _t(d["aperto_utc"]))
+ 
+ 
+ def metriche_dopo_perdita(trades: list[dict]) -> list[dict]:
      """Per ogni trade che segue una perdita: minuti dalla chiusura della perdita e rapporto tra le size."""
      out = []
      for prec, succ in zip(trades, trades[1:]):
@@ -327,7 +477,7 @@ index 5dac82b..5974bec 100644
              for m in metriche_dopo_perdita(trades)
              if m["minuti_dopo_perdita"] <= minuti_max and m["rapporto_size"] >= rapporto_min]
 diff --git a/brain/guardian/journal/journal.py b/brain/guardian/journal/journal.py
-index cf791cf..f585160 100644
+index cf791cf..5165dda 100644
 --- a/brain/guardian/journal/journal.py
 +++ b/brain/guardian/journal/journal.py
 @@ -9,12 +9,19 @@ Registri (un file JSON Lines ciascuno, nella cartella dati):
@@ -346,12 +496,19 @@ index cf791cf..f585160 100644
  
  Uso:
    python3 -m journal.journal aggiungi <registro> '<json>'
-   python3 -m journal.journal verifica
+-  python3 -m journal.journal verifica
++  python3 -m journal.journal verifica [--impronta <sha256>]
 +  python3 -m journal.journal ancora                   (impronta dell'ancora, da annotare fuori dal journal)
    python3 -m journal.journal brier
    python3 -m journal.journal sigilla '<json>'          (impegno per una stima sigillata, DA-07)
  """
-@@ -29,6 +36,8 @@ from datetime import datetime, timezone
+@@ -25,10 +32,13 @@ import json
+ import os
+ import secrets
+ import sys
+-from datetime import datetime, timezone
++from datetime import date, datetime, timedelta, timezone
++from decimal import Decimal, InvalidOperation
  from pathlib import Path
  
  SCHEMA = "journal/1"
@@ -360,7 +517,7 @@ index cf791cf..f585160 100644
  GENESI = "0" * 64
  REGISTRI = {
      "trade": {"simbolo", "direzione", "aperto_utc", "ingresso", "stop", "quantita", "fonte"},
-@@ -49,6 +58,28 @@ def cartella_dati() -> Path:
+@@ -49,6 +59,28 @@ def cartella_dati() -> Path:
      return Path(os.environ.get("TRADING_JOURNAL_DIR", Path(__file__).resolve().parent / "dati"))
  
  
@@ -389,7 +546,77 @@ index cf791cf..f585160 100644
  def _canonico(obj) -> str:
      return json.dumps(obj, ensure_ascii=False, sort_keys=True, separators=(",", ":"))
  
-@@ -102,8 +133,14 @@ def aggiungi(registro: str, dati: dict, cartella: Path | None = None) -> dict:
+@@ -64,6 +96,39 @@ def _righe(path: Path) -> list[str]:
+         return [r.rstrip("\n") for r in f if r.strip()]
+ 
+ 
++# Campi numerici e orari validati all'INGRESSO (un record malformato, una volta nella catena, è immutabile).
++POSITIVI = {"trade": ("ingresso", "stop", "quantita", "uscita", "target")}
++FINITI = {"trade": ("pnl_conto", "commissioni"), "stato": ("ore_sonno",)}
++ORARI = {"trade": ("aperto_utc", "chiuso_utc"), "previsione": ("scadenza_utc", "esito_utc")}
++
++
++def _decimale(campo: str, x) -> Decimal:
++    """Numero finito come Decimal, dalla sua rappresentazione testuale. Rifiuta booleani, testo non numerico,
++    NaN e infiniti."""
++    if isinstance(x, bool):
++        raise ValueError(f"{campo}: valore booleano non ammesso")
++    try:
++        d = Decimal(str(x))
++    except (InvalidOperation, ValueError):
++        raise ValueError(f"{campo}: non è un numero ({x!r})") from None
++    if not d.is_finite():
++        raise ValueError(f"{campo}: numero non finito ({x!r})")
++    return d
++
++
++def orario_utc(campo: str, s) -> datetime:
++    """Orario ISO-8601 in UTC (`…Z` o `+00:00`, anche con frazioni di secondo). Rifiuta orari senza fuso o non UTC."""
++    if not isinstance(s, str):
++        raise ValueError(f"{campo}: orario non testuale ({s!r})")
++    try:
++        t = datetime.fromisoformat(s)
++    except ValueError:
++        raise ValueError(f"{campo}: orario non ISO-8601 ({s!r})") from None
++    if t.tzinfo is None or t.utcoffset() != timedelta(0):
++        raise ValueError(f"{campo}: orario non in UTC ({s!r})")
++    return t
++
++
+ def valida(registro: str, dati: dict) -> None:
+     if registro not in REGISTRI:
+         raise ValueError(f"registro sconosciuto: {registro}")
+@@ -90,6 +155,22 @@ def valida(registro: str, dati: dict) -> None:
+     if registro == "previsione" and "esito" in dati:
+         if dati["esito"] not in (0, 1):
+             raise ValueError("esito: 0 o 1")
++    for campo in POSITIVI.get(registro, ()):
++        if campo in dati and _decimale(campo, dati[campo]) <= 0:
++            raise ValueError(f"{campo}: deve essere maggiore di zero ({dati[campo]!r})")
++    for campo in FINITI.get(registro, ()):
++        if campo in dati:
++            _decimale(campo, dati[campo])
++    orari = {campo: orario_utc(campo, dati[campo]) for campo in ORARI.get(registro, ()) if campo in dati}
++    if registro == "trade" and "chiuso_utc" in orari and orari["chiuso_utc"] < orari["aperto_utc"]:
++        raise ValueError("chiuso_utc precede aperto_utc")
++    if registro == "stato":
++        try:
++            date.fromisoformat(str(dati["data"]))
++        except ValueError:
++            raise ValueError(f"data: non è una data ISO-8601 ({dati['data']!r})") from None
++        if "ore_sonno" in dati and not 0 <= _decimale("ore_sonno", dati["ore_sonno"]) <= 24:
++            raise ValueError("ore_sonno: tra 0 e 24")
+ 
+ 
+ def aggiungi(registro: str, dati: dict, cartella: Path | None = None) -> dict:
+@@ -99,18 +180,36 @@ def aggiungi(registro: str, dati: dict, cartella: Path | None = None) -> dict:
+     cartella.mkdir(parents=True, exist_ok=True)
+     path = cartella / f"{registro}.jsonl"
+     righe = _righe(path)
++    ids = {json.loads(r)["id"] for r in righe}
++    for rif in ("corregge", "chiude"):
++        if rif in dati and dati[rif] not in ids:
++            raise ValueError(f"{rif}: il record {dati[rif]!r} non esiste nel registro {registro}")
      rec = {"schema": SCHEMA, "registro": registro, "id": f"{registro[:3].upper()}-{len(righe) + 1:05d}",
             "registrato_utc": datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
             "prec_hash": _sha(righe[-1]) if righe else GENESI, "dati": dati}
@@ -405,7 +632,24 @@ index cf791cf..f585160 100644
      return rec
  
  
-@@ -124,9 +161,41 @@ def verifica(cartella: Path | None = None) -> list[str]:
+-def verifica(cartella: Path | None = None) -> list[str]:
+-    """Controlla la catena di hash e lo schema di ogni registro. Restituisce l'elenco dei problemi (vuoto = integro)."""
++def verifica(cartella: Path | None = None, impronta_attesa: str | None = None) -> list[str]:
++    """Controlla la catena di hash, lo schema di ogni registro e l'ancora. Con `impronta_attesa` (annotata fuori dal
++    journal con `ancora`) rileva anche la cancellazione totale di dati e ancora o la loro sostituzione.
++    Restituisce l'elenco dei problemi (vuoto = integro)."""
+     cartella = cartella or cartella_dati()
+     problemi = []
++    if impronta_attesa is not None:
++        ancora = _leggi_ancora(percorso_ancora(cartella))
++        if ancora is None:
++            problemi.append("ancora assente ma impronta attesa fornita: journal cancellato, spostato o sostituito")
++        elif _sha(_canonico(ancora)) != impronta_attesa:
++            problemi.append("l'impronta dell'ancora non coincide con quella annotata: journal modificato dopo l'annotazione")
+     for registro in REGISTRI:
+         prec = GENESI
+         for i, riga in enumerate(_righe(cartella / f"{registro}.jsonl"), 1):
+@@ -124,20 +223,62 @@ def verifica(cartella: Path | None = None) -> list[str]:
              if rec.get("prec_hash") != prec:
                  problemi.append(f"{registro} riga {i}: catena interrotta (riga precedente modificata o rimossa)")
              prec = _sha(riga)
@@ -413,6 +657,11 @@ index cf791cf..f585160 100644
      return problemi
  
  
+-def brier(cartella: Path | None = None) -> dict:
+-    """Brier score per autore, sulle previsioni risolte. Esiti da record con `chiude` = id della previsione."""
+-    cartella = cartella or cartella_dati()
+-    prev, esiti = {}, {}
+-    for riga in _righe(cartella / "previsione.jsonl"):
 +def _verifica_ancora(cartella: Path) -> list[str]:
 +    """Confronta ogni registro con l'ancora: numero di righe e hash dell'ultima riga."""
 +    ancora = _leggi_ancora(percorso_ancora(cartella))
@@ -444,11 +693,42 @@ index cf791cf..f585160 100644
 +    return _sha(_canonico(ancora))
 +
 +
- def brier(cartella: Path | None = None) -> dict:
-     """Brier score per autore, sulle previsioni risolte. Esiti da record con `chiude` = id della previsione."""
-     cartella = cartella or cartella_dati()
-@@ -164,6 +233,8 @@ def main(argv=None) -> int:
-         p = verifica()
++def versioni_finali(path: Path) -> dict:
++    """Applica le correzioni: per ogni record originale restituisce l'ultima versione dei dati.
++    Una correzione (`corregge`) può puntare all'originale o a una correzione precedente: si risale all'originale.
++    Chiave: id dell'originale. Anche `chiude` è ricondotto all'originale."""
++    radice, finali = {}, {}
++    for riga in _righe(path):
+         rec = json.loads(riga)
+         d = rec["dati"]
+-        if "chiude" in d:
+-            esiti[d["chiude"]] = d["esito"]
+-        else:
+-            prev[rec["id"]] = d
++        r = radice.get(d["corregge"], d["corregge"]) if "corregge" in d else rec["id"]
++        radice[rec["id"]] = r
++        finali[r] = dict(d, chiude=radice.get(d["chiude"], d["chiude"])) if "chiude" in d else d
++    return finali
++
++
++def brier(cartella: Path | None = None) -> dict:
++    """Brier score per autore, sulle previsioni risolte, DOPO aver applicato le correzioni (`corregge`).
++    Esiti da record con `chiude` = id della previsione; vale l'ultima versione di previsione ed esito."""
++    cartella = cartella or cartella_dati()
++    finali = versioni_finali(cartella / "previsione.jsonl")
++    prev = {k: d for k, d in finali.items() if "chiude" not in d}
++    esiti = {d["chiude"]: d["esito"] for d in finali.values() if "chiude" in d}
+     per_autore = {}
+     for pid, d in prev.items():
+         if pid in esiti:
+@@ -160,10 +301,12 @@ def main(argv=None) -> int:
+     a = argv if argv is not None else sys.argv[1:]
+     if a[:1] == ["aggiungi"] and len(a) == 3:
+         print(_canonico(aggiungi(a[1], json.loads(a[2]))))
+-    elif a == ["verifica"]:
+-        p = verifica()
++    elif a[:1] == ["verifica"] and (len(a) == 1 or (len(a) == 3 and a[1] == "--impronta")):
++        p = verifica(impronta_attesa=a[2] if len(a) == 3 else None)
          print("\n".join(p) if p else "journal integro")
          return 1 if p else 0
 +    elif a == ["ancora"]:
@@ -458,10 +738,10 @@ index cf791cf..f585160 100644
      elif a[:1] == ["sigilla"] and len(a) == 2:
 diff --git a/brain/guardian/test/test_fix_g0_journal.py b/brain/guardian/test/test_fix_g0_journal.py
 new file mode 100644
-index 0000000..8dd206f
+index 0000000..0eda59b
 --- /dev/null
 +++ b/brain/guardian/test/test_fix_g0_journal.py
-@@ -0,0 +1,127 @@
+@@ -0,0 +1,244 @@
 +"""Test dei 5 difetti del G0 e del journal (mandato «Binario A», 12/11/2026), scritti PRIMA delle correzioni (TDD).
 +Uso (dalla cartella guardian/): python3 -s -B -m unittest discover -s test -v
 +"""
@@ -585,6 +865,123 @@ index 0000000..8dd206f
 +        self.assertEqual(m[0]["rapporto_size"], D("3"))                    # 0,3 / 0,1 (in float: 2,9999…)
 +        r = pattern_r1([t1, t2], minuti_max=D("5"), rapporto_min=D("2"))
 +        self.assertEqual(len(r["casi"]), 1)
++
++
++
++# ---------------------------------------------------------------------------------------------------------------
++# Contro-audit del 12/11/2026: 7 rilievi bloccanti prima del merge (test scritti PRIMA delle correzioni)
++# ---------------------------------------------------------------------------------------------------------------
++
++def regole_con(**conferme):
++    """Regole personali del file con alcune regole confermate: conferme = {"P-05": "0.004", ...}."""
++    with open(SCH.FILE_REGOLE_PERSONALI, "rb") as f:
++        regole = tomllib.load(f)
++    for r in regole["regola"]:
++        if r["id"].replace("-", "_") in conferme:
++            r.update(confermata=True, valore=conferme[r["id"].replace("-", "_")])
++    return regole
++
++
++class TestAudit1P05RegolaAurea(unittest.TestCase):
++    def test_p05_non_piu_stretto_della_prop_e_avvisi_non_soppressi(self):
++        d = esempio()
++        d["conto"]["prodotto"] = "ftmo_1step"                                  # limite giornaliero della prop: 3%
++        testo = "\n".join(SCH.scheda(d, regole_personali=regole_con(P_05="0.04")))
++        self.assertIn("non è più stretto del limite della prop firm", testo)
++        # P-05 a 0,4%: limite personale = 100.400 − 400 = 100.000; margine = 150. Trade 682 e stress 842,50 lo superano:
++        # devono comparire ENTRAMBI gli avvisi.
++        testo = "\n".join(SCH.scheda(esempio(), regole_personali=regole_con(P_05="0.004")))
++        self.assertIn("P-05: se lo stop del trade previsto viene colpito", testo)
++        self.assertIn("P-05: nello scenario di stress", testo)
++
++
++class TestAudit2P01SecondaParte(unittest.TestCase):
++    def test_p01_size_maggiore_dopo_perdita(self):
++        d = esempio()                                                          # trade previsto: 2 lotti
++        testo = "\n".join(SCH.scheda(d, regole_personali=regole_con(P_01="0.01")))
++        self.assertIn("P-01 (seconda parte) non verificata", testo)
++        d["sessione"] = {"ultima_operazione_in_perdita": True, "size_precedente": "1"}
++        testo = "\n".join(SCH.scheda(d, regole_personali=regole_con(P_01="0.01")))
++        self.assertIn("P-01: size maggiore della precedente dopo una perdita", testo.split("AVVISI")[1])
++
++
++class TestAudit3ValidazioneJournal(unittest.TestCase):
++    def test_numeri_e_orari_validati_all_ingresso(self):
++        T = {"simbolo": "EURUSD", "direzione": "long", "aperto_utc": "2026-11-12T09:00:00Z", "ingresso": "1.085",
++             "stop": "1.083", "quantita": "1", "fonte": "t"}
++        J.valida("trade", T)                                                   # record valido: nessun errore
++        for campo, valore in (("aperto_utc", "ieri"), ("aperto_utc", "2026-11-12T09:00:00"), ("quantita", "0"),
++                              ("quantita", "abc"), ("ingresso", "-1"), ("stop", "NaN"), ("pnl_conto", "Infinity"),
++                              ("chiuso_utc", "2026-11-12T08:59:59Z")):
++            with self.assertRaises(ValueError, msg=f"{campo}={valore}"):
++                J.valida("trade", dict(T, **{campo: valore}))
++        with self.assertRaises(ValueError):
++            J.valida("previsione", {"autore": "claude", "evento": "x", "scadenza_utc": "domani",
++                                    "probabilita": 0.5, "fonte": "t"})
++
++
++class TestAudit4BrierCorrezioni(unittest.TestCase):
++    def test_brier_applica_le_correzioni(self):
++        with tempfile.TemporaryDirectory() as tmp:
++            d = Path(tmp)
++            base = {"autore": "claude", "evento": "A", "scadenza_utc": "2026-12-01T00:00:00Z", "fonte": "t"}
++            a = J.aggiungi("previsione", dict(base, probabilita=0.8), d)
++            J.aggiungi("previsione", dict(base, probabilita=0.6, corregge=a["id"]), d)       # previsione corretta
++            e = J.aggiungi("previsione", {"autore": "utente", "fonte": "t", "chiude": a["id"], "esito": 1}, d)
++            self.assertAlmostEqual(J.brier(d)["claude"]["brier"], (0.6 - 1) ** 2)
++            self.assertEqual(J.brier(d)["claude"]["n"], 1)
++            J.aggiungi("previsione", {"autore": "utente", "fonte": "t", "chiude": a["id"], "esito": 0,
++                                      "corregge": e["id"]}, d)                                # esito corretto
++            self.assertAlmostEqual(J.brier(d)["claude"]["brier"], (0.6 - 0) ** 2)
++            self.assertEqual(J.brier(d)["claude"]["n"], 1)
++
++
++class TestAudit5ImprontaEsterna(unittest.TestCase):
++    def test_verifica_con_impronta_rileva_cancellazione_totale(self):
++        T = {"simbolo": "EURUSD", "direzione": "long", "aperto_utc": "2026-11-12T09:00:00Z", "ingresso": "1.085",
++             "stop": "1.083", "quantita": "1", "fonte": "t"}
++        with tempfile.TemporaryDirectory() as tmp:
++            d = Path(tmp)
++            J.aggiungi("trade", T, d)
++            imp = J.impronta_ancora(d)
++            self.assertEqual(J.verifica(d, impronta_attesa=imp), [])
++            self.assertTrue(J.verifica(d, impronta_attesa="0" * 64))                         # impronta diversa
++            for f in d.iterdir():
++                f.unlink()                                                                   # dati e ancora cancellati
++            self.assertEqual(J.verifica(d), [])                                              # senza impronta: invisibile
++            self.assertTrue(J.verifica(d, impronta_attesa=imp))                              # con impronta: rilevato
++
++
++class TestAudit6Positivita(unittest.TestCase):
++    def test_valori_non_positivi_rifiutati(self):
++        from g0 import limiti as L
++        t = "t"
++        fx = Strumento("EURUSD", "fx", "USD", D(100000), t, valuta_base="EUR")
++        jp = Strumento("USDJPY", "fx", "JPY", D(100000), t, valuta_base="USD")
++        m = lambda x, u="prezzo": misura(x, u, t)
++        casi = [
++            lambda: L.limite_giornaliero("ftmo_2step", m("0", "USD"), m("0", "USD")),
++            lambda: perdita_allo_stop(fx, m("1.085"), m("1.083"), m("0", "lotti"), "USD"),
++            lambda: perdita_allo_stop(fx, m("1.085"), m("1.085"), m("1", "lotti"), "USD"),
++            lambda: perdita_allo_stop(fx, m("-1.085"), m("1.083"), m("1", "lotti"), "USD"),
++            lambda: perdita_allo_stop(fx, m("1.085"), m("0"), m("1", "lotti"), "USD"),
++            lambda: perdita_allo_stop(jp, m("150"), m("149.5"), m("1", "lotti"), "EUR", cambio=misura("0", "JPY/EUR", t)),
++            lambda: Strumento("ES", "future", "USD", None, t, passo_tick=D("0"), valore_tick=D("12.5")),
++            lambda: Strumento("ES", "future", "USD", None, t, passo_tick=D("0.25"), valore_tick=D("-12.5")),
++            lambda: Strumento("EURUSD", "fx", "USD", D(0), t, valuta_base="EUR"),
++        ]
++        for i, caso in enumerate(casi):
++            with self.assertRaises(ValueError, msg=f"caso {i}"):
++                caso()
++
++
++class TestAudit7Continuita(unittest.TestCase):
++    def test_documenti_di_continuita_allineati(self):
++        brain = Path(__file__).resolve().parent.parent.parent
++        self.assertIn("trading-brain-core", (brain / "CONTINUITA.md").read_text(encoding="utf-8"))
++        self.assertIn("feat/fix-g0-journal", (brain / "governance" / "REGISTRO-MODIFICHE.md").read_text(encoding="utf-8"))
++        aperte = (brain / "governance" / "DECISIONI-APERTE.md").read_text(encoding="utf-8")
++        self.assertIn("trading-brain-core", aperte.split("### DA-01")[1].split("### DA-02")[0])
 +
 +
 +if __name__ == "__main__":
