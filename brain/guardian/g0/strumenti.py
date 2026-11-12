@@ -27,7 +27,7 @@ class Strumento:
     simbolo: str
     classe: str                        # "fx" | "future" | "cfd"
     valuta_profitto: str               # FX: valuta quotata; future/CFD: valuta del contratto
-    dimensione_contratto: Decimal      # FX/CFD: unità per lotto; future: non usato (vedi tick)
+    dimensione_contratto: Optional[Decimal]  # FX/CFD: unità per lotto (obbligatoria); future: None (si usa il tick)
     fonte: str                         # specifica del broker o dell'exchange, con data
     stato_verifica: str = "C"          # V solo se la specifica è stata letta sulla fonte del broker
     valuta_base: Optional[str] = None  # solo FX
@@ -41,13 +41,23 @@ class Strumento:
             raise ValueError("per una coppia FX serve la valuta base")
         if self.classe == "future" and (self.passo_tick is None or self.valore_tick is None):
             raise ValueError("per un future servono passo e valore del tick")
+        if self.classe in ("fx", "cfd") and self.dimensione_contratto is None:
+            raise ValueError(f"per uno strumento {self.classe} serve la dimensione del contratto (unità per lotto)")
 
 
 def perdita_allo_stop(s: Strumento, ingresso: Valore, stop: Valore, quantita: Valore, valuta_conto: str,
                       cambio: Optional[Valore] = None, commissioni: Optional[Valore] = None) -> Valore:
     """Perdita nella valuta del conto se lo stop viene eseguito al suo prezzo (DERIVATO | H_esec).
     `quantita`: lotti (FX/CFD) o contratti (future). `commissioni`: costo totale previsto in valuta del conto."""
-    spec = Valore(s.dimensione_contratto, "unità", "REGOLA", "norma", s.fonte, stato_verifica=s.stato_verifica)
+    # Specifiche del contratto come REGOLE del broker/exchange: solo quelle effettivamente usate dal calcolo,
+    # con lo stato di verifica dichiarato per lo strumento (nessun valore inventato).
+    if s.classe == "future":
+        specifiche = [Valore(s.passo_tick, "passo del tick", "REGOLA", "norma", s.fonte, stato_verifica=s.stato_verifica),
+                      Valore(s.valore_tick, f"{s.valuta_profitto} per tick", "REGOLA", "norma", s.fonte,
+                             stato_verifica=s.stato_verifica)]
+    else:
+        specifiche = [Valore(s.dimensione_contratto, "unità per lotto", "REGOLA", "norma", s.fonte,
+                             stato_verifica=s.stato_verifica)]
     distanza = abs(ingresso.valore - stop.valore)
     if s.classe == "future":
         tick = distanza / s.passo_tick
@@ -56,7 +66,7 @@ def perdita_allo_stop(s: Strumento, ingresso: Valore, stop: Valore, quantita: Va
         perdita_prof = tick * s.valore_tick * quantita.valore
     else:
         perdita_prof = distanza * s.dimensione_contratto * quantita.valore
-    ins = [ingresso, stop, quantita, spec]
+    ins = [ingresso, stop, quantita] + specifiche
 
     if s.valuta_profitto == valuta_conto:
         perdita = perdita_prof

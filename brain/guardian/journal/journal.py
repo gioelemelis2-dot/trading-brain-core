@@ -9,12 +9,19 @@ Registri (un file JSON Lines ciascuno, nella cartella dati):
 
 Regole:
 - nessuna riga si modifica: una correzione è un nuovo record con `corregge` = id del record corretto;
-- ogni riga contiene `prec_hash` (SHA-256 della riga precedente): `verifica` scopre modifiche e cancellazioni;
+- ogni riga contiene `prec_hash` (SHA-256 della riga precedente): la catena scopre modifiche e cancellazioni
+  delle righe che hanno un successore;
+- ANCORA DI INTEGRITÀ (`ancora_integrita.json`): per ogni registro, numero di righe e SHA-256 dell'ultima riga,
+  aggiornata da `aggiungi` e controllata da `verifica`. Scopre anche modifica dell'ultima riga, troncamento della
+  coda e riscrittura completa della catena. LIMITE: se l'ancora sta nella stessa cartella dei dati, chi riscrive
+  i dati può riscrivere anche l'ancora. Per una protezione contro la manomissione deliberata, tenere l'ancora in
+  un percorso separato (TRADING_JOURNAL_ANCHOR) e annotare altrove l'impronta stampata da `ancora`;
 - i dati stanno in `dati/` (esclusa da git) o nella cartella indicata da TRADING_JOURNAL_DIR.
 
 Uso:
   python3 -m journal.journal aggiungi <registro> '<json>'
   python3 -m journal.journal verifica
+  python3 -m journal.journal ancora                   (impronta dell'ancora, da annotare fuori dal journal)
   python3 -m journal.journal brier
   python3 -m journal.journal sigilla '<json>'          (impegno per una stima sigillata, DA-07)
 """
@@ -29,6 +36,8 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 SCHEMA = "journal/1"
+SCHEMA_ANCORA = "ancora/1"
+FILE_ANCORA = "ancora_integrita.json"
 GENESI = "0" * 64
 REGISTRI = {
     "trade": {"simbolo", "direzione", "aperto_utc", "ingresso", "stop", "quantita", "fonte"},
@@ -47,6 +56,28 @@ FACOLTATIVI = {
 
 def cartella_dati() -> Path:
     return Path(os.environ.get("TRADING_JOURNAL_DIR", Path(__file__).resolve().parent / "dati"))
+
+
+def percorso_ancora(cartella: Path) -> Path:
+    """TRADING_JOURNAL_ANCHOR (file) se impostata; altrimenti `ancora_integrita.json` nella cartella dei dati."""
+    env = os.environ.get("TRADING_JOURNAL_ANCHOR")
+    return Path(env) if env else cartella / FILE_ANCORA
+
+
+def _leggi_ancora(path: Path):
+    if not path.exists():
+        return None
+    with open(path, encoding="utf-8") as f:
+        return json.load(f)
+
+
+def _scrivi_ancora(path: Path, ancora: dict) -> None:
+    """Scrittura atomica: file temporaneo e poi sostituzione."""
+    path.parent.mkdir(parents=True, exist_ok=True)
+    tmp = path.with_name(path.name + ".tmp")
+    with open(tmp, "w", encoding="utf-8") as f:
+        f.write(json.dumps(ancora, ensure_ascii=False, sort_keys=True, indent=2) + "\n")
+    os.replace(tmp, path)
 
 
 def _canonico(obj) -> str:
@@ -102,8 +133,14 @@ def aggiungi(registro: str, dati: dict, cartella: Path | None = None) -> dict:
     rec = {"schema": SCHEMA, "registro": registro, "id": f"{registro[:3].upper()}-{len(righe) + 1:05d}",
            "registrato_utc": datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
            "prec_hash": _sha(righe[-1]) if righe else GENESI, "dati": dati}
+    riga = _canonico(rec)
     with open(path, "a", encoding="utf-8") as f:
-        f.write(_canonico(rec) + "\n")
+        f.write(riga + "\n")
+    pa = percorso_ancora(cartella)
+    ancora = _leggi_ancora(pa) or {"schema": SCHEMA_ANCORA, "registri": {}}
+    ancora["registri"][registro] = {"righe": len(righe) + 1, "ultimo_hash": _sha(riga)}
+    ancora["aggiornato_utc"] = rec["registrato_utc"]
+    _scrivi_ancora(pa, ancora)
     return rec
 
 
@@ -124,7 +161,39 @@ def verifica(cartella: Path | None = None) -> list[str]:
             if rec.get("prec_hash") != prec:
                 problemi.append(f"{registro} riga {i}: catena interrotta (riga precedente modificata o rimossa)")
             prec = _sha(riga)
+    problemi += _verifica_ancora(cartella)
     return problemi
+
+
+def _verifica_ancora(cartella: Path) -> list[str]:
+    """Confronta ogni registro con l'ancora: numero di righe e hash dell'ultima riga."""
+    ancora = _leggi_ancora(percorso_ancora(cartella))
+    presenti = {r for r in REGISTRI if _righe(cartella / f"{r}.jsonl")}
+    if ancora is None:
+        return [f"ancora di integrità assente ({percorso_ancora(cartella)}): impossibile controllare ultima riga, "
+                f"troncamento e riscrittura"] if presenti else []
+    problemi = []
+    attesi = ancora.get("registri", {})
+    for registro in sorted(presenti | set(attesi)):
+        righe = _righe(cartella / f"{registro}.jsonl")
+        a = attesi.get(registro)
+        if a is None:
+            problemi.append(f"{registro}: registro non presente nell'ancora")
+            continue
+        ultimo = _sha(righe[-1]) if righe else None
+        if a["righe"] != len(righe) or a["ultimo_hash"] != ultimo:
+            problemi.append(f"{registro}: non coincide con l'ancora ({len(righe)} righe contro {a['righe']} attese"
+                            f"{'' if a['ultimo_hash'] == ultimo else '; ultima riga diversa'}): ultima riga "
+                            f"modificata, coda troncata o registro riscritto")
+    return problemi
+
+
+def impronta_ancora(cartella: Path | None = None) -> str:
+    """SHA-256 dell'ancora in forma canonica: da annotare fuori dal journal (commit, messaggio, nota)."""
+    ancora = _leggi_ancora(percorso_ancora(cartella or cartella_dati()))
+    if ancora is None:
+        raise ValueError("nessuna ancora: il journal è vuoto o l'ancora è stata rimossa")
+    return _sha(_canonico(ancora))
 
 
 def brier(cartella: Path | None = None) -> dict:
@@ -164,6 +233,8 @@ def main(argv=None) -> int:
         p = verifica()
         print("\n".join(p) if p else "journal integro")
         return 1 if p else 0
+    elif a == ["ancora"]:
+        print(impronta_ancora())
     elif a == ["brier"]:
         print(json.dumps(brier(), ensure_ascii=False, indent=2))
     elif a[:1] == ["sigilla"] and len(a) == 2:
