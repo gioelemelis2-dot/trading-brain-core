@@ -1,6 +1,6 @@
 # Documento di continuità
 
-Ultimo aggiornamento: **2026-11-12**, dopo la chiusura dell'audit Red Team sul Guardian (vedi «Stato consolidato di `main`»). Leggere questo file per primo (vale anche per Gemini, insieme a `collaborazione/HANDOFF-GEMINI.md`).
+Ultimo aggiornamento: **2026-11-12**, dopo la verifica completa del Binario B e la chiusura dei Gate 0 e 1 (vedi «Stato consolidato di `main`» e «Gate operativi»). Leggere questo file per primo (vale anche per Gemini, insieme a `collaborazione/HANDOFF-GEMINI.md`).
 
 ## Stato
 - **Sviluppo sospeso** (D-12): nessun nuovo modulo, nessuno sviluppo del motore quantitativo, nessuna modifica a L2.1–L2.6 né ai materiali di Antigravity, nessuna migrazione o riorganizzazione.
@@ -88,26 +88,42 @@ Il G0 **non** è ancora utilizzabile per decidere: serve la riconciliazione con 
   - lock esclusivo in `aggiungi()`, che corregge anche una collisione reale fra scrittori concorrenti sul file temporaneo dell'ancora.
   - 61/61 test su Python 3.9, 3.11, 3.12 e 3.13; mutanti non equivalenti uccisi: 58/58 su 3.13 e 57/57 su 3.9 (V48 equivalente prima di 3.11).
 
-**Audit esterno «Red Team» sul Guardian: chiuso per `brain/guardian/`.**
+**Audit esterno «Red Team»: chiuso per il Guardian e per il Binario B.**
 - Bonifica sul ramo `fix/red-team-guardian`, unito a `main` (`fd14834`): 13 rilievi in TDD (NON STIMABILE in limiti e scheda, trade sovrapposti in R1, stringhe dello strumento e rumore float nel tick, `versioni_finali` ed esiti senza `chiude`, lock con O_CLOEXEC, lock orfani e `verifica` sotto lock, `fmt` con esponenti estremi, P-01 con capitale nullo, chiavi TOML tra virgolette).
 - Audit di verifica: 0 CRITICO e 0 ALTO nei 7 file del Guardian; 1 MEDIO (`versioni_finali` accettava `chiude` verso una correzione), corretto in TDD su `main` (`3372072` rosso, `18bd042` verde).
-- **Non verificati:** i 6 file del Binario B (`dsr`, `engine`, `ingestion`, `models`, `partitioning`, `portfolio`) e i due ALTO che l'audit vi attribuisce (ALTO-2 residuo in `portfolio.on_fill`, ALTO-7 in `engine` dopo un gap).
-  - Al 12/11/2026 22:46 UTC, `origin/main` è identico a `main` locale (verificato con `git ls-remote`).
-  - `brain/laboratorio/` non esiste e `brain/dati/` contiene solo i README: nessun codice né test del Binario B su GitHub.
-  - Restano da verificare quando il codice sarà pubblicato.
+- **Binario B verificato** dopo la pubblicazione su `origin/main` (`30ea8e6`; `brain/guardian/` invariato rispetto a `591302a`).
+  - ALTO-2 (atomicità di `portfolio.on_fill`): risolto. Controesempio indipendente di Claude: chiusura USD/JPY su conto EUR senza cambio → `ValueError` prima di ogni modifica; cassa, storico dei fill e posizione invariati.
+  - ALTO-7 (SL/TP dopo un gap in `engine`): risolto. Controesempio: segnale LONG al close 100 con SL 95 e TP 105, apertura a 90 dopo il weekend → ordine respinto, nessuna operazione, cassa invariata.
+  - Entrambi verificati su Python 3.13 e 3.9.
 
 **Stato consolidato di `main`:**
-- `brain/guardian/`: 76/76 test verdi con `-W error` su Python 3.9, 3.11, 3.12 e 3.13.
+- Suite unificata: **108/108 test verdi** con `python3 -s -B -W error`, su Python 3.13 e 3.9. Sono 76 di `brain/guardian/test` più 32 del Binario B.
+  - Il Binario B si esegue dalla radice del repository: `python3 -s -B -W error -m unittest brain.dati.tests.test_pipeline brain.laboratorio.tests.test_backtester brain.laboratorio.tests.test_anti_frode_statico`.
+- `brain/guardian/`: 76/76 test verdi anche su Python 3.11 e 3.12.
 - ALTO-8 (race nel recupero del lock orfano senza `fcntl`, da una revisione esterna) corretto in TDD sul ramo `fix/lock-orfano-toctou` e unito a `main`.
-- Mutanti non equivalenti uccisi: 79/79 su 3.13 e 78/78 su 3.9 (V48 equivalente prima di 3.11, E01 equivalente su tutte le versioni).
+- Mutanti non equivalenti uccisi: 79/79 su 3.13 e 78/78 su 3.9 (V48 equivalente prima di 3.11, E01 equivalente su tutte le versioni). Riconfermato 79/79 su 3.13 dopo che i test sono stati resi indipendenti dalle conferme reali delle regole personali.
+
+**Gate operativi** (denominazione dell'utente; nel Brain non c'è ancora una definizione formale dei gate):
+- **Gate 0, chiuso:** verifica completa del codice. Guardian e Binario B sono su `main`, con ALTO-2 e ALTO-7 verificati e 108/108 test.
+- **Gate 1, chiuso:** conto demo broker ECN su MetaTrader 5, 50.000 USD, XAU/USD.
+  - Scheda: `dati/reali/demo_broker_mt5_50k_xauusd.toml`, rinominata da `demo_mt5_50k_xauusd.toml`.
+  - Regole interne 5% giornaliero (2.500 USD) e 10% totale (5.000 USD), simulate con lo schema `ftmo_2step`.
+  - Commissione ECN round-turn 7,00 USD/lotto. Specifiche del contratto e commissione sono da verificare sul broker (stato C).
+  - Regole personali confermate dall'utente il 12/11/2026: **P-01 = 0,5%** (250 USD per trade) e **P-05 = 1,5%** (750 USD al giorno). Nella scheda risultano «2 confermate su 15».
+  - Scheda **non riconciliata** con la piattaforma (DA-25): finché non lo è, la scheda dichiara di non usarne i numeri per decidere.
+- **Gate 2, aperto:** in attesa del CSV storico **XAUUSD 15m**, da registrare in `dati/reali/` con fonte, data di download, hash e licenza (vedi `dati/reali/README.md`).
+- **Gate 3, inizializzato (non aperto):**
+  - `dati/operativo/journal_broker_mt5_50k/`: i dati del journal sono esclusi da git, perché personali (DA-16);
+  - `dati/operativo/trial_registry_xauusd.json`: `TRIAL_REGISTRY_V1`, 0 prove.
 - Rami storici ancora su GitHub: `feat/fix-g0-journal`, `fix/red-team-guardian` e `fix/lock-orfano-toctou`, tutti già uniti.
+- Nota minore aperta: nella scheda la riga «P-01 rischio del trade previsto» arrotonda la frazione a 2 decimali (per esempio 0,005014 → «0,01»). L'avviso P-01 riporta invece il valore corretto (0,501%). Da correggere in `fmt`.
 
 **Ora: fermo in attesa dell'utente**, per:
 - rispondere alle decisioni di `governance/DECISIONI-APERTE.md`, a partire da quelle bloccanti;
 - valutare la revisione V3.3 e decidere se applicare l'errata (T-01…T-05) all'inizio della fase successiva;
 - prendere le decisioni elencate nell'audit architetturale (§10) e nella valutazione della controverifica (§7);
 - avviare Q-09 (Trading Guardian) e Q-07;
-- pubblicare il codice del Binario B su GitHub, per verificare ALTO-2 e ALTO-7 ed eseguire `brain/dati/tests` e `brain/laboratorio/tests`;
+- fornire il CSV storico XAUUSD 15m (Gate 2) e riconciliare la scheda del conto demo con la piattaforma (DA-25);
 - prendere le decisioni della proposta della Parte B.
 
 ## Correzioni note ancora da applicare (dopo il via libera)

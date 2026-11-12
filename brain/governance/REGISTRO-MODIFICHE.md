@@ -237,3 +237,22 @@ Formato: data · versione della base · cosa · perché · file.
 - La stessa revisione segnalava come aperto il MEDIO su `versioni_finali`: era già corretto su `main` (`18bd042`); la revisione leggeva una versione precedente.
 - ALTO-2 e ALTO-7 del Binario B restano non verificati: su GitHub non c'è codice del Binario B.
 - Esito: 76/76 test su Python 3.9, 3.11, 3.12 e 3.13; mutanti non equivalenti uccisi 79/79 su 3.13 e 78/78 su 3.9 (nuovo V79).
+
+## 2026-11-12 · v1.18 (verifica del Binario B; Gate 0 e 1 chiusi, Gate 2 aperto, Gate 3 inizializzato)
+
+- `main` allineato a `origin/main` (`30ea8e6`, fast-forward). Il Binario B è ora su GitHub; `brain/guardian/` è invariato rispetto a `591302a`.
+- **Verifica del Binario B**, con controesempi indipendenti di Claude e senza modificare i file di Gemini:
+  - ALTO-2 (`portfolio.on_fill`): risolto; con il cambio mancante l'errore arriva prima di ogni modifica dello stato;
+  - ALTO-7 (`engine`, SL/TP dopo un gap): risolto; l'ordine incoerente con l'apertura reale viene respinto.
+- **Suite unificata:** 108/108 test (76 Guardian più 32 Binario B) con `python3 -s -B -W error`, su Python 3.13 e 3.9; nessun file scritto nel repository dall'esecuzione.
+- **Gate 1:**
+  - `dati/reali/demo_mt5_50k_xauusd.toml` → `demo_broker_mt5_50k_xauusd.toml`: conto demo broker ECN MT5 da 50.000 USD; regole interne 5%/10% simulate con lo schema `ftmo_2step`; commissione ECN round-turn 7,00 USD/lotto su XAU/USD. Tolto il nome dell'operatore, dato personale non necessario alla scheda;
+  - `guardian/regole/regole_personali.toml` (il percorso indicato, `g0/regole_personali.toml`, non esiste): **P-01 = 0,005** e **P-05 = 0,015** confermate dall'utente;
+  - la scheda mostra «2 confermate su 15» e il margine P-05 di 750 USD. Con un trade [ESEMPIO] non salvato (0,10 lotti, stop a 25 USD, 0,70 di commissione) la perdita allo stop è 250,70 USD e l'avviso P-01 scatta (0,501% contro 0,500%), anche su Python 3.9 con il parser TOML minimale.
+- **Test resi indipendenti dalle scelte dell'utente:** `TestFix3` e i tre helper `regole_con` ora partono da regole tutte non confermate. Prima `TestFix3` presupponeva «0 confermate» nel file reale e falliva dopo le conferme. Mutation testing riconfermato: 79/79 su 3.13.
+- **Gate 3 inizializzato:**
+  - `dati/operativo/journal_broker_mt5_50k/`, con `.gitignore` che esclude i dati personali del journal (DA-16) e un LEGGIMI d'uso;
+  - `dati/operativo/trial_registry_xauusd.json`, `TRIAL_REGISTRY_V1` con 0 prove, letto correttamente da `DSRCalculator`.
+- **Gate 2 aperto:** in attesa del CSV storico XAUUSD 15m.
+- I gate sono la denominazione operativa dell'utente: nel Brain non ne esiste ancora una definizione formale.
+- Nessuna modifica a V3.3, lezioni o ai file di codice e test di Gemini.
