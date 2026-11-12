@@ -139,6 +139,22 @@ class TestMedio3e4VersioniFinali(unittest.TestCase):
             _scrivi_previsioni(path, [dict(P, probabilita=0.5), esito])
             self.assertEqual(len(J.versioni_finali(path)), 2)                          # file coerente: nessun errore
 
+    def test_versioni_finali_rifiuta_chiude_verso_una_correzione(self):
+        """MEDIO (audit di verifica): `chiude` deve puntare all'id RADICE della previsione, come in
+        controlla_riferimenti(). In un file scritto a mano un esito che chiude la correzione PRE-00002 veniva accettato."""
+        esito = {"autore": "utente", "fonte": "t", "esito": 1}
+        with tempfile.TemporaryDirectory() as tmp:
+            path = Path(tmp) / "previsione.jsonl"
+            _scrivi_previsioni(path, [dict(P, probabilita=0.8), dict(P, probabilita=0.6, corregge="PRE-00001"),
+                                      dict(esito, chiude="PRE-00002")])
+            with self.assertRaises(ValueError):
+                J.versioni_finali(path)
+            with self.assertRaises(ValueError):
+                J.brier(Path(tmp))
+            _scrivi_previsioni(path, [dict(P, probabilita=0.8), dict(P, probabilita=0.6, corregge="PRE-00001"),
+                                      dict(esito, chiude="PRE-00001")])
+            self.assertAlmostEqual(J.brier(Path(tmp))["claude"]["brier"], (0.6 - 1) ** 2)   # radice: valido
+
     def test_previsione_con_esito_senza_chiude_rifiutata(self):
         for extra in ({"esito": 1}, {"esito_utc": "2026-12-01T00:00:00Z"}):
             with self.assertRaises(ValueError, msg=str(extra)):
