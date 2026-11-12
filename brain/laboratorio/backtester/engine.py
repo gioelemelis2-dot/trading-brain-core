@@ -139,6 +139,7 @@ class EventDrivenBacktester:
                     target_bar_open_time=bar.close_time,  # Deve coincidere con open_time di t+1
                     stop_loss=signal.stop_loss,
                     take_profit=signal.take_profit,
+                    reduce_only=signal.reduce_only,
                 )
                 self.pending_orders.append(order)
 
@@ -224,6 +225,17 @@ class EventDrivenBacktester:
                     f"ma la barra corrente apre a {bar.open_time.isoformat()}."
                 )
 
+            # Regola reduce_only: se l'ordine ha reduce_only=True e la posizione è già stata chiusa
+            # (es. in Fase 1.A per GAP_STOP_LOSS o GAP_TAKE_PROFIT) oppure non è nella direzione da ridurre,
+            # scartalo invece di aprire una posizione inversa scoperta.
+            if order.reduce_only:
+                pos = self.portfolio.positions.get(order.symbol)
+                if pos is None:
+                    continue
+                if (pos.position_type == PositionType.LONG and order.direction != Direction.SELL) or \
+                   (pos.position_type == PositionType.SHORT and order.direction != Direction.BUY):
+                    continue
+
             spread_cost = self.portfolio.calcola_costo_punti(
                 self.spread_points / Decimal("2"), order.quantity, bar.open
             )
@@ -243,6 +255,7 @@ class EventDrivenBacktester:
                 metadata={
                     "stop_loss": order.stop_loss,
                     "take_profit": order.take_profit,
+                    "reduce_only": order.reduce_only,
                 },
             )
             self.portfolio.on_fill(fill)

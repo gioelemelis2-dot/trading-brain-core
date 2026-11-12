@@ -236,6 +236,30 @@ class TestDataPipelineZeroTrust(unittest.TestCase):
         self.assertFalse(res_tampered["oos_match"])
         self.assertFalse(res_tampered["commitment_match"])
 
+    def test_09_template_riconciliazione_da25_valido_per_scheda_g0(self):
+        """Verifica che TEMPLATE_RICONCILIAZIONE_DA25.toml sia elaborato da g0.scheda.scheda() senza errori."""
+        try:
+            import tomllib
+        except ModuleNotFoundError:
+            import tomli as tomllib
+            sys.modules["tomllib"] = tomllib
+
+        from brain.guardian.g0.scheda import scheda
+
+        template_path = repo_root / "brain" / "dati" / "reali" / "TEMPLATE_RICONCILIAZIONE_DA25.toml"
+        self.assertTrue(template_path.exists(), f"Manca il template {template_path}")
+
+        with open(template_path, "rb") as f:
+            dati = tomllib.load(f)
+
+        righe = scheda(dati)
+        testo = "\n".join(righe)
+        self.assertIn("G0 · CONSULTIVO · riconciliato: True", testo)
+        self.assertIn("LIMITI DETERMINISTICI", testo)
+        self.assertIn("TRADE PREVISTO", testo)
+        self.assertIn("SCENARIO DI STRESS", testo)
+        self.assertIn("nessuna obiezione dalle regole verificate", testo)
+
 
 if __name__ == "__main__":
     unittest.main()

@@ -496,6 +496,98 @@ class TestEventDrivenBacktesterZeroTrust(unittest.TestCase):
         self.assertEqual(sr.incertezza, NON_STIMABILE)
         self.assertEqual(dsr.incertezza, NON_STIMABILE)
 
+    def test_07_reduce_only_discards_order_when_position_already_closed_by_gap_stop(self):
+        """
+        DIMOSTRAZIONE BUG REDUCE_ONLY:
+        Se un ordine pendente di chiusura (reduce_only=True) arriva in Fase 1.B
+        ma la posizione è già stata chiusa in Fase 1.A per GAP_STOP_LOSS,
+        l'ordine deve essere scartato senza aprire una posizione inversa scoperta.
+        """
+        s_fx = Strumento(
+            simbolo="EURUSD",
+            classe="fx",
+            valuta_base="EUR",
+            valuta_profitto="USD",
+            dimensione_contratto=Decimal("100000"),
+            fonte="Broker FX Test",
+        )
+        bars = [
+            Candle(
+                symbol="EURUSD",
+                timeframe="1H",
+                open_time=self.t0,
+                close_time=self.t0 + timedelta(hours=1),
+                open=Decimal("1.08000"),
+                high=Decimal("1.08200"),
+                low=Decimal("1.07900"),
+                close=Decimal("1.08000"),
+                volume=Decimal("1000"),
+            ),
+            Candle(
+                symbol="EURUSD",
+                timeframe="1H",
+                open_time=self.t0 + timedelta(hours=1),
+                close_time=self.t0 + timedelta(hours=2),
+                open=Decimal("1.08100"),
+                high=Decimal("1.08300"),
+                low=Decimal("1.07800"),
+                close=Decimal("1.07850"),
+                volume=Decimal("1000"),
+            ),
+            Candle(
+                symbol="EURUSD",
+                timeframe="1H",
+                open_time=self.t0 + timedelta(hours=2),
+                close_time=self.t0 + timedelta(hours=3),
+                open=Decimal("1.07000"),  # GAP DOWN violento sotto SL (1.07500)
+                high=Decimal("1.07200"),
+                low=Decimal("1.06900"),
+                close=Decimal("1.07100"),
+                volume=Decimal("1000"),
+            ),
+        ]
+
+        def strategy(bar: Candle, portfolio: Portfolio, engine: EventDrivenBacktester):
+            if engine.current_bar_index == 0:
+                # Barra 0: entra LONG con SL a 1.07500
+                return SignalEvent(
+                    timestamp=bar.close_time,
+                    symbol="EURUSD",
+                    direction=Direction.BUY,
+                    quantity=Decimal("1.00"),
+                    stop_loss=Decimal("1.07500"),
+                )
+            elif engine.current_bar_index == 1:
+                # Barra 1: la strategia decide di chiudere a mercato con reduce_only=True
+                return SignalEvent(
+                    timestamp=bar.close_time,
+                    symbol="EURUSD",
+                    direction=Direction.SELL,
+                    quantity=Decimal("1.00"),
+                    reduce_only=True,
+                )
+            return None
+
+        engine = EventDrivenBacktester(
+            strumento=s_fx,
+            valuta_conto="USD",
+            initial_capital=Decimal("100000.00"),
+            spread_points=Decimal("0.00010"),
+            fixed_commission_per_order=Decimal("2.00"),
+            slippage_points=Decimal("0.00005"),
+        )
+
+        portfolio = engine.run(bars, strategy)
+
+        # 1. Nessuna posizione inversa (SHORT) deve essere rimasta aperta!
+        self.assertEqual(len(portfolio.positions), 0, "Non devono esserci posizioni aperte residue.")
+
+        # 2. Ci deve essere ESATTAMENTE 1 trade (quello chiuso per GAP_STOP_LOSS in 1.A)
+        self.assertEqual(len(portfolio.trade_history), 1, "Deve esserci solo il trade di GAP_STOP_LOSS.")
+        t = portfolio.trade_history[0]
+        self.assertEqual(t.exit_reason, "GAP_STOP_LOSS")
+        self.assertEqual(t.exit_price, Decimal("1.07000"))
+
 
 if __name__ == "__main__":
     unittest.main()

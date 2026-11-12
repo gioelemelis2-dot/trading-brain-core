@@ -159,11 +159,16 @@ class Portfolio:
         """
         Aggiorna cassa e posizioni all'arrivo di un FillEvent.
         """
+        existing = self.positions.get(fill.symbol)
+
+        # Regola reduce_only a livello di portafoglio: se non esiste posizione, non può aprire a mercato
+        if existing is None and fill.metadata.get("reduce_only", False):
+            return None
+
         # Deduce costi della leg corrente
         leg_friction = fill.commission + fill.spread_cost + fill.slippage
         self.cash -= leg_friction
 
-        existing = self.positions.get(fill.symbol)
         trade_record: Optional[TradeRecord] = None
 
         if existing is None:

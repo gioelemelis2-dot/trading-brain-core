@@ -66,6 +66,7 @@ class MutationTestingEngine:
             ("M18_ignore_currency_conversion", "Omette divisione per cambio_valuta nel PnL cross-currency"),
             ("M19_dsr_return_float_zero_when_few_trades", "Restituisce float 0.0 invece di Valore NON STIMABILE con <30 trade"),
             ("M20_dsr_ignore_multiple_trials", "Ignora il contatore N in DSR forzando N=1"),
+            ("M21_disable_reduce_only_guard", "Disabilita lo scarto dell'ordine reduce_only quando la posizione e' gia' chiusa"),
         ]
 
     def test_m01(self) -> bool:
@@ -277,6 +278,32 @@ class MutationTestingEngine:
         dsr_50, _ = DSRCalculator.calculate_dsr_analytical(1.5, num_trials=50, track_record_length=50)
         return dsr_1 > dsr_50
 
+    def test_m21(self) -> bool:
+        """Mutante M21: Disabilita protezione reduce_only consentendo apertura contraria scoperta."""
+        s_fx = Strumento(
+            simbolo="EURUSD",
+            classe="fx",
+            valuta_base="EUR",
+            valuta_profitto="USD",
+            dimensione_contratto=Decimal("100000"),
+            fonte="test",
+        )
+        bars = [
+            Candle("EURUSD", "1H", self.t0, self.t0 + timedelta(hours=1), Decimal("1.080"), Decimal("1.082"), Decimal("1.079"), Decimal("1.080"), Decimal("100")),
+            Candle("EURUSD", "1H", self.t0 + timedelta(hours=1), self.t0 + timedelta(hours=2), Decimal("1.081"), Decimal("1.083"), Decimal("1.078"), Decimal("1.0785"), Decimal("100")),
+            Candle("EURUSD", "1H", self.t0 + timedelta(hours=2), self.t0 + timedelta(hours=3), Decimal("1.070"), Decimal("1.072"), Decimal("1.069"), Decimal("1.071"), Decimal("100")),
+        ]
+        def strat(bar, p, eng):
+            if eng.current_bar_index == 0:
+                return SignalEvent(bar.close_time, "EURUSD", Direction.BUY, Decimal("1.00"), stop_loss=Decimal("1.07500"))
+            elif eng.current_bar_index == 1:
+                return SignalEvent(bar.close_time, "EURUSD", Direction.SELL, Decimal("1.00"), reduce_only=True)
+            return None
+
+        eng = EventDrivenBacktester(s_fx, "USD", Decimal("100000.00"), Decimal("0.0001"), Decimal("2.0"), Decimal("0.00005"))
+        p = eng.run(bars, strat)
+        return len(p.positions) == 0 and len(p.trade_history) == 1 and p.trade_history[0].exit_reason == "GAP_STOP_LOSS"
+
 
 def run_all_mutations():
     engine = MutationTestingEngine()
@@ -284,7 +311,7 @@ def run_all_mutations():
     killed = 0
 
     print("================================================================================")
-    print("SPIETATO MUTATION TESTING ENGINE — BINARIO B (20 MUTANTI NON EQUIVALENTI)")
+    print("SPIETATO MUTATION TESTING ENGINE — BINARIO B (21 MUTANTI NON EQUIVALENTI)")
     print("================================================================================")
 
     for idx, (m_id, m_desc) in enumerate(engine.mutants, 1):
@@ -308,7 +335,7 @@ def run_all_mutations():
         print(f"ERRORE CRITICO: {total - killed} mutanti sono sopravvissuti!")
         sys.exit(1)
     else:
-        print("SUCCESSO TOTALE: 20/20 mutanti non equivalenti rigorosamente abbattuti.")
+        print("SUCCESSO TOTALE: 21/21 mutanti non equivalenti rigorosamente abbattuti.")
         return 0
 
 

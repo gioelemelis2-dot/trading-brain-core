@@ -41,6 +41,7 @@ class SignalEvent:
     quantity: Decimal
     stop_loss: Optional[Decimal] = None
     take_profit: Optional[Decimal] = None
+    reduce_only: bool = False
     metadata: Dict[str, Any] = field(default_factory=dict)
 
     def __post_init__(self):
@@ -58,6 +59,7 @@ class OrderEvent:
     target_bar_open_time: datetime
     stop_loss: Optional[Decimal] = None
     take_profit: Optional[Decimal] = None
+    reduce_only: bool = False
 
 
 @dataclass(frozen=True)

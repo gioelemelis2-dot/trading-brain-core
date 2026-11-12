@@ -9,6 +9,7 @@ Governance Epistemica:
 
 import json
 import math
+import statistics
 from datetime import datetime, timezone
 from decimal import Decimal
 from pathlib import Path
@@ -95,10 +96,9 @@ class DSRCalculator:
         if num_trials <= 1:
             sr_star = benchmark_sharpe
         else:
-            gamma_euler = 0.5772156649
-            ln_n = math.log(num_trials)
-            denom = math.sqrt(2.0 * ln_n)
-            sr_star = denom + (gamma_euler / denom)
+            gamma_euler = 0.57721566490153286060
+            inv_cdf = statistics.NormalDist().inv_cdf
+            sr_star = (1.0 - gamma_euler) * inv_cdf(1.0 - 1.0 / num_trials) + gamma_euler * inv_cdf(1.0 - 1.0 / (num_trials * math.e))
 
         sr = sharpe_estimated
         variance_term = 1.0 - (skewness * sr) + (((kurtosis - 1.0) / 4.0) * (sr ** 2))

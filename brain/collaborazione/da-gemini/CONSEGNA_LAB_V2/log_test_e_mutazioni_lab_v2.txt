@@ -1,49 +1,55 @@
 ================================================================================
-VERBALE DI COLLAUDO INTEGRALE E MUTATION TESTING ZERO-TRUST (BINARIO B V2)
-Data: 2026-11-12T21:26:58Z · Python: Python 3.9.6
+LOG DI ESECUZIONE TEST UNITARI E MUTATION TESTING - CONSEGNA LAB V2 ZERO-TRUST
+Data: 2026-11-12T21:52:49Z
+Branch: feat/lab-dati-backtester
+Commit Base: c8f199a
 ================================================================================
 
---- 1. TEST PIPELINE DATI REALI (brain/dati/tests/test_pipeline.py) ---
-test_01_valid_candle_creation (__main__.TestDataPipelineZeroTrust) ... ok
-test_02_reject_untimezoned_timestamps (__main__.TestDataPipelineZeroTrust)
+--- FASE 1: TEST UNITARI PIPELINE DATI (9 TEST) ---
+test_01_valid_candle_creation (brain.dati.tests.test_pipeline.TestDataPipelineZeroTrust) ... ok
+test_02_reject_untimezoned_timestamps (brain.dati.tests.test_pipeline.TestDataPipelineZeroTrust)
 Verifica che timestamp privi di fuso orario sollevino DataValidationError. ... ok
-test_03_reject_float_strictly (__main__.TestDataPipelineZeroTrust) ... ok
-test_04_reject_corrupted_prices (__main__.TestDataPipelineZeroTrust) ... ok
-test_05_reject_non_monotonic_sequence (__main__.TestDataPipelineZeroTrust) ... ok
-test_06_reject_lookahead_future_candles (__main__.TestDataPipelineZeroTrust) ... ok
-test_07_reject_anomaly_data_gaps (__main__.TestDataPipelineZeroTrust) ... ok
-test_08_partitioning_and_sealed_commitment_aligned_to_journal (__main__.TestDataPipelineZeroTrust) ... ok
+test_03_reject_float_strictly (brain.dati.tests.test_pipeline.TestDataPipelineZeroTrust) ... ok
+test_04_reject_corrupted_prices (brain.dati.tests.test_pipeline.TestDataPipelineZeroTrust) ... ok
+test_05_reject_non_monotonic_sequence (brain.dati.tests.test_pipeline.TestDataPipelineZeroTrust) ... ok
+test_06_reject_lookahead_future_candles (brain.dati.tests.test_pipeline.TestDataPipelineZeroTrust) ... ok
+test_07_reject_anomaly_data_gaps (brain.dati.tests.test_pipeline.TestDataPipelineZeroTrust) ... ok
+test_08_partitioning_and_sealed_commitment_aligned_to_journal (brain.dati.tests.test_pipeline.TestDataPipelineZeroTrust) ... ok
+test_09_template_riconciliazione_da25_valido_per_scheda_g0 (brain.dati.tests.test_pipeline.TestDataPipelineZeroTrust)
+Verifica che TEMPLATE_RICONCILIAZIONE_DA25.toml sia elaborato da g0.scheda.scheda() senza errori. ... ok
 
 ----------------------------------------------------------------------
-Ran 8 tests in 0.010s
+Ran 9 tests in 0.020s
 
 OK
 
---- 2. TEST BACKTESTER STRICTLY EVENT-DRIVEN (brain/laboratorio/tests/test_backtester.py) ---
-test_01_toy_strategy_fx_all_friction_gt_zero (__main__.TestEventDrivenBacktesterZeroTrust)
+--- FASE 2: TEST UNITARI BACKTESTER EVENT-DRIVEN (7 TEST) ---
+test_01_toy_strategy_fx_all_friction_gt_zero (brain.laboratorio.tests.test_backtester.TestEventDrivenBacktesterZeroTrust)
 STRATEGIA 1: FX EUR/USD su Conto in USD. ... ok
-test_02_toy_strategy_future_es_currency_conversion_gap_down (__main__.TestEventDrivenBacktesterZeroTrust)
+test_02_toy_strategy_future_es_currency_conversion_gap_down (brain.laboratorio.tests.test_backtester.TestEventDrivenBacktesterZeroTrust)
 STRATEGIA 2: Future CME E-mini S&P 500 (ES) su Conto in EUR. ... ok
-test_03_intrabar_stop_loss_on_entry_bar (__main__.TestEventDrivenBacktesterZeroTrust)
+test_03_intrabar_stop_loss_on_entry_bar (brain.laboratorio.tests.test_backtester.TestEventDrivenBacktesterZeroTrust)
 DIMOSTRAZIONE RISOLUZIONE BUG 5: ... ok
-test_04_intrabar_ambiguity_pessimistic_rule (__main__.TestEventDrivenBacktesterZeroTrust)
+test_04_intrabar_ambiguity_pessimistic_rule (brain.laboratorio.tests.test_backtester.TestEventDrivenBacktesterZeroTrust)
 DIMOSTRAZIONE RISOLUZIONE BUG 6: ... ok
-test_05_max_drawdown_intrabar_vs_close (__main__.TestEventDrivenBacktesterZeroTrust)
+test_05_max_drawdown_intrabar_vs_close (brain.laboratorio.tests.test_backtester.TestEventDrivenBacktesterZeroTrust)
 DIMOSTRAZIONE RISOLUZIONE BUG 7: ... ok
-test_06_dsr_returns_valore_non_stimabile_when_insufficient_trades (__main__.TestEventDrivenBacktesterZeroTrust)
+test_06_dsr_returns_valore_non_stimabile_when_insufficient_trades (brain.laboratorio.tests.test_backtester.TestEventDrivenBacktesterZeroTrust)
 DIMOSTRAZIONE RISOLUZIONE BUG 3 & 10: ... ok
+test_07_reduce_only_discards_order_when_position_already_closed_by_gap_stop (brain.laboratorio.tests.test_backtester.TestEventDrivenBacktesterZeroTrust)
+DIMOSTRAZIONE BUG REDUCE_ONLY: ... ok
 
 ----------------------------------------------------------------------
-Ran 6 tests in 0.004s
+Ran 7 tests in 0.003s
 
 OK
 
---- 3. TEST ANTI-FRODE STATICO (brain/laboratorio/tests/test_anti_frode_statico.py) ---
-test_01_no_replace_tzinfo_allowed (__main__.TestAntiFrodeStatico)
+--- FASE 3: TEST STATICI ANTI-FRODE (3 TEST) ---
+test_01_no_replace_tzinfo_allowed (brain.laboratorio.tests.test_anti_frode_statico.TestAntiFrodeStatico)
 Divieto assoluto di usare .replace(tzinfo=...) per mascherare timestamp senza fuso. ... ok
-test_02_v3_3_hash_strictly_canonical (__main__.TestAntiFrodeStatico)
+test_02_v3_3_hash_strictly_canonical (brain.laboratorio.tests.test_anti_frode_statico.TestAntiFrodeStatico)
 Verifica che nessun file contenga hash V3.3 spuri o allucinati (tipo 6fb9d76e73fbf...). ... ok
-test_03_engine_and_portfolio_import_guardian_g0 (__main__.TestAntiFrodeStatico)
+test_03_engine_and_portfolio_import_guardian_g0 (brain.laboratorio.tests.test_anti_frode_statico.TestAntiFrodeStatico)
 Verifica che engine.py e portfolio.py importino Strumento e Valore da brain.guardian.g0. ... ok
 
 ----------------------------------------------------------------------
@@ -51,51 +57,57 @@ Ran 3 tests in 0.017s
 
 OK
 
---- 4. SPIETATO MUTATION TESTING ENGINE (20/20 MUTANTI) ---
+--- FASE 4: MUTATION TESTING ENGINE (21 MUTANTI NON EQUIVALENTI) ---
 ================================================================================
-SPIETATO MUTATION TESTING ENGINE — BINARIO B (20 MUTANTI NON EQUIVALENTI)
+SPIETATO MUTATION TESTING ENGINE — BINARIO B (21 MUTANTI NON EQUIVALENTI)
 ================================================================================
-[01/20] M01_allow_float                     -> KILLED (UCCISO)
+[01/21] M01_allow_float                     -> KILLED (UCCISO)
        Descrizione: Permette float in Candle senza sollevare TypeError
-[02/20] M02_allow_untimezoned_ts            -> KILLED (UCCISO)
+[02/21] M02_allow_untimezoned_ts            -> KILLED (UCCISO)
        Descrizione: Accetta timestamp privi di fuso orario UTC esplicito
-[03/20] M03_disable_high_low_check          -> KILLED (UCCISO)
+[03/21] M03_disable_high_low_check          -> KILLED (UCCISO)
        Descrizione: Disabilita validazione Low <= High nelle candele
-[04/20] M04_allow_negative_volume           -> KILLED (UCCISO)
+[04/21] M04_allow_negative_volume           -> KILLED (UCCISO)
        Descrizione: Permette volume negativo nelle candele
-[05/20] M05_disable_monotonicity_check      -> KILLED (UCCISO)
+[05/21] M05_disable_monotonicity_check      -> KILLED (UCCISO)
        Descrizione: Disabilita controllo di monotonia temporale in ingestion
-[06/20] M06_disable_lookahead_cutoff        -> KILLED (UCCISO)
+[06/21] M06_disable_lookahead_cutoff        -> KILLED (UCCISO)
        Descrizione: Disabilita blocco candele future rispetto al cutoff
-[07/20] M07_disable_gap_check               -> KILLED (UCCISO)
+[07/21] M07_disable_gap_check               -> KILLED (UCCISO)
        Descrizione: Disabilita rilevamento di buchi anomali non dichiarati
-[08/20] M08_corrupt_commitment_formula      -> KILLED (UCCISO)
+[08/21] M08_corrupt_commitment_formula      -> KILLED (UCCISO)
        Descrizione: Altera la formula del sigillo OOS omettendo il nonce
-[09/20] M09_same_bar_execution_leak         -> KILLED (UCCISO)
+[09/21] M09_same_bar_execution_leak         -> KILLED (UCCISO)
        Descrizione: Esegue ordini pendenti alla stessa barra di emissione t invece di t+1
-[10/20] M10_disable_target_open_time_check  -> KILLED (UCCISO)
+[10/21] M10_disable_target_open_time_check  -> KILLED (UCCISO)
        Descrizione: Rimuove controllo order.target_bar_open_time == bar.open_time
-[11/20] M11_naive_gap_fill_at_stop_price    -> KILLED (UCCISO)
+[11/21] M11_naive_gap_fill_at_stop_price    -> KILLED (UCCISO)
        Descrizione: Riporta il bug ingenuo: esegue stop al prezzo nominale invece che al prezzo di Gap Open
-[12/20] M12_invert_ambiguity_rule           -> KILLED (UCCISO)
+[12/21] M12_invert_ambiguity_rule           -> KILLED (UCCISO)
        Descrizione: In caso di SL e TP contemporanei, esegue TP invece di SL
-[13/20] M13_process_stops_before_open_orders -> KILLED (UCCISO)
+[13/21] M13_process_stops_before_open_orders -> KILLED (UCCISO)
        Descrizione: Riporta il bug 5: controlla stop prima di eseguire ordini ad Open(t)
-[14/20] M14_zero_spread_cost                -> KILLED (UCCISO)
+[14/21] M14_zero_spread_cost                -> KILLED (UCCISO)
        Descrizione: Azzera il costo dello spread nell'accounting del portafoglio
-[15/20] M15_zero_commission_cost            -> KILLED (UCCISO)
+[15/21] M15_zero_commission_cost            -> KILLED (UCCISO)
        Descrizione: Azzera la commissione fissa nell'accounting del portafoglio
-[16/20] M16_zero_slippage_cost              -> KILLED (UCCISO)
+[16/21] M16_zero_slippage_cost              -> KILLED (UCCISO)
        Descrizione: Azzera il costo di slippage nell'accounting del portafoglio
-[17/20] M17_future_ignore_tick_value        -> KILLED (UCCISO)
+[17/21] M17_future_ignore_tick_value        -> KILLED (UCCISO)
        Descrizione: Ignora valore_tick nel calcolo PnL dei Futures
-[18/20] M18_ignore_currency_conversion      -> KILLED (UCCISO)
+[18/21] M18_ignore_currency_conversion      -> KILLED (UCCISO)
        Descrizione: Omette divisione per cambio_valuta nel PnL cross-currency
-[19/20] M19_dsr_return_float_zero_when_few_trades -> KILLED (UCCISO)
+[19/21] M19_dsr_return_float_zero_when_few_trades -> KILLED (UCCISO)
        Descrizione: Restituisce float 0.0 invece di Valore NON STIMABILE con <30 trade
-[20/20] M20_dsr_ignore_multiple_trials      -> KILLED (UCCISO)
+[20/21] M20_dsr_ignore_multiple_trials      -> KILLED (UCCISO)
        Descrizione: Ignora il contatore N in DSR forzando N=1
+[21/21] M21_disable_reduce_only_guard       -> KILLED (UCCISO)
+       Descrizione: Disabilita lo scarto dell'ordine reduce_only quando la posizione e' gia' chiusa
 --------------------------------------------------------------------------------
-MUTATION SCORE: 20/20 MUTANTI UCCISI (100.0%)
+MUTATION SCORE: 21/21 MUTANTI UCCISI (100.0%)
 ================================================================================
-SUCCESSO TOTALE: 20/20 mutanti non equivalenti rigorosamente abbattuti.
+SUCCESSO TOTALE: 21/21 mutanti non equivalenti rigorosamente abbattuti.
+
+================================================================================
+TUTTE LE FASI COMPLETATE CON SUCCESSO: 19 TEST UNITARI + 21 MUTANTI = 40/40 VERIFICATI
+================================================================================

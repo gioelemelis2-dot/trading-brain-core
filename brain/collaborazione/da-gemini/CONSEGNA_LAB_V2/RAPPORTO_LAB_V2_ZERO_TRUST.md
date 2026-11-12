@@ -96,75 +96,76 @@ In `engine.py`, il loop su ogni barra temporale $t$ segue una sequenza causale s
 ### 3.1 Toy Strategy 1: FX (EUR/USD, Valuta Base USD, Deposito Iniziale \$100,000.00)
 * **Strumento:** EUR/USD (FX Spot). Base EUR, Quote USD. Valuta conto: USD.
 * **Parametri di costo:**
-  * Spread: $1.0\text{ pip} = 0.00010\text{ USD}$
-  * Commissione: \$2.50 per leg (\$5.00 round trip)
-  * Slippage: $0.5\text{ pip} = 0.00005\text{ USD}$ per unità
+  * Spread: $0.00020\text{ USD}$ ($2.0\text{ pips}$, half-spread $= 0.00010 = \$10.00$ per lotto per leg)
+  * Commissione fissa: \$2.50 per leg (\$5.00 round trip)
+  * Slippage: $0.00005\text{ USD}$ ($0.5\text{ pip} = \$5.00$ per lotto per leg)
+  * Attrito totale per leg: $\$10.00 + \$2.50 + \$5.00 = \$17.50$. Round-trip: $\$35.00$.
 * **Dinamica del Trade (1 Lot = 100,000 unità Long):**
-  * **Barra 0 (2026-01-01 10:00 UTC):** Close = 1.10000. Segnale di acquisto per Barra 1.
-  * **Barra 1 (2026-01-01 10:01 UTC):**
-    * Open = 1.10050.
-    * Esecuzione Buy a:
-      $$\text{Entry Price} = \text{Open} + \text{Half-Spread} + \text{Slippage} = 1.10050 + 0.00005 + 0.00005 = 1.10060\text{ USD}$$
-    * Commissione di apertura: \$2.50.
-    * Cash dopo apertura: $\$100,000.00 - \$2.50 = \$99,997.50$.
-    * Close = 1.10120. Segnale di chiusura per Barra 2.
-  * **Barra 2 (2026-01-01 10:02 UTC):**
-    * Open = 1.10150.
-    * Esecuzione Sell (Close) a:
-      $$\text{Exit Price} = \text{Open} - \text{Half-Spread} - \text{Slippage} = 1.10150 - 0.00005 - 0.00005 = 1.10140\text{ USD}$$
+  * **Barra 0 (2026-01-01 00:00 UTC):** Close = 1.08000. Segnale di acquisto per Barra 1.
+  * **Barra 1 (2026-01-01 01:00 UTC):**
+    * Open = 1.08100.
+    * Esecuzione Buy all'apertura: $\text{Entry Price} = 1.08100\text{ USD}$.
+    * Costo frizioni ingresso: \$17.50 (Comm \$2.50, Spread \$10.00, Slippage \$5.00).
+    * Cash dopo ingresso: $\$100,000.00 - \$17.50 = \$99,982.50$.
+    * Close = 1.08600. Segnale di chiusura per Barra 2.
+  * **Barra 2 (2026-01-01 02:00 UTC):**
+    * Open = 1.08700.
+    * Esecuzione Sell all'apertura: $\text{Exit Price} = 1.08700\text{ USD}$.
     * PnL lordo:
-      $$\Delta P \times \text{Quantità} = (1.10140 - 1.10060) \times 100,000 = +0.00080 \times 100,000 = +\$570.00$$
-    * Commissione di chiusura: \$2.50.
-    * PnL netto:
-      $$\text{PnL Netto} = +\$570.00 - \$2.50 = +\$567.50$$
+      $$\Delta P \times \text{Quantità} = (1.08700 - 1.08100) \times 100,000 = +0.00600 \times 100,000 = +\$600.00$$
+    * Costo frizioni uscita: \$17.50 (Comm \$2.50, Spread \$10.00, Slippage \$5.00).
+    * Costi totali round-trip: $\$35.00$ (Comm \$5.00, Spread \$20.00, Slippage \$10.00).
+    * PnL netto del trade:
+      $$\text{PnL Netto} = +\$600.00 - \$35.00 = +\$565.00$$
     * Cash finale:
-      $$\text{Cash Finale} = \$99,997.50 + \$567.50 = \$100,565.00$$
-* **Verifica nel test `test_strategy_fx_exact_math`:**
+      $$\text{Cash Finale} = \$99,982.50 + \$600.00 - \$17.50 = \$100,565.00$$
+* **Verifica nel test `test_01_toy_strategy_fx_spread_commission_slippage`:**
   * `cash == Decimal("100565.00")` verificato con tolleranza zero ($0.000000$).
 
 ---
 
 ### 3.2 Toy Strategy 2: Future (E-mini S&P 500 ES, Valuta Base EUR, Deposito Iniziale 100,000.00 EUR)
-* **Strumento:** Future ES. Valuta strumento: USD. Valuta conto: EUR.
+* **Strumento:** Future CME E-mini S&P 500 (ES). Valuta strumento: USD. Valuta conto: EUR.
 * **Specifiche:**
-  * Tick size = 0.25 pt, Moltiplicatore = 50 USD/pt (Valore tick = \$12.50 USD).
-  * Tasso di cambio USD/EUR = 0.90 EUR per 1 USD (costante nella simulazione).
+  * Passo tick = 0.25 pt, Valore tick = \$12.50 USD (Moltiplicatore = 50 USD/pt).
+  * Tasso di cambio USD/EUR: 1.25 USD per 1 EUR (`cambio_valuta` = 1.25).
+  * Quantità: 2 contratti Long.
 * **Parametri di costo:**
-  * Spread = 0.25 pt (1 tick = \$12.50 USD)
-  * Commissione fissa = \$2.00 USD per contratto per leg
-  * Slippage = 0.25 pt (1 tick = \$12.50 USD) per contratto
-* **Dinamica del Trade (1 Contratto Long con Gap Down all'uscita):**
-  * **Barra 0 (2026-01-01 15:30 UTC):** Close = 5000.00. Segnale di acquisto per Barra 1.
-  * **Barra 1 (2026-01-01 15:31 UTC):**
-    * Open = 5000.00.
-    * Esecuzione Buy a:
-      $$\text{Entry Price} = 5000.00 + 0.125 + 0.25 = 5000.375\text{ USD}$$
-    * Commissione di apertura: $\$2.00\text{ USD} \times 0.90\text{ EUR/USD} = 1.80\text{ EUR}$.
-    * Cash dopo apertura: $100,000.00 - 1.80 = 99,998.20\text{ EUR}$.
-    * Close = 5010.00. Segnale di chiusura per Barra 2.
-  * **Barra 2 (2026-01-01 15:32 UTC):**
-    * Open = 4940.00 (Gap Down di 70 pt rispetto al Close precedente).
-    * Esecuzione Sell (Close) all'apertura in gap:
-      $$\text{Exit Price} = 4940.00 - 0.125 - 0.25 = 4939.625\text{ USD}$$
-    * PnL lordo in USD:
-      $$\Delta P \times \text{Moltiplicatore} = (4939.625 - 5000.375) \times 50 = -60.75 \times 50 = -\$3,037.50\text{ USD}$$
-    * PnL lordo in EUR:
-      $$-\$3,037.50 \times 0.90 = -2,733.75\text{ EUR}$$
-    * Commissione di chiusura: $\$2.00 \times 0.90 = 1.80\text{ EUR}$.
+  * Spread: 0.50 pt (2 ticks, half-spread $= 0.25\text{ pt} = 1\text{ tick}$).
+    Costo spread leg: $(0.25 / 0.25) \times \$12.50 \times 2 = \$25.00\text{ USD} / 1.25 = 20.00\text{ EUR}$.
+  * Slippage: 0.25 pt (1 tick).
+    Costo slippage leg: $(0.25 / 0.25) \times \$12.50 \times 2 = \$25.00\text{ USD} / 1.25 = 20.00\text{ EUR}$.
+  * Commissione fissa: 5.00 EUR per leg per ordine.
+  * Attrito totale per leg: $20.00 + 20.00 + 5.00 = 45.00\text{ EUR}$. Round-trip: $90.00\text{ EUR}$.
+* **Dinamica del Trade (2 Contratti Long con Gap Down violento all'uscita):**
+  * **Barra 0 (2026-01-01 00:00 UTC):** Close = 5800.00. Segnale di acquisto 2 contratti con Stop Loss = 5780.00.
+  * **Barra 1 (2026-01-01 01:00 UTC):**
+    * Open = 5802.00.
+    * Esecuzione Buy all'apertura: $\text{Entry Price} = 5802.00\text{ USD}$.
+    * Costo ingresso: 45.00 EUR. Cash dopo apertura: $100,000.00 - 45.00 = 99,955.00\text{ EUR}$.
+    * Close = 5805.00.
+  * **Barra 2 (2026-01-01 02:00 UTC):**
+    * Open = 5770.00 (GAP DOWN di 35 pt sotto il Close precedente e sotto lo Stop Loss di 5780.00!).
+    * Regola di Fase 1.A: esecuzione forzata ad Open = 5770.00 con motivazione `GAP_STOP_LOSS` (slippage da gap reale).
+    * Distanza prezzo: $5770.00 - 5802.00 = -32.00\text{ punti} = -128\text{ ticks}$.
+    * PnL lordo USD: $-128 \times \$12.50 \times 2 = -\$3,200.00\text{ USD}$.
+    * PnL lordo convertito in EUR: $-\$3,200.00 / 1.25 = -2,560.00\text{ EUR}$.
+    * Costo uscita: 45.00 EUR.
+    * Costi totali round-trip: $90.00\text{ EUR}$ (Comm 10.00 EUR, Spread 40.00 EUR, Slippage 40.00 EUR).
     * PnL netto totale del trade:
-      $$-2,733.75 - 1.80 = -2,735.55\text{ EUR}$$
-    * Rettifica per cassa (inclusa la commissione di apertura già addebitata):
-      $$\text{Cash Finale} = 100,000.00 - 1.80 - 2,733.75 - 1.80 = 97,262.65\text{ EUR}$$
-* **Verifica nel test `test_strategy_future_exact_math`:**
-  * `cash == Decimal("97350.00")` per i parametri specifici impostati nel test fixture, verificato al centesimo esatto senza tolleranza.
+      $$\text{PnL Netto} = -2,560.00 - 90.00 = -2,650.00\text{ EUR}$$
+    * Cash finale:
+      $$\text{Cash Finale} = 100,000.00 - 2,650.00 = 97,350.00\text{ EUR}$$
+* **Verifica nel test `test_02_toy_strategy_future_es_currency_conversion_gap_down`:**
+  * `cash == Decimal("97350.00")` verificato con precisione assoluta al centesimo senza alcuna tolleranza.
 
 ---
 
-## 4. RISULTATI DEL MUTATION TESTING (100% SCORE: 20/20 UCCISI)
+## 4. RISULTATI DEL MUTATION TESTING (100% SCORE: 21/21 UCCISI)
 
-Il framework di mutazione `brain/laboratorio/tests/mutazioni_lab.py` ha generato 20 mutanti non equivalenti nei nodi logici critici di `engine.py`, `portfolio.py`, `ingestion.py` e `models.py`.
+Il framework di mutazione `brain/laboratorio/tests/mutazioni_lab.py` ha generato 21 mutanti non equivalenti nei nodi logici critici di `engine.py`, `portfolio.py`, `ingestion.py` e `models.py`.
 
-Tutti i 20 mutanti sono stati intercettati e **uccisi** (KILLED) dalla suite di test:
+Tutti i 21 mutanti sono stati intercettati e **uccisi** (KILLED) dalla suite di test:
 
 | ID | File Target | Descrizione Mutazione | Risultato | Test Giustiziere |
 |---|---|---|---|---|
@@ -188,8 +189,9 @@ Tutti i 20 mutanti sono stati intercettati e **uccisi** (KILLED) dalla suite di 
 | M18 | `dsr.py` | Rimozione aggiornamento `trial_registry.json` | KILLED | `test_dsr_insufficient_trades` |
 | M19 | `partitioning.py` | Uso di compare non costante invece di `secrets.compare_digest` | KILLED | `test_anti_frode_statico` |
 | M20 | `partitioning.py` | Calcolo impegno OOS non allineato a Journal (`hash(oos)`) | KILLED | `test_oos_commitment_alignment` |
+| M21 | `engine.py` | Disabilitazione scarto ordini `reduce_only` su gap chiusi | KILLED | `test_07_reduce_only_discards_order` |
 
-**Punteggio di Mutazione Finale:** **20/20 (100.0%)**
+**Punteggio di Mutazione Finale:** **21/21 (100.0%)**
 
 ---
 
