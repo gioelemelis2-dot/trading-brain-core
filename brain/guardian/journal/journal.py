@@ -16,7 +16,11 @@ Regole:
   coda e riscrittura completa della catena. LIMITE: se l'ancora sta nella stessa cartella dei dati, chi riscrive
   i dati può riscrivere anche l'ancora. Per una protezione contro la manomissione deliberata, tenere l'ancora in
   un percorso separato (TRADING_JOURNAL_ANCHOR) e annotare altrove l'impronta stampata da `ancora`;
-- i dati stanno in `dati/` (esclusa da git) o nella cartella indicata da TRADING_JOURNAL_DIR.
+- i dati stanno in `dati/` (esclusa da git) o nella cartella indicata da TRADING_JOURNAL_DIR;
+- `aggiungi` lavora sotto un LOCK ESCLUSIVO (`.journal.lock` nella cartella dei dati): `fcntl.flock` su Unix,
+  altrimenti un file di lock creato in modo esclusivo. Scritture concorrenti non rompono catena e ancora;
+- orari: formato unico `AAAA-MM-GGTHH:MM:SS[.frazione da 1 a 6 cifre]` con `Z` o `+00:00`, identico su ogni versione
+  di Python (dalla 3.9): un journal valido su una macchina lo è anche sulle altre.
 
 Uso:
   python3 -m journal.journal aggiungi <registro> '<json>'
@@ -30,15 +34,25 @@ from __future__ import annotations
 import hashlib
 import json
 import os
+import re
 import secrets
 import sys
-from datetime import date, datetime, timedelta, timezone
+import time
+from contextlib import contextmanager
+from datetime import date, datetime, timezone
 from decimal import Decimal, InvalidOperation
 from pathlib import Path
+
+try:
+    import fcntl
+except ImportError:                     # non Unix: ripiego sul file di lock esclusivo
+    fcntl = None
 
 SCHEMA = "journal/1"
 SCHEMA_ANCORA = "ancora/1"
 FILE_ANCORA = "ancora_integrita.json"
+FILE_LOCK = ".journal.lock"
+ATTESA_LOCK_S = 30.0                    # attesa massima del lock prima di un errore esplicito
 GENESI = "0" * 64
 REGISTRI = {
     "trade": {"simbolo", "direzione", "aperto_utc", "ingresso", "stop", "quantita", "fonte"},
@@ -65,6 +79,56 @@ def percorso_ancora(cartella: Path) -> Path:
     return Path(env) if env else cartella / FILE_ANCORA
 
 
+def percorso_lock(cartella: Path) -> Path:
+    return cartella / FILE_LOCK
+
+
+@contextmanager
+def _lock_esclusivo(cartella: Path):
+    """Lock esclusivo sulla cartella dei dati, con attesa massima ATTESA_LOCK_S e poi TimeoutError (mai una scrittura
+    non protetta). Unix: `fcntl.flock`, rilasciato anche se il processo termina. Altrimenti: file creato con O_EXCL
+    (atomico anche su Windows) e rimosso alla fine; se un'interruzione lo lascia, l'errore dice di rimuoverlo a mano."""
+    cartella.mkdir(parents=True, exist_ok=True)
+    path = percorso_lock(cartella)
+    scadenza = time.monotonic() + ATTESA_LOCK_S
+    if fcntl is not None:
+        fd = os.open(path, os.O_RDWR | os.O_CREAT, 0o600)
+        try:
+            while True:
+                try:
+                    fcntl.flock(fd, fcntl.LOCK_EX | fcntl.LOCK_NB)
+                    break
+                except BlockingIOError:
+                    if time.monotonic() >= scadenza:
+                        raise TimeoutError(f"journal bloccato da un altro processo ({path})") from None
+                    time.sleep(0.02)
+            try:
+                yield
+            finally:
+                fcntl.flock(fd, fcntl.LOCK_UN)
+        finally:
+            os.close(fd)
+        return
+    while True:
+        try:
+            fd = os.open(path, os.O_CREAT | os.O_EXCL | os.O_WRONLY, 0o600)
+            break
+        except FileExistsError:
+            if time.monotonic() >= scadenza:
+                raise TimeoutError(f"journal bloccato: esiste {path}. Un altro processo sta scrivendo, oppure "
+                                   f"un'interruzione ha lasciato il lock: se nessun processo è attivo, rimuoverlo "
+                                   f"a mano") from None
+            time.sleep(0.02)
+    try:
+        try:
+            os.write(fd, f"{os.getpid()}\n".encode("ascii"))
+        finally:
+            os.close(fd)
+        yield
+    finally:
+        path.unlink()
+
+
 def _leggi_ancora(path: Path):
     if not path.exists():
         return None
@@ -75,7 +139,7 @@ def _leggi_ancora(path: Path):
 def _scrivi_ancora(path: Path, ancora: dict) -> None:
     """Scrittura atomica: file temporaneo e poi sostituzione."""
     path.parent.mkdir(parents=True, exist_ok=True)
-    tmp = path.with_name(path.name + ".tmp")
+    tmp = path.with_name(f"{path.name}.{os.getpid()}.tmp")      # unico per processo
     with open(tmp, "w", encoding="utf-8") as f:
         f.write(json.dumps(ancora, ensure_ascii=False, sort_keys=True, indent=2) + "\n")
     os.replace(tmp, path)
@@ -100,6 +164,9 @@ def _righe(path: Path) -> list[str]:
 POSITIVI = {"trade": ("ingresso", "stop", "quantita", "uscita", "target")}
 FINITI = {"trade": ("pnl_conto", "commissioni"), "stato": ("ore_sonno",)}
 ORARI = {"trade": ("aperto_utc", "chiuso_utc"), "previsione": ("scadenza_utc", "esito_utc")}
+# Formati unici, indipendenti dalla versione di Python (fromisoformat di 3.11+ accetta molto più di quello di 3.9).
+_ORARIO = re.compile(r"([0-9]{4}-[0-9]{2}-[0-9]{2})T([0-9]{2}:[0-9]{2}:[0-9]{2})(?:\.([0-9]{1,6}))?(?:Z|\+00:00)")
+_DATA = re.compile(r"[0-9]{4}-[0-9]{2}-[0-9]{2}")
 
 
 def _decimale(campo: str, x) -> Decimal:
@@ -117,16 +184,30 @@ def _decimale(campo: str, x) -> Decimal:
 
 
 def orario_utc(campo: str, s) -> datetime:
-    """Orario ISO-8601 in UTC (`…Z` o `+00:00`, anche con frazioni di secondo). Rifiuta orari senza fuso o non UTC."""
+    """Orario UTC nel formato unico `AAAA-MM-GGTHH:MM:SS[.frazione da 1 a 6 cifre]` seguito da `Z` o `+00:00`.
+    Prima di `datetime.fromisoformat` la frazione è portata a 6 cifre e `Z` diventa `+00:00`: Python 3.9 e 3.10 non
+    accettano né `Z` né frazioni diverse da 3 o 6 cifre. Rifiuta orari senza fuso, non UTC o inesistenti."""
     if not isinstance(s, str):
         raise ValueError(f"{campo}: orario non testuale ({s!r})")
+    m = _ORARIO.fullmatch(s)
+    if not m:
+        raise ValueError(f"{campo}: orario non nel formato AAAA-MM-GGTHH:MM:SS[.frazione] con Z o +00:00 ({s!r})")
+    frazione = (m.group(3) or "").ljust(6, "0")
     try:
-        t = datetime.fromisoformat(s)
+        return datetime.fromisoformat(f"{m.group(1)}T{m.group(2)}.{frazione}+00:00")
     except ValueError:
-        raise ValueError(f"{campo}: orario non ISO-8601 ({s!r})") from None
-    if t.tzinfo is None or t.utcoffset() != timedelta(0):
-        raise ValueError(f"{campo}: orario non in UTC ({s!r})")
-    return t
+        raise ValueError(f"{campo}: orario inesistente ({s!r})") from None
+
+
+def _in_testo(x):
+    """Decimal → testo (precisione esatta nel JSON, come per i prezzi), anche dentro liste e dizionari."""
+    if isinstance(x, Decimal):
+        return str(x)
+    if isinstance(x, dict):
+        return {k: _in_testo(v) for k, v in x.items()}
+    if isinstance(x, list):
+        return [_in_testo(v) for v in x]
+    return x
 
 
 def valida(registro: str, dati: dict) -> None:
@@ -151,8 +232,8 @@ def valida(registro: str, dati: dict) -> None:
         raise ValueError("una deroga richiede il motivo")
     if registro == "previsione" and "chiude" not in dati:
         p = dati["probabilita"]
-        if isinstance(p, bool) or not isinstance(p, (int, float)) or not 0 <= p <= 1:
-            raise ValueError("probabilita: numero tra 0 e 1 (non un booleano)")
+        if isinstance(p, bool) or not isinstance(p, (int, float, Decimal, str)) or not 0 <= _decimale("probabilita", p) <= 1:
+            raise ValueError("probabilita: numero finito tra 0 e 1 (int, float, Decimal o testo numerico; non un booleano)")
     if registro == "previsione" and "esito" in dati:
         if type(dati["esito"]) is not int or dati["esito"] not in (0, 1):
             raise ValueError("esito: intero 0 o 1 (non un booleano)")
@@ -167,6 +248,8 @@ def valida(registro: str, dati: dict) -> None:
         raise ValueError("chiuso_utc precede aperto_utc")
     if registro == "stato":
         try:
+            if not _DATA.fullmatch(str(dati["data"])):
+                raise ValueError
             date.fromisoformat(str(dati["data"]))
         except ValueError:
             raise ValueError(f"data: non è una data ISO-8601 ({dati['data']!r})") from None
@@ -215,24 +298,27 @@ def controlla_riferimenti(registro: str, dati: dict, precedenti: list[dict]) -> 
 
 
 def aggiungi(registro: str, dati: dict, cartella: Path | None = None) -> dict:
-    """Aggiunge un record validato, con id, data di registrazione e hash della riga precedente."""
+    """Aggiunge un record validato, con id, data di registrazione e hash della riga precedente.
+    Lettura delle righe, scrittura e aggiornamento dell'ancora avvengono sotto lock esclusivo.
+    I Decimal sono registrati come testo (precisione esatta)."""
+    dati = _in_testo(dati)
     valida(registro, dati)
     cartella = cartella or cartella_dati()
-    cartella.mkdir(parents=True, exist_ok=True)
-    path = cartella / f"{registro}.jsonl"
-    righe = _righe(path)
-    controlla_riferimenti(registro, dati, [json.loads(r) for r in righe])
-    rec = {"schema": SCHEMA, "registro": registro, "id": f"{registro[:3].upper()}-{len(righe) + 1:05d}",
-           "registrato_utc": datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
-           "prec_hash": _sha(righe[-1]) if righe else GENESI, "dati": dati}
-    riga = _canonico(rec)
-    with open(path, "a", encoding="utf-8") as f:
-        f.write(riga + "\n")
-    pa = percorso_ancora(cartella)
-    ancora = _leggi_ancora(pa) or {"schema": SCHEMA_ANCORA, "registri": {}}
-    ancora["registri"][registro] = {"righe": len(righe) + 1, "ultimo_hash": _sha(riga)}
-    ancora["aggiornato_utc"] = rec["registrato_utc"]
-    _scrivi_ancora(pa, ancora)
+    with _lock_esclusivo(cartella):
+        path = cartella / f"{registro}.jsonl"
+        righe = _righe(path)
+        controlla_riferimenti(registro, dati, [json.loads(r) for r in righe])
+        rec = {"schema": SCHEMA, "registro": registro, "id": f"{registro[:3].upper()}-{len(righe) + 1:05d}",
+               "registrato_utc": datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
+               "prec_hash": _sha(righe[-1]) if righe else GENESI, "dati": dati}
+        riga = _canonico(rec)
+        with open(path, "a", encoding="utf-8") as f:
+            f.write(riga + "\n")
+        pa = percorso_ancora(cartella)
+        ancora = _leggi_ancora(pa) or {"schema": SCHEMA_ANCORA, "registri": {}}
+        ancora["registri"][registro] = {"righe": len(righe) + 1, "ultimo_hash": _sha(riga)}
+        ancora["aggiornato_utc"] = rec["registrato_utc"]
+        _scrivi_ancora(pa, ancora)
     return rec
 
 
@@ -322,7 +408,8 @@ def brier(cartella: Path | None = None) -> dict:
     per_autore = {}
     for pid, d in prev.items():
         if pid in esiti:
-            per_autore.setdefault(d["autore"], []).append((d["probabilita"] - esiti[pid]) ** 2)
+            p = float(_decimale("probabilita", d["probabilita"]))      # int, float o testo (Decimal registrato)
+            per_autore.setdefault(d["autore"], []).append((p - esiti[pid]) ** 2)
     return {a: {"n": len(v), "brier": sum(v) / len(v)} for a, v in per_autore.items()}
 
 

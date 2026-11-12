@@ -10,19 +10,18 @@
 """
 from __future__ import annotations
 
-from datetime import datetime, timedelta, timezone
+from datetime import datetime, timedelta
 from decimal import Decimal
 from pathlib import Path
 from typing import Optional
 
+from .journal import orario_utc, versioni_finali
+
 
 def _t(s: str) -> datetime:
-    """Orario UTC in ISO-8601: `2026-11-12T09:30:00Z`, con o senza frazioni di secondo (`…:00.120Z`), oppure con
-    offset esplicito `+00:00`. Orari senza fuso o con fuso diverso da UTC sono rifiutati."""
-    t = datetime.fromisoformat(s)
-    if t.tzinfo is None or t.utcoffset() != timedelta(0):
-        raise ValueError(f"orario non in UTC: {s!r}")
-    return t.astimezone(timezone.utc)
+    """Orario UTC nel formato unico del journal (`journal.orario_utc`): `2026-11-12T09:30:00Z`, con o senza frazioni
+    di secondo (`…:00.120Z`), oppure `+00:00`. Stesso comportamento su ogni versione di Python dalla 3.9."""
+    return orario_utc("orario", s)
 
 
 def _dec(x) -> Decimal:
@@ -38,7 +37,6 @@ def _secondi(d: timedelta) -> Decimal:
 def trade_da_journal(path: Path) -> list[dict]:
     """Trade chiusi, in ordine di apertura, nell'ultima versione (correzioni applicate con journal.versioni_finali,
     anche quando una correzione corregge una correzione precedente)."""
-    from .journal import versioni_finali
     if not path.exists():
         return []
     chiusi = [d for d in versioni_finali(path).values() if "chiuso_utc" in d and "pnl_conto" in d]

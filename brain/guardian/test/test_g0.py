@@ -4,12 +4,13 @@
 Uso (dalla cartella guardian/): python3 -s -B -m unittest discover -s test -v
 """
 import sys
-import tomllib
 import unittest
 from decimal import Decimal as D
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
+
+from g0 import _toml as tomllib                     # noqa: E402  (portabile: Python 3.9+)
 
 from g0 import limiti as L                                    # noqa: E402
 from g0.scheda import scheda                                  # noqa: E402

@@ -5,12 +5,13 @@ import copy
 import json
 import sys
 import tempfile
-import tomllib
 import unittest
 from decimal import Decimal as D
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
+
+from g0 import _toml as tomllib                     # noqa: E402  (portabile: Python 3.9+)
 
 from g0 import scheda as SCH                      # noqa: E402
 from g0.strumenti import Strumento, perdita_allo_stop  # noqa: E402

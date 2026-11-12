@@ -8,10 +8,10 @@ Ordine fisso della scheda: stato di riconciliazione → misure → regole → li
 from __future__ import annotations
 
 import sys
-import tomllib
 from decimal import Decimal, InvalidOperation, ROUND_HALF_UP
 from pathlib import Path
 
+from . import _toml
 from . import limiti as L
 from .strumenti import H_ESEC, Strumento, perdita_allo_stop
 from .valori import Valore, combina, ipotesi, misura
@@ -189,7 +189,7 @@ def scheda(dati: dict, regole_personali: dict | None = None) -> list[str]:
     """`regole_personali`: contenuto del file delle regole personali; se assente si legge FILE_REGOLE_PERSONALI."""
     if regole_personali is None:
         with open(FILE_REGOLE_PERSONALI, "rb") as f:
-            regole_personali = tomllib.load(f)
+            regole_personali = _toml.load(f)
     c = dati["conto"]
     valuta, prodotto, fonte = c["valuta"], c["prodotto"], c["fonte"]
     righe = []
@@ -262,7 +262,7 @@ def main(argv=None):
         print(__doc__)
         return 2
     with open(argv[0], "rb") as f:
-        print("\n".join(scheda(tomllib.load(f))))
+        print("\n".join(scheda(_toml.load(f))))
     return 0
 
 

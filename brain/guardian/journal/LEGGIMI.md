@@ -11,7 +11,8 @@ Creato da Claude (D-23) e affidato all'utente per la compilazione, con l'aiuto d
 | `previsione` | previsioni probabilistiche di utente, Claude e Gemini, con scadenza e poi esito | per il Brier score e la calibrazione |
 
 Validazione **all'ingresso** (`valida`, chiamata da `aggiungi`): un record malformato, una volta nella catena, non si può più togliere.
-- Orari: ISO-8601 in UTC (`…Z` o `+00:00`), anche con frazioni di secondo; `chiuso_utc` non precede `aperto_utc`.
+- Orari: formato unico `AAAA-MM-GGTHH:MM:SS[.frazione da 1 a 6 cifre]` seguito da `Z` o `+00:00`, identico su ogni versione di Python dalla 3.9 (Python 3.11+ di suo accetterebbe anche forme che 3.9 rifiuta: un journal valido su una macchina lo è così anche sulle altre); `chiuso_utc` non precede `aperto_utc`. Date (`stato.data`): `AAAA-MM-GG`.
+- `probabilita`: numero finito tra 0 e 1, come `int`, `float`, `Decimal` o testo numerico. I `Decimal` sono registrati come testo, per conservarne la precisione esatta.
 - Numeri: finiti (niente testo, NaN o infiniti). `ingresso`, `stop`, `quantita`, `uscita` e `target` maggiori di zero; `ore_sonno` tra 0 e 24; `data` come data ISO-8601.
 - Riferimenti: `corregge` e `chiude` devono puntare a un record esistente dello stesso registro.
 - Previsioni ed esiti (`controlla_riferimenti`, applicato da `aggiungi` e ripetuto da `verifica`):
@@ -19,7 +20,13 @@ Validazione **all'ingresso** (`valida`, chiamata da `aggiungi`): un record malfo
   - `chiude` punta all'id **radice** di una previsione, non a una sua correzione né a un esito;
   - una previsione ha un solo esito originale: per cambiarlo si scrive una correzione (`corregge`), che chiude la stessa previsione.
 - Booleani: `true`/`false` non valgono come numeri (`probabilita`, `esito`, `aderenza`, prezzi e quantità), anche se in Python `True == 1`.
-- Gli indicatori calcolano con `Decimal`, mai con `float`.
+- Gli indicatori calcolano con `Decimal`, mai con `float` (il Brier score, una statistica, è in `float`).
+
+Concorrenza: `aggiungi` lavora sotto un lock esclusivo (`.journal.lock` nella cartella dei dati).
+- Su Unix si usa `fcntl.flock`, che il sistema rilascia anche se il processo termina.
+- Altrimenti un file di lock creato in modo esclusivo, rimosso alla fine.
+- Dopo 30 secondi di attesa: errore esplicito, mai una scrittura non protetta. Se un'interruzione lascia il file di lock (solo nel ripiego), l'errore dice di rimuoverlo a mano.
+- `verifica` non prende il lock (non scrive nulla): eseguita **durante** una scrittura può segnalare una differenza transitoria fra l'ultima riga e l'ancora, che sparisce rieseguendola.
 
 Correzioni: `versioni_finali` applica `corregge`, anche a catena (una correzione di una correzione). Brier score e indicatori usano sempre l'ultima versione.
 
