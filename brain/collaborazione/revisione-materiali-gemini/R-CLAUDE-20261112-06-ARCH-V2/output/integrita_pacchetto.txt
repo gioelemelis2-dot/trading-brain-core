@@ -1,0 +1,19 @@
+# Integrita' del pacchetto architetturale V2 (12/11/2026)
+ZIP ricevuto: 38218 byte
+SHA-256 f4794a554f6abdd7594d868aecfc060d6252a45083ff674ff2bb528841953d05
+SHA-256 dichiarato nel messaggio di consegna: 64470738cecef1bc1125840ca367fbe55850d0c24bf3dccccef0867d0a229f77 -> NON COINCIDE
+Contenuto dichiarato: 3 documenti + manifest; contenuto reale: 3 documenti + manifest + LEGGIMI_CLAUDE.md (non annunciato)
+
+## sha256sum -c MANIFEST_SHA256_ARCHITECTURE_V2.txt
+LEGGIMI_CLAUDE.md: OK
+TRADING_BRAIN_ARCHITECTURE_AND_ROADMAP_REVISED_V2.md: OK
+TRADING_BRAIN_CLAIMS_AUDIT_V1.md: OK
+TRADING_BRAIN_ARCHITECTURE_CHANGELOG_V2.md: OK
+
+## Hash dei tre documenti contro quelli dichiarati nel messaggio
+62dda32d05e8a2362dd3739ce3942c5d89370e97973d3775057ff791c8092b59  TRADING_BRAIN_ARCHITECTURE_AND_ROADMAP_REVISED_V2.md
+5465113e7e6c46a752e5089190f7de7fc8d7f38a78e0f453b9f6041ed43dce52  TRADING_BRAIN_ARCHITECTURE_CHANGELOG_V2.md
+d0f6729ccf35f2e179864ebc02883b05b573511be0812dbfc8316d2d1f2b1d62  TRADING_BRAIN_CLAIMS_AUDIT_V1.md
+-> coincidono tutti e tre con i valori dichiarati (62dda32d..., d0f6729c..., 5465113e...)
+
+Documento non fornito: rapporto strategico V1 di Gemini (12/11/2026 14:35), citato dal changelog.

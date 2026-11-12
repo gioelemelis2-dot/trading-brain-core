@@ -1,0 +1,26 @@
+# Verifica delle fonti eseguita in questa sessione (12/11/2026)
+Crossref (api.crossref.org) e doi.org: connessione RIFIUTATA dalla rete dell'ambiente. Nessun DOI risolto direttamente.
+Ricerche web (strumento di ricerca della sessione); stato STANDARD.md: V-sec (confermato da schede bibliografiche e pagine secondarie, testo integrale non letto).
+
+1. Lo, Repin, Steenbarger (2005), "Fear and Greed in Financial Markets: A Clinical Study of Day-Traders"
+   -> American Economic Review 95(2): 352-359 (RePEc aea:aecrev:v95y2005i2p352-359; NBER WP 11243). 80 day-trader, questionari giornalieri e inventari di personalità.
+   -> NON "Cognitive Neuroscience 17(10) 1693-1759", come scrive il documento di Gemini; il DOI 10.1162/089892905774597237 non è quello dell'articolo.
+   URL: https://ideas.repec.org/a/aea/aecrev/v95y2005i2p352-359.html ; https://www.nber.org/papers/w11243
+2. Almgren, Chriss, "Optimal execution of portfolio transactions", Journal of Risk 3(2): 5-39
+   -> DOI 10.21314/JOR.2001.041 (non JOR.2000.042, come scrive il documento).
+   URL: https://www.risk.net/journal-risk/2161150/optimal-execution-portfolio-transactions
+3. Bouchaud, Farmer, Lillo, "How markets slowly digest changes in supply and demand"
+   -> esiste (arXiv:0809.0822, 2008). Sede editoriale, pagine e DOI 10.1016/S1874-9844(08)00003-8 NON confermati dalla ricerca.
+   -> Il documento di Gemini lo cita in due sedi diverse: "Quantitative Finance" (tabella §10, riga 12) e "Handbook of Financial Markets" (§15).
+   URL: https://arxiv.org/abs/0809.0822
+4. Lou, Polk, Skouras (2019), "A tug of war: Overnight versus intraday expected returns", JFE 134(1): 192-213, DOI 10.1016/j.jfineco.2019.03.011
+   -> il terzo autore è Skouras (non "Skona"). Tema: rendimenti overnight e intraday di 14 strategie cross-sectional; non tratta la chiusura dei gap per inventario dei market maker.
+   URL: https://econpapers.repec.org/RePEc:eee:jfinec:v:134:y:2019:i:1:p:192-213
+5. Branch, Ma (2012), "Overnight return, the invisible hand behind intraday returns?", Journal of Applied Finance 22(2)
+   -> esiste; documenta una correlazione negativa tra rendimenti overnight e intraday dei singoli titoli. Non tratta una regola M5 sui gap dell'S&P 500.
+   URL: https://econbiz.de/Record/overnight-return-the-invisible-hand-behind-intraday-returns-branch-ben/10013101035
+6. Pine Script: versione 6 annunciata da TradingView il 10/12/2024 ("Pine Script v6 has landed").
+   -> il documento cita il "Pine Script v5 Reference Manual" come riferimento corrente.
+   URL: https://tradingview.com/blog/en/pine-script-v6-has-landed-48830
+
+Tutte le altre fonti citate da Gemini sono classificate C nei documenti di Claude (note dalla conoscenza dell'autore, non rilette in questa sessione).

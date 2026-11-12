@@ -1,0 +1,5 @@
+E[R] = 0.1500R, sigma = 1.4697R
+IC 95% con limite inferiore > 0 se si osserva esattamente l'edge: N = 369 trade; 8.8 mesi a 2 trade/giorno; 2.9 mesi a 6 trade/giorno (21 giorni/mese)
+test unilaterale alfa 5%, potenza 80%: N = 594 trade; 14.1 mesi a 2 trade/giorno; 4.7 mesi a 6 trade/giorno (21 giorni/mese)
+test bilaterale alfa 5%, potenza 80%: N = 754 trade; 18.0 mesi a 2 trade/giorno; 6.0 mesi a 6 trade/giorno (21 giorni/mese)
+soglia t > 3 (Harvey, Liu e Zhu 2016), potenza 80%: N = 1417 trade; 33.7 mesi a 2 trade/giorno; 11.2 mesi a 6 trade/giorno (21 giorni/mese)

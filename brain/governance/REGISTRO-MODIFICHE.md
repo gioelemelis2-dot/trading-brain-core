@@ -126,3 +126,15 @@ Formato: data · versione della base · cosa · perché · file.
   - Mutazioni dichiarate non riproducibili; con le definizioni di Claude 21/24.
   - Precisione fittizia dei valori esatti; attribuzione anticipata nel README.
 - Aggiornati `CONTINUITA.md`, `collaborazione/LOCK.md` e questo registro. Nessun file di Antigravity e nessuna lezione modificati.
+
+## 2026-11-12 · v1.8 (audit dell'architettura V2 di Gemini)
+
+- Ricevuto il pacchetto `TRADING_BRAIN_ARCHITECTURE_REVISION_V2_PACKAGE.zip` (SHA-256 `f4794a55…`, diverso dal dichiarato `64470738…`; i tre documenti coincidono con gli hash dichiarati; manifest 4/4 OK). Non archiviato nel Brain.
+- Aggiunta `collaborazione/revisione-materiali-gemini/R-CLAUDE-20261112-06-ARCH-V2/`:
+  - audit indipendente;
+  - revisione delle affermazioni (CLM-01…16, A-01…18) e delle fonti (6 verificate al web, stato V-sec);
+  - registro delle divergenze D-01…D-28;
+  - calcolo di potenza (`verifiche/potenza_campione.py`);
+  - pacchetto per una revisione esterna (`PACCHETTO_AUDIT_ARCHITETTURA_V2_PER_CHAT.md` e `.zip`).
+- Riconosciuti due errori di Claude (D-03 ρ = 1; D-04 limiti «deterministici» senza H_esec).
+- Commit autorizzato dall'utente il 12/11/2026. Aggiornati `CONTINUITA.md`, `collaborazione/LOCK.md` e questo registro. Nessun file di Gemini, nessuna lezione e nessun codice modificati.
