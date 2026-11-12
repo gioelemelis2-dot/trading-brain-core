@@ -31,7 +31,7 @@ fonte = "specifiche contrattuali CME / MT5"
 stato_verifica = "V"
 
 [cambi]
-"USD/EUR" = "0.9200"
+"USD/EUR" = "1.0870"
 
 [[posizione]]
 simbolo = "EURUSD"

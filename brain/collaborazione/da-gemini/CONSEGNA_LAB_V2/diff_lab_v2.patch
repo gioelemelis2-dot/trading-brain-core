@@ -2085,7 +2085,7 @@ index 0000000..e780006
 +        }
 diff --git a/brain/dati/reali/TEMPLATE_RICONCILIAZIONE_DA25.toml b/brain/dati/reali/TEMPLATE_RICONCILIAZIONE_DA25.toml
 new file mode 100644
-index 0000000..6bc9bd9
+index 0000000..8e49430
 --- /dev/null
 +++ b/brain/dati/reali/TEMPLATE_RICONCILIAZIONE_DA25.toml
 @@ -0,0 +1,59 @@
@@ -2122,7 +2122,7 @@ index 0000000..6bc9bd9
 +stato_verifica = "V"
 +
 +[cambi]
-+"USD/EUR" = "0.9200"
++"USD/EUR" = "1.0870"
 +
 +[[posizione]]
 +simbolo = "EURUSD"
