@@ -1,0 +1,50 @@
+# [ESEMPIO] Situazione inventata per provare la scheda: NON sono dati dell'utente né di un conto reale.
+# Le specifiche degli strumenti sono valori tipici, NON verificati sul broker (stato_verifica = "C").
+
+[conto]
+prodotto = "ftmo_2step"
+valuta = "USD"
+capitale_iniziale = "100000"
+saldo_mezzanotte = "100400"
+equity = "100150"
+saldi_riferimento = []
+fonte = "[ESEMPIO] dati inventati"
+riconciliato = false
+
+[[strumento]]
+simbolo = "EURUSD"
+classe = "fx"
+valuta_base = "EUR"
+valuta_profitto = "USD"
+dimensione_contratto = "100000"
+fonte = "[ESEMPIO] specifica tipica, non verificata sul broker"
+stato_verifica = "C"
+
+[[strumento]]
+simbolo = "USDJPY"
+classe = "fx"
+valuta_base = "USD"
+valuta_profitto = "JPY"
+dimensione_contratto = "100000"
+fonte = "[ESEMPIO] specifica tipica, non verificata sul broker"
+stato_verifica = "C"
+
+[cambi]
+# unità di valuta del profitto per 1 unità di valuta del conto; serve solo se la valuta del profitto non è né
+# quella del conto né (per l'FX) la valuta base. In questo esempio non serve: USDJPY su conto in USD si converte
+# al prezzo dello stop.
+
+[[posizione]]
+simbolo = "EURUSD"
+ingresso = "1.08500"
+stop = "1.08300"
+prezzo_attuale = "1.08400"
+quantita = "1.5"
+commissioni = "10.50"   # costi ancora da pagare alla chiusura
+
+[trade_previsto]
+simbolo = "USDJPY"
+ingresso = "150.20"
+stop = "149.70"
+quantita = "2"
+commissioni = "14.00"
