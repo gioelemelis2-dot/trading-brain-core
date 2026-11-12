@@ -23,6 +23,7 @@ from .models import (
     LookAheadDataError,
     AnomalyGapError,
     EpistemicType,
+    parse_iso_utc,
 )
 
 
@@ -138,14 +139,7 @@ class DataIngestionPipeline:
 
     @staticmethod
     def _parse_iso_utc(val: str) -> datetime:
-        dt = datetime.fromisoformat(val)
-        if dt.tzinfo is None:
-            raise DataValidationError(
-                f"Timestamp privo di fuso orario UTC esplicito: '{val}'. Richiesto suffisso UTC (+00:00 o Z)."
-            )
-        if dt.utcoffset() != timedelta(0):
-            dt = dt.astimezone(timezone.utc)
-        return dt
+        return parse_iso_utc(val)
 
     @staticmethod
     def _timeframe_to_timedelta(tf: str) -> timedelta:

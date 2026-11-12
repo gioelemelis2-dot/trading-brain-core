@@ -9,6 +9,8 @@ Verifiche Zero-Trust e Regola Zero-Parametri-Nulli:
 6. DSR restituisce Valore con incertezza NON STIMABILE se < 30 trades.
 """
 
+import json
+import multiprocessing
 import sys
 import unittest
 import tempfile
@@ -28,10 +30,20 @@ from brain.laboratorio.backtester import (
     EventDrivenBacktester,
     Portfolio,
     SignalEvent,
+    FillEvent,
     Direction,
     LookAheadViolationError,
     DSRCalculator,
 )
+
+
+def _worker_register_trial(reg_path_str: str, worker_id: int) -> int:
+    calc = DSRCalculator(registry_path=Path(reg_path_str))
+    return calc.register_trial(
+        strategy_name=f"Concurrent_{worker_id}",
+        parameters={"w": worker_id},
+        metrics={"total_trades": 30},
+    )
 
 
 class TestEventDrivenBacktesterZeroTrust(unittest.TestCase):
@@ -587,6 +599,200 @@ class TestEventDrivenBacktesterZeroTrust(unittest.TestCase):
         t = portfolio.trade_history[0]
         self.assertEqual(t.exit_reason, "GAP_STOP_LOSS")
         self.assertEqual(t.exit_price, Decimal("1.07000"))
+
+    def test_08_intrabar_peak_equity_tracks_bar_high_low_not_close(self):
+        """RED TEAM CRITICO-1: peak_equity_intrabar deve tracciare eq_best_intrabar (High per LONG) e non solo eq_close."""
+        s_fx = Strumento(
+            simbolo="EURUSD", classe="fx", valuta_base="EUR", valuta_profitto="USD",
+            dimensione_contratto=Decimal("100000"), fonte="test",
+        )
+        bars = [
+            Candle("EURUSD", "1H", self.t0, self.t0 + timedelta(hours=1),
+                   Decimal("1.08000"), Decimal("1.08100"), Decimal("1.07900"), Decimal("1.08000"), Decimal("100")),
+            # Bar 1: Entra a 1.08000. Sale fino a 1.09000 (+1000 USD picco!) poi scende a 1.07500 (-500 USD), chiude a 1.08000 (0 PnL al close).
+            Candle("EURUSD", "1H", self.t0 + timedelta(hours=1), self.t0 + timedelta(hours=2),
+                   Decimal("1.08000"), Decimal("1.09000"), Decimal("1.07500"), Decimal("1.08000"), Decimal("100")),
+        ]
+        def strat(bar, p, eng):
+            if eng.current_bar_index == 0:
+                return SignalEvent(bar.close_time, "EURUSD", Direction.BUY, Decimal("1.00"))
+            return None
+
+        eng = EventDrivenBacktester(s_fx, "USD", Decimal("100000.00"), Decimal("0.00010"), Decimal("2.50"), Decimal("0.00005"))
+        p = eng.run(bars, strat)
+
+        # Entry friction = 5.00 + 5.00 + 2.50 = 12.50 -> cash = 99987.50
+        # Best intrabar (High 1.09000) = 99987.50 + 1000.00 = 100987.50 (senza costi uscita latenti)
+        # Worst intrabar (Low 1.07500) = 99987.50 - 500.00 - 12.50 = 99475.00
+        # Vero DD intrabarra = 100987.50 - 99475.00 = 1512.50
+        self.assertGreaterEqual(p.peak_equity_intrabar, Decimal("100987.50"))
+        self.assertEqual(p.max_drawdown_intrabar, Decimal("1512.50"))
+
+    def test_09_weekend_session_gap_executes_order_with_metadata(self):
+        """RED TEAM CRITICO-2: un gap di sessione/weekend esegue l'ordine ad Open(t) con metadata is_session_gap=True."""
+        s_fx = Strumento(
+            simbolo="EURUSD", classe="fx", valuta_base="EUR", valuta_profitto="USD",
+            dimensione_contratto=Decimal("100000"), fonte="test",
+        )
+        t_fri = datetime(2026, 1, 2, 21, 0, tzinfo=timezone.utc)
+        t_mon = datetime(2026, 1, 5, 22, 0, tzinfo=timezone.utc)  # Gap weekend > 48h
+        bars = [
+            Candle("EURUSD", "1H", t_fri, t_fri + timedelta(hours=1),
+                   Decimal("1.08000"), Decimal("1.08100"), Decimal("1.07900"), Decimal("1.08050"), Decimal("100")),
+            Candle("EURUSD", "1H", t_mon, t_mon + timedelta(hours=1),
+                   Decimal("1.08500"), Decimal("1.08600"), Decimal("1.08400"), Decimal("1.08550"), Decimal("100")),
+        ]
+        def strat(bar, p, eng):
+            if eng.current_bar_index == 0:
+                return SignalEvent(bar.close_time, "EURUSD", Direction.BUY, Decimal("1.00"))
+            return None
+
+        eng = EventDrivenBacktester(s_fx, "USD", Decimal("100000.00"), Decimal("0.00010"), Decimal("2.50"), Decimal("0.00005"))
+        p = eng.run(bars, strat)
+
+        self.assertEqual(len(p.trade_history), 1)
+        self.assertEqual(p.trade_history[0].entry_price, Decimal("1.08500"))
+        # Verifica metadati is_session_gap sul FillEvent eseguito
+        session_gap_fills = [f for f in p.fill_history if f.metadata.get("is_session_gap")]
+        self.assertEqual(len(session_gap_fills), 1)
+        self.assertGreater(session_gap_fills[0].metadata.get("session_gap_delay_seconds", 0), 0)
+
+        # Verifica che bar.open_time < target_bar_open_time continui a sollevare LookAheadViolationError
+        bars_backward = [
+            Candle("EURUSD", "1H", t_mon, t_mon + timedelta(hours=1),
+                   Decimal("1.080"), Decimal("1.081"), Decimal("1.079"), Decimal("1.080"), Decimal("100")),
+            Candle("EURUSD", "1H", t_fri, t_fri + timedelta(hours=1),
+                   Decimal("1.081"), Decimal("1.082"), Decimal("1.080"), Decimal("1.081"), Decimal("100")),
+        ]
+        with self.assertRaises(LookAheadViolationError):
+            EventDrivenBacktester(s_fx, "USD", Decimal("100000.00")).run(bars_backward, strat)
+
+    def test_10_pyramiding_error_does_not_corrupt_cash(self):
+        """RED TEAM ALTO-2: piramidazione rifiutata PRIMA di toccare self.cash."""
+        s_fx = Strumento(
+            simbolo="EURUSD", classe="fx", valuta_base="EUR", valuta_profitto="USD",
+            dimensione_contratto=Decimal("100000"), fonte="test",
+        )
+        p = Portfolio(s_fx, initial_cash=Decimal("100000.00"))
+        f1 = FillEvent(self.t0, "EURUSD", Direction.BUY, Decimal("1.00"), Decimal("1.08000"),
+                       Decimal("2.50"), Decimal("5.00"), Decimal("5.00"))
+        p.on_fill(f1)
+        cash_after_f1 = p.cash
+        self.assertEqual(cash_after_f1, Decimal("99987.50"))
+
+        f2 = FillEvent(self.t0 + timedelta(hours=1), "EURUSD", Direction.BUY, Decimal("1.00"), Decimal("1.08100"),
+                       Decimal("2.50"), Decimal("5.00"), Decimal("5.00"))
+        with self.assertRaises(NotImplementedError):
+            p.on_fill(f2)
+        self.assertEqual(p.cash, cash_after_f1, "La cassa non deve essere corrotta dopo NotImplementedError.")
+
+    def test_11_dsr_dry_run_readonly_and_counts_simulated_trial(self):
+        """RED TEAM ALTO-3 + ALTO-4: dry_run=True e' readonly (non crea trial_registry.json) e usa N = total_trials + 1."""
+        s_fx = Strumento(
+            simbolo="EURUSD", classe="fx", valuta_base="EUR", valuta_profitto="USD",
+            dimensione_contratto=Decimal("100000"), fonte="test",
+        )
+        p = Portfolio(s_fx, initial_cash=Decimal("100000.00"))
+        from brain.laboratorio.backtester.events import TradeRecord
+        for i in range(35):
+            pnl = Decimal("100.00") if i % 2 == 0 else Decimal("-50.00")
+            p.trade_history.append(TradeRecord(
+                symbol="EURUSD", direction=Direction.BUY, quantity=Decimal("1"),
+                entry_time=self.t0 + timedelta(hours=i), entry_price=Decimal("1.08"),
+                exit_time=self.t0 + timedelta(hours=i + 1), exit_price=Decimal("1.081"),
+                gross_pnl=pnl, net_pnl=pnl,
+                total_commission=Decimal("0"), total_spread_cost=Decimal("0"),
+                total_slippage=Decimal("0"), exit_reason="TEST",
+            ))
+
+        reg_path = self.temp_dir / "non_existent_registry.json"
+        self.assertFalse(reg_path.exists())
+        metrics = DSRCalculator.evaluate_portfolio(p, registry_path=reg_path, dry_run=True)
+        self.assertFalse(reg_path.exists(), "dry_run=True NON deve creare o scrivere trial_registry.json su disco.")
+        self.assertIn("N=1 trials", metrics["deflated_sharpe_ratio"].nota)
+
+    def test_12_dsr_concurrent_locking_atomicity(self):
+        """RED TEAM ALTO-3: registrazioni concorrenti su trial_registry.json devono essere atomiche senza perdite."""
+        reg_path = self.temp_dir / "concurrent_registry.json"
+        ctx = multiprocessing.get_context("spawn")
+        num_workers = 8
+        with ctx.Pool(processes=4) as pool:
+            ids = pool.starmap(_worker_register_trial, [(str(reg_path), i) for i in range(num_workers)])
+
+        self.assertEqual(sorted(ids), list(range(1, num_workers + 1)))
+        data = json.loads(reg_path.read_text(encoding="utf-8"))
+        self.assertEqual(data["total_trials"], num_workers)
+        self.assertEqual(len(data["trials"]), num_workers)
+
+    def test_13_dsr_pathological_variance_term_returns_non_stimabile(self):
+        """RED TEAM BASSO-4: se variance_term <= 0, non mascherare con 1e-6 ma restituire NON_STIMABILE."""
+        res_dsr, res_std = DSRCalculator.calculate_dsr_analytical(
+            sharpe_estimated=2.0,
+            num_trials=5,
+            track_record_length=50,
+            skewness=5.0,
+            kurtosis=1.0,  # variance_term = 1 - 10 + 0 = -9 <= 0
+        )
+        self.assertIsNone(res_dsr)
+        self.assertIsNone(res_std)
+
+        # Verifica anche via evaluate_portfolio con distribuzione patologicamente asimmetrica
+        s_fx = Strumento(
+            simbolo="EURUSD", classe="fx", valuta_base="EUR", valuta_profitto="USD",
+            dimensione_contratto=Decimal("100000"), fonte="test",
+        )
+        p = Portfolio(s_fx, initial_cash=Decimal("100000.00"))
+        from brain.laboratorio.backtester.events import TradeRecord
+        # Costruiamo >=30 trade dove skewness e' estremamente alta e sharpe alto ma kurtosis non compensa -> controlliamo che NON venga mascherato se patologico
+        # Nota: per la disuguaglianza di Pearson (kurt >= skew^2 + 1), con campioni reali (kurt >= skew^2 + 1) variance_term = 1 - s*sr + ((k-1)/4)*sr^2 >= (1 - s*sr/2)^2 >= 0!
+        # L'unico modo per avere variance_term <= 0 in campioni reali e' kurt = skew^2 + 1 e s*sr/2 == 1 -> variance_term == 0!
+        # Simuliamo esplicitamente una distribuzione di esattamente 2 valori: 29 volte -1 e 1 volta +9 -> skew positivo e k - 1 = skew^2 -> verifichiamo se almeno la path patologica in evaluate_portfolio gestisce (None, None).
+        from unittest.mock import patch
+        for i in range(30):
+            pnl = Decimal("100") if i % 2 == 0 else Decimal("-10")
+            p.trade_history.append(TradeRecord(
+                symbol="EURUSD", direction=Direction.BUY, quantity=Decimal("1"),
+                entry_time=self.t0 + timedelta(hours=i), entry_price=Decimal("1.08"),
+                exit_time=self.t0 + timedelta(hours=i + 1), exit_price=Decimal("1.081"),
+                gross_pnl=pnl, net_pnl=pnl,
+                total_commission=Decimal("0"), total_spread_cost=Decimal("0"),
+                total_slippage=Decimal("0"), exit_reason="TEST",
+            ))
+        with patch.object(DSRCalculator, "calculate_dsr_analytical", return_value=(None, None)):
+            metrics = DSRCalculator.evaluate_portfolio(p, registry_path=self.registry_file, dry_run=True)
+            self.assertEqual(metrics["deflated_sharpe_ratio"].incertezza, NON_STIMABILE)
+            self.assertIsNone(metrics["deflated_sharpe_ratio"].valore)
+
+    def test_14_intrabar_fill_timing_and_discarded_end_of_data_orders(self):
+        """RED TEAM MEDIO-1 + MEDIO-2: fill_timing='intrabar_close_assumed' e tracciamento discarded_end_of_data_orders."""
+        s_fx = Strumento(
+            simbolo="EURUSD", classe="fx", valuta_base="EUR", valuta_profitto="USD",
+            dimensione_contratto=Decimal("100000"), fonte="test",
+        )
+        bars = [
+            Candle("EURUSD", "1H", self.t0, self.t0 + timedelta(hours=1),
+                   Decimal("1.08000"), Decimal("1.08100"), Decimal("1.07900"), Decimal("1.08000"), Decimal("100")),
+            # Bar 1: Entra Long a 1.08000, SL a 1.07500 colpito intrabarra!
+            Candle("EURUSD", "1H", self.t0 + timedelta(hours=1), self.t0 + timedelta(hours=2),
+                   Decimal("1.08000"), Decimal("1.08200"), Decimal("1.07400"), Decimal("1.07800"), Decimal("100")),
+            # Bar 2: Ultima barra emette segnale per t+1 (che non esiste) -> deve finire in discarded_end_of_data_orders
+            Candle("EURUSD", "1H", self.t0 + timedelta(hours=2), self.t0 + timedelta(hours=3),
+                   Decimal("1.07800"), Decimal("1.07900"), Decimal("1.07700"), Decimal("1.07850"), Decimal("100")),
+        ]
+        def strat(bar, p, eng):
+            if eng.current_bar_index == 0:
+                return SignalEvent(bar.close_time, "EURUSD", Direction.BUY, Decimal("1.00"), stop_loss=Decimal("1.07500"))
+            if eng.current_bar_index == 2:
+                return SignalEvent(bar.close_time, "EURUSD", Direction.BUY, Decimal("1.00"))
+            return None
+
+        eng = EventDrivenBacktester(s_fx, "USD", Decimal("100000.00"), Decimal("0.00010"), Decimal("2.50"), Decimal("0.00005"))
+        p = eng.run(bars, strat)
+
+        self.assertEqual(len(p.trade_history), 1)
+        self.assertEqual(p.trade_history[0].fill_timing, "intrabar_close_assumed")
+        self.assertEqual(len(p.discarded_end_of_data_orders), 1)
+        self.assertEqual(len(eng.pending_orders), 0)
 
 
 if __name__ == "__main__":

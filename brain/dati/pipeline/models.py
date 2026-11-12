@@ -9,9 +9,38 @@ from dataclasses import dataclass, field
 from datetime import datetime, timezone, timedelta
 from decimal import Decimal, InvalidOperation
 from enum import Enum
+import re
 from typing import Any, Dict
 
 from brain.guardian.g0.valori import Valore, misura
+
+
+def parse_iso_utc(val: str) -> datetime:
+    """
+    Analizza un timestamp ISO-8601 con fuso orario esplicito (inclusi 'Z' e frazioni di secondo variabili)
+    mantenendo compatibilita' con Python 3.9+ e rifiutando timestamp privi di fuso orario.
+    """
+    if not isinstance(val, str) or not val.strip():
+        raise DataValidationError(f"Timestamp ISO-8601 non valido: {val!r}")
+    s = val.strip()
+    if s.endswith("Z"):
+        s = s[:-1] + "+00:00"
+    m = re.search(r"\.(\d+)", s)
+    if m:
+        frac = m.group(1)
+        norm_frac = (frac + "000000")[:6]
+        s = s[:m.start(1)] + norm_frac + s[m.end(1):]
+    try:
+        dt = datetime.fromisoformat(s)
+    except ValueError as e:
+        raise DataValidationError(f"Formato ISO-8601 non valido '{val}': {e}") from e
+    if dt.tzinfo is None:
+        raise DataValidationError(
+            f"Timestamp privo di fuso orario UTC esplicito: '{val}'. Richiesto suffisso UTC (+00:00 o Z)."
+        )
+    if dt.utcoffset() != timedelta(0):
+        dt = dt.astimezone(timezone.utc)
+    return dt
 
 
 class EpistemicType(str, Enum):
@@ -85,9 +114,14 @@ class Candle:
                 )
             if not isinstance(val, Decimal):
                 try:
-                    object.__setattr__(self, field_name, Decimal(str(val)))
+                    val = Decimal(str(val))
+                    object.__setattr__(self, field_name, val)
                 except (InvalidOperation, TypeError):
                     raise DataValidationError(f"Impossibile convertire '{field_name}' in Decimal: {val}")
+            if not val.is_finite():
+                raise DataValidationError(
+                    f"Il campo '{field_name}' deve essere un Decimal finito (NaN o Infinity vietati): {val}"
+                )
 
         # 3. Validazione Coerenza Prezzi
         if self.low > self.high:
@@ -136,16 +170,8 @@ class Candle:
 
     @classmethod
     def from_dict(cls, data: Dict[str, Any]) -> "Candle":
-        open_time = datetime.fromisoformat(data["open_time"])
-        if open_time.tzinfo is None:
-            raise DataValidationError(
-                f"Timestamp open_time privo di fuso orario UTC esplicito: '{data['open_time']}'"
-            )
-        close_time = datetime.fromisoformat(data["close_time"])
-        if close_time.tzinfo is None:
-            raise DataValidationError(
-                f"Timestamp close_time privo di fuso orario UTC esplicito: '{data['close_time']}'"
-            )
+        open_time = parse_iso_utc(data["open_time"])
+        close_time = parse_iso_utc(data["close_time"])
 
         return cls(
             symbol=data["symbol"],

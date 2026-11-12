@@ -148,6 +148,10 @@ class EventDrivenBacktester:
         # =============================================================================
         self._force_close_at_end_of_data(data_feed[-1])
 
+        if self.pending_orders:
+            self.portfolio.discarded_end_of_data_orders.extend(self.pending_orders)
+            self.pending_orders.clear()
+
         self.is_running = False
         return self.portfolio
 
@@ -218,12 +222,19 @@ class EventDrivenBacktester:
         self.pending_orders.clear()
 
         for order in orders_to_execute:
-            # Controllo rigoroso del timestamp target di esecuzione
-            if order.target_bar_open_time != bar.open_time:
+            # Controllo anti-lookahead su gap di sessione / weekend (CRITICO-2)
+            if bar.open_time < order.target_bar_open_time:
                 raise LookAheadViolationError(
                     f"Violazione Esecutiva: L'ordine pendente richiedeva esecuzione a {order.target_bar_open_time.isoformat()} "
-                    f"ma la barra corrente apre a {bar.open_time.isoformat()}."
+                    f"ma la barra corrente apre prima ({bar.open_time.isoformat()})."
                 )
+
+            is_session_gap = bar.open_time > order.target_bar_open_time
+            session_gap_delay = (
+                int((bar.open_time - order.target_bar_open_time).total_seconds())
+                if is_session_gap
+                else 0
+            )
 
             # Regola reduce_only: se l'ordine ha reduce_only=True e la posizione è già stata chiusa
             # (es. in Fase 1.A per GAP_STOP_LOSS o GAP_TAKE_PROFIT) oppure non è nella direzione da ridurre,
@@ -243,6 +254,15 @@ class EventDrivenBacktester:
                 self.slippage_points, order.quantity, bar.open
             )
 
+            fill_meta = {
+                "stop_loss": order.stop_loss,
+                "take_profit": order.take_profit,
+                "reduce_only": order.reduce_only,
+                "is_session_gap": is_session_gap,
+            }
+            if is_session_gap:
+                fill_meta["session_gap_delay_seconds"] = session_gap_delay
+
             fill = FillEvent(
                 timestamp=bar.open_time,
                 symbol=order.symbol,
@@ -252,11 +272,7 @@ class EventDrivenBacktester:
                 commission=self.fixed_commission,
                 spread_cost=spread_cost,
                 slippage=slippage_cost,
-                metadata={
-                    "stop_loss": order.stop_loss,
-                    "take_profit": order.take_profit,
-                    "reduce_only": order.reduce_only,
-                },
+                metadata=fill_meta,
             )
             self.portfolio.on_fill(fill)
 
@@ -325,6 +341,7 @@ class EventDrivenBacktester:
                 metadata={
                     "exit_reason": exit_reason,
                     "is_ambiguous_intrabar": is_ambiguous,
+                    "fill_timing": "intrabar_close_assumed",
                     "condizioni": ["{H_intrabar_worst_case}"] if is_ambiguous else [],
                 },
             )
