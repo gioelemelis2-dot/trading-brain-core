@@ -24,11 +24,17 @@ Validazione **all'ingresso** (`valida`, chiamata da `aggiungi`): un record malfo
 
 Concorrenza: `aggiungi` lavora sotto un lock esclusivo (`.journal.lock` nella cartella dei dati).
 - Su Unix si usa `fcntl.flock`, che il sistema rilascia anche se il processo termina.
-- Altrimenti un file di lock creato in modo esclusivo, rimosso alla fine.
-- Dopo 30 secondi di attesa: errore esplicito, mai una scrittura non protetta. Se un'interruzione lascia il file di lock (solo nel ripiego), l'errore dice di rimuoverlo a mano.
-- `verifica` non prende il lock (non scrive nulla): eseguita **durante** una scrittura può segnalare una differenza transitoria fra l'ultima riga e l'ancora, che sparisce rieseguendola.
+- Il file di lock è aperto con `O_CLOEXEC`. Da Python 3.4 (PEP 446) i descrittori sono comunque non ereditabili: il flag rende esplicita l'intenzione.
+- Altrimenti un file di lock creato in modo esclusivo, con PID, host e orario, rimosso alla fine.
+  - Un lock **orfano** è recuperato automaticamente, ma solo se: stesso host, processo non più attivo e più vecchio di 2 × 30 secondi.
+  - Ogni altro lock si attende, compresi quelli illeggibili o di un altro host.
+  - Su Windows lo stato del processo si legge con `OpenProcess`, perché `os.kill` lì terminerebbe il processo; questo ramo non è verificato in questo repository.
+- Dopo 30 secondi di attesa: errore esplicito, mai una scrittura non protetta.
+- Anche `verifica` lavora sotto il lock, così non vede una scrittura a metà. Su una cartella in sola lettura procede senza lock.
 
 Correzioni: `versioni_finali` applica `corregge`, anche a catena (una correzione di una correzione). Brier score e indicatori usano sempre l'ultima versione.
+- Su un file con riferimenti fantasma (id non ancora presenti) o incoerenti (correzione fra nature diverse, esito che chiude un esito) solleva un errore.
+- Una previsione non può contenere `esito` né `esito_utc`: stanno solo nei record di esito (`chiude`).
 
 ## Garanzie
 - **Sola aggiunta.** Una correzione è un nuovo record con `corregge` = id del record corretto.
@@ -40,7 +46,7 @@ Correzioni: `versioni_finali` applica `corregge`, anche a catena (una correzione
   - L'impronta cambia a ogni `aggiungi`: va annotata di nuovo dopo ogni registrazione, o almeno a fine sessione.
   - Se un'interruzione avviene tra la scrittura della riga e quella dell'ancora, `verifica` segnala la discrepanza: si controlla l'ultima riga e si riallinea l'ancora solo dopo averla verificata.
 - **Impegni sigillati** (DA-07): `sigilla` produce un impegno SHA-256 con nonce segreto di 256 bit. Non è una firma e non prova chi l'ha creato.
-- **Indicatori comportamentali** (`indicatori.py`): metriche oggettive come DERIVATI. Il pattern R1 è un'IPOTESI («compatibile con un rientro impulsivo») ed è **spento** finché l'utente non fissa i parametri.
+- **Indicatori comportamentali** (`indicatori.py`): metriche oggettive come DERIVATI. Il pattern R1 è un'IPOTESI («compatibile con un rientro impulsivo») ed è **spento** finché l'utente non fissa i parametri. Vale solo per trade sequenziali: un trade aperto prima della chiusura della perdita (sovrapposto) è escluso.
 
 ## Dove stanno i dati: decisione dell'utente
 - Predefinito: `journal/dati/`, **esclusa da git** (contiene un `.gitignore`), oppure la cartella indicata da `TRADING_JOURNAL_DIR`.

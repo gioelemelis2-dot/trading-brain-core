@@ -115,7 +115,7 @@ class TestTomlPortabile(unittest.TestCase):
         """Fallire in modo esplicito, mai interpretare a metà: ogni costrutto non gestito è un errore con la riga."""
         from g0 import _toml
         for testo in ('x = {a = 1}', 'x = """a"""', 'x = 2026-11-12', 'x = [\n1]', 'x = 1\nx = 2',
-                      '[a]\n[a]', 'a.b = 1', '"a b" = 1', 'x = "aperta', 'x = 0x1F', 'x = nan', 'x = 01',
+                      '[a]\n[a]', 'a.b = 1', '"a".b = 1', 'x = "aperta', 'x = 0x1F', 'x = nan', 'x = 01',
                       '[a\n', 'x = 1 2'):
             with self.assertRaises(ValueError, msg=testo):
                 _toml.loads_minimale(testo)

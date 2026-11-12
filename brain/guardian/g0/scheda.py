@@ -8,7 +8,7 @@ Ordine fisso della scheda: stato di riconciliazione → misure → regole → li
 from __future__ import annotations
 
 import sys
-from decimal import Decimal, InvalidOperation, ROUND_HALF_UP
+from decimal import Decimal, InvalidOperation, ROUND_HALF_UP, localcontext
 from pathlib import Path
 
 from . import _toml
@@ -28,14 +28,37 @@ CONTROLLI_PERSONALI = {
 }
 
 
+ZERO = Decimal(0)
+
+
+def _quantizza(x: Decimal, q: Decimal) -> Decimal:
+    """quantize con precisione sufficiente anche per esponenti estremi (1E+100): niente InvalidOperation."""
+    with localcontext() as ctx:
+        ctx.prec = max(ctx.prec, x.adjusted() - q.adjusted() + 2)
+        return x.quantize(q, ROUND_HALF_UP)
+
+
+def _maggiore(a, b, avvisi: list, cosa: str) -> bool:
+    """a > b, con a e b `Valore` o Decimal. Se un operando è NON STIMABILE il controllo NON è verificabile: avviso
+    esplicito e False (né «superato» né «rispettato»; con un avviso la raccomandazione è comunque «non entrare»)."""
+    x = a.valore if isinstance(a, Valore) else a
+    y = b.valore if isinstance(b, Valore) else b
+    if x is None or y is None:
+        avvisi.append(f"{cosa}: controllo non verificabile (dato NON STIMABILE)")
+        return False
+    return x > y
+
+
 def fmt(v: Valore, etichetta: str) -> str:
     cond = sorted(ABBREV.get(c, c.split(":")[0]) for c in v.condizioni)
     testa = v.tipo + (" | " + ", ".join(cond) if cond else "")
     if v.valore is None:
         num = "NON STIMABILE"
+    elif not v.valore.is_finite():
+        num = f"{v.valore} {v.unita}"
     else:
         q = Decimal("0.01") if v.unita not in ("stop",) else Decimal("1")
-        num = f"{v.valore.quantize(q, ROUND_HALF_UP):,}".replace(",", "_").replace(".", ",").replace("_", ".") + f" {v.unita}"
+        num = f"{_quantizza(v.valore, q):,}".replace(",", "_").replace(".", ",").replace("_", ".") + f" {v.unita}"
     inc = "" if v.incertezza in ("esatto", "NON STIMABILE") else f" [{v.incertezza}]"
     return f"[{testa}] {etichetta}: {num}{inc}  (verifica: {v.stato_verifica})"
 
@@ -108,7 +131,7 @@ def _dato_sessione_valido(rid: str, x) -> bool:
 
 
 def _pct(x: Decimal) -> str:
-    return f"{(x * 100).quantize(Decimal('0.001'), ROUND_HALF_UP)}%".replace(".", ",")
+    return f"{_quantizza(x * 100, Decimal('0.001'))}%".replace(".", ",")
 
 
 def _regole_personali(regole: dict, dati: dict, cap, saldo0, eq, pt, st, f_g, tp):
@@ -136,12 +159,16 @@ def _regole_personali(regole: dict, dati: dict, cap, saldo0, eq, pt, st, f_g, tp
             if pt is None:
                 righe.append(f"{rid}: nessun trade previsto da controllare")
                 continue
-            frac = combina([pt, cap, soglia], pt.valore / cap.valore, "frazione del capitale", "calcolo deterministico",
-                           fonte=f"{rid} rischio del trade previsto")
-            righe.append(fmt(frac, f"{rid} rischio del trade previsto (soglia {_pct(v)})"))
-            if frac.valore > v:
-                avvisi.append(f"{rid}: il trade previsto rischia {_pct(frac.valore)} del capitale iniziale, "
-                              f"oltre il limite personale di {_pct(v)}.")
+            if cap.stimabile and cap.valore <= 0:
+                avvisi.append(f"{rid}: capitale iniziale non positivo: rischio del trade non verificabile")
+            else:
+                stimabili = pt.stimabile and cap.stimabile
+                frac = combina([pt, cap, soglia], pt.valore / cap.valore if stimabili else None,
+                               "frazione del capitale", "calcolo deterministico", fonte=f"{rid} rischio del trade previsto")
+                righe.append(fmt(frac, f"{rid} rischio del trade previsto (soglia {_pct(v)})"))
+                if _maggiore(frac, v, avvisi, f"{rid} rischio del trade previsto"):
+                    avvisi.append(f"{rid}: il trade previsto rischia {_pct(frac.valore)} del capitale iniziale, "
+                                  f"oltre il limite personale di {_pct(v)}.")
             # Seconda parte di P-01 (regole_personali.toml): «size maggiore del trade precedente dopo una perdita»
             in_perdita, size_prec = sess.get("ultima_operazione_in_perdita"), sess.get("size_precedente")
             if in_perdita is None or size_prec is None:
@@ -163,11 +190,11 @@ def _regole_personali(regole: dict, dati: dict, cap, saldo0, eq, pt, st, f_g, tp
                                 "calcolo deterministico", fonte=f"{rid} margine personale giornaliero")
             righe.append(fmt(margine_p, f"{rid} margine rispetto al limite personale giornaliero ({_pct(v)})"))
             # Controlli indipendenti: anche a limite personale già superato, trade e stress vanno segnalati.
-            if margine_p.valore < 0:
+            if _maggiore(ZERO, margine_p, avvisi, f"{rid} limite personale giornaliero"):
                 avvisi.append(f"{rid}: limite personale giornaliero già superato: kill switch personale.")
-            if pt is not None and pt.valore > margine_p.valore:
+            if pt is not None and _maggiore(pt, margine_p, avvisi, f"{rid} trade previsto"):
                 avvisi.append(f"{rid}: se lo stop del trade previsto viene colpito, il limite personale giornaliero viene superato.")
-            if st is not None and st.valore > margine_p.valore:
+            if st is not None and _maggiore(st, margine_p, avvisi, f"{rid} scenario di stress"):
                 avvisi.append(f"{rid}: nello scenario di stress il limite personale giornaliero viene superato.")
         else:
             chiave = serve.split(".")[1]
@@ -215,7 +242,8 @@ def scheda(dati: dict, regole_personali: dict | None = None) -> list[str]:
 
     strumenti, cambi = _strumenti(dati), {k: v for k, v in dati.get("cambi", {}).items()}
     avvisi = []
-    if mg.valore < 0 or mt.valore < 0:
+    if _maggiore(ZERO, mg, avvisi, "Equity contro il limite giornaliero") or \
+            _maggiore(ZERO, mt, avvisi, "Equity contro il limite totale"):
         avvisi.append("Equity già sotto un limite della prop firm: verificare subito sulla piattaforma.")
     perdite_aperte = [_perdita(p, strumenti, valuta, cambi, fonte, aperta=True) for p in dati.get("posizione", [])]
     tp = dati.get("trade_previsto")
@@ -225,22 +253,22 @@ def scheda(dati: dict, regole_personali: dict | None = None) -> list[str]:
         sr = L.stop_residui(mg, pt)
         righe += ["", "TRADE PREVISTO", fmt(pt, f"perdita allo stop ({tp['simbolo']})"),
                   fmt(sr, "stop pieni di questa dimensione, dato il margine attuale (posizioni aperte escluse)")]
-        if pt.valore > mg.valore:
+        if _maggiore(pt, mg, avvisi, "Trade previsto contro il limite giornaliero"):
             avvisi.append("Se lo stop del trade previsto viene colpito, il limite giornaliero viene violato.")
-        if pt.valore > mt.valore:
+        if _maggiore(pt, mt, avvisi, "Trade previsto contro il limite totale"):
             avvisi.append("Se lo stop del trade previsto viene colpito, il limite totale viene violato.")
     tutte = perdite_aperte + ([pt] if tp else [])
     if tutte:
         st = L.scenario_di_stress(tutte)
-        eq_dopo = combina([eq, st], eq.valore - st.valore, valuta, "calcolo deterministico",
+        eq_dopo = combina([eq, st], eq.valore - st.valore if st.stimabile else None, valuta, "calcolo deterministico",
                           fonte="equity dopo lo scenario di stress")
         dopo, dopo_t = L.margine(eq_dopo, lg), L.margine(eq_dopo, lt)
         righe += ["", "SCENARIO DI STRESS (tutte le posizioni allo stop, incluso il trade previsto)",
                   fmt(st, "perdita nello scenario"), fmt(dopo, "margine giornaliero dopo lo scenario"),
                   fmt(dopo_t, "margine totale dopo lo scenario")]
-        if dopo.valore < 0:
+        if _maggiore(ZERO, dopo, avvisi, "Scenario di stress contro il limite giornaliero"):
             avvisi.append("Nello scenario di stress il limite giornaliero viene violato.")
-        if dopo_t.valore < 0:
+        if _maggiore(ZERO, dopo_t, avvisi, "Scenario di stress contro il limite totale"):
             avvisi.append("Nello scenario di stress il limite totale viene violato.")
     rg = dati.get("riserva_gap")
     riserva = ipotesi(rg["valore"] if rg else None, valuta, (rg or {}).get("fonte", "nessun dato di esecuzione"),

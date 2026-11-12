@@ -4,11 +4,12 @@ Il parser minimale serve quando nessuno dei due è disponibile (per esempio il P
 SOLO il sottoinsieme usato dai file del Guardian:
 - commenti `#` (anche a fine riga, fuori dalle stringhe) e righe vuote;
 - tabelle `[a.b]` e array di tabelle `[[a]]`, con chiavi semplici (lettere, cifre, `_`, `-`);
-- coppie `chiave = valore` con chiave semplice;
+- coppie `chiave = valore` con chiave semplice o tra virgolette (`"JPY/EUR" = "162.00"`, `'USD/EUR' = …`), come
+  nella sezione [cambi];
 - stringhe "base" (con gli escape di TOML) e 'letterali'; interi e decimali in base 10 (anche con `_` ed esponente);
   `true`/`false`; array su una sola riga di questi valori.
 Ogni altro costrutto (tabelle inline, stringhe su più righe, date, chiavi puntate o tra virgolette, array su più righe,
-numeri esadecimali, inf/nan, chiavi o tabelle duplicate) è un ERRORE esplicito con il numero di riga: mai
+numeri esadecimali, inf/nan, chiavi o tabelle duplicate, chiavi tra virgolette nelle intestazioni) è un ERRORE esplicito con il numero di riga: mai
 un'interpretazione a metà. Il test `test_compatibilita_e_concorrenza.py` confronta il risultato con `tomllib` su tutti
 i file TOML del Guardian.
 """
@@ -47,6 +48,7 @@ _PERCORSO = rf"{_CHIAVE}(?:[ \t]*\.[ \t]*{_CHIAVE})*"
 _TABELLA = re.compile(rf"\[[ \t]*({_PERCORSO})[ \t]*\][ \t]*(?:#.*)?")
 _ARRAY_DI_TABELLE = re.compile(rf"\[\[[ \t]*({_PERCORSO})[ \t]*\]\][ \t]*(?:#.*)?")
 _COPPIA = re.compile(rf"({_CHIAVE})[ \t]*=[ \t]*")
+_UGUALE = re.compile(r"[ \t]*=[ \t]*")
 _INTERO = r"[+-]?(?:0|[1-9](?:_?[0-9])*)"
 _RE_INTERO = re.compile(_INTERO)
 _RE_DECIMALE = re.compile(rf"{_INTERO}(?:\.[0-9](?:_?[0-9])*(?:[eE][+-]?[0-9](?:_?[0-9])*)?|[eE][+-]?[0-9](?:_?[0-9])*)")
@@ -188,11 +190,18 @@ def loads_minimale(testo: str) -> dict:
             definite.add(id(t))
             corrente = t
             continue
-        m = _COPPIA.match(s)
-        if not m:
-            raise _errore(n, "riga non riconosciuta (chiave puntata o tra virgolette?)")
-        chiave = m.group(1)
-        valore, fine = _valore(s, m.end(), n)
+        if s[0] in "\"'":                                   # chiave tra virgolette (stringa base o letterale)
+            chiave, fine = _valore(s, 0, n)
+            u = _UGUALE.match(s, fine)
+            if not u:
+                raise _errore(n, "dopo una chiave tra virgolette serve «=» (chiavi puntate non gestite)")
+            inizio = u.end()
+        else:
+            m = _COPPIA.match(s)
+            if not m:
+                raise _errore(n, "riga non riconosciuta (chiave puntata?)")
+            chiave, inizio = m.group(1), m.end()
+        valore, fine = _valore(s, inizio, n)
         resto = s[fine:].strip(" \t")
         if resto and not resto.startswith("#"):
             raise _errore(n, f"testo dopo il valore: {resto!r}")
