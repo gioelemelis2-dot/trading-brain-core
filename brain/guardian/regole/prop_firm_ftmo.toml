@@ -1,0 +1,106 @@
+# Regole della prop firm FTMO, tipo REGOLA (origine: prop firm).
+# Fonte: pagine ufficiali, consultate il 2026-11-12T14:46Z. Estratto testuale e hash delle pagine in
+# fonti/FTMO_REGOLE_ESTRATTO_20261112.txt. Stato di verifica: V (pagina ufficiale letta), salvo dove indicato.
+# Le regole cambiano: ogni voce ha una data di prossima verifica. Questo file NON contiene regole personali.
+#
+# Convenzioni:
+#   - percentuali come frazione del capitale iniziale simulato (0.05 = 5%);
+#   - "equity" = Balance + Open Positions P/L ± Swaps − Commissions (definizione FTMO);
+#   - "saldo" = balance, cioè posizioni chiuse.
+
+[meta]
+schema = "guardian-regole-prop/1"
+fonte_url = "https://ftmo.com/en/trading-objectives/"
+consultato = "2026-11-12T14:46Z"
+prossima_verifica = "2027-02-12"
+nota = "Il prodotto e il tipo di conto effettivamente usati dall'utente NON sono ancora noti: vedi informazioni richieste in LEGGIMI.md"
+
+# ---------------------------------------------------------------------------------------------------
+[prodotti.ftmo_2step]
+descrizione = "FTMO Challenge: 2-Step (fasi FTMO Challenge e Verification) e FTMO Account successivo"
+
+[prodotti.ftmo_2step.profit_target]
+fase1 = 0.10
+fase2 = 0.05
+conto_finanziato = "assente"
+condizione = "saldo superiore al capitale iniziale del target, con tutte le posizioni chiuse"
+citazione = "You will meet this objective once your account balance exceeds the Initial Simulated Capital by the required Profit Target with all positions closed."
+stato = "V"
+
+[prodotti.ftmo_2step.max_daily_loss]
+frazione = 0.05
+base = "saldo alle 00:00 CE(S)T del giorno corrente (il primo giorno: capitale iniziale)"
+limite = "saldo_00:00 − 0.05 × capitale_iniziale"
+controllo = "equity (incluse posizioni aperte, swap e commissioni) non deve scendere sotto il limite, in qualsiasi momento"
+reset = "00:00 CE(S)T"
+si_applica = "entrambe le fasi e FTMO Account (2-Step)"
+citazione = "The Maximum Daily Loss Limit is recalculated daily at 00:00 CE(S)T as the difference between: the account balance recorded at 00:00 CE(S)T of the current day and the Maximum Daily Loss Amount, which is 5% of the Initial Simulated Capital."
+stato = "V"
+nota = "La base è il SALDO a mezzanotte, non l'equity: le posizioni aperte durante la notte non entrano nella base, ma il loro P/L conta nel controllo dell'equity."
+
+[prodotti.ftmo_2step.max_loss]
+frazione = 0.10
+tipo = "statico"
+limite = "capitale_iniziale − 0.10 × capitale_iniziale"
+controllo = "equity non deve scendere sotto il limite"
+citazione = "The Maximum Loss rule establishes a static limit (the Maximum Loss Limit) below which your account equity (i.e., Balance + Open Positions P/L ± Swaps – Commissions) cannot drop."
+stato = "V"
+
+[prodotti.ftmo_2step.min_trading_days]
+giorni = 4
+definizione = "giorno (00:00:00–23:59:59 CE(S)T) in cui si APRE almeno una posizione"
+conto_finanziato = "assente"
+citazione = "A Trading Day is defined as any day – measured from 00:00:00 to 23:59:59 CE(S)T – during which at least one position is opened."
+stato = "V"
+
+[prodotti.ftmo_2step.periodo]
+limite = "illimitato"
+citazione = "Trading Period Unlimited"
+fonte_url = "https://ftmo.com/en/2-step-challenge/"
+stato = "V"
+
+[prodotti.ftmo_2step.tipo_conto]
+nota = "Le restrizioni su notizie e su posizioni overnight/weekend si applicano solo al tipo di conto Standard; il tipo Swing non le ha."
+citazione = "Restrictions for trading during selected news releases apply only to the Standard account type. ... Overnight and weekend position restrictions apply only to the Standard account type."
+stato = "V-parziale"
+dettagli_da_verificare = "contenuto esatto delle restrizioni (quali notizie, quali finestre orarie, regole di weekend): pagine FAQ non lette"
+
+# ---------------------------------------------------------------------------------------------------
+[prodotti.ftmo_1step]
+descrizione = "FTMO Challenge: 1-Step e FTMO Account (1-Step)"
+
+[prodotti.ftmo_1step.profit_target]
+fase1 = 0.10
+conto_finanziato = "assente"
+stato = "V"
+
+[prodotti.ftmo_1step.max_daily_loss]
+frazione = 0.03
+base = "saldo alle 00:00 CE(S)T del giorno corrente (il primo giorno: capitale iniziale)"
+limite = "saldo_00:00 − 0.03 × capitale_iniziale"
+controllo = "equity non deve scendere sotto il limite"
+reset = "00:00 CE(S)T"
+citazione = "the Maximum Daily Loss Amount, which is 3% of the Initial Simulated Capital."
+stato = "V"
+
+[prodotti.ftmo_1step.max_loss]
+frazione = 0.10
+tipo = "trailing di fine giornata"
+limite = "max(capitale_iniziale, massimo saldo alle 00:00 CE(S)T dei giorni precedenti) − 0.10 × capitale_iniziale"
+monotonia = "può solo salire; si azzera al ritiro di un Reward con nuovo FTMO Account"
+citazione = "the highest account balance achieved at 00:00 CE(S)T of any preceding trading day or, if higher, the amount of Initial Simulated Capital, and the Maximum Loss Amount, which is 10% of the Initial Simulated Capital."
+stato = "V"
+
+[prodotti.ftmo_1step.consistency]
+regola = "Best Day <= 50% del profitto totale (somma dei P/L chiusi di tutti i giorni)"
+applicabilita = "conti da ordini creati dal 2026-10-12 (prima: Best Day Rule legacy, 50% del profitto dei soli giorni positivi)"
+violazione = "non è una violazione: occorre continuare a operare finché il vincolo è soddisfatto"
+stato = "V"
+
+# ---------------------------------------------------------------------------------------------------
+[prodotti.ftmo_instant]
+descrizione = "Accesso diretto a un FTMO Account (Instant)"
+max_daily_loss = 0.03
+max_loss = "0.10, trailing intraday sul saldo da posizioni chiuse (si aggiorna alla chiusura di un trade su un nuovo massimo; non si azzera al ritiro di un Reward)"
+consistency = "Best Day <= 30% del profitto totale"
+stato = "V"
