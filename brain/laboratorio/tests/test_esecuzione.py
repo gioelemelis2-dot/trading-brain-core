@@ -264,3 +264,65 @@ class TestCaricatore(Cartella):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class TestCasiAlLimite(Cartella):
+    """Aggiunti dopo l'analisi dei mutanti (mutazioni_esecuzione.py): soglie esatte e controlli difensivi."""
+
+    def test_registro_manomesso(self):
+        self.registro.write_text(json.dumps({"schema": "altro/9", "prove": [], "sigilli": [], "esecuzioni": []}))
+        with self.assertRaises(ValueError):
+            S.leggi(self.registro)
+        self.registro.write_text(json.dumps({"schema": S.SCHEMA, "prove": [], "sigilli": [],
+                                             "esecuzioni": [{"ipotesi": "H-999", "ruolo": "sviluppo"}]}))
+        with self.assertRaises(ValueError):                           # esecuzioni prima del sigillo: niente sigillo
+            S.sigilla(self.registro, "H-999", self.scheda, ["V-T"], ORA)
+
+    def test_casuale_uguale_al_percentile_non_basta(self):
+        self.assertFalse(K.confronto_casuale([(1.0, 1.0)] * 10, 1.0, ripetizioni=50, seme=1)["sopra"])
+
+    def test_percentile_95_della_distribuzione(self):
+        """100 giorni a ±1: media con deviazione 0,1; il 95° percentile teorico è 0,1645 (passi di 0,02)."""
+        p = K.confronto_casuale([(1.0, -1.0)] * 100, 0.0, ripetizioni=20000, seme=3)["percentile_95"]
+        self.assertGreater(p, 0.15)
+        self.assertLess(p, 0.19)
+
+    def test_benchmark_battuto_solo_da_uno(self):
+        d = [date(2025, 1, 2), date(2025, 1, 3)]
+        self.assertFalse(K.confronto_benchmark({d[0]: 0.1, d[1]: 0.1}, {d[0]: 0.3, d[1]: 0.3},
+                                               {d[0]: -0.3, d[1]: -0.3})["batte_entrambi"])
+        self.assertEqual(K.confronto_benchmark({d[0]: 1.0}, {d[1]: 1.0}, {d[0]: 1.0})["n_comuni"], 0)
+
+    def test_anni_senza_trade_e_quota_esatta(self):
+        tr = [trade(2005, 1, 1.0), trade(2006, 1, -1.0), trade(2007, 1, 1.0), trade(2008, 1, 1.0), trade(2009, 1, -1.0)]
+        self.assertAlmostEqual(K.quota_anni_positivi(tr, anni=range(2005, 2011)), 0.5)
+        e = K.verifica([trade(a, m, 1.0 if a in (2005, 2007, 2008) else -0.5) for a in range(2005, 2010)
+                        for m in range(1, 13)], n_prove=1)
+        self.assertTrue([c for c in e["criteri"] if c["nome"].startswith("quota")][0]["passa"])     # 60% esatto
+
+    def test_ultimi_cinque_anni_esatti(self):
+        tr = [trade(a, m, 1.0 if a < 2019 else -0.1) for a in range(2005, 2024) for m in range(1, 13)]
+        e = K.verifica(tr, n_prove=2)
+        c = [c for c in e["criteri"] if c["nome"].startswith("ultimi 5")][0]
+        self.assertAlmostEqual(c["valore"], -6.0)
+        self.assertFalse(c["passa"])
+
+    def test_media_negativa_e_drawdown_in_ordine_di_data(self):
+        e = K.verifica([trade(2005, 1, -1.0), trade(2005, 2, -1.2)], n_prove=1)
+        self.assertFalse([c for c in e["criteri"] if c["nome"] == "R medio netto"][0]["passa"])
+        tr = [trade(2005, 1, -1.0)] * 8 + [trade(2007, 1, -1.0)] * 8 + [trade(2006, 1, 1.0)] * 8   # fuori ordine
+        dd = [c for c in K.verifica(tr, n_prove=1)["criteri"] if c["nome"].startswith("drawdown")][0]
+        self.assertAlmostEqual(dd["valore"], 8.0)
+
+    def test_momenti(self):
+        asim, curt = K._momenti([0.0, 0.0, 0.0, 4.0])
+        self.assertAlmostEqual(asim, 6 / 3 ** 1.5)
+        self.assertAlmostEqual(curt, 21 / 9)
+
+    def test_periodi_del_caricatore(self):
+        S.sigilla(self.registro, "H-999", self.scheda, ["V-T"], ORA)
+        with self.assertRaises(ValueError):
+            C.carica(self.dir, self.dir, date(2023, 11, 1), date(2023, 11, 15), "verifica", self.registro, "H-999",
+                     self.scheda)
+        with self.assertRaises(ValueError):
+            C.carica(self.dir, self.dir, date(2024, 2, 1), date(2024, 1, 1), "sviluppo")

@@ -78,6 +78,15 @@ class TestMercatiInventati(unittest.TestCase):
                 self.assertGreaterEqual(x["benchmark"]["n_comuni"], 0.95 * n, (nome, v))
                 self.assertEqual(x["casuale"]["ripetizioni"], 1000)
 
+    def test_robustezza_con_i_parametri_giusti_e_stress_di_020(self):
+        from brain.laboratorio.simulatori import orb_londra as O
+        bid, ask = mercato()
+        x = self.ris["casuale"]["varianti"]["V-T"]
+        for nome in ("range 20'", "range 45'", "tetto 1,6", "tetto 2,5", "target 1,2", "target 2,0"):
+            self.assertNotAlmostEqual(x["robustezza"][nome], x["metriche"]["r_medio"], places=6, msg=nome)
+        p = O.Parametri(stress=0.20)
+        self.assertAlmostEqual(x["r_stress"], O.metriche(O.trade(O.prepara(bid, ask, p), p))["r_medio"])
+
     def test_vantaggio_batte_benchmark_e_casuale(self):
         x = self.ris["vantaggio"]["varianti"]["V-T"]
         self.assertTrue(x["benchmark"]["batte_entrambi"])
@@ -200,6 +209,17 @@ class TestRigaDiComando(unittest.TestCase):
         self.assertIn("verifica", self.uscita.read_text(encoding="utf-8"))
         self.assertEqual(self.lancia(*argomenti), 2)
         self.assertEqual(self.lancia("--modalita", "verifica", "--inizio", "2010-01-01", "--fine", "2010-02-28"), 2)
+
+    def test_verifica_senza_varianti_fermata_prima_dei_dati(self):
+        """Senza --varianti la verifica si ferma PRIMA di leggere i dati sigillati (mutante E12)."""
+        S.sigilla(self.registro, "H-002", self.scheda, ["V-T", "V-S"], ORA)
+        errore = io.StringIO()
+        with contextlib.redirect_stdout(io.StringIO()), contextlib.redirect_stderr(errore):
+            rc = E.main(["--registro", str(self.registro), "--scheda", str(self.scheda), "--cache", str(self.cache),
+                         "--rapporto", str(self.uscita), "--ora", ORA, "--modalita", "verifica",
+                         "--inizio", "2010-01-01", "--fine", "2010-02-28"])
+        self.assertEqual(rc, 2)
+        self.assertIn("--varianti", errore.getvalue())
 
 
 if __name__ == "__main__":
