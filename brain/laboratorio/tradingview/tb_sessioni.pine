@@ -8,7 +8,7 @@
 //@version=5
 indicator("TB Sessioni e range di apertura", overlay=true, max_boxes_count=500, max_lines_count=500)
 
-inizioSviluppo = input.time(timestamp("UTC", 2023, 11, 15, 0, 0), "Inizio periodo di sviluppo")
+inizioSviluppo = input.time(timestamp("15 Nov 2023 00:00 +0000"), "Inizio periodo di sviluppo")
 copriSigillato = input.bool(true, "Copri il periodo sigillato")
 sAsia = input.session("0900-1500", "Tokyo (ora di Tokyo)")
 sLon = input.session("0800-1630", "Londra (ora di Londra)")
@@ -42,6 +42,7 @@ boxSessione(bool attiva, color col) =>
         box.set_top(b, hi)
         box.set_bottom(b, lo)
         box.set_right(b, bar_index)
+    true    // valore di ritorno fisso: i rami dell'if restituiscono tipi diversi (box / void)
 
 // --- range di apertura: linee di massimo e minimo, prolungate fino alla fine della sessione ---
 rangeApertura(bool inRange, bool inSessione, color col) =>
@@ -61,6 +62,7 @@ rangeApertura(bool inRange, bool inSessione, color col) =>
     else if inSessione and not inRange and not na(lh)
         line.set_x2(lh, bar_index)
         line.set_x2(ll, bar_index)
+    true    // idem (line / void)
 
 visibile = not sigillato
 boxSessione(visibile and dentro(sAsia, "Asia/Tokyo"), color.purple)
