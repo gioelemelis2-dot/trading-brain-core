@@ -341,3 +341,13 @@ Formato: data · versione della base · cosa · perché · file.
 - **Correzioni** in TDD: `d0c8c4d` rosso, poi verde.
 - **Mutation testing:** 40 mutanti (14 nuovi), 40/40 su Python 3.13 e 3.9. Al primo giro il mutante P14 (ruoli presi dal commitment) era sopravvissuto: aggiunto un controllo sul sigillo dei blocchi declassati.
 - **Collaborazione:** Gemini ha lavorato in un worktree separato senza toccare i file di Claude. I suoi rami sono stati pubblicati dall'utente.
+
+## 2026-11-15 · v1.25 (mandato notturno: programma dei criteri di H-002, sigillo, quaderno delle ipotesi)
+
+- **Ramo `feat/esecutore-h002`, NON unito a main** (merge solo con l'autorizzazione dell'utente, dopo le revisioni).
+- **TDD:**
+  - `ecbae88` rosso, `7cf50ae` verde: sigillo e registro delle prove, criteri generici, caricatore BID/ASK;
+  - `c8ef3aa` rosso, `78f41e4` verde: esecutore di H-002 e prove su mercati inventati.
+- **Mutation testing** (`laboratorio/tests/mutazioni_esecuzione.py`, 56 mutanti): primo giro 55/56 su Python 3.13 e 3.9. Il sopravvissuto E12 è ucciso da un test aggiunto (`fdf4afe`).
+- **Nessun dato reale usato, nessuna richiesta a Dukascopy, nessun sigillo.** Scheda H-002 v3.1 invariata; ambiguità A1–A11 in `laboratorio/ipotesi/H-002-REVISIONI.md`.
+- **Quaderno delle ipotesi** `laboratorio/ipotesi/QUADERNO-IPOTESI.md`: 10 idee dalla letteratura, senza dati; fonti incerte segnate.

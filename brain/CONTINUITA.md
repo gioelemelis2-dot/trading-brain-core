@@ -1,6 +1,6 @@
 # Documento di continuità
 
-Ultimo aggiornamento: **2026-11-12**, dopo la verifica completa del Binario B, la chiusura dei Gate 0 e 1 e la preparazione del Gate 2 (vedi «Stato consolidato di `main`» e «Gate operativi»). Leggere questo file per primo (vale anche per Gemini, insieme a `collaborazione/HANDOFF-GEMINI.md`).
+Ultimo aggiornamento: **2026-11-15**, dopo il mandato notturno su H-002 (programma dei criteri, strumento di sigillo, quaderno delle ipotesi; ramo `feat/esecutore-h002`, **non unito a main**). Leggere questo file per primo (vale anche per Gemini, insieme a `collaborazione/HANDOFF-GEMINI.md`).
 
 ## Stato
 - **Sviluppo sospeso** (D-12): nessun nuovo modulo, nessuno sviluppo del motore quantitativo, nessuna modifica a L2.1–L2.6 né ai materiali di Antigravity, nessuna migrazione o riorganizzazione.
@@ -142,9 +142,15 @@ Il G0 **non** è ancora utilizzabile per decidere: serve la riconciliazione con 
   - **H-001** (scalping nei micro-range a 1 minuto, idea dell'utente): bozza critica in `laboratorio/ipotesi/H-001-range-1m-BOZZA.md`.
     - Attende 4 risposte dell'utente.
     - **DA-30:** sarà automatizzata in demo (Expert Advisor MQL5, replica indipendente di Gemini).
-  - **H-002** (rottura del range di apertura di Londra): bozza `H-002-ORB-BOZZA.md`, revisioni di DeepSeek e Gemini verificate in `H-002-REVISIONI.md`.
+  - **H-002** (rottura del range di apertura di Londra): scheda `H-002-ORB-v3.md` (v3.1), revisioni R1–R6 in `H-002-REVISIONI.md`, simulatore `laboratorio/simulatori/orb_londra.py` (43 test, mutanti 33/33).
     - Decisioni dell'utente: solo Londra, varianti V-T e V-S (N = 2), esclusi i range oltre 2 × la mediana.
-    - Prossimo passo: versione 2, ultima rilettura, sigillo, simulatore minuto per minuto BID/ASK in TDD, test sullo sviluppo.
+    - **Mandato notturno 14–15/11 (ramo `feat/esecutore-h002`, NON unito a main):**
+      - programma dei criteri completo in `laboratorio/esecuzione/`, con prove su mercati inventati: casuale bocciato, vantaggio noto trovato, sola tendenza bocciata;
+      - strumento di sigillo pronto ma **non eseguito**: il registro `laboratorio/registro_prove.json` non esiste;
+      - 11 ambiguità della scheda annotate con proposte (A1–A11 in `H-002-REVISIONI.md`), scheda non toccata;
+      - quaderno delle ipotesi `laboratorio/ipotesi/QUADERNO-IPOTESI.md` (Q-01…Q-10, solo letteratura).
+    - **Prossimo passo:** revisioni R7 (Gemini, DeepSeek, ChatGPT) del ramo → decisioni dell'utente sulle ambiguità → eventuale v3.2 → merge autorizzato → sigillo deciso dall'utente → screening sullo sviluppo con `esegui_h002.py`.
+    - Servono prima i dati ASK dello sviluppo nella cache del Mac (`cache_dukascopy/XAUUSD_ASK`).
   - **TradingView:** nessun connettore. Indicatore Pine solo visivo in `laboratorio/tradingview/tb_sessioni.pine`; copre il periodo sigillato.
     - Si guarda solo dal 15/11/2023; vietato lo Strategy Tester per provare idee.
   - **DA-29:** arresto in demo con controllo di fedeltà (solo esecuzione) e test sequenziale di Wald (θ1 = Sharpe 0,10, σ dal backtest, potenza effettiva circa 64% con taglio a 600 trade).
@@ -170,7 +176,7 @@ Il G0 **non** è ancora utilizzabile per decidere: serve la riconciliazione con 
   - verificare le FAQ FTMO citate da Gemini (overnight, weekend, notizie, leva) e aggiornare `prop_firm_ftmo.toml`;
   - fonte di un calendario storico delle notizie (P-08);
   - conteggio dei buchi per anno sullo storico;
-  - simulatore minuto per minuto;
+  - simulatore minuto per minuto: fatto (main); programma dei criteri: fatto sul ramo, in revisione;
   - aggiornare il documento del progetto.
 - **Mai usati finora:** la scheda del Guardian G0 e il journal. Vanno avviati con la prima demo vera.
 

@@ -1,7 +1,8 @@
 """Mutation testing del pacchetto laboratorio/esecuzione (sigillo, criteri, caricatore, esecutore di H-002).
 Ogni mutante è una copia di brain/ con UN difetto; la copia non mutata deve superare i test; ogni sostituzione deve
 comparire una sola volta. Il generatore di mercati inventati (sintetico.py) è strumento di prova: non si muta.
-Uso (dalla radice del repository): python3 -s -B brain/laboratorio/tests/mutazioni_esecuzione.py <cartella> [processi]
+Uso (dalla radice del repository): python3 -s -B brain/laboratorio/tests/mutazioni_esecuzione.py <cartella> [processi] [prefissi]
+  prefissi: per esempio «S,C» per far girare solo i mutanti che iniziano con S o C (utile con poco tempo).
 """
 import shutil
 import subprocess
@@ -9,10 +10,11 @@ import sys
 from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 
-if len(sys.argv) not in (2, 3):
+if len(sys.argv) not in (2, 3, 4):
     sys.exit(__doc__)
 BRAIN, OUT = Path(__file__).resolve().parents[2], Path(sys.argv[1]).resolve()
-PROCESSI = int(sys.argv[2]) if len(sys.argv) == 3 else 2
+PROCESSI = int(sys.argv[2]) if len(sys.argv) >= 3 else 2
+PREFISSI = tuple(sys.argv[3].split(",")) if len(sys.argv) == 4 else ("",)
 SUITE = ["brain.laboratorio.tests.test_esecuzione", "brain.laboratorio.tests.test_esegui_h002"]
 SG = "laboratorio/esecuzione/sigillo.py"
 K = "laboratorio/esecuzione/criteri.py"
@@ -135,12 +137,12 @@ def main():
     shutil.rmtree(OUT / "M00")
     print("M00 copia non mutata: suite verde", flush=True)
     with ThreadPoolExecutor(PROCESSI) as ex:
-        esiti = list(ex.map(lambda a: mutante(*a), [(i, n, s) for i, (n, s) in enumerate(M.items(), 1)]))
+        esiti = list(ex.map(lambda a: mutante(*a), [(i, n, s) for i, (n, s) in enumerate(M.items(), 1) if n.startswith(PREFISSI)]))
     for nome, esito in esiti:
         print(f"{esito:6} {nome}")
     uccisi = sum(1 for _, e in esiti if e == "UCCISO")
-    print(f"\n{uccisi}/{len(M)} mutanti uccisi ({sys.version.split()[0]})")
-    return 0 if uccisi == len(M) else 1
+    print(f"\n{uccisi}/{len(esiti)} mutanti uccisi ({sys.version.split()[0]})")
+    return 0 if uccisi == len(esiti) else 1
 
 
 if __name__ == "__main__":

@@ -142,3 +142,47 @@ Eseguiti i 43 test nel suo ambiente: verdi, codice di uscita 0. Non ha potuto co
 |---|---|---|
 | La scheda dichiarava 39 test, ma i test sono 43 | **accolto** | I numeri non stanno più nella scheda (invecchiano), ma qui |
 
+
+## Programma dei criteri e sigillo (notte del 14–15/11/2026, ramo `feat/esecutore-h002`, NON unito a main)
+- **Codice nuovo** in `laboratorio/esecuzione/`:
+  - `sigillo.py`: registro delle prove `registro-prove/1`, impronta SHA-256, niente doppio sigillo, verifica una volta sola;
+  - `criteri.py`: generico, riusabile per le ipotesi future;
+  - `caricatore.py`: modalità «sviluppo» e «verifica»;
+  - `esegui_h002.py`: esecutore e riga di comando;
+  - `sintetico.py`: mercati inventati, solo per le prove.
+- **Il sigillo NON è stato eseguito:** il registro vero `laboratorio/registro_prove.json` non esiste. La scheda v3.1 non è stata toccata: `git diff main -- H-002-ORB-v3.md` è vuoto.
+- **Prove su mercati inventati** (seme 3, 800 giorni di calendario, circa 433 trade per variante):
+
+  | mercato | V-T | V-S | esito |
+  |---|---|---|---|
+  | casuale | R medio −0,028 | R medio −0,029 | entrambe bocciate |
+  | vantaggio noto nella rottura (+0,01 USD al minuto) | R medio 0,250 | R medio 0,336 | entrambe promosse, tutti i 9 criteri |
+  | sola tendenza al rialzo | vendite −0,255 | vendite −0,437 | entrambe bocciate, anche dai benchmark |
+
+  Taratura del generatore: su 10 mercati casuali (semi 1–10) l'R medio è −0,046 (V-T) e −0,053 (V-S), cioè i costi.
+
+### Ambiguità della scheda v3.1 trovate scrivendo il programma (NON corrette: proposte per l'utente)
+| # | Punto | Cosa fa oggi il programma | Proposta |
+|---|---|---|---|
+| A1 | Criterio 6 senza vendite | Boccia: un valore mancante non passa | Tenere: senza vendite non si può mostrare l'indipendenza dalla tendenza |
+| A2 | Confronto casuale: quale percentile, quali giorni | Percentile a rango più vicino (ceil 0,95·n), «sopra» = strettamente maggiore. Giorni = quelli in cui esistono sia l'acquisto sia la vendita speculari (≥ 95% dei giorni della strategia nelle prove). L'R della strategia è quello di tutti i suoi trade | Scrivere nella v3.2 che strategia e confronto casuale si misurano sugli **stessi** giorni, come per i benchmark |
+| A3 | «60% degli anni solari positivi»: anni senza trade | Contati solo gli anni con trade (la funzione accetta anche l'elenco completo degli anni) | Contare tutti gli anni del periodo, con gli anni senza trade come non positivi (più severo) |
+| A4 | Veto con la base ≤ 0 | Veto. Non cambia nulla: il criterio 1 boccia già | Scriverlo |
+| A5 | DSR: asimmetria, curtosi e V | Momenti degli R per trade; V = max(1/(T−1), varianza empirica degli Sharpe delle altre varianti promosse sullo stesso periodo), come in `backtester/dsr.py` | Scrivere V nella scheda. Le non promosse non girano in verifica, quindi non entrano in V |
+| A6 | Sigillo prima anche dello sviluppo (§10) | La riga di comando rifiuta **qualunque** esecuzione senza sigillo; il caricatore in sviluppo non lo controlla (come chiesto dal mandato) | Tenere la versione più severa |
+| A7 | Due registri | Esiste ancora `laboratorio/trial_registry.json` del vecchio backtester (0 prove). N conta solo il registro nuovo | Congelare il vecchio (è vuoto) e dichiarare unico il nuovo (DA-19) |
+| A8 | Fine esatta della verifica | Il caricatore rifiuta solo le date dal 15/11/2023; DA-26 dice «circa il 31/10/2023» con embargo | Fissare la data esatta in DA-26 **prima** del sigillo; il caricatore rifiuterà l'embargo |
+| A9 | Riscaldamento | Le prime 20 sessioni di ogni periodo servono solo da storico (nessun trade possibile) | Scriverlo |
+| A10 | Verifica registrata prima del calcolo | Sì: se il programma cade a metà, la verifica conta comunque come eseguita | Tenere |
+| A11 | Ultimi 5 anni con il 2023 parziale | Il 2023 (gennaio–ottobre) conta come anno solare | Scriverlo, o usare gli ultimi 60 mesi |
+
+### Stato di test e mutanti del programma
+- 49 test nuovi (`test_esecuzione`: 31; `test_esegui_h002`: 18), verdi su Python 3.13 e 3.9.
+- Mutation testing: `tests/mutazioni_esecuzione.py`, 56 mutanti.
+  - Primo giro: 55/56 su entrambe le versioni. Sopravvissuto E12: senza `--varianti` la verifica si fermava solo dopo aver letto i dati sigillati.
+  - Aggiunto il test; secondo giro più sotto.
+
+## R7 · Revisioni del programma dei criteri (in attesa)
+- Gemini (Antigravity): replica indipendente e revisione del ramo.
+- DeepSeek: revisione del codice e delle ambiguità.
+- ChatGPT: doppia revisione con il pacchetto eseguibile.
