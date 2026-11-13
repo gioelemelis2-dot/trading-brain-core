@@ -117,6 +117,10 @@ Il G0 **non** è ancora utilizzabile per decidere: serve la riconciliazione con 
   - La «perdita massima 1,5%» indicata dall'utente è giornaliera, cioè coincide con P-05.
   - Scheda **non riconciliata** con la piattaforma (DA-25): finché non lo è, la scheda dichiara di non usarne i numeri per decidere.
 - **Gate 2, pronto ma NON chiuso:** lo storico reale e il `commitment.json` non esistono ancora.
+  - **13/11/2026, approvato dall'utente:** il sigillo sui 3 anni con 70/30 diventa **provvisorio**. L'Out-of-Sample (gli ultimi ~11 mesi) è già stato visto, sia dall'utente sia da Claude.
+  - Prima del sigillo definitivo: più anni di storico e un periodo vecchio di verifica (**DA-26**, bloccante). Il test finale è il futuro, cioè l'incubazione.
+  - Dal 13/11/2026 lo scaricamento sul Mac funziona: corretti la pazienza dei tentativi (`7154e1c`) e i timeout di Python 3.9 (`42cf512`).
+  - Fino alle ipotesi, nessuna analisi dei dati storici.
   - Dal container cloud il server Dukascopy rifiuta le richieste: prima il proxy (host poi consentito nell'ambiente cloud), poi il server stesso, con 429 e connessioni chiuse. I tentativi ripetuti sono stati fermati dal controllo dei permessi. Nessun dato è stato inventato o simulato al posto di quello reale.
   - Pronto `brain/dati/pipeline/dukascopy.py`, da eseguire **sul Mac**, dalla radice del repository: `python3 -s -B -m brain.dati.pipeline.dukascopy --anni 3`.
   - Cosa fa: scarica le candele BID da 1 minuto e le aggrega a 15 minuti UTC; controlla scala, OHLC, ordine e buchi; poi ingestione e partizione In-Sample 70% / Out-of-Sample 30%, con `commitment.json` e il nonce fuori dal repository (`~/.trading_brain/nonce/`).

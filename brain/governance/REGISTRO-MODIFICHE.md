@@ -291,3 +291,18 @@ Formato: data · versione della base · cosa · perché · file.
   - proposta sulle regole personali, rischi, decisioni aperte;
   - prompt per i revisori esterni.
 - Esportato in PDF per DeepSeek. Primo giro di domande all'utente in corso.
+
+## 2026-11-13 · v1.21 (contro l'autoinganno; DA-26)
+
+- **Autovalutazione di Claude**, chiesta dall'utente («stiamo procedendo come scienziati rigorosi?»). Problema principale: l'Out-of-Sample sui 3 anni (gli ultimi ~11 mesi) è già stato visto dall'utente e, a grandi linee, da Claude. Il sigillo impedisce di modificarlo, non di guardarlo.
+- **Contromisure approvate dall'utente:**
+  - il futuro (incubazione) come test finale;
+  - più anni e un periodo vecchio di verifica (nuova **DA-26**, bloccante per il Gate 2);
+  - seconda fonte di dati e costi veri prima di ogni risultato;
+  - replica indipendente Claude/Gemini e regole decise prima;
+  - «come lo sai?»;
+  - niente nuova infrastruttura fino alla prima ipotesi testata.
+- **Sigillo:** quello sui 3 anni con 70/30 è provvisorio.
+- **Scaricamento Dukascopy:** timeout di lettura, connessioni chiuse e risposte troncate sono nuovi tentativi (TDD: `994373f` rosso, `42cf512` verde). Su Python 3.9 `socket.timeout` non è un `TimeoutError` e faceva fermare lo script sul Mac.
+- **Utente:** circa 2 anni di trading, strategie passate non profittevoli. Le idee di partenza (Fibonacci e order block, anche insieme) diventano ipotesi da sigillare al Gate 3; i dettagli si scrivono prima di guardare i dati.
+- **Percorso:** FTMO solo dopo una lunga incubazione su più conti demo gratuiti di broker diversi; nessuna data.

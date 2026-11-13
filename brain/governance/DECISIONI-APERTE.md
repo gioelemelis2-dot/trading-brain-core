@@ -249,6 +249,18 @@ DA-13 rulebook (Q-09) ──► DA-11 G0 minimo ──► DA-12 indicatori compo
 - Un estratto conto, anche demo, per la riconciliazione: senza riconciliazione il G0 non si usa per decidere.
 - Dettaglio in `guardian/regole/LEGGIMI.md`.
 
+## I. Dati e autoinganno (13/11/2026)
+
+### DA-26 · Partizione dei dati prima del sigillo · **bloccante per il Gate 2**
+- **Problema:** il sigillo (`commitment.json`) prova che i dati Out-of-Sample non sono stati modificati, non che nessuno li abbia guardati. Con 3 anni e una divisione 70/30, l'Out-of-Sample sono gli ultimi ~11 mesi. L'utente li ha visti sui grafici, e Claude ne conosce l'andamento a grandi linee dall'addestramento: il test non è davvero cieco.
+- **Contromisura approvata dall'utente il 13/11/2026:**
+  - più anni di storico;
+  - un periodo vecchio tenuto come verifica;
+  - il futuro, cioè l'incubazione sui conti demo, come test finale.
+- **Da decidere:** quanti anni (prima va verificato da quale anno Dukascopy ha XAUUSD), quale periodo di sviluppo, quale periodo di verifica.
+- **Fino ad allora:** il sigillo sui 3 anni con 70/30 è provvisorio e non va pubblicato come definitivo.
+- Le altre contromisure approvate (seconda fonte di dati, costi veri, replica indipendente, regole decise prima, «come lo sai?», niente nuova infrastruttura) sono nel documento «Trading Brain — Progetto generale», sezione «Contro l'autoinganno».
+
 ---
 
 ## Fonti di questo registro
