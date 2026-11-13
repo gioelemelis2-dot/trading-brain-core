@@ -350,6 +350,32 @@ DA-13 rulebook (Q-09) ──► DA-11 G0 minimo ──► DA-12 indicatori compo
   - in demo, un arresto sequenziale al posto della regola grezza dei 100 trade;
   - per Fibonacci e order block, ogni variante di tracciamento conta come una prova.
 
+### DA-30 · Esecuzione automatica della strategia H-001 sul conto demo
+**Deciso dall'utente il 14/11/2026:** la strategia di scalping nei micro-range (H-001) sarà **automatizzata fin dall'inizio** sul conto demo, dopo revisione e test. Non sarà eseguita a mano.
+
+**Proposta di Claude (da confermare):**
+- **Strumento:** Expert Advisor in MQL5 su MetaTrader 5. Il pacchetto Python per MetaTrader 5 funziona solo su Windows; l'utente usa un Mac.
+- **Percorso, nessun passo saltato:**
+  1. Scheda H-001 completata con le risposte dell'utente e **sigillata**.
+  2. Spread e commissioni reali misurati sul conto demo (FP Markets).
+  3. Motore di backtest a 1 minuto con ordini limite, in Python, scritto da Claude in TDD e rivisto da Gemini.
+  4. Backtest sullo sviluppo; se passa i criteri scritti, **una sola** verifica sul periodo sigillato.
+  5. **Replica indipendente:** Gemini scrive l'Expert Advisor in MQL5 partendo dalla sola scheda sigillata, senza leggere il codice Python di Claude. I trade dell'Expert Advisor nel tester di MT5 e quelli del backtest Python sullo stesso periodo devono coincidere; ogni differenza è un errore da trovare.
+  6. Demo automatica, con controllo di fedeltà nei primi 20–30 trade e test sequenziale di Wald (DA-29).
+- **Protezioni dentro l'Expert Advisor** (sono parte della strategia, non del Guardian: D-16 resta invariata):
+  - si rifiuta di operare se il conto non è demo (`ACCOUNT_TRADE_MODE_DEMO`);
+  - rischio per trade P-01; stop giornaliero P-05; una posizione alla volta (P-06);
+  - finestra notizie P-08;
+  - numero massimo di trade al giorno;
+  - stop obbligatorio su ogni ordine;
+  - registro di ogni ordine, da riportare nel journal.
+- **Regole personali:** P-11 e P-12 riguardano il trading manuale. Per l'Expert Advisor valgono i suoi limiti scritti; l'utente non interviene a mano sui trade dell'Expert Advisor.
+- **Da verificare:**
+  - MT5 per Mac del broker con Expert Advisor funzionanti;
+  - Mac acceso e collegato nelle ore di trading, oppure un VPS (ha un costo: decide l'utente);
+  - regole FTMO sugli Expert Advisor e sulle «pratiche vietate», prima di qualunque passaggio a FTMO.
+- **Soldi veri:** mai senza autorizzazione esplicita (D-14).
+
 ---
 
 ## Fonti di questo registro
