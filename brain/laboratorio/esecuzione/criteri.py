@@ -5,7 +5,7 @@ nel formato di `simulatori.orb_londra.metriche`. Le soglie sono parametri con i 
 """
 import math
 import random
-from statistics import mean, stdev
+from statistics import mean, stdev, variance
 from typing import Dict, Iterable, List, Optional, Sequence, Tuple
 
 from ..backtester.dsr import DSRCalculator
@@ -126,15 +126,21 @@ def _momenti(rs: List[float]) -> Tuple[float, float]:
 
 
 def verifica(tr: List[dict], n_prove: int, dsr_min: float = 0.95, quota_anni: float = 0.6, ultimi: int = 5,
-             dd_max: float = 15.0, anni: Optional[Iterable[int]] = None) -> dict:
+             dd_max: float = 15.0, anni: Optional[Iterable[int]] = None,
+             sharpe_prove: Optional[List[float]] = None) -> dict:
     """I 5 criteri della verifica sigillata. DSR di Bailey e López de Prado sullo Sharpe per trade, con N = prove
-    nel registro, T = numero di trade, asimmetria e curtosi degli R per trade."""
+    nel registro, T = numero di trade, asimmetria e curtosi degli R per trade.
+    V (varianza degli Sharpe delle prove) come in backtester/dsr.py: max(1/(T − 1), varianza empirica degli Sharpe
+    `sharpe_prove` delle ALTRE varianti eseguite sullo stesso periodo più quello di questa)."""
     rs = [x["r"] for x in sorted(tr, key=lambda x: x["data"])]
     dsr = sr = None
     if len(rs) > 1 and stdev(rs) > 0:
         sr = mean(rs) / stdev(rs)
         asim, curt = _momenti(rs)
-        dsr, _ = DSRCalculator.calculate_dsr_analytical(sr, n_prove, len(rs), asim, curt)
+        v = 1.0 / (len(rs) - 1)
+        if sharpe_prove:
+            v = max(v, variance(list(sharpe_prove) + [sr]))
+        dsr, _ = DSRCalculator.calculate_dsr_analytical(sr, n_prove, len(rs), asim, curt, varianza_sr_prove=v)
     r = mean(rs) if rs else None
     if rs:
         ultimo = max(x["data"].year for x in tr)

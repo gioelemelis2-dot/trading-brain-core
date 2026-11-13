@@ -122,7 +122,7 @@ class TestCasiLimite(unittest.TestCase):
         r = E.esegui_verifica(bid, ask, ["V-T"], n_prove=2)
         self.assertTrue(r["varianti"]["V-T"]["verifica"]["promossa"], r["varianti"]["V-T"]["verifica"])
         self.assertNotIn("V-S", r["varianti"])
-        self.assertEqual(len(r["sharpe_prove"]), 2)                          # V usa gli Sharpe di tutte le varianti
+        self.assertEqual(list(r["sharpe_prove"]), ["V-T"])                  # solo le promosse girano in verifica
         bid, ask = SN.mercato(date(2008, 1, 1), 800, seme=4, sd=0.7)
         self.assertFalse(E.esegui_verifica(bid, ask, ["V-T", "V-S"], n_prove=2)["varianti"]["V-S"]["verifica"]["promossa"])
         with self.assertRaises(ValueError):
