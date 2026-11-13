@@ -348,6 +348,6 @@ Formato: data · versione della base · cosa · perché · file.
 - **TDD:**
   - `ecbae88` rosso, `7cf50ae` verde: sigillo e registro delle prove, criteri generici, caricatore BID/ASK;
   - `c8ef3aa` rosso, `78f41e4` verde: esecutore di H-002 e prove su mercati inventati.
-- **Mutation testing** (`laboratorio/tests/mutazioni_esecuzione.py`, 56 mutanti): primo giro 55/56 su Python 3.13 e 3.9. Il sopravvissuto E12 è ucciso da un test aggiunto (`fdf4afe`).
+- **Mutation testing** (`laboratorio/tests/mutazioni_esecuzione.py`, 56 mutanti): primo giro 55/56 su Python 3.13 e 3.9. Il sopravvissuto E12 è ucciso da un test aggiunto (`fdf4afe`). Secondo giro intero: 56/56 su entrambe.
 - **Nessun dato reale usato, nessuna richiesta a Dukascopy, nessun sigillo.** Scheda H-002 v3.1 invariata; ambiguità A1–A11 in `laboratorio/ipotesi/H-002-REVISIONI.md`.
 - **Quaderno delle ipotesi** `laboratorio/ipotesi/QUADERNO-IPOTESI.md`: 10 idee dalla letteratura, senza dati; fonti incerte segnate.

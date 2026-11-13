@@ -180,7 +180,8 @@ Eseguiti i 43 test nel suo ambiente: verdi, codice di uscita 0. Non ha potuto co
 - 49 test nuovi (`test_esecuzione`: 31; `test_esegui_h002`: 18), verdi su Python 3.13 e 3.9.
 - Mutation testing: `tests/mutazioni_esecuzione.py`, 56 mutanti.
   - Primo giro: 55/56 su entrambe le versioni. Sopravvissuto E12: senza `--varianti` la verifica si fermava solo dopo aver letto i dati sigillati.
-  - Aggiunto il test; secondo giro più sotto.
+  - Aggiunto il test (`fdf4afe`). **Secondo giro, intero: 56/56 su Python 3.13.18 e 56/56 su 3.9.25.**
+- Regressioni: suite di `dati/tests` e `laboratorio/tests` (11 moduli, 183 test) e Guardian (77 test) verdi.
 
 ## R7 · Revisioni del programma dei criteri (in attesa)
 - Gemini (Antigravity): replica indipendente e revisione del ramo.
