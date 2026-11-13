@@ -163,6 +163,9 @@ class TestPartizione(unittest.TestCase):
         esito = PD.verifica(self.dati, finto, TRE, "00" * 32)
         self.assertFalse(esito["valido"])
         self.assertFalse(esito["partizione"])
+        # il sigillo dei blocchi di verifica (ruolo preso dalla partizione) è controllato comunque, e fallisce
+        self.assertEqual(esito["blocchi"]["verifica_recente"]["commitment"], False)
+        self.assertEqual(esito["blocchi"]["verifica_vecchia"]["commitment"], False)
 
     def test_partizione_o_protocollo_diversi_scoperti(self):
         PD.partiziona(self.cc, TRE, self.dati, self.nonce, partizione_sha256="00" * 32)

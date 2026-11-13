@@ -158,19 +158,37 @@ def partiziona(candele: List[Candle], partizione: dict, cartella: Path, cartella
     return commitment
 
 
-def verifica(cartella: Path, file_nonce: Path) -> Dict[str, Any]:
-    """Ricalcola SHA-256 e sigilli di ogni blocco. `commitment` è None per i blocchi di sviluppo."""
+def _uguali(a: Any, b: Any) -> bool:
+    return isinstance(a, str) and isinstance(b, str) and secrets.compare_digest(a, b)
+
+
+def verifica(cartella: Path, file_nonce: Path, partizione: dict, partizione_sha256: str) -> Dict[str, Any]:
+    """Ricalcola SHA-256 e sigilli di ogni blocco. I blocchi e i loro ruoli vengono dalla PARTIZIONE (il file TOML
+    pubblicato: passare il risultato di `leggi(file)`), non da commitment.json: altrimenti basterebbe declassare un
+    blocco di verifica a «sviluppo» nel commitment per non controllarne il sigillo (rilievo di Gemini G3-02).
+    `commitment` è None per i blocchi di sviluppo; `partizione` dice se il commitment corrisponde al file."""
     cartella = Path(cartella)
+    attesi = valida(partizione)
     comm = json.loads((cartella / "commitment.json").read_text(encoding="utf-8"))
+    descritti = comm.get("blocchi") if isinstance(comm.get("blocchi"), list) else []
+    chiavi = ("nome", "ruolo", "inizio", "fine")
+    ok_part = (comm.get("protocol") == PROTOCOLLO and _uguali(comm.get("partizione_sha256"), partizione_sha256)
+               and comm.get("symbol") == partizione["simbolo"]
+               and comm.get("embargo_giorni") == partizione["embargo_giorni"]
+               and [tuple(d.get(k) for k in chiavi) for d in descritti if isinstance(d, dict)]
+               == [tuple(b[k] for k in chiavi) for b in attesi])
+    per_nome = {d.get("nome"): d for d in descritti if isinstance(d, dict)}
     nonce_hex = Path(file_nonce).read_text(encoding="utf-8").strip()
     esito: Dict[str, Dict[str, Optional[bool]]] = {}
-    for d in comm["blocchi"]:
-        testo = (cartella / f"{d['nome']}.jsonl").read_text(encoding="utf-8")
-        ok_sha = secrets.compare_digest(hashlib.sha256(testo.encode("utf-8")).hexdigest(), d["sha256"])
+    for b in attesi:
+        d = per_nome.get(b["nome"], {})
+        f = cartella / f"{b['nome']}.jsonl"
+        testo = f.read_text(encoding="utf-8") if f.exists() else None
+        ok_sha = testo is not None and _uguali(hashlib.sha256(testo.encode("utf-8")).hexdigest(), d.get("sha256"))
         ok_comm = None
-        if d["ruolo"] == "verifica":
-            ok_comm = secrets.compare_digest(hashlib.sha256((nonce_hex + testo).encode("utf-8")).hexdigest(),
-                                             d["commitment_hash"])
-        esito[d["nome"]] = {"sha256": ok_sha, "commitment": ok_comm}
-    valido = all(e["sha256"] and e["commitment"] is not False for e in esito.values())
-    return {"valido": valido, "blocchi": esito}
+        if b["ruolo"] == "verifica":
+            ok_comm = testo is not None and _uguali(
+                hashlib.sha256((nonce_hex + testo).encode("utf-8")).hexdigest(), d.get("commitment_hash"))
+        esito[b["nome"]] = {"sha256": ok_sha, "commitment": ok_comm}
+    valido = ok_part and all(e["sha256"] and e["commitment"] is not False for e in esito.values())
+    return {"valido": valido, "partizione": ok_part, "blocchi": esito}

@@ -183,6 +183,14 @@ class DSRCalculator:
         nulla, 1/(T - 1). Senza sqrt(V) (versione precedente) la soglia era in unità sbagliate e, per Sharpe per
         trade, bocciava qualunque strategia già con N = 2.
         """
+        for nome, x in (("sharpe_estimated", sharpe_estimated), ("skewness", skewness), ("kurtosis", kurtosis),
+                        ("benchmark_sharpe", benchmark_sharpe)):
+            if isinstance(x, bool) or not isinstance(x, (int, float)) or not math.isfinite(x):
+                raise ValueError(f"{nome} deve essere un numero finito: {x!r}")       # NaN diventava DSR = 1,0
+        if isinstance(num_trials, bool) or not isinstance(num_trials, int) or num_trials < 1:
+            raise ValueError(f"num_trials deve essere un intero >= 1: {num_trials!r}")
+        if isinstance(track_record_length, bool) or not isinstance(track_record_length, int):
+            raise ValueError(f"track_record_length deve essere un intero: {track_record_length!r}")
         if varianza_sr_prove is not None and not (math.isfinite(varianza_sr_prove) and varianza_sr_prove > 0):
             raise ValueError(f"varianza_sr_prove deve essere finita e positiva: {varianza_sr_prove!r}")
         if track_record_length <= 1:
@@ -340,7 +348,9 @@ class DSRCalculator:
                     valore=Decimal(str(round(dsr_float, 6))),
                     unita="", tipo="STIMA", operazione="inferenza", fonte="DSRCalculator",
                     incertezza=f"+/-{round(std_sr, 4)}",
-                    nota=(f"Deflated Sharpe Ratio (N={max(1, num_trials)} trials; varianza degli Sharpe = "
+                    nota=(f"Deflated Sharpe Ratio (N={max(1, num_trials)} trials; soglia 0: nessuna selezione fra più "
+                          f"prove)" if num_trials <= 1 else
+                          f"Deflated Sharpe Ratio (N={num_trials} trials; varianza degli Sharpe = "
                           f"{'empirica delle prove' if v_emp > v_nulla else 'sotto ipotesi nulla 1/(T-1)'} "
                           f"{round(varianza, 6)})"),
                 )

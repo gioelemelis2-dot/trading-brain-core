@@ -328,3 +328,16 @@ Formato: data · versione della base · cosa · perché · file.
 - **Mutation testing:** nuovo `dati/tests/mutazioni_dsr_partizione.py`, 26/26 su Python 3.13 e 3.9. Al primo giro il mutante P11 (la verifica ignorava il sigillo) era sopravvissuto: aggiunto un test.
 - **Divisione del lavoro in `LOCK.md`:** Claude corregge; Gemini prepara vettori di prova indipendenti per il DSR e rivede il ramo.
 - **Merge su main solo con l'autorizzazione dell'utente,** dopo la revisione di Gemini.
+
+## 2026-11-13 · v1.24 (revisione dura di Gemini sul ramo: 6 difetti corretti)
+
+- **Revisione di Gemini** G-20261113-03 sul commit `2d16a46`. Claude ha riprodotto tutti i rilievi prima di correggerli; esiti in `collaborazione/da-claude/ESITI.md`.
+  - G3-01: DSR con NaN = 1,0.
+  - G3-02: verifica aggirabile declassando tutti i blocchi di verifica.
+  - G3-03: buchi lunghi di giorno e picchi dentro la candela non fermavano.
+  - G3-04: CSV scritto prima del controllo del nonce.
+  - G3-06: record binari non validi.
+  - G3-05 resta aperto (con DA-19 e DA-28).
+- **Correzioni** in TDD: `d0c8c4d` rosso, poi verde.
+- **Mutation testing:** 40 mutanti (14 nuovi), 40/40 su Python 3.13 e 3.9. Al primo giro il mutante P14 (ruoli presi dal commitment) era sopravvissuto: aggiunto un controllo sul sigillo dei blocchi declassati.
+- **Collaborazione:** Gemini ha lavorato in un worktree separato senza toccare i file di Claude. I suoi rami sono stati pubblicati dall'utente.

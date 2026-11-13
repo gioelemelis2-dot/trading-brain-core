@@ -33,6 +33,11 @@ M = {
     "D05 varianza non valida accettata": [
         (DS, "not (math.isfinite(varianza_sr_prove) and varianza_sr_prove > 0)", "False")],
     "D06 Sharpe registrati ignorati": [(DS, "campione = sr_registrati + [sharpe_float]", "campione = [sharpe_float]")],
+    "D08 NaN e infiniti accettati (G3-01)": [
+        (DS, "if isinstance(x, bool) or not isinstance(x, (int, float)) or not math.isfinite(x):", "if False:")],
+    "D09 N < 1 accettato (G3-01)": [(DS, "or num_trials < 1:", ":")],
+    "D10 T non intero accettato": [
+        (DS, "if isinstance(track_record_length, bool) or not isinstance(track_record_length, int):", "if False:")],
     "D07 secondo termine con N invece di N e": [
         (DS, "inv_cdf(1.0 - 1.0 / (num_trials * math.e))", "inv_cdf(1.0 - 1.0 / num_trials)")],
     # --- partizione per date ---
@@ -50,8 +55,18 @@ M = {
     "P09 blocchi vuoti ammessi": [(PD, "if vuoti:", "if False:")],
     "P10 simbolo non controllato": [(PD, 'if simboli != {partizione["simbolo"]}:', "if False:")],
     "P11 verifica ignora il sigillo": [
-        (PD, 'valido = all(e["sha256"] and e["commitment"] is not False for e in esito.values())',
-         'valido = all(e["sha256"] for e in esito.values())')],
+        (PD, 'valido = ok_part and all(e["sha256"] and e["commitment"] is not False for e in esito.values())',
+         'valido = ok_part and all(e["sha256"] for e in esito.values())')],
+    "P14 ruoli presi dal commitment (G3-02)": [
+        (PD, 'if b["ruolo"] == "verifica":\n            ok_comm = testo', 'if d.get("ruolo") == "verifica":\n            ok_comm = testo')],
+    "P15 SHA-256 della partizione ignorato": [
+        (PD, '_uguali(comm.get("partizione_sha256"), partizione_sha256)', "True")],
+    "P16 protocollo ignorato": [(PD, 'comm.get("protocol") == PROTOCOLLO and ', "")],
+    "P17 blocchi del commitment non confrontati con la partizione": [
+        (PD, "== [tuple(b[k] for k in chiavi) for b in attesi])",
+         "== [tuple(d.get(k) for k in chiavi) for d in descritti if isinstance(d, dict)])")],
+    "P18 corrispondenza con la partizione ignorata nel verdetto": [
+        (PD, "valido = ok_part and all(", "valido = True and all(")],
     "P12 embargo negativo ammesso": [(PD, "or emb < 0:", "or False:")],
     "P13 candele escluse non contate": [(PD, "            escluse += 1", "            escluse += 0")],
     # --- scaricatore ---
@@ -63,6 +78,12 @@ M = {
         (DK, '    raise ErroreDati(f"{simbolo}: nessuna banda', '    return Decimal(0), Decimal(10**9)\n    raise ErroreDati(f"{simbolo}: nessuna banda')],
     "K05 sigillo anche senza partizione decisa": [(DK, "    if partizione is None:\n        info_partizione",
                                                    "    if False:\n        info_partizione")],
+    "K07 chiusura lunga di giorno accettata (G3-03)": [(DK, "if fine.hour >= 17:", "if True:")],
+    "K08 ampiezza della candela ignorata (G3-03)": [(DK, 'if c["high"] / c["low"] > SALTO_MAX:', "if False:")],
+    "K09 secondi fuori dal giorno accettati (G3-06)": [(DK, "if not 0 <= sec < 86400:", "if False:")],
+    "K10 volume non finito accettato (G3-06)": [(DK, "if not math.isfinite(vol):", "if False:")],
+    "K11 prezzo non positivo accettato (G3-06)": [(DK, "        if lo <= 0:", "        if False:")],
+    "K12 nonce controllato solo dopo aver scritto (G3-04)": [(DK, "if vecchio.exists():", "if False:")],
     "K06 periodo fino alla fine esclusa": [
         (DK, 'blocchi[-1]["fine_utc"].date() - timedelta(days=1)', 'blocchi[-1]["fine_utc"].date()')],
 }

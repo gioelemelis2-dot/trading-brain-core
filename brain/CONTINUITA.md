@@ -129,8 +129,9 @@ Il G0 **non** è ancora utilizzabile per decidere: serve la riconciliazione con 
   - **DSR:** prima, con N ≥ 2, bocciava tutto. Ora usa la scala sqrt(V).
   - **Partizione per date** con embargo; senza partizione decisa non si sigilla.
   - **Bande di prezzo per periodo** e controllo dei salti di scala.
-  - **Test:** 63/63 su Python 3.13 e 3.9; nuovi mutanti 26/26 su entrambe le versioni; vecchi mutanti del laboratorio 31/31.
-  - **Prima del merge:** revisione di Gemini, con i suoi vettori di prova indipendenti per il DSR.
+  - **Revisione di Gemini** (G-20261113-02 e G-20261113-03): 30/30 vettori del DSR coincidenti. Trovati 6 difetti veri, riprodotti e corretti da Claude in TDD; resta aperto solo G3-05 (con DA-19 e DA-28).
+  - **Test:** 73/73 su Python 3.13 e 3.9; mutanti 40/40 su entrambe le versioni; laboratorio 31/31; guardian OK.
+  - **Merge su main** solo con l'autorizzazione dell'utente.
 - **Risposte dell'utente del 13/11/2026 (DA-29):**
   - weekend chiuso;
   - obiettivo «in positivo», l'1–2% al mese va bene;

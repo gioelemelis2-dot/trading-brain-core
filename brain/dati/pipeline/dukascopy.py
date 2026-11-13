@@ -32,6 +32,7 @@ import hashlib
 import http.client
 import json
 import lzma
+import math
 import os
 import platform
 import struct
@@ -125,8 +126,14 @@ def decodifica(dati: bytes, giorno: date, cifre: int) -> List[tuple]:
     inizio = datetime(giorno.year, giorno.month, giorno.day, tzinfo=timezone.utc)
     minuti = []
     for sec, o, c, lo, hi, vol in RECORD.iter_unpack(grezzo):
+        if not 0 <= sec < 86400:
+            raise ErroreDati(f"{giorno}: secondi {sec} fuori dal giorno")
+        if not math.isfinite(vol):
+            raise ErroreDati(f"{giorno} +{sec}s: volume non finito ({vol})")
         if vol <= 0:
             continue                                           # minuto senza scambi (mercato chiuso o fermo)
+        if lo <= 0:
+            raise ErroreDati(f"{giorno} +{sec}s: prezzo non positivo")
         o, c, lo, hi = (Decimal(x).scaleb(-cifre) for x in (o, c, lo, hi))
         if not (lo <= min(o, c) and hi >= max(o, c)):
             raise ErroreDati(f"{giorno} +{sec}s: OHLC incoerente (o={o} h={hi} l={lo} c={c})")
@@ -164,7 +171,11 @@ def classifica_buco(fine: datetime, inizio_successivo: datetime) -> str:
     if durata <= timedelta(hours=2) and 20 <= fine.hour <= 23:
         return "pausa giornaliera"
     if durata > timedelta(hours=2):
-        return "festività o chiusura lunga (da verificare)"
+        # Chiusure lunghe accettate solo se cominciano la sera (dalle 17:00 UTC): chiusure anticipate dei festivi
+        # USA, Natale, Capodanno, come le 22 dei dati 2023–2026. Di giorno è un buco del feed (rilievo G3-03).
+        if fine.hour >= 17:
+            return "festività o chiusura lunga (da verificare)"
+        return "ANOMALO (chiusura lunga in orario di mercato)"
     return "ANOMALO (in orario di mercato)"
 
 
@@ -191,6 +202,9 @@ def controlla(candele: List[dict], simbolo: str = "XAUUSD") -> dict:
                                  f"(scala o strumento sbagliati?)")
         if not (c["low"] <= min(c["open"], c["close"]) and c["high"] >= max(c["open"], c["close"])):
             raise ErroreDati(f"{c['open_time'].isoformat()}: OHLC incoerente")
+        if c["high"] / c["low"] > SALTO_MAX:
+            raise ErroreDati(f"{c['open_time'].isoformat()}: ampiezza della candela da {c['low']} a {c['high']} "
+                             f"(picco anomalo o scala sbagliata?)")
         if i:
             p = candele[i - 1]
             if c["open_time"] < p["close_time"]:
@@ -251,6 +265,9 @@ def esegui(simbolo: str, inizio: date, fine: date, cartella_reali: Path, cartell
             raise ErroreDati(f"partizione per {partizione['simbolo']}, dati di {simbolo}")
         if not isinstance(partizione_sha256, str):
             raise ValueError("partizione_sha256 obbligatorio con la partizione")
+        vecchio = Path(cartella_nonce) / partizione_date.NONCE
+        if vecchio.exists():                                   # prima di scaricare e scrivere (rilievo G3-04)
+            raise FileExistsError(17, "nonce già presente: non si sovrascrive un sigillo", str(vecchio))
 
     cifre = SCALA[simbolo]
     minuti, giorni_vuoti, giorno = [], 0, inizio
