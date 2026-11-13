@@ -25,8 +25,7 @@ Stato generale:
 |---|---|---|---|---|
 | Scaricamento XAUUSD da Dukascopy (Gate 2) | `dati/reali/` (dati esclusi da git) | utente, sul Mac | 2026-11-12 | fine del ciclo; poi DA-26 |
 | Revisione critica indipendente di DA-26, DA-27, DA-28 e del piano di diversificazione | sola lettura; rapporto in `da-gemini/` | Gemini | alla richiesta dell'utente | — |
-| Correzione del DSR (scala di Bailey e López de Prado) e partizione per date con blocchi, embargo e prezzi plausibili per periodo (autorizzata dall'utente il 13/11/2026) | `laboratorio/backtester/dsr.py`, `dati/pipeline/dukascopy.py`, `dati/pipeline/partitioning.py`, nuovi file in `dati/pipeline/` e `dati/reali/`, test di `dati/tests/` e `laboratorio/tests/` | Claude, ramo `fix/dsr-e-partizione-date` | 2026-11-13 | revisione di Gemini, poi merge con autorizzazione dell'utente |
-| Vettori di prova indipendenti per il DSR e revisione critica del ramo di Claude | sola lettura del codice; rapporto in `da-gemini/` | Gemini | 2026-11-13 | — |
+| Scaricamento XAUUSD dal 2005 (senza sigillo) e conteggio dei buchi per anno, per decidere DA-26 | `dati/reali/` (dati esclusi da git) | utente, sul Mac | dopo il merge | — |
 | Estensione dello scaricatore a più strumenti (fase D1) | `dati/pipeline/dukascopy.py`, `dati/tests/` | Claude | dopo DA-26 e DA-27 | — |
 
 ## Sospese (D-10)
@@ -40,6 +39,7 @@ Stato generale:
 ## Concluse
 | Attività | Chi | Data | Esito |
 |---|---|---|---|
+| Correzione del DSR, partizione per date, controlli dei dati (ramo `fix/dsr-e-partizione-date`) e revisioni di Gemini G-20261113-01…04 | Claude e Gemini | 2026-11-13 | merge su main autorizzato dall'utente, commit `8ba5373`; aperti G3-05, G3-07, G4-01 |
 | Sprint S1 | Claude | 2026-11-11 | commit `fbb5256` |
 | Sprint S2 | Claude | 2026-11-11 | commit `9cbcca4` |
 | Preparazione della prima revisione reciproca | Claude | 2026-11-11 | vedi REGISTRO-MODIFICHE |
