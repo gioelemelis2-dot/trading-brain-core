@@ -25,6 +25,8 @@ Stato generale:
 |---|---|---|---|---|
 | Scaricamento XAUUSD da Dukascopy (Gate 2) | `dati/reali/` (dati esclusi da git) | utente, sul Mac | 2026-11-12 | fine del ciclo; poi DA-26 |
 | Revisione critica indipendente di DA-26, DA-27, DA-28 e del piano di diversificazione | sola lettura; rapporto in `da-gemini/` | Gemini | alla richiesta dell'utente | — |
+| Correzione del DSR (scala di Bailey e López de Prado) e partizione per date con blocchi, embargo e prezzi plausibili per periodo (autorizzata dall'utente il 13/11/2026) | `laboratorio/backtester/dsr.py`, `dati/pipeline/dukascopy.py`, `dati/pipeline/partitioning.py`, nuovi file in `dati/pipeline/` e `dati/reali/`, test di `dati/tests/` e `laboratorio/tests/` | Claude, ramo `fix/dsr-e-partizione-date` | 2026-11-13 | revisione di Gemini, poi merge con autorizzazione dell'utente |
+| Vettori di prova indipendenti per il DSR e revisione critica del ramo di Claude | sola lettura del codice; rapporto in `da-gemini/` | Gemini | 2026-11-13 | — |
 | Estensione dello scaricatore a più strumenti (fase D1) | `dati/pipeline/dukascopy.py`, `dati/tests/` | Claude | dopo DA-26 e DA-27 | — |
 
 ## Sospese (D-10)
