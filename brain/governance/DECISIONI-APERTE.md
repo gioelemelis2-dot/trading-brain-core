@@ -322,10 +322,12 @@ DA-13 rulebook (Q-09) ──► DA-11 G0 minimo ──► DA-12 indicatori compo
     - C'è evidenza se è ≥ +27,7 + 0,05 × n.
     - Dopo 600 trade senza decisione: «non dimostrata».
     - Le soglie si ricalcolano con la σ vera della strategia.
-  - **Simulazione di Claude** (6.000 strategie per caso, σ = 1R):
-    - senza vantaggio: fermata nell'86% dei casi, promossa per errore nel 3,6%, indecisa nel 10%;
-    - con +0,10R: promossa nel 63%, fermata per errore nel 17%, indecisa nel 20%, circa 350 trade in media.
-    - La vecchia regola (100 trade) lasciava sopravvivere il 38% delle strategie senza vantaggio.
+  - **Simulazione riproducibile** (`laboratorio/studi/simulazione_sprt.py`, seme fisso, output identico su Python 3.13 e 3.9):
+    - 6.000 sequenze di trade inventate per ogni livello di vantaggio, con risultati estratti da una normale di dispersione 1R. Non sono strategie reali;
+    - senza vantaggio: fermata nell'86,2% dei casi, promossa per errore nel 3,7%, indecisa nel 10,1%;
+    - con +0,10R: promossa nel 64,3%, fermata per errore nel 17,1%, indecisa nel 18,6%, 348 trade in media;
+    - la vecchia regola (100 trade) lasciava sopravvivere il 39,2% delle sequenze senza vantaggio.
+    - Probabilità di passare la fase 1 FTMO: la formula coincide con la simulazione entro circa 2 punti.
   - **Conseguenza:** la demo da sola non dimostra in fretta un vantaggio piccolo: 350 trade a 3 a settimana sono più di 2 anni. Il peso statistico lo porta il backtest lungo (DSR con tutte le prove). La demo verifica la fedeltà e che i risultati non contraddicano il backtest. Più strategie in parallelo accorciano i tempi.
   - **CUSUM:** per controllare se il vantaggio si esaurisce dopo la promozione, più avanti, su FTMO.
 - **Da aggiungere (Gemini G-20261113-01, accolto da Claude):**
