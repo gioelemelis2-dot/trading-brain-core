@@ -26,7 +26,7 @@ class Parametri:
     fine_sessione: time = time(16, 30)
     target_r: Optional[float] = 1.5                            # None = variante V-S (uscita a fine sessione)
     tetto: float = 2.0                                         # A ≤ tetto × mediana delle 20 sessioni valide precedenti
-    a_min: float = 3.0                                         # A ≥ 6 × 0,50 USD
+    molt_costi: float = 6.0                                    # A ≥ 6 × costo per trade di riferimento
     sessioni_rif: int = 20
     minuti_or_min: float = 0.8
     rischio_min_a: float = 0.25
@@ -35,6 +35,7 @@ class Parametri:
     slip_uscita: float = 0.20                                  # stop e uscita a fine sessione
     stress: float = 0.0                                        # USD in più contro, su ingresso e uscita
     rischio_usd: float = 500.0                                 # 0,5% di 100.000 USD (capitale fisso)
+    attesa_max: timedelta = timedelta(minutes=15)              # ingresso e uscita di fine sessione entro 15 minuti
 
 
 V_T = Parametri()
@@ -56,11 +57,56 @@ def pasqua(anno: int) -> date:
     return date(anno, mese, giorno)
 
 
-def esclusi(anno: int) -> set:
-    """Giorni esclusi noti in anticipo (§3): 24, 25, 26 e 31 dicembre, 1° gennaio, Venerdì Santo, lunedì di Pasqua."""
+# Festivi inglesi spostati o aggiunti per decreto (annunciati mesi prima, quindi noti in anticipo). Fonte: elenchi
+# ufficiali gov.uk dei bank holiday; date da conoscenza di Claude, da verificare sulla fonte prima della verifica.
+SPOSTATI = {2012: (date(2012, 5, 28), date(2012, 6, 4)), 2020: (date(2020, 5, 4), date(2020, 5, 8)),
+            2022: (date(2022, 5, 30), date(2022, 6, 2))}
+AGGIUNTI = {2011: [date(2011, 4, 29)], 2012: [date(2012, 6, 5)], 2022: [date(2022, 6, 3), date(2022, 9, 19)],
+            2023: [date(2023, 5, 8)]}
+
+
+def festivi_inglesi(anno: int) -> set:
+    """Bank holiday di Inghilterra e Galles: Capodanno, Venerdì Santo, lunedì di Pasqua, primo e ultimo lunedì di
+    maggio, ultimo lunedì di agosto, Natale e Santo Stefano, con i giorni sostitutivi quando cadono nel fine
+    settimana, più gli spostamenti e le aggiunte straordinarie."""
+    def primo_lunedi(m):
+        d = date(anno, m, 1)
+        while d.weekday() != 0:
+            d += timedelta(days=1)
+        return d
+
+    def ultimo_lunedi(m):
+        d = date(anno, m + 1, 1) - timedelta(days=1)
+        while d.weekday() != 0:
+            d -= timedelta(days=1)
+        return d
+
+    capodanno = date(anno, 1, 1)
+    while capodanno.weekday() >= 5:
+        capodanno += timedelta(days=1)
     p = pasqua(anno)
-    return {date(anno, 12, 24), date(anno, 12, 25), date(anno, 12, 26), date(anno, 12, 31), date(anno, 1, 1),
-            p - timedelta(days=2), p + timedelta(days=1)}
+    s = {capodanno, p - timedelta(days=2), p + timedelta(days=1), primo_lunedi(5), ultimo_lunedi(5), ultimo_lunedi(8)}
+    natale = date(anno, 12, 25)
+    if natale.weekday() == 5:                       # sabato: Natale → lunedì 27, Santo Stefano → martedì 28
+        s |= {date(anno, 12, 27), date(anno, 12, 28)}
+    elif natale.weekday() == 6:                     # domenica: Santo Stefano lunedì 26, Natale → martedì 27
+        s |= {date(anno, 12, 26), date(anno, 12, 27)}
+    elif natale.weekday() == 4:                     # venerdì: Santo Stefano (sabato) → lunedì 28
+        s |= {natale, date(anno, 12, 28)}
+    else:
+        s |= {natale, date(anno, 12, 26)}
+    if anno in SPOSTATI:
+        vecchio, nuovo = SPOSTATI[anno]
+        s.discard(vecchio)
+        s.add(nuovo)
+    s |= set(AGGIUNTI.get(anno, []))
+    return s
+
+
+def esclusi(anno: int) -> set:
+    """Giorni esclusi noti in anticipo (§3): festivi inglesi, più 24, 25, 26 e 31 dicembre e 1° gennaio."""
+    return festivi_inglesi(anno) | {date(anno, 12, 24), date(anno, 12, 25), date(anno, 12, 26), date(anno, 12, 31),
+                                    date(anno, 1, 1)}
 
 
 def _utc(giorno: date, ora: time) -> datetime:
@@ -76,7 +122,8 @@ class Giorno:
     valido: bool                      # tutte le condizioni del §3, filtro dell'ampiezza compreso
     motivo: str
     lato: Optional[str] = None        # "acquisto" / "vendita" / None
-    minuti: Optional[list] = None     # minuti eseguibili dall'ingresso al primo minuto ≥ fine sessione compreso
+    minuti: Optional[list] = None     # minuti eseguibili dall'ingresso al primo minuto ≥ fine sessione (se entro 15')
+    minuti_scartati: int = 0          # minuti con ASK sotto il BID (dato errato): non eseguibili
 
 
 def prepara(bid: Dict[datetime, Quota], ask: Dict[datetime, Quota], par: Parametri = V_T) -> List[Giorno]:
@@ -86,8 +133,12 @@ def prepara(bid: Dict[datetime, Quota], ask: Dict[datetime, Quota], par: Paramet
     for t in sorted(bid):
         per_data.setdefault(t.astimezone(LONDRA).date(), []).append(t)
     storico_a: List[float] = []
+    storico_spread: List[float] = []
     out = []
     ask_t = set(ask)
+
+    def eseguibile(t):
+        return t in ask_t and ask[t][0] >= bid[t][0] and ask[t][3] >= bid[t][3]
     for g in sorted(per_data):
         inizio, fine_or = _utc(g, time(8, 0)), _utc(g, time(8, 0)) + timedelta(minutes=par.or_minuti)
         fine = _utc(g, par.fine_sessione)
@@ -97,14 +148,23 @@ def prepara(bid: Dict[datetime, Quota], ask: Dict[datetime, Quota], par: Paramet
         alto, basso = max(bid[t][1] for t in or_t), min(bid[t][2] for t in or_t)
         a = alto - basso
         rif = median(storico_a[-par.sessioni_rif:]) if len(storico_a) >= par.sessioni_rif else None
-        storico_a.append(a)                                     # la mediana usa solo le sessioni precedenti
+        spread_prec = storico_spread[-par.sessioni_rif:]
+        storico_a.append(a)                                     # mediane: solo le sessioni PRECEDENTI
+        primo_eseguibile = [t for t in per_data[g] if t >= fine_or and eseguibile(t)][:1]
+        if primo_eseguibile:
+            t_s = primo_eseguibile[0]
+            storico_spread.append(ask[t_s][0] - bid[t_s][0])
         if rif is None:
             out.append(Giorno(g, a, alto, basso, False, "meno di 20 sessioni precedenti"))
             continue
         if a > par.tetto * rif:
             out.append(Giorno(g, a, alto, basso, False, "range oltre il tetto"))
             continue
-        if a < par.a_min:
+        if not spread_prec:
+            out.append(Giorno(g, a, alto, basso, False, "manca lo spread delle sessioni precedenti"))
+            continue
+        costo = median(spread_prec) + par.commissione + par.slip_ingresso + par.slip_uscita
+        if a < par.molt_costi * costo:
             out.append(Giorno(g, a, alto, basso, False, "range sotto il minimo dei costi"))
             continue
         giorno = Giorno(g, a, alto, basso, True, "valido")
@@ -118,15 +178,19 @@ def prepara(bid: Dict[datetime, Quota], ask: Dict[datetime, Quota], par: Paramet
                 chiusura = bid[dentro[-1]][3]
                 lato = "acquisto" if chiusura > alto else "vendita" if chiusura < basso else None
                 if lato:
-                    eseguibili = [t for t in per_data[g]
-                                  if t in ask_t and t >= t_candela + timedelta(minutes=15)]
+                    giorno.lato = lato
+                    fine_candela = t_candela + timedelta(minutes=15)
+                    dopo_segnale = [t for t in per_data[g] if t >= fine_candela]
+                    giorno.minuti_scartati = sum(1 for t in dopo_segnale if t in ask_t and not eseguibile(t))
+                    eseguibili = [t for t in dopo_segnale if eseguibile(t)]
                     sessione = [t for t in eseguibili if t < fine]
-                    dopo = [t for t in eseguibili if t >= fine][:1]
-                    if sessione:
-                        giorno.lato = lato
-                        giorno.minuti = [(t, bid[t], ask[t]) for t in sessione + dopo]
-                    else:
+                    dopo = [t for t in eseguibili if fine <= t < fine + par.attesa_max][:1]
+                    if not sessione:
                         giorno.motivo = "nessun minuto eseguibile dopo il segnale"
+                    elif sessione[0] >= fine_candela + par.attesa_max:
+                        giorno.motivo = "ingresso oltre la candela successiva"
+                    else:
+                        giorno.minuti = [(t, bid[t], ask[t]) for t in sessione + dopo]
                     break
             t_candela += timedelta(minutes=15)
         out.append(giorno)
@@ -164,18 +228,19 @@ def simula(giorno: Giorno, lato: str, par: Parametri, stop_livello: Optional[flo
             motivo = "fine sessione"
             break
         tocca_stop = b[2] <= stop if su else a[1] >= stop
-        if tocca_stop:
-            uscita = (stop - par.slip_uscita - par.stress) if su else (stop + par.slip_uscita + par.stress)
+        if tocca_stop:                                                   # in salto: all'apertura, peggiore
+            uscita = (min(stop, b[0]) - par.slip_uscita - par.stress) if su else \
+                (max(stop, a[0]) + par.slip_uscita + par.stress)
             motivo = "stop"
             break
         if k > 0 and target is not None:                                 # nel minuto d'ingresso conta solo lo stop
             if (b[1] >= target) if su else (a[2] <= target):
                 uscita, motivo = target, "target"
                 break
-    if uscita is None:                                                   # nessun minuto dopo la fine: ultimo prezzo
+    if uscita is None:                         # nessuna quotazione fra le 16:30 e le 16:45: ultima chiusura nota
         t, b, a = giorno.minuti[-1]
         uscita = (b[3] - par.slip_uscita - par.stress) if su else (a[3] + par.slip_uscita + par.stress)
-        motivo = "fine dati"
+        motivo = "fine sessione senza quotazioni"
     per_oncia = (uscita - entrata) if su else (entrata - uscita)
     perdita_allo_stop = (entrata - (stop - par.slip_uscita - par.stress)) if su else \
         ((stop + par.slip_uscita + par.stress) - entrata)

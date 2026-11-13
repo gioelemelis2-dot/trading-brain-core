@@ -75,3 +75,24 @@ Quando arriva R2: versione 2 della scheda con le correzioni accolte, e l'elenco 
    - **perdita per oncia allo stop** = differenza fra il prezzo d'ingresso eseguito (spread e slittamento compresi) e il prezzo d'uscita eseguito allo stop (livello ± slittamento ± stress).
 2. **§4.3, rischio per il filtro dei 0,25 × A e per il target.** Rischio = distanza fra il prezzo d'ingresso eseguito e il **livello** dello stop, senza lo slittamento dello stop.
 
+## R3 · Rilettura di Gemini sulla v2: `da-gemini/G-20261114-03-rilettura-H-002-v2.md`, ramo `rev/gemini-h002-v2`, commit `807cda0`
+**Verdetto di Gemini sulla v2: non ancora sigillabile.** Tutti i rilievi sono stati verificati da Claude; quelli sul simulatore sono coperti da test scritti PRIMA della correzione (commit `c1f0163`) e da mutanti nuovi (29/29).
+
+| Rilievo | Esito | Applicazione |
+|---|---|---|
+| Doppio conteggio dello slittamento nella dimensione; manca la regola «once < 1, niente trade»; segni espliciti | **accolto** (Claude l'aveva trovato in parallelo) | v3 §5 |
+| Stop in salto eseguito al livello invece che all'apertura del minuto (vantaggio irreale) | **accolto, grave** | v3 §4.3; simulatore e test |
+| Uscita di fine sessione che con un buco di dati poteva scivolare molto in là | **accolto** | finestra [16:30, 16:45), altrimenti l'ultima chiusura prima delle 16:30 |
+| Ingresso ritardato da buchi di dati | **accolto** | ingresso solo entro 15 minuti dalla fine della candela di segnale |
+| «Oltre lo stop all'ingresso» dal lato giusto (BID per l'acquisto, ASK per la vendita) | **accolto** | v3 §4.3 (era già così nel simulatore) |
+| BID senza ASK, ASK sotto il BID | **accolto, con una correzione di Claude** | Minuto non eseguibile, contato. NON si esclude il giorno: sarebbe uno sguardo al futuro (errore di Claude nella prima stesura del test, corretto) |
+| Robustezza con range di 20 minuti e soglia dell'80% proporzionale | **accolto (chiarimento)** | v3 §3 |
+| Pavimento fisso di 3 USD inadatto al 2005–2012 | **accolto** | minimo = 6 × costo di riferimento dagli spread veri delle 20 sessioni precedenti |
+| Festivi: mancano i bank holiday inglesi | **accolto** | elenco completo con sostituti e date straordinarie (da verificare su gov.uk) |
+| Chiusure anticipate USA | **respinto per Londra** | cadono dopo le 16:30 di Londra |
+| Scenario di stress «solo riportato» in §5/§6 ma criterio in §8 | **accolto** | è un criterio; entra anche nella dimensione |
+| N di H-002 contato due volte (sigillo e verifica) | **accolto** | in verifica N = totale del registro in quel momento |
+| Drawdown, ultimi 5 anni, anni solari da precisare | **accolto** | trade chiusi; risultato cumulato del quinquennio; anni solari |
+| Confronto casuale: testo sul target di V-S e sulla «distanza R» | **accolto** | v3 §6 |
+| Nota sulle alternative USA e sul fixing LBMA | **accolto** | v3 §9 |
+

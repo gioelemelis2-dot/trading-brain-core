@@ -370,14 +370,18 @@ class TestRiletturaGemini(unittest.TestCase):
         self.assertEqual(g.motivo, "ingresso oltre la candela successiva")
         self.assertEqual(O.trade([g], O.V_T), [])
 
-    def test_spread_negativo_esclude_il_giorno(self):
+    def test_spread_negativo_minuto_non_eseguibile(self):
+        """Un minuto con ASK sotto il BID è un dato errato: non si usa per eseguire (come se mancasse) e si conta.
+        Escludere il GIORNO sarebbe uno sguardo al futuro: alle 08:45, quando si entra, il minuto delle 09:00 non si
+        conosce ancora (errore di Claude nella prima stesura di questo test)."""
         def rompi(m):
             t = datetime(2026, 1, 7, 9, 0, tzinfo=UTC)
             b = m.bid[t]
             m.ask[t] = (b[0] - 0.5, b[1], b[2] - 0.5, b[3])
         g = self.prepara(rialzo, modifica=rompi)[0]
-        self.assertFalse(g.valido)
-        self.assertEqual(g.motivo, "spread negativo")
+        self.assertTrue(g.valido)
+        self.assertNotIn(datetime(2026, 1, 7, 9, 0, tzinfo=UTC), [x[0] for x in g.minuti])
+        self.assertEqual(g.minuti_scartati, 1)
 
     def test_minimo_dell_ampiezza_dai_costi_veri(self):
         """Storia con spread 0,3: costo di riferimento 0,3 + 0,07 + 0,1 + 0,2 = 0,67, minimo 4,02 USD; oggi A = 4:

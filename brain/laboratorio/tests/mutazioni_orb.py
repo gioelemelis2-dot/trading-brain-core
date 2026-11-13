@@ -14,12 +14,10 @@ F = "laboratorio/simulatori/orb_londra.py"
 SUITE = ["brain.laboratorio.tests.test_orb_londra"]
 M = {
     "O01 mediana con la sessione corrente (sguardo al futuro)": [
-        (F, "        rif = median(storico_a[-par.sessioni_rif:]) if len(storico_a) >= par.sessioni_rif else None\n"
-            "        storico_a.append(a)",
-         "        storico_a.append(a)\n"
-         "        rif = median(storico_a[-par.sessioni_rif:]) if len(storico_a) >= par.sessioni_rif else None")],
+        (F, "        rif = median(storico_a[-par.sessioni_rif:]) if len(storico_a) >= par.sessioni_rif else None\n",
+         "        rif = median((storico_a + [a])[-par.sessioni_rif:]) if len(storico_a) >= par.sessioni_rif else None\n")],
     "O02 tetto con >=": [(F, "if a > par.tetto * rif:", "if a >= par.tetto * rif:")],
-    "O03 minimo dei costi ignorato": [(F, "if a < par.a_min:", "if False:")],
+    "O03 minimo dei costi ignorato": [(F, "if a < par.molt_costi * costo:", "if False:")],
     "O04 minuti del range non controllati": [(F, "len(or_t) < par.minuti_or_min * par.or_minuti", "False")],
     "O05 festivi non esclusi": [(F, "or g in esclusi(g.year) ", "")],
     "O06 chiusura della candela dal primo minuto": [(F, "chiusura = bid[dentro[-1]][3]", "chiusura = bid[dentro[0]][3]")],
@@ -28,10 +26,10 @@ M = {
     "O09 stop della vendita sul BID": [(F, "tocca_stop = b[2] <= stop if su else a[1] >= stop",
                                          "tocca_stop = b[2] <= stop if su else b[1] >= stop")],
     "O10 target anche nel minuto d'ingresso": [(F, "if k > 0 and target is not None:", "if target is not None:")],
-    "O11 target prima dello stop": [(F, "        if tocca_stop:\n", "        if tocca_stop and not ((b[1] >= target) if (su and target) else False):\n")],
+    "O11 target prima dello stop": [(F, "        if tocca_stop:                                                   # in salto", "        if tocca_stop and not ((b[1] >= target) if (su and target) else False):  # in salto")],
     "O12 fine sessione con >": [(F, "        if t >= fine:", "        if t > fine:")],
-    "O13 slittamento dello stop ignorato": [(F, "uscita = (stop - par.slip_uscita - par.stress) if su else (stop + par.slip_uscita + par.stress)",
-                                              "uscita = stop")],
+    "O13 slittamento dello stop ignorato": [(F, "(min(stop, b[0]) - par.slip_uscita - par.stress)",
+                                              "(min(stop, b[0]) - par.stress)")],
     "O14 commissione ignorata": [(F, "netto = once * (per_oncia - par.commissione)", "netto = once * per_oncia")],
     "O15 dimensione senza commissione": [(F, "once = floor(par.rischio_usd / (perdita_allo_stop + par.commissione))",
                                            "once = floor(par.rischio_usd / perdita_allo_stop)")],
@@ -41,6 +39,16 @@ M = {
     "O19 specchio: stop non alla stessa distanza": [(F, "stop = entrata - distanza if lato == \"acquisto\" else entrata + distanza",
                                                        "stop = entrata - 2 * distanza if lato == \"acquisto\" else entrata + 2 * distanza")],
     "O20 drawdown dal minimo invece che dal picco": [(F, "dd = max(dd, picco - cum)", "dd = max(dd, -cum)")],
+    "O21 stop dell'acquisto in salto eseguito al livello": [(F, "(min(stop, b[0]) - par.slip_uscita", "(stop - par.slip_uscita")],
+    "O22 stop della vendita in salto eseguito al livello": [(F, "(max(stop, a[0]) + par.slip_uscita", "(stop + par.slip_uscita")],
+    "O23 uscita di fine sessione senza limite di attesa": [(F, "fine <= t < fine + par.attesa_max", "fine <= t")],
+    "O24 ingresso in ritardo ammesso": [(F, "elif sessione[0] >= fine_candela + par.attesa_max:", "elif False:")],
+    "O25 spread negativo eseguibile": [(F, "return t in ask_t and ask[t][0] >= bid[t][0] and ask[t][3] >= bid[t][3]",
+                                         "return t in ask_t")],
+    "O26 costo di riferimento senza lo spread": [(F, "costo = median(spread_prec) + par.commissione", "costo = par.commissione")],
+    "O27 festivi inglesi ignorati": [(F, "return festivi_inglesi(anno) | {", "return set() | {")],
+    "O28 Natale di sabato senza secondo sostituto": [(F, "s |= {date(anno, 12, 27), date(anno, 12, 28)}", "s |= {date(anno, 12, 27)}")],
+    "O29 festivi spostati ignorati": [(F, "        s.discard(vecchio)\n        s.add(nuovo)", "        pass")],
 }
 
 
