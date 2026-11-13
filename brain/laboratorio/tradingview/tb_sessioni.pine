@@ -8,7 +8,7 @@
 //@version=5
 indicator("TB Sessioni e range di apertura", overlay=true, max_boxes_count=500, max_lines_count=500)
 
-inizioSviluppo = input.time(timestamp("15 Nov 2023 00:00 +0000"), "Inizio periodo di sviluppo")
+inizioSviluppo = timestamp("UTC", 2023, 11, 15, 0, 0)    // fisso: non si sposta dal pannello delle impostazioni
 copriSigillato = input.bool(true, "Copri il periodo sigillato")
 sAsia = input.session("0900-1500", "Tokyo (ora di Tokyo)")
 sLon = input.session("0800-1630", "Londra (ora di Londra)")
