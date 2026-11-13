@@ -117,46 +117,62 @@ Il G0 **non** è ancora utilizzabile per decidere: serve la riconciliazione con 
   - Nella scheda risultano «14 confermate su 15».
   - La «perdita massima 1,5%» indicata dall'utente è giornaliera, cioè coincide con P-05.
   - Scheda **non riconciliata** con la piattaforma (DA-25): finché non lo è, la scheda dichiara di non usarne i numeri per decidere.
-- **Gate 2, pronto ma NON chiuso:** lo storico reale e il `commitment.json` non esistono ancora.
-  - **13/11/2026, approvato dall'utente:** il sigillo sui 3 anni con 70/30 diventa **provvisorio**. L'Out-of-Sample (gli ultimi ~11 mesi) è già stato visto, sia dall'utente sia da Claude.
-  - Prima del sigillo definitivo: più anni di storico e un periodo vecchio di verifica (**DA-26**, bloccante). Il test finale è il futuro, cioè l'incubazione.
-  - Dal 13/11/2026 lo scaricamento sul Mac funziona: corretti la pazienza dei tentativi (`7154e1c`) e i timeout di Python 3.9 (`42cf512`).
-  - Fino alle ipotesi, nessuna analisi dei dati storici.
-- **Diversificazione (13/11/2026, proposta):** l'utente la vuole centrale. Piano in `governance/PIANO-DIVERSIFICAZIONE.md`, decisioni DA-27 e DA-28.
-  - Ordine: un mercato alla volta dopo l'oro, con lo stesso calendario per tutti; si parte da EURUSD.
-  - Prima va esteso lo scaricatore, che oggi conosce solo XAUUSD.
-- **Correzioni del 13/11/2026 (ramo `fix/dsr-e-partizione-date`, NON ancora su main):** rilievi di Gemini G-20261113-01, verificati da Claude e autorizzati dall'utente.
-  - **DSR:** prima, con N ≥ 2, bocciava tutto. Ora usa la scala sqrt(V).
-  - **Partizione per date** con embargo; senza partizione decisa non si sigilla.
-  - **Bande di prezzo per periodo** e controllo dei salti di scala.
-  - **Revisione di Gemini** (G-20261113-02 e G-20261113-03): 30/30 vettori del DSR coincidenti. Trovati 6 difetti veri, riprodotti e corretti da Claude in TDD; resta aperto solo G3-05 (con DA-19 e DA-28).
-  - **Test:** 73/73 su Python 3.13 e 3.9; mutanti 40/40 su entrambe le versioni; laboratorio 31/31; guardian OK.
-  - **Merge su main** solo con l'autorizzazione dell'utente.
-- **Risposte dell'utente del 13/11/2026 (DA-29):**
-  - weekend chiuso;
-  - obiettivo «in positivo», l'1–2% al mese va bene;
-  - challenge FTMO solo dopo più strategie testate.
-  - Overnight e criteri numerici di arresto: proposti da Claude, da confermare.
-  - Vuole aprire nuovi conti demo scegliendo i broker in base allo spread.
-  - Dal container cloud il server Dukascopy rifiuta le richieste: prima il proxy (host poi consentito nell'ambiente cloud), poi il server stesso, con 429 e connessioni chiuse. I tentativi ripetuti sono stati fermati dal controllo dei permessi. Nessun dato è stato inventato o simulato al posto di quello reale.
-  - Pronto `brain/dati/pipeline/dukascopy.py`, da eseguire **sul Mac**, dalla radice del repository: `python3 -s -B -m brain.dati.pipeline.dukascopy --anni 3`.
-  - Cosa fa: scarica le candele BID da 1 minuto e le aggrega a 15 minuti UTC; controlla scala, OHLC, ordine e buchi; poi ingestione e partizione In-Sample 70% / Out-of-Sample 30%, con `commitment.json` e il nonce fuori dal repository (`~/.trading_brain/nonce/`).
-  - Il formato dei file Dukascopy non è documentato: scala dei prezzi (×10⁻³) e ordine dei campi sono dedotti, e il modulo si ferma se i dati non tornano. 9 test offline.
-  - Esclusi da git: il CSV, la cache dei file grezzi, le partizioni `.jsonl` e `*.secret`. Si versionano `dati/reali/XAUUSD_15m.meta.json` (periodo, SHA-256, buchi, date IS/OOS) e `dati/reali/partizioni/XAUUSD_15m/commitment.json`.
-  - Si chiude quando i due file sono su GitHub: allora si registrano qui le date IS/OOS e gli hash.
-- **Gate 3, inizializzato (non aperto):**
-  - `dati/operativo/journal_broker_mt5_50k/`: i dati del journal sono esclusi da git, perché personali (DA-16);
-  - `dati/operativo/trial_registry_xauusd.json`: `TRIAL_REGISTRY_V1`, 0 prove.
-- Rami storici ancora su GitHub: `feat/fix-g0-journal`, `fix/red-team-guardian` e `fix/lock-orfano-toctou`, tutti già uniti.
-- Visualizzazione delle frazioni nella scheda corretta in TDD: P-01 si legge «0,005», non più «0,01» (3 decimali per tutte le frazioni).
+- **Gate 2, dati: stato al 14/11/2026.**
+  - **3 anni BID scaricati** (13/11): 71.008 candele da 15 minuti, dal 2023-11-12T23:00Z al 2026-11-13T00:00Z.
+    - Buchi: 598 pause giornaliere, 156 fine settimana, 22 chiusure anticipate dei festivi USA (verificate sulle date), 0 anomali.
+    - Il sigillo 70/30 creato in locale **non si pubblica** (provvisorio); il suo nonce resta in `~/.trading_brain/nonce/XAUUSD_15m/`.
+  - **DA-26, inversione decisa dall'utente il 14/11:**
+    - **sviluppo:** dal 15/11/2023 in poi (dati già visti);
+    - **verifica sigillata:** dal 2005 a circa il 31/10/2023 (date esatte dopo il conteggio dei buchi per anno);
+    - **test finale:** il futuro (demo).
+  - Dukascopy ha l'oro almeno dal 2005; il 2003 ha risposto 429, quindi non si sa.
+  - **Scaricamento storico BID dal 2005 in corso sul Mac**, senza sigillo, log `~/ciclo_storico.log`.
+    - Proposta del 14/11: fermarlo, scaricare prima gli **ASK dei 3 anni recenti** (log `~/ciclo_ask_recente.log`), poi riprenderlo, e alla fine scaricare gli ASK storici.
+  - **Codice su main:**
+    - DSR con la scala sqrt(V) e input validati;
+    - partizione per date con embargo (`dati/pipeline/partizione_date.py`), con verifica legata al file della partizione;
+    - bande di prezzo per anno, salti di scala e ampiezza della candela;
+    - opzione `--lato ASK`;
+    - file compresso danneggiato = ErroreDati.
+    - Test verdi su Python 3.13 e 3.9; mutanti 44/44 su entrambe (`dati/tests/mutazioni_dsr_partizione.py`).
+- **Ricerca, stato al 14/11/2026:**
+  - **Studio 1 (E-001, esplorativo, solo sviluppo):** `laboratorio/studi/studio_sessioni.py`, risultati in `laboratorio/studi/risultati/`, registro in `laboratorio/studi/REGISTRO-ESPLORAZIONI.md`.
+    - La volatilità si concentra fra le 14 e le 17 italiane.
+    - Nessuna struttura direzionale chiaramente diversa dal confronto casuale.
+  - **H-001** (scalping nei micro-range a 1 minuto, idea dell'utente): bozza critica in `laboratorio/ipotesi/H-001-range-1m-BOZZA.md`.
+    - Attende 4 risposte dell'utente.
+    - **DA-30:** sarà automatizzata in demo (Expert Advisor MQL5, replica indipendente di Gemini).
+  - **H-002** (rottura del range di apertura di Londra): bozza `H-002-ORB-BOZZA.md`, revisioni di DeepSeek e Gemini verificate in `H-002-REVISIONI.md`.
+    - Decisioni dell'utente: solo Londra, varianti V-T e V-S (N = 2), esclusi i range oltre 2 × la mediana.
+    - Prossimo passo: versione 2, ultima rilettura, sigillo, simulatore minuto per minuto BID/ASK in TDD, test sullo sviluppo.
+  - **TradingView:** nessun connettore. Indicatore Pine solo visivo in `laboratorio/tradingview/tb_sessioni.pine`; copre il periodo sigillato.
+    - Si guarda solo dal 15/11/2023; vietato lo Strategy Tester per provare idee.
+  - **DA-29:** arresto in demo con controllo di fedeltà (solo esecuzione) e test sequenziale di Wald (θ1 = Sharpe 0,10, σ dal backtest, potenza effettiva circa 64% con taglio a 600 trade).
+    - Simulazione riproducibile: `laboratorio/studi/simulazione_sprt.py`.
+- **Collaborazione:** le chat di Gemini sul sito non vedono il repository e possono ragionare su stati superati (è successo il 14/11 con un «mandato di audit» del vecchio sigillo 70/30, da NON eseguire). Per lo stato del progetto fanno fede il repository, Antigravity o Claude.
+- Rami su GitHub già uniti e da pulire (con il via libera dell'utente): `feat/fix-g0-journal`, `fix/red-team-guardian`, `fix/lock-orfano-toctou`, `fix/dsr-e-partizione-date`, `rev/dati-diversificazione-gemini`, `rev/vettori-dsr-gemini`, `rev/gemini-20261114`, `rev/gemini-h002`.
 
-**Ora: fermo in attesa dell'utente**, per:
-- rispondere alle decisioni di `governance/DECISIONI-APERTE.md`, a partire da quelle bloccanti;
-- valutare la revisione V3.3 e decidere se applicare l'errata (T-01…T-05) all'inizio della fase successiva;
-- prendere le decisioni elencate nell'audit architetturale (§10) e nella valutazione della controverifica (§7);
-- avviare Q-09 (Trading Guardian) e Q-07;
-- eseguire sul Mac lo scaricamento del Gate 2 e pubblicare `XAUUSD_15m.meta.json` e `commitment.json`; riconciliare la scheda del conto demo con la piattaforma (DA-25);
-- prendere le decisioni della proposta della Parte B.
+**Pendenze aperte (controllo del 14/11/2026 contro il documento del progetto e le decisioni aperte):**
+- **Utente:**
+  - risposte per H-001;
+  - broker del conto demo MT5 da 50.000 USD (DA-25, chiesto più volte);
+  - apertura della demo FP Markets e screenshot delle specifiche XAUUSD;
+  - esito della revisione esterna del documento del progetto (inviato a DeepSeek il 13/11);
+  - piano di accumulo e budget (fuori dal repository).
+- **Decisioni:**
+  - DA-14 (Pine solo per visualizzare: proposta da adottare);
+  - DA-17 (contaminazione: di fatto applicata con l'inversione, da chiudere);
+  - DA-19 e DA-20 (registro unico; robustezza registrata ma fuori da N; sviluppo come screening e DSR sulla verifica);
+  - DA-23 (procedura per modificare le regole personali; serve per lo scalping e l'automazione);
+  - DA-27 e DA-28 (diversificazione, non urgenti);
+  - criterio di discordanza Dukascopy–MT5 e le «due chiavi» per FTMO (proposte di Gemini G-20261114-01).
+- **Claude:**
+  - verificare le FAQ FTMO citate da Gemini (overnight, weekend, notizie, leva) e aggiornare `prop_firm_ftmo.toml`;
+  - fonte di un calendario storico delle notizie (P-08);
+  - conteggio dei buchi per anno sullo storico;
+  - simulatore minuto per minuto;
+  - aggiornare il documento del progetto.
+- **Mai usati finora:** la scheda del Guardian G0 e il journal. Vanno avviati con la prima demo vera.
 
 ## Correzioni note ancora da applicare (dopo il via libera)
 - Contestazione, punto C-04: il rimando "(§3, C-05)" va corretto in "(§3, C-06)".
