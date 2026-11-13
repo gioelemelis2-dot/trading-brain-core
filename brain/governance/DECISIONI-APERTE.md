@@ -315,6 +315,19 @@ DA-13 rulebook (Q-09) ──► DA-11 G0 minimo ──► DA-12 indicatori compo
   - le prime ipotesi sono solo intraday;
   - l'overnight è ammesso solo se l'ipotesi lo dichiara prima e il backtest include lo swap.
   - Le regole FTMO sull'overnight nel conto Standard sono da verificare (`prop_firm_ftmo.toml`, stato V-parziale).
+- **Arresto in demo: scelta di Claude su delega dell'utente (13/11/2026), modificabile.** Sostituisce la regola dei 100 trade e del −10R.
+  - **Controllo di fedeltà (primi 20–30 trade):** ogni trade della demo si confronta con quello che il backtest avrebbe fatto negli stessi giorni (segnali, prezzi di ingresso, spread, slippage). Una differenza sistematica ferma la strategia: il backtest non descrive la realtà.
+  - **Test sequenziale di Wald (SPRT) sul risultato in R:** H0 aspettativa 0, H1 aspettativa +0,10R, α = 5%, β = 20%, σ stimata dal backtest (circa 1R).
+    - Si ferma se il totale in R è ≤ −15,6 + 0,05 × n.
+    - C'è evidenza se è ≥ +27,7 + 0,05 × n.
+    - Dopo 600 trade senza decisione: «non dimostrata».
+    - Le soglie si ricalcolano con la σ vera della strategia.
+  - **Simulazione di Claude** (6.000 strategie per caso, σ = 1R):
+    - senza vantaggio: fermata nell'86% dei casi, promossa per errore nel 3,6%, indecisa nel 10%;
+    - con +0,10R: promossa nel 63%, fermata per errore nel 17%, indecisa nel 20%, circa 350 trade in media.
+    - La vecchia regola (100 trade) lasciava sopravvivere il 38% delle strategie senza vantaggio.
+  - **Conseguenza:** la demo da sola non dimostra in fretta un vantaggio piccolo: 350 trade a 3 a settimana sono più di 2 anni. Il peso statistico lo porta il backtest lungo (DSR con tutte le prove). La demo verifica la fedeltà e che i risultati non contraddicano il backtest. Più strategie in parallelo accorciano i tempi.
+  - **CUSUM:** per controllare se il vantaggio si esaurisce dopo la promozione, più avanti, su FTMO.
 - **Da aggiungere (Gemini G-20261113-01, accolto da Claude):**
   - permutation test, ablation e sensibilità dei parametri (±20–30%: la strategia deve reggere);
   - in demo, un arresto sequenziale al posto della regola grezza dei 100 trade;
