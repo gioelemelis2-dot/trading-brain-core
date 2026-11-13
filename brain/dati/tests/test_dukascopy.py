@@ -148,6 +148,23 @@ class TestScaricamentoEPipeline(unittest.TestCase):
             DK.scarica_giorno("XAUUSD", date(2026, 9, 20), None, scarica_rotto)
         self.assertEqual(chiamate[0], "trading-brain-dati/1.0")        # nessun dato personale nell'User-Agent
 
+        # Timeout di lettura e risposte troncate: su Python 3.9 socket.timeout NON è un TimeoutError (lo è dalla 3.10),
+        # e http.client.IncompleteRead non è un errore di urllib. Devono essere nuovi tentativi, non un crash.
+        import http.client
+        import socket
+        for errore in (socket.timeout("The read operation timed out"), http.client.IncompleteRead(b"x"),
+                       ConnectionResetError("reset")):
+            chiamate.clear()
+            attese.clear()
+
+            def apri_lento(richiesta, timeout, errore=errore):
+                chiamate.append(1)
+                if len(chiamate) == 1:
+                    raise errore
+                return _Risposta(b"ok")
+            self.assertEqual(DK.scarica_http("http://x", attesa=attese.append, apri=apri_lento), b"ok", repr(errore))
+            self.assertEqual(attese, [5.0])
+
         def apri_404(richiesta, timeout):
             raise urllib.error.HTTPError(richiesta.full_url, 404, "Not Found", {}, None)
         self.assertIsNone(DK.scarica_http("http://x", attesa=attese.append, apri=apri_404))
