@@ -1,6 +1,6 @@
 """Simulatore minuto per minuto di H-002 v3 (rottura del range di apertura di Londra su XAUUSD).
 
-Esegue SOLO le regole scritte in brain/laboratorio/ipotesi/H-002-ORB-v2.md: ogni scostamento è un errore.
+Esegue SOLO le regole scritte in brain/laboratorio/ipotesi/H-002-ORB-v3.md (v3.1): ogni scostamento è un errore.
 Prezzi: minuti BID e ASK di Dukascopy (float). Segnali e range sui BID; esecuzioni dal lato giusto:
 - acquisto: entra all'ASK, stop quando il BID tocca RA basso, target e uscita al BID;
 - vendita: entra al BID, stop quando l'ASK tocca RA alto, target e uscita all'ASK.

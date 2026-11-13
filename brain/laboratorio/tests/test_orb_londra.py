@@ -532,6 +532,44 @@ class TestRevisioneDeepSeek(unittest.TestCase):
         self.assertIsNone(O.simula(g, "acquisto", O.V_T))
 
 
+class TestSecondoGiroDeepSeek(unittest.TestCase):
+    """Casi della lista di DeepSeek (secondo giro) che non avevano ancora un test."""
+
+    def test_lo_stress_non_cambia_i_giorni_ammessi(self):
+        """Il costo di riferimento non contiene lo stress: un giorno con A = 2,9 (minimo 2,82 con spread 0,1) resta
+        valido anche con stress 0,2, così lo scenario di stress si misura sugli stessi giorni."""
+        def f(t):
+            if time(8, 0) <= t.time() < time(8, 30):
+                return 2000.0, 2001.45, 1998.55, 2000.0
+            return 2000.0, 2000.0, 2000.0, 2000.0
+        m = Mercato()
+        m.storia(G, a=3.0)
+        m.giornata(G, f)
+        for par in (O.V_T, O.Parametri(stress=0.2)):
+            g = [x for x in O.prepara(m.bid, m.ask, par) if x.data == G][0]
+            self.assertEqual(g.motivo, "valido", par.stress)
+
+    def test_fine_sessione_al_primo_minuto_disponibile(self):
+        """Manca il minuto delle 16:30; quello delle 16:31 apre a 2010: uscita a 2010 − 0,2 = 2009,8."""
+        m = Mercato()
+        m.storia(G)
+        m.giornata(G, rialzo)
+        t30, t31 = datetime(2026, 1, 7, 16, 30, tzinfo=UTC), datetime(2026, 1, 7, 16, 31, tzinfo=UTC)
+        del m.bid[t30], m.ask[t30]
+        m.bid[t31] = (2010.0, 2010.0, 2010.0, 2010.0)
+        m.ask[t31] = (2010.3, 2010.3, 2010.3, 2010.3)
+        x = O.trade(O.prepara(m.bid, m.ask, O.V_S), O.V_S)[0]
+        self.assertEqual(x["motivo"], "fine sessione")
+        self.assertAlmostEqual(x["uscita"], 2009.8)
+
+    def test_minuto_senza_ask_non_conta_come_spread_negativo(self):
+        m = Mercato()
+        m.storia(G)
+        m.giornata(G, rialzo)
+        del m.ask[datetime(2026, 1, 6, 10, 0, tzinfo=UTC)]
+        self.assertEqual(O.resoconto(m.bid, m.ask)["minuti_spread_negativo"], 0)
+
+
 class TestFestiviUfficiali(unittest.TestCase):
     """I festivi del codice coincidono con il file ufficiale gov.uk (dati/riferimenti/uk_bank_holidays.json, commit
     ac17502), che copre dal 2019 al 2028. Per il 2005–2018 il file non c'è: le date straordinarie del 2011 e del 2012

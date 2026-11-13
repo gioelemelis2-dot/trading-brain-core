@@ -118,3 +118,17 @@ DeepSeek ha ricevuto per errore la bozza v1 al posto dei test, quindi non ha val
 | Il confronto casuale 50/50 sarebbe «positivo» in un mercato in tendenza | **respinto** | Con direzione casuale metà dei trade va contro la tendenza: la media è circa zero meno i costi. La tendenza la controllano i benchmark «compro sempre» e «vendo sempre», già fra i criteri |
 | Casi della sezione C non coperti dai test | **accolto** | Aggiunti: ora legale, target della vendita sull'ASK, minuto delle 16:30, due rotture e un solo trade, once < 1, rischio al limite. Erano già corretti nel codice: mancava la copertura |
 
+## R5 · DeepSeek, secondo giro (14/11/2026)
+Non ha ricevuto di nuovo `test_orb_londra.py` (allegata ancora la bozza v1), quindi la sezione C manca ancora. Ha ricontrollato le correzioni: giudicate in gran parte giuste.
+
+| Rilievo | Esito | Motivo e applicazione |
+|---|---|---|
+| Il simulatore citava ancora `H-002-ORB-v2.md` | **accolto** | Corretto |
+| «20 sessioni che ce l'hanno» ambiguo; il codice è più severo | **accolto (chiarimento)** | La scheda ora dice: ultime 20 sessioni di base, di cui almeno 15 con lo spread, senza andare più indietro (come fa il codice) |
+| Priorità dei motivi di esclusione in `resoconto` | **accolto (chiarimento)** | Priorità scritta nella scheda |
+| `minuti_scartati` parziale | **accolto (chiarimento)** | Dichiarato a cosa serve |
+| Prezzo all'ingresso già oltre il target | **respinto** | Impossibile: il target si calcola dal prezzo d'ingresso eseguito (ingresso ± 1,5 × rischio), quindi è sempre dalla parte giusta |
+| Festivi 2024–2026 | **già risolto** | DeepSeek aveva la versione precedente: dal commit `9af64db` i festivi coincidono con il file ufficiale gov.uk per il 2019–2028 |
+| Sigillo bloccato finché non c'è il programma dei criteri | **d'accordo** | È il piano |
+| Casi della sua lista senza test | **accolto** | Aggiunti 3 test: stress che non cambia i giorni ammessi, fine sessione al primo minuto disponibile, minuto senza ASK non contato come spread negativo |
+

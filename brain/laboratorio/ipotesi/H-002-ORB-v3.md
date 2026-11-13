@@ -48,7 +48,7 @@ Dopo i primi 30 minuti di Londra, la prima chiusura a 15 minuti fuori dal range 
 - **Mediane** sulle **20 sessioni di base precedenti**; meno di 20 → giorno non valido. La sessione corrente non entra mai.
 - **Tetto dell'ampiezza:** A ≤ 2 × la mediana di A.
 - **Costo di riferimento:**
-  - mediana dello spread (ASK − BID in apertura) del primo minuto eseguibile dalle 08:30 in poi, fra le 20 sessioni di base precedenti che ce l'hanno: **ne servono almeno 15**, altrimenti il giorno non è valido;
+  - mediana dello spread (ASK − BID in apertura) del primo minuto eseguibile dalle 08:30 in poi, calcolata sulle **ultime 20 sessioni di base**: fra queste **almeno 15 devono avere lo spread**, altrimenti il giorno non è valido. Non si va più indietro per cercarne altre;
   - lo stress NON entra nel costo di riferimento, così lo scenario di stress si misura sugli stessi giorni;
   - più commissione (0,07), slittamento d'ingresso (0,10) e slittamento d'uscita (0,20).
   - Così il minimo segue i costi veri di ogni epoca, dal 2005 a oggi.
@@ -106,7 +106,10 @@ Dopo i primi 30 minuti di Londra, la prima chiusura a 15 minuti fuori dal range 
   - Nei giorni in cui la direzione è opposta al segnale, lo stop è alla **stessa distanza** dall'ingresso, dalla parte giusta.
   - V-T: target a 1,5 × quella distanza; V-S: uscita a fine sessione.
 - **Confronto casuale:** stessi giorni e minuti d'ingresso, direzione estratta a caso, stop alla stessa distanza dalla parte giusta, stesse uscite della variante. 1.000 ripetizioni con seme fisso.
-- **Dati scartati e giorni:** numero di minuti con spread negativo nelle sessioni di base (dalle 08:00 alle 16:45) e numero di giorni per motivo di esclusione.
+- **Dati scartati e giorni** (funzione `resoconto`):
+  - numero di minuti con spread negativo nelle sessioni di base, dalle 08:00 alle 16:45;
+  - numero di giorni per motivo di esclusione, un motivo per giorno, con questa priorità: fine settimana o festivo; minuti del range insufficienti; poi il motivo del §3.
+  - Il campo `minuti_scartati` del singolo giorno conta solo i minuti dopo il segnale e serve solo a ispezionare quel giorno.
 - **Sharpe** con la deviazione standard campionaria (n − 1). **Per anno:** numero di trade, media e somma.
 
 ## 7. Prove (DA-19, DA-28)
