@@ -399,6 +399,137 @@ class TestRiletturaGemini(unittest.TestCase):
             self.assertNotIn(d, e(d.year), d)
 
 
+class TestRevisioneDeepSeek(unittest.TestCase):
+    """Rilievi della revisione esterna di DeepSeek sulla v3 (14/11/2026), verificati da Claude; test scritti PRIMA
+    delle correzioni, più i casi della sua sezione C che i test non coprivano."""
+
+    def mercato(self, prezzo_fn, storia_spread=0.1, togli_ask_storia=0):
+        m = Mercato()
+        m.storia(G, spread=storia_spread)
+        if togli_ask_storia:                     # nelle prime sessioni della storia manca l'ASK dalle 08:30 in poi
+            for d in giorni_lavorativi_prima(G, 20)[:togli_ask_storia]:
+                for t in [t for t in m.ask if t.date() == d and t.time() >= time(8, 30)]:
+                    del m.ask[t]
+        m.giornata(G, prezzo_fn)
+        return m
+
+    def test_spread_richiesto_in_almeno_15_sessioni_su_20(self):
+        """B1.8/B1.9. Con 6 sessioni precedenti senza ASK restano 14 spread: giorno non valido. Con 5: valido."""
+        g = [x for x in O.prepara(*self.bidask(self.mercato(rialzo, togli_ask_storia=6))) if x.data == G][0]
+        self.assertEqual(g.motivo, "manca lo spread delle sessioni precedenti")
+        g = [x for x in O.prepara(*self.bidask(self.mercato(rialzo, togli_ask_storia=5))) if x.data == G][0]
+        self.assertEqual(g.motivo, "valido")
+
+    def bidask(self, m):
+        return m.bid, m.ask
+
+    def test_sharpe_con_deviazione_campionaria(self):
+        """B1.7. r = 1, −1, 1, −1, 2: media 0,4; deviazione campionaria sqrt(4,6/4) = 1,07238 → Sharpe 0,37300."""
+        tr = [{"data": date(2025, 1, k + 2), "lato": "acquisto", "r": r} for k, r in enumerate((1, -1, 1, -1, 2))]
+        self.assertAlmostEqual(O.metriche(tr)["sharpe"], 0.4 / (4.6 / 4) ** 0.5, places=6)
+
+    def test_somme_per_anno_e_ultimi_anni(self):
+        """B1.6. per_anno riporta (trade, media, somma); somma degli ultimi 2 anni = 0 + 1 = 1."""
+        tr = [{"data": date(2024, 3, 1), "lato": "acquisto", "r": -3.0},
+              {"data": date(2025, 3, 1), "lato": "vendita", "r": 1.0}, {"data": date(2025, 3, 2), "lato": "vendita", "r": -1.0},
+              {"data": date(2026, 3, 1), "lato": "acquisto", "r": 1.0}]
+        x = O.metriche(tr)
+        self.assertEqual(x["per_anno"][2025], (2, 0.0, 0.0))
+        self.assertEqual(O.somma_ultimi_anni(tr, 2), 1.0)
+
+    def test_specchio_richiede_la_direzione(self):
+        """B1.14. Senza direzione fissa né direzioni per giorno: errore esplicito, non KeyError."""
+        with self.assertRaises(ValueError):
+            O.specchio(O.prepara(*self.bidask(self.mercato(rialzo))), O.V_T)
+
+    def test_resoconto_dei_giorni(self):
+        """B1.5/B1.11. Il resoconto conta i giorni esclusi per motivo (anche fine settimana e festivi) e i minuti con
+        spread negativo di TUTTE le sessioni di base, non solo dei giorni con segnale."""
+        m = self.mercato(rialzo)
+        t = datetime(2026, 1, 6, 10, 0, tzinfo=UTC)                 # sessione della storia, senza segnale
+        b = m.bid[t]
+        m.ask[t] = (b[0] - 0.5, b[1], b[2] - 0.5, b[3])
+        r = O.resoconto(m.bid, m.ask)
+        self.assertEqual(r["minuti_spread_negativo"], 1)
+        self.assertEqual(r["giorni_per_motivo"]["valido"], 1)
+        self.assertEqual(r["giorni_per_motivo"]["meno di 20 sessioni precedenti"], 20)
+        self.assertGreaterEqual(r["giorni_per_motivo"]["fine settimana o festivo"], 1)
+
+    def test_ora_legale_range_di_trenta_minuti(self):
+        """C1. Lunedì 30/3/2026, primo giorno feriale con l'ora legale inglese: il range va dalle 07:00 alle 07:30 UTC."""
+        g = date(2026, 3, 30)
+        m = Mercato()
+        m.storia(g)
+
+        def f(t):
+            if datetime(2026, 3, 30, 7, 0, tzinfo=UTC) <= t < datetime(2026, 3, 30, 7, 30, tzinfo=UTC):
+                return 2000.0, 2002.0, 1998.0, 2000.0
+            return 2000.0, 2000.0, 2000.0, 2000.0
+        m.giornata(g, f)
+        x = [x for x in O.prepara(m.bid, m.ask) if x.data == g][0]
+        self.assertEqual((x.ra_alto, x.ra_basso, x.motivo), (2002.0, 1998.0, "valido"))
+
+    def test_target_della_vendita_sull_ask(self):
+        """C1. Vendita a 1996,9 (BID 1997 − 0,1), stop 2002, rischio 5,1, target 1996,9 − 7,65 = 1989,25. Il BID scende a
+        1989,1 ma l'ASK (spread 0,3) solo a 1989,4: niente target. Quando l'ASK arriva a 1989,2: target a 1989,25."""
+        def f(t):
+            hm = t.time()
+            if time(8, 0) <= hm < time(8, 30):
+                return 2000.0, 2002.0, 1998.0, 2000.0
+            if hm < time(9, 30):
+                return 1997.0, 1997.0, 1997.0, 1997.0
+            if hm < time(10, 0):
+                return 1990.0, 1990.0, 1989.1, 1990.0
+            return 1989.0, 1989.0, 1988.9, 1989.0
+        m = self.mercato(f)
+        x = O.trade(O.prepara(m.bid, m.ask), O.V_T)[0]
+        self.assertEqual((x["lato"], x["motivo"]), ("vendita", "target"))
+        self.assertAlmostEqual(x["uscita"], 1989.25)
+
+    def test_minuto_delle_16_30_esce_all_apertura(self):
+        """C1. Nel minuto delle 16:30 il BID tocca sia lo stop sia il target: si esce all'apertura (2012 − 0,2)."""
+        m = self.mercato(rialzo)
+        t = datetime(2026, 1, 7, 16, 30, tzinfo=UTC)
+        m.bid[t] = (2005.0, 2030.0, 1990.0, 2005.0)
+        m.ask[t] = (2005.3, 2030.3, 1990.3, 2005.3)
+        x = O.trade(O.prepara(m.bid, m.ask, O.V_S), O.V_S)[0]
+        self.assertEqual(x["motivo"], "fine sessione")
+        self.assertAlmostEqual(x["uscita"], 2004.8)
+
+    def test_due_rotture_un_solo_trade(self):
+        """C1. Rottura sopra alle 08:45, poi il prezzo rompe sotto: un solo trade, il primo."""
+        def f(t):
+            hm = t.time()
+            if time(8, 0) <= hm < time(8, 30):
+                return 2000.0, 2002.0, 1998.0, 2000.0
+            if hm < time(8, 45):
+                return 2003.0, 2003.0, 2003.0, 2003.0
+            if hm < time(9, 0):
+                return 2001.0, 2001.0, 2001.0, 2001.0
+            return 1996.0, 1996.0, 1996.0, 1996.0
+        m = self.mercato(f)
+        tr = O.trade(O.prepara(m.bid, m.ask), O.V_T)
+        self.assertEqual([x["lato"] for x in tr], ["acquisto"])
+
+    def test_once_meno_di_uno_niente_trade(self):
+        """C1. Con un rischio di 400 USD per oncia e 500 USD di rischio, le once sarebbero 1: con rischio_usd = 300 sono
+        0, quindi niente trade."""
+        m = self.mercato(rialzo)
+        par = O.Parametri(rischio_usd=5.0)                          # 5 / (5,6 + 0,07) < 1
+        self.assertEqual(O.trade(O.prepara(m.bid, m.ask, par), par), [])
+
+    def test_rischio_al_limite_del_quarto_di_a(self):
+        """C1. A = 4, minimo 1: rischio 1,0 → trade; 0,9 → niente (già coperto). Ingresso ASK 1998,7 + 0,1 = 1998,8,
+        stop 1998, rischio 0,8: niente; ingresso 1998,9 + 0,1 = 1999,0, rischio 1,0: trade."""
+        m = self.mercato(rialzo)
+        g = [x for x in O.prepara(m.bid, m.ask) if x.data == G][0]
+        t0, b0, a0 = g.minuti[0]
+        g.minuti[0] = (t0, (1998.6, 1998.6, 1998.6, 1998.6), (1998.9, 1998.9, 1998.9, 1998.9))
+        self.assertIsNotNone(O.simula(g, "acquisto", O.V_T))
+        g.minuti[0] = (t0, (1998.4, 1998.4, 1998.4, 1998.4), (1998.7, 1998.7, 1998.7, 1998.7))
+        self.assertIsNone(O.simula(g, "acquisto", O.V_T))
+
+
 class TestBenchmarkEMetriche(unittest.TestCase):
     def test_specchio_stessa_distanza_dalla_parte_giusta(self):
         m = Mercato()
@@ -423,7 +554,7 @@ class TestBenchmarkEMetriche(unittest.TestCase):
         self.assertEqual((x["n"], x["vinti"], x["r_medio"]), (4, 0.5, 0.25))
         self.assertEqual((x["dd_max"], x["serie_perdite"]), (2.0, 2))
         self.assertEqual((x["r_vendite"], x["n_vendite"], x["r_acquisti"]), (-1.0, 2, 1.5))
-        self.assertEqual(x["per_anno"], {2025: (2, 0.0), 2026: (2, 0.5)})
+        self.assertEqual(x["per_anno"], {2025: (2, 0.0, 0.0), 2026: (2, 0.5, 1.0)})
 
 
 if __name__ == "__main__":
