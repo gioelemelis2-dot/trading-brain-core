@@ -38,21 +38,22 @@ class Mercato:
         sa = spread if spread_alto is None else spread_alto
         self.ask[t] = (o + spread, h + sa, l + spread, c + spread)
 
-    def giornata(self, g, prezzo_fn):
+    def giornata(self, g, prezzo_fn, spread=SPREAD):
         t = datetime(g.year, g.month, g.day, 7, 0, tzinfo=UTC)
         while t < datetime(g.year, g.month, g.day, 17, 0, tzinfo=UTC):
             o, h, l, c = prezzo_fn(t)
-            self.minuto(t, o, h, l, c)
+            self.minuto(t, o, h, l, c, spread=spread)
             t += timedelta(minutes=1)
 
-    def storia(self, g, a=5.0):
-        """20 sessioni precedenti con range di apertura largo `a` (mediana = a)."""
+    def storia(self, g, a=5.0, spread=0.1):
+        """20 sessioni precedenti con range di apertura largo `a` (mediana = a) e spread `spread`: il costo di
+        riferimento è spread + 0,07 + 0,10 + 0,20 (con 0,1: 0,47, minimo dell'ampiezza 6 × 0,47 = 2,82 USD)."""
         for d in giorni_lavorativi_prima(g, 20):
             def f(t, d=d):
                 if time(8, 0) <= t.time() < time(8, 30):
                     return 2000.0, 2000.0 + a / 2, 2000.0 - a / 2, 2000.0
                 return 2000.0, 2000.0, 2000.0, 2000.0
-            self.giornata(d, f)
+            self.giornata(d, f, spread)
 
 
 G = date(2026, 1, 7)    # mercoledì
@@ -166,7 +167,8 @@ class TestFiltriEGiorni(unittest.TestCase):
     def test_tetto_e_minimo(self):
         self.assertEqual(self.costruisci(10.0)[0].motivo, "valido")                 # 10 = 2 × 5: ammesso
         self.assertEqual(self.costruisci(10.2)[0].motivo, "range oltre il tetto")
-        self.assertEqual(self.costruisci(2.9, storia_a=3.0)[0].motivo, "range sotto il minimo dei costi")
+        self.assertEqual(self.costruisci(2.7, storia_a=3.0)[0].motivo, "range sotto il minimo dei costi")
+        self.assertEqual(self.costruisci(2.9, storia_a=3.0)[0].motivo, "valido")               # 2,9 ≥ 2,82
 
     def test_servono_20_sessioni_precedenti(self):
         m = Mercato()
@@ -312,6 +314,85 @@ class TestDopoLaMutazione(unittest.TestCase):
         self.assertAlmostEqual(x["entrata"], 2003.6)
         self.assertEqual((x["motivo"], x["once"]), ("target", 82))
         self.assertAlmostEqual(x["r"], 1.36612, places=6)
+
+
+class TestRiletturaGemini(unittest.TestCase):
+    """Rilievi di Gemini G-20261114-03 sulla v2, verificati da Claude: test scritti PRIMA delle correzioni."""
+
+    def prepara(self, prezzo_fn, togli=(), modifica=None, storia_spread=0.1):
+        m = Mercato()
+        m.storia(G, spread=storia_spread)
+        m.giornata(G, prezzo_fn)
+        for t in togli:
+            m.bid.pop(t, None)
+            m.ask.pop(t, None)
+        if modifica:
+            modifica(m)
+        return [x for x in O.prepara(m.bid, m.ask) if x.data == G]
+
+    def test_stop_in_salto_eseguito_all_apertura(self):
+        """Il minuto dopo l'ingresso apre a 1996, già sotto lo stop 1998: si esce a 1996 − 0,2 = 1995,8, non a
+        1998 − 0,2 (sarebbe un vantaggio irreale)."""
+        g = self.prepara(rialzo)[0]
+        t1, b1, a1 = g.minuti[1]
+        g.minuti[1] = (t1, (1996.0, 1996.0, 1995.0, 1995.5), (1996.3, 1996.3, 1995.3, 1995.8))
+        x = O.simula(g, "acquisto", O.V_T)
+        self.assertEqual(x["motivo"], "stop")
+        self.assertAlmostEqual(x["uscita"], 1995.8)
+
+    def test_stop_in_salto_della_vendita(self):
+        """Vendita: l'ASK apre a 2003, sopra RA alto 2002: uscita 2003 + 0,2 = 2003,2."""
+        def f(t):
+            hm = t.time()
+            if time(8, 0) <= hm < time(8, 30):
+                return 2000.0, 2002.0, 1998.0, 2000.0
+            if hm < time(9, 30):
+                return 1997.0, 1997.0, 1997.0, 1997.0
+            return 2002.7, 2002.7, 2002.7, 2002.7
+        x = O.trade(self.prepara(f), O.V_T)[0]
+        self.assertEqual((x["lato"], x["motivo"]), ("vendita", "stop"))
+        self.assertAlmostEqual(x["uscita"], 2003.2)
+
+    def test_fine_sessione_senza_quotazioni_vicine(self):
+        """Mancano i minuti dalle 16:30 alle 16:50: il primo dopo è alle 16:51, oltre le 16:45. Si esce alla chiusura
+        dell'ultimo minuto prima delle 16:30 (BID 2012) − 0,2 = 2011,8, mai più tardi."""
+        togli = [datetime(2026, 1, 7, 16, k, tzinfo=UTC) for k in range(30, 51)]
+        x = O.trade(self.prepara(rialzo, togli), O.V_S)[0]
+        self.assertEqual(x["motivo"], "fine sessione senza quotazioni")
+        self.assertAlmostEqual(x["uscita"], 2011.8)
+
+    def test_ingresso_solo_dentro_la_candela_successiva(self):
+        """Il segnale finisce alle 08:45; se mancano tutti i minuti dalle 08:45 alle 08:59, l'ingresso alle 09:00 è
+        oltre la candela successiva: niente trade."""
+        togli = [datetime(2026, 1, 7, 8, k, tzinfo=UTC) for k in range(45, 60)]
+        g = self.prepara(rialzo, togli)[0]
+        self.assertIsNone(g.minuti)
+        self.assertEqual(g.motivo, "ingresso oltre la candela successiva")
+        self.assertEqual(O.trade([g], O.V_T), [])
+
+    def test_spread_negativo_esclude_il_giorno(self):
+        def rompi(m):
+            t = datetime(2026, 1, 7, 9, 0, tzinfo=UTC)
+            b = m.bid[t]
+            m.ask[t] = (b[0] - 0.5, b[1], b[2] - 0.5, b[3])
+        g = self.prepara(rialzo, modifica=rompi)[0]
+        self.assertFalse(g.valido)
+        self.assertEqual(g.motivo, "spread negativo")
+
+    def test_minimo_dell_ampiezza_dai_costi_veri(self):
+        """Storia con spread 0,3: costo di riferimento 0,3 + 0,07 + 0,1 + 0,2 = 0,67, minimo 4,02 USD; oggi A = 4:
+        escluso. Con spread 0,1 (minimo 2,82) lo stesso giorno è valido."""
+        self.assertEqual(self.prepara(rialzo, storia_spread=0.3)[0].motivo, "range sotto il minimo dei costi")
+        self.assertEqual(self.prepara(rialzo, storia_spread=0.1)[0].motivo, "valido")
+
+    def test_festivi_inglesi(self):
+        e = O.esclusi
+        for d in (date(2026, 5, 4), date(2026, 5, 25), date(2026, 8, 31), date(2020, 5, 8), date(2022, 6, 2),
+                  date(2022, 6, 3), date(2022, 9, 19), date(2023, 5, 8), date(2012, 6, 4), date(2012, 6, 5),
+                  date(2011, 4, 29), date(2021, 12, 27), date(2021, 12, 28), date(2022, 1, 3), date(2022, 12, 27)):
+            self.assertIn(d, e(d.year), d)
+        for d in (date(2020, 5, 4), date(2012, 5, 28), date(2022, 5, 30), date(2026, 5, 5)):
+            self.assertNotIn(d, e(d.year), d)
 
 
 class TestBenchmarkEMetriche(unittest.TestCase):
