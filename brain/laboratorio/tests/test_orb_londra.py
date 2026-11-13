@@ -424,9 +424,11 @@ class TestRevisioneDeepSeek(unittest.TestCase):
         return m.bid, m.ask
 
     def test_sharpe_con_deviazione_campionaria(self):
-        """B1.7. r = 1, −1, 1, −1, 2: media 0,4; deviazione campionaria sqrt(4,6/4) = 1,07238 → Sharpe 0,37300."""
+        """B1.7. r = 1, −1, 1, −1, 2: media 0,4; scarti al quadrato 0,36 + 1,96 + 0,36 + 1,96 + 2,56 = 7,2; deviazione
+        campionaria sqrt(7,2 / 4) = 1,34164 → Sharpe 0,29814 (con la deviazione di popolazione sarebbe 0,33333).
+        Prima stesura del test con la somma sbagliata (4,6): errore aritmetico di Claude, corretto."""
         tr = [{"data": date(2025, 1, k + 2), "lato": "acquisto", "r": r} for k, r in enumerate((1, -1, 1, -1, 2))]
-        self.assertAlmostEqual(O.metriche(tr)["sharpe"], 0.4 / (4.6 / 4) ** 0.5, places=6)
+        self.assertAlmostEqual(O.metriche(tr)["sharpe"], 0.4 / (7.2 / 4) ** 0.5, places=6)
 
     def test_somme_per_anno_e_ultimi_anni(self):
         """B1.6. per_anno riporta (trade, media, somma); somma degli ultimi 2 anni = 0 + 1 = 1."""
@@ -446,6 +448,7 @@ class TestRevisioneDeepSeek(unittest.TestCase):
         """B1.5/B1.11. Il resoconto conta i giorni esclusi per motivo (anche fine settimana e festivi) e i minuti con
         spread negativo di TUTTE le sessioni di base, non solo dei giorni con segnale."""
         m = self.mercato(rialzo)
+        m.giornata(date(2026, 1, 3), lambda t: (2000.0, 2000.0, 2000.0, 2000.0))   # un sabato con dati
         t = datetime(2026, 1, 6, 10, 0, tzinfo=UTC)                 # sessione della storia, senza segnale
         b = m.bid[t]
         m.ask[t] = (b[0] - 0.5, b[1], b[2] - 0.5, b[3])
@@ -453,7 +456,7 @@ class TestRevisioneDeepSeek(unittest.TestCase):
         self.assertEqual(r["minuti_spread_negativo"], 1)
         self.assertEqual(r["giorni_per_motivo"]["valido"], 1)
         self.assertEqual(r["giorni_per_motivo"]["meno di 20 sessioni precedenti"], 20)
-        self.assertGreaterEqual(r["giorni_per_motivo"]["fine settimana o festivo"], 1)
+        self.assertEqual(r["giorni_per_motivo"]["fine settimana o festivo"], 1)
 
     def test_ora_legale_range_di_trenta_minuti(self):
         """C1. Lunedì 30/3/2026, primo giorno feriale con l'ora legale inglese: il range va dalle 07:00 alle 07:30 UTC."""
@@ -512,8 +515,7 @@ class TestRevisioneDeepSeek(unittest.TestCase):
         self.assertEqual([x["lato"] for x in tr], ["acquisto"])
 
     def test_once_meno_di_uno_niente_trade(self):
-        """C1. Con un rischio di 400 USD per oncia e 500 USD di rischio, le once sarebbero 1: con rischio_usd = 300 sono
-        0, quindi niente trade."""
+        """C1. Perdita allo stop 5,6 + 0,07 USD per oncia: con un rischio di 5 USD le once sono 0, quindi niente trade."""
         m = self.mercato(rialzo)
         par = O.Parametri(rischio_usd=5.0)                          # 5 / (5,6 + 0,07) < 1
         self.assertEqual(O.trade(O.prepara(m.bid, m.ask, par), par), [])

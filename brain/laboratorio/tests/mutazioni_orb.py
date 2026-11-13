@@ -48,6 +48,10 @@ M = {
     "O26 costo di riferimento senza lo spread": [(F, "costo = median(spread_prec) + par.commissione", "costo = par.commissione")],
     "O27 festivi inglesi ignorati": [(F, "return festivi_inglesi(anno) | {", "return set() | {")],
     "O28 Natale di sabato senza secondo sostituto": [(F, "s |= {date(anno, 12, 27), date(anno, 12, 28)}", "s |= {date(anno, 12, 27)}")],
+    "O30 spread richiesti: basta uno": [(F, "if len(spread_prec) < par.spread_min:", "if not spread_prec:")],
+    "O31 Sharpe con deviazione di popolazione": [(F, "sd = stdev(rs) if len(rs) > 1 else 0.0", "sd = (sum((r - mean(rs)) ** 2 for r in rs) / len(rs)) ** 0.5 if len(rs) > 1 else 0.0")],
+    "O32 ultimi anni contati male": [(F, 'if x["data"].year > ultimo - anni)', 'if x["data"].year >= ultimo - anni)')],
+    "O33 resoconto senza minuti con spread negativo": [(F, "            negativi += sum(", "            negativi += 0 * sum(")],
     "O29 festivi spostati ignorati": [(F, "        s.discard(vecchio)\n        s.add(nuovo)", "        pass")],
 }
 

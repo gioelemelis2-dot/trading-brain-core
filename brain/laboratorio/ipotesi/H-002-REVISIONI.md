@@ -96,3 +96,25 @@ Quando arriva R2: versione 2 della scheda con le correzioni accolte, e l'elenco 
 | Confronto casuale: testo sul target di V-S e sulla «distanza R» | **accolto** | v3 §6 |
 | Nota sulle alternative USA e sul fixing LBMA | **accolto** | v3 §9 |
 
+## R4 · Revisione esterna di DeepSeek sulla v3 (14/11/2026)
+DeepSeek ha ricevuto per errore la bozza v1 al posto dei test, quindi non ha valutato `test_orb_londra.py`. Alcuni rilievi (spread di riferimento 0,35, spread all'apertura) vengono dalla bozza v1, non dalla v3. Correzioni in TDD (commit `8e2f61c` rosso, poi verde): 39 test e mutanti 33/33.
+
+| Rilievo | Esito | Motivo e applicazione |
+|---|---|---|
+| B3: la scheda dichiarava che ogni regola era nel simulatore, ma il confronto casuale, il DSR, la robustezza, il veto e il cumulato dei 5 anni non c'erano | **accolto, alto** | Vero. La v3.1 dice cosa è codice e cosa no; il programma che esegue §6–§8 si scrive, si testa e si rivede prima del sigillo |
+| Spread disponibile in meno di 20 sessioni; «manca lo spread» ambiguo | **accolto** | Servono almeno 15 spread fra le 20 sessioni precedenti; codice e test |
+| Stress nel costo di riferimento | **accolto (chiarimento)** | Escluso, dichiarato: lo stress si misura sugli stessi giorni |
+| Limite dei 15 minuti per l'ingresso | **accolto (chiarimento)** | Fine esclusa |
+| Minuti mancanti che nascondono uno stop | **accolto in parte** | Un minuto senza scambi non muove il prezzo. Un buco del flusso è coperto dallo stop in salto all'apertura successiva. Limite residuo dichiarato |
+| Sharpe con la deviazione di popolazione | **accolto** | Deviazione campionaria; nella prima stesura del test Claude ha sbagliato una somma (4,6 invece di 7,2), corretto |
+| Somma per anno e cumulato degli ultimi 5 anni | **accolto** | `per_anno` con la somma; `somma_ultimi_anni` |
+| Minuti con spread negativo solo nei giorni con segnale; giorni esclusi senza traccia | **accolto** | `resoconto()` per tutti i giorni |
+| `specchio` senza direzione: KeyError | **accolto** | Errore esplicito |
+| Benchmark su campioni diversi | **accolto** | Confronto sui giorni in cui entrano entrambi |
+| Docstring «v2» | **accolto** | Aggiornato |
+| Festivi straordinari 2024–2026 | **accolto** | Da confrontare con il file ufficiale gov.uk (dal Mac) prima del sigillo |
+| Spread di riferimento 0,35 «ottimistico all'apertura» | **respinto** | Viene dalla bozza v1. La v3 usa lo spread vero minuto per minuto (dati ASK), e gli ingressi sono almeno 45 minuti dopo l'apertura |
+| DSR anche nello screening | **respinto, con il motivo** | Con 3 anni di sviluppo una strategia da +0,10R a trade avrebbe DSR circa 0,77 (calcolo di Gemini G-20261114-02, ricontrollato da Claude): il DSR nello screening boccerebbe anche le strategie buone. Il DSR resta sulla verifica sigillata. È un disaccordo fra i due revisori, deciso con il calcolo |
+| Il confronto casuale 50/50 sarebbe «positivo» in un mercato in tendenza | **respinto** | Con direzione casuale metà dei trade va contro la tendenza: la media è circa zero meno i costi. La tendenza la controllano i benchmark «compro sempre» e «vendo sempre», già fra i criteri |
+| Casi della sezione C non coperti dai test | **accolto** | Aggiunti: ora legale, target della vendita sull'ASK, minuto delle 16:30, due rotture e un solo trade, once < 1, rischio al limite. Erano già corretti nel codice: mancava la copertura |
+

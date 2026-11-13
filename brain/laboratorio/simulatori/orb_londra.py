@@ -1,4 +1,4 @@
-"""Simulatore minuto per minuto di H-002 v2 (rottura del range di apertura di Londra su XAUUSD).
+"""Simulatore minuto per minuto di H-002 v3 (rottura del range di apertura di Londra su XAUUSD).
 
 Esegue SOLO le regole scritte in brain/laboratorio/ipotesi/H-002-ORB-v2.md: ogni scostamento è un errore.
 Prezzi: minuti BID e ASK di Dukascopy (float). Segnali e range sui BID; esecuzioni dal lato giusto:
@@ -11,7 +11,7 @@ Non apre dati da solo e non sceglie periodi: riceve i minuti dal chiamante, che 
 from dataclasses import dataclass, replace
 from datetime import date, datetime, time, timedelta, timezone
 from math import floor, sqrt
-from statistics import mean, median, pstdev
+from statistics import mean, median, stdev
 from typing import Dict, List, Optional, Tuple
 from zoneinfo import ZoneInfo
 
@@ -28,6 +28,7 @@ class Parametri:
     tetto: float = 2.0                                         # A ≤ tetto × mediana delle 20 sessioni valide precedenti
     molt_costi: float = 6.0                                    # A ≥ 6 × costo per trade di riferimento
     sessioni_rif: int = 20
+    spread_min: int = 15                                       # spread presenti richiesti fra le 20 sessioni precedenti
     minuti_or_min: float = 0.8
     rischio_min_a: float = 0.25
     commissione: float = 0.07                                  # USD per oncia, andata e ritorno
@@ -148,19 +149,17 @@ def prepara(bid: Dict[datetime, Quota], ask: Dict[datetime, Quota], par: Paramet
         alto, basso = max(bid[t][1] for t in or_t), min(bid[t][2] for t in or_t)
         a = alto - basso
         rif = median(storico_a[-par.sessioni_rif:]) if len(storico_a) >= par.sessioni_rif else None
-        spread_prec = storico_spread[-par.sessioni_rif:]
+        spread_prec = [s for s in storico_spread[-par.sessioni_rif:] if s is not None]
         storico_a.append(a)                                     # mediane: solo le sessioni PRECEDENTI
         primo_eseguibile = [t for t in per_data[g] if t >= fine_or and eseguibile(t)][:1]
-        if primo_eseguibile:
-            t_s = primo_eseguibile[0]
-            storico_spread.append(ask[t_s][0] - bid[t_s][0])
+        storico_spread.append((ask[primo_eseguibile[0]][0] - bid[primo_eseguibile[0]][0]) if primo_eseguibile else None)
         if rif is None:
             out.append(Giorno(g, a, alto, basso, False, "meno di 20 sessioni precedenti"))
             continue
         if a > par.tetto * rif:
             out.append(Giorno(g, a, alto, basso, False, "range oltre il tetto"))
             continue
-        if not spread_prec:
+        if len(spread_prec) < par.spread_min:
             out.append(Giorno(g, a, alto, basso, False, "manca lo spread delle sessioni precedenti"))
             continue
         costo = median(spread_prec) + par.commissione + par.slip_ingresso + par.slip_uscita
@@ -267,6 +266,8 @@ def specchio(giorni: List[Giorno], par: Parametri, lato_fisso: Optional[str] = N
              lati: Optional[Dict[date, str]] = None) -> List[dict]:
     """Benchmark: stessi giorni e orari d'ingresso della strategia, direzione fissa (`lato_fisso`) o data per giorno
     (`lati`), stop alla STESSA distanza della strategia ma dalla parte giusta."""
+    if lato_fisso is None and lati is None:
+        raise ValueError("serve una direzione fissa o una direzione per ogni giorno")
     out = []
     for g in giorni:
         if not (g.valido and g.lato):
@@ -301,7 +302,7 @@ def metriche(tr: List[dict]) -> dict:
         dd = max(dd, picco - cum)
         serie = serie + 1 if r < 0 else 0
         peggiore = max(peggiore, serie)
-    sd = pstdev(rs) if len(rs) > 1 else 0.0
+    sd = stdev(rs) if len(rs) > 1 else 0.0                     # deviazione campionaria (n − 1)
     per_anno: Dict[int, list] = {}
     for x in tr:
         per_anno.setdefault(x["data"].year, []).append(x["r"])
@@ -311,5 +312,37 @@ def metriche(tr: List[dict]) -> dict:
             "sharpe": (mean(rs) / sd) if sd > 0 else None, "dd_max": dd, "serie_perdite": peggiore,
             "r_acquisti": mean(acquisti) if acquisti else None, "n_acquisti": len(acquisti),
             "r_vendite": mean(vendite) if vendite else None, "n_vendite": len(vendite),
-            "per_anno": {k: (len(v), mean(v)) for k, v in sorted(per_anno.items())},
+            "per_anno": {k: (len(v), mean(v), sum(v)) for k, v in sorted(per_anno.items())},
             "errore_std": (sd / sqrt(len(rs))) if len(rs) > 1 else None}
+
+
+def somma_ultimi_anni(tr: List[dict], anni: int) -> float:
+    """Somma degli R negli ultimi `anni` anni solari del periodo (fino all'anno dell'ultimo trade compreso)."""
+    if not tr:
+        return 0.0
+    ultimo = max(x["data"].year for x in tr)
+    return sum(x["r"] for x in tr if x["data"].year > ultimo - anni)
+
+
+def resoconto(bid: Dict[datetime, Quota], ask: Dict[datetime, Quota], par: Parametri = V_T) -> dict:
+    """Conteggi per il rapporto: giorni per motivo (anche quelli che non arrivano a prepara) e minuti con spread
+    negativo in tutte le sessioni di base, dalle 08:00 alle 16:45 di Londra."""
+    giorni = prepara(bid, ask, par)
+    per_motivo: Dict[str, int] = {}
+    for g in giorni:
+        per_motivo[g.motivo] = per_motivo.get(g.motivo, 0) + 1
+    base = {g.data for g in giorni}
+    date_con_dati: Dict[date, list] = {}
+    for t in bid:
+        date_con_dati.setdefault(t.astimezone(LONDRA).date(), []).append(t)
+    negativi = 0
+    for d, ts in date_con_dati.items():
+        if d in base:
+            inizio, fine = _utc(d, time(8, 0)), _utc(d, par.fine_sessione) + par.attesa_max
+            negativi += sum(1 for t in ts if inizio <= t < fine and t in ask
+                            and not (ask[t][0] >= bid[t][0] and ask[t][3] >= bid[t][3]))
+        elif d.weekday() >= 5 or d in esclusi(d.year):
+            per_motivo["fine settimana o festivo"] = per_motivo.get("fine settimana o festivo", 0) + 1
+        else:
+            per_motivo["minuti del range insufficienti"] = per_motivo.get("minuti del range insufficienti", 0) + 1
+    return {"giorni_per_motivo": per_motivo, "minuti_spread_negativo": negativi}

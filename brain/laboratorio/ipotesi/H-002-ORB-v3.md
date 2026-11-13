@@ -1,11 +1,14 @@
-# H-002 v3 · Rottura del range di apertura di Londra su XAUUSD
+# H-002 v3.1 · Rottura del range di apertura di Londra su XAUUSD
 
 **Stato:** versione 3, **da sigillare** dopo la revisione esterna.
 - Sostituisce la v2 (commit `9780d71`).
 - Applica:
   - i rilievi della rilettura di Gemini G-20261114-03 (verdetto sulla v2: non ancora sigillabile), verificati da Claude;
   - le 2 correzioni trovate da Claude scrivendo il simulatore.
-- Ogni regola qui sotto è eseguita da `laboratorio/simulatori/orb_londra.py` e coperta da test (`laboratorio/tests/test_orb_londra.py`, 28 test, mutation testing 29/29).
+- **v3.1:** chiarimenti dalla revisione esterna di DeepSeek (esiti in `H-002-REVISIONI.md`, R4).
+- **Cosa è già codice e cosa no** (la v3 diceva «ogni regola», ed era falso: rilievo di DeepSeek):
+  - §2–§5, i benchmark direzionali e le metriche del §6 sono eseguiti da `laboratorio/simulatori/orb_londra.py`, con 39 test e mutation testing 33/33;
+  - il confronto casuale (§6), la robustezza e il veto (§7) e i criteri del §8, DSR compreso, saranno eseguiti da un programma a parte. **Va scritto, testato e rivisto PRIMA del sigillo.**
 
 **Contaminazione dichiarata (DA-17):**
 - gli Studi E-001 (sessioni) ed E-002 (micro-range) sono stati letti prima: nessuna struttura direzionale trovata;
@@ -22,6 +25,9 @@ Dopo i primi 30 minuti di Londra, la prima chiusura a 15 minuti fuori dal range 
   - Un minuto con ASK sotto il BID è un dato errato: non si usa (come se mancasse) e si conta.
   - Il giorno NON si esclude: sarebbe uno sguardo al futuro.
 - **Minuto mancante** = minuto senza scambi; non si inventano prezzi.
+  - Senza scambi il prezzo non si muove, quindi non può toccare lo stop.
+  - Se invece mancano dati per un'interruzione del flusso e il prezzo è andato oltre lo stop, lo stop scatta all'apertura del primo minuto dopo il buco, al prezzo peggiore (§4.3).
+  - Limite residuo dichiarato: un prezzo andato oltre lo stop e tornato indietro DENTRO un buco di dati non si vede.
 - **Sviluppo:** dal 15/11/2023 al 12/11/2026.
 - **Verifica sigillata:** dal 2005 a circa il 31/10/2023, con date esatte in DA-26; una sola volta, con gli ASK storici.
 
@@ -34,15 +40,17 @@ Dopo i primi 30 minuti di Londra, la prima chiusura a 15 minuti fuori dal range 
 - **Giorni esclusi, noti in anticipo:**
   - i bank holiday di Inghilterra e Galles: Capodanno, Venerdì Santo, lunedì di Pasqua, primo e ultimo lunedì di maggio, ultimo lunedì di agosto, Natale, Santo Stefano;
   - i giorni sostitutivi quando un festivo cade nel fine settimana;
-  - gli spostamenti e le aggiunte straordinarie: 2011-04-29; 2012-06-04 al posto del 2012-05-28; 2012-06-05; 2020-05-08 al posto del 2020-05-04; 2022-06-02 al posto del 2022-05-30; 2022-06-03; 2022-09-19; 2023-05-08. Elenco da verificare sulla fonte ufficiale gov.uk prima della verifica sigillata;
+  - gli spostamenti e le aggiunte straordinarie: 2011-04-29; 2012-06-04 al posto del 2012-05-28; 2012-06-05; 2020-05-08 al posto del 2020-05-04; 2022-06-02 al posto del 2022-05-30; 2022-06-03; 2022-09-19; 2023-05-08.
+    - Per il 2024–2026 Claude non conosce date straordinarie.
+    - **Prima del sigillo** l'elenco si confronta con il file ufficiale `bank-holidays.json` di gov.uk, scaricato sul Mac e versionato (da questo ambiente gov.uk non è raggiungibile);
   - in più: 24, 25, 26 e 31 dicembre, 1° gennaio.
   - Le chiusure anticipate USA (13:00–13:30 di New York) cadono dopo la fine della sessione di Londra e non la toccano.
 - **Mediane** sulle **20 sessioni di base precedenti**; meno di 20 → giorno non valido. La sessione corrente non entra mai.
 - **Tetto dell'ampiezza:** A ≤ 2 × la mediana di A.
 - **Costo di riferimento:**
-  - mediana, sulle 20 sessioni di base precedenti, dello spread (ASK − BID in apertura) del primo minuto eseguibile dalle 08:30 in poi;
+  - mediana dello spread (ASK − BID in apertura) del primo minuto eseguibile dalle 08:30 in poi, fra le 20 sessioni di base precedenti che ce l'hanno: **ne servono almeno 15**, altrimenti il giorno non è valido;
+  - lo stress NON entra nel costo di riferimento, così lo scenario di stress si misura sugli stessi giorni;
   - più commissione (0,07), slittamento d'ingresso (0,10) e slittamento d'uscita (0,20).
-  - Se manca lo spread delle sessioni precedenti, il giorno non è valido.
   - Così il minimo segue i costi veri di ogni epoca, dal 2005 a oggi.
 - **Minimo dell'ampiezza:** A ≥ 6 × il costo di riferimento.
 - **Candele di segnale:** candele BID da 15 minuti allineate in UTC, che **aprono** dalla prima quarta d'ora non anteriore alla fine del range fino alle 15:15 incluse. Con il range di 20 minuti la prima candela è quella delle 08:30.
@@ -50,7 +58,7 @@ Dopo i primi 30 minuti di Londra, la prima chiusura a 15 minuti fuori dal range 
 
 ## 4. Regole
 1. **Segnale:** la prima candela di segnale che chiude **sopra RA alto** (acquisto) o **sotto RA basso** (vendita). Una sola, la prima.
-2. **Ingresso:** all'apertura del primo minuto eseguibile dopo la fine della candela di segnale, **entro i 15 minuti successivi**; altrimenti niente trade.
+2. **Ingresso:** all'apertura del primo minuto eseguibile dopo la fine della candela di segnale, **nei 15 minuti successivi** (fine esclusa: un minuto esattamente 15 minuti dopo non vale); altrimenti niente trade.
    - acquisto: ASK di apertura + 0,10 (+ stress);
    - vendita: BID di apertura − 0,10 (− stress).
    - L'ultimo ingresso possibile è quindi entro le 15:45.
@@ -94,11 +102,12 @@ Dopo i primi 30 minuti di Londra, la prima chiusura a 15 minuti fuori dal range 
 - **Drawdown massimo** sulla curva cumulata dei trade chiusi, in R.
 - Serie peggiore di perdite consecutive.
 - **Separati:** acquisti e vendite, e ogni **anno solare**.
-- **Benchmark direzionali:** «compro sempre» e «vendo sempre», negli stessi giorni e con gli stessi minuti d'ingresso della strategia.
+- **Benchmark direzionali:** «compro sempre» e «vendo sempre», negli stessi giorni e con gli stessi minuti d'ingresso della strategia. Il confronto si fa sui giorni in cui entrano sia la strategia sia il benchmark.
   - Nei giorni in cui la direzione è opposta al segnale, lo stop è alla **stessa distanza** dall'ingresso, dalla parte giusta.
   - V-T: target a 1,5 × quella distanza; V-S: uscita a fine sessione.
 - **Confronto casuale:** stessi giorni e minuti d'ingresso, direzione estratta a caso, stop alla stessa distanza dalla parte giusta, stesse uscite della variante. 1.000 ripetizioni con seme fisso.
-- **Dati scartati:** numero di minuti con spread negativo.
+- **Dati scartati e giorni:** numero di minuti con spread negativo nelle sessioni di base (dalle 08:00 alle 16:45) e numero di giorni per motivo di esclusione.
+- **Sharpe** con la deviazione standard campionaria (n − 1). **Per anno:** numero di trade, media e somma.
 
 ## 7. Prove (DA-19, DA-28)
 - **Prove dichiarate: V-T e V-S.** Si registrano **al sigillo**, insieme, nel registro delle prove: N di H-002 = 2. Tutte e due si valutano con lo stesso N.
