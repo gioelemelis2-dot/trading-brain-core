@@ -250,6 +250,12 @@ DA-13 rulebook (Q-09) ──► DA-11 G0 minimo ──► DA-12 indicatori compo
 - Dettaglio in `guardian/regole/LEGGIMI.md`.
 
 ## I. Dati e autoinganno (13/11/2026)
+- **14/11/2026: l'utente delega a Claude la scelta del broker** e propone Alpaca.
+  - **Alpaca: scartato.** Broker USA di azioni, ETF, opzioni e cripto via API; non offre XAUUSD spot né CFD, non usa MetaTrader 5 e non c'entra con FTMO. Sull'oro si arriverebbe solo con un ETF nell'orario della borsa USA. È un dato da conoscenza generale di Claude, da verificare se l'utente insiste.
+  - **Scelta di Claude: FP Markets, conto demo MT5 «Raw».** Spread bassi più commissione; MT5, quindi Expert Advisor (DA-30); demo gratuita.
+  - **Secondo broker di confronto, più avanti:** IC Markets o Pepperstone (MT5 Raw o Razor).
+  - **Costi finali:** quelli che contano sono di FTMO (server MT5 proprio). Si misurano prima delle challenge.
+  - Il conto demo da 50.000 USD della scheda attuale non ha un broker noto: la scheda va rifatta sul conto FP Markets.
 
 ### DA-26 · Partizione dei dati prima del sigillo · **bloccante per il Gate 2**
 - **Problema:** il sigillo (`commitment.json`) prova che i dati Out-of-Sample non sono stati modificati, non che nessuno li abbia guardati. Con 3 anni e una divisione 70/30, l'Out-of-Sample sono gli ultimi ~11 mesi. L'utente li ha visti sui grafici, e Claude ne conosce l'andamento a grandi linee dall'addestramento: il test non è davvero cieco.
