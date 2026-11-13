@@ -124,7 +124,10 @@ def scarica_giorno(simbolo: str, giorno: date, cache: Optional[Path], scarica: C
 def decodifica(dati: bytes, giorno: date, cifre: int) -> List[tuple]:
     """Minuti con scambi: (orario UTC, open, high, low, close, volume). Prezzi in Decimal esatti (intero × 10^-cifre).
     Solleva ErroreDati su file troncato o OHLC incoerente (per esempio campi in un ordine diverso dal previsto)."""
-    grezzo = lzma.decompress(dati)
+    try:
+        grezzo = lzma.decompress(dati)
+    except (lzma.LZMAError, EOFError) as e:
+        raise ErroreDati(f"{giorno}: file compresso danneggiato ({e}); cancellarlo dalla cache e riscaricarlo") from None
     if len(grezzo) % RECORD.size:
         raise ErroreDati(f"{giorno}: {len(grezzo)} byte, non multiplo di {RECORD.size} (file troncato o formato diverso)")
     inizio = datetime(giorno.year, giorno.month, giorno.day, tzinfo=timezone.utc)

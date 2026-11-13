@@ -53,6 +53,16 @@ class TestDecodificaEAggregazione(unittest.TestCase):
         self.assertEqual((t, o, h, lo, c, v), (datetime(2026, 1, 5, tzinfo=UTC), D("2650.123"), D("2650.500"),
                                                 D("2650.000"), D("2650.456"), D("1.5")))
 
+    def test_file_compresso_danneggiato_ferma(self):
+        """Rilievo di Gemini (14/11/2026): un file in cache danneggiato non deve passare in silenzio. La scrittura in
+        cache è atomica (file temporaneo e os.replace), quindi un file parziale non dovrebbe esistere; se esiste, è un
+        ErroreDati con la data, non un'eccezione generica."""
+        buono = bi5([(600, 2650000, 2650000, 2649990, 2650010, 1.0)])
+        for rotto in (buono[: len(buono) // 2], b"non lzma"):
+            with self.assertRaises(DK.ErroreDati) as e:
+                DK.decodifica(rotto, date(2026, 1, 5), 3)
+            self.assertIn("2026-01-05", str(e.exception))
+
     def test_record_non_validi_fermano(self):
         """Rilievo di Gemini G3-06: secondi fuori dal giorno, prezzi non positivi o volume non finito sono errori di
         dati (ErroreDati), non eccezioni generiche né minuti accettati."""
