@@ -1,6 +1,7 @@
 """Test offline di brain/dati/pipeline/dukascopy.py (Gate 2): nessuna rete, file .bi5 costruiti nel formato atteso.
 Uso (dalla radice del repository): python3 -s -B -W error -m unittest brain.dati.tests.test_dukascopy
 """
+import hashlib
 import io
 import json
 import lzma
@@ -19,7 +20,6 @@ if str(repo_root) not in sys.path:
     sys.path.insert(0, str(repo_root))
 
 from brain.dati.pipeline import dukascopy as DK                      # noqa: E402
-from brain.dati.pipeline.partitioning import DatasetPartitioner       # noqa: E402
 
 UTC = timezone.utc
 
@@ -81,11 +81,33 @@ class TestControlli(unittest.TestCase):
                 "low": prezzo - 1, "close": prezzo, "volume": D(1)}
 
     def test_scala_sbagliata_ferma(self):
-        """Una scala ×10 (265 USD) o ÷10 (26.500 USD) esce dall'intervallo plausibile per l'oro."""
-        t = datetime(2026, 1, 5, tzinfo=UTC)
-        for p in (D("265"), D("26500")):
-            with self.assertRaises(DK.ErroreDati):
-                DK.controlla([self.candela(t, p)])
+        """Una scala ×10 o ÷10 esce dalla banda plausibile dell'anno: 2026 (265 / 26.500 USD) e 2004 (40 / 4.000)."""
+        for t, prezzi in ((datetime(2026, 1, 5, tzinfo=UTC), (D("265"), D("26500"))),
+                          (datetime(2004, 3, 10, tzinfo=UTC), (D("40"), D("4000")))):
+            for p in prezzi:
+                with self.assertRaises(DK.ErroreDati, msg=f"{t.year} {p}"):
+                    DK.controlla([self.candela(t, p)])
+
+    def test_bande_per_periodo(self):
+        """Rilievo di Gemini G-20261113-01: con il limite fisso 1.000 USD gli anni prima del 2010 erano esclusi.
+        L'oro a 400 USD nel 2004 e a 1.300 nel 2017 è plausibile; un anno senza banda ferma (va aggiunta, a mano)."""
+        DK.controlla([self.candela(datetime(2004, 3, 10, tzinfo=UTC), D("400"))])
+        DK.controlla([self.candela(datetime(2017, 6, 1, tzinfo=UTC), D("1300"))])
+        with self.assertRaises(DK.ErroreDati) as e:
+            DK.controlla([self.candela(datetime(1999, 6, 1, tzinfo=UTC), D("280"))])
+        self.assertIn("nessuna banda", str(e.exception))
+        with self.assertRaises(DK.ErroreDati):
+            DK.controlla([self.candela(datetime(2026, 1, 5, tzinfo=UTC))], simbolo="EURUSD")
+
+    def test_salto_di_scala_fra_candele_ferma(self):
+        """Un giorno decodificato con la scala sbagliata può restare nella banda: lo scopre il salto fra due candele
+        consecutive (oltre il 25%). Un movimento forte ma reale (5%) passa."""
+        t = datetime(2026, 1, 5, 10, tzinfo=UTC)
+        DK.controlla([self.candela(t, D("2650")), self.candela(t + DK.QUINDICI, D("2782.5"))])
+        for p in (D("3400"), D("2000")):
+            with self.assertRaises(DK.ErroreDati, msg=str(p)) as e:
+                DK.controlla([self.candela(t, D("2650")), self.candela(t + DK.QUINDICI, p)])
+            self.assertIn("salto", str(e.exception))
 
     def test_buchi_classificati(self):
         ven = datetime(2026, 1, 9, 20, 45, tzinfo=UTC)                 # venerdì, ultima candela
@@ -169,11 +191,8 @@ class TestScaricamentoEPipeline(unittest.TestCase):
             raise urllib.error.HTTPError(richiesta.full_url, 404, "Not Found", {}, None)
         self.assertIsNone(DK.scarica_http("http://x", attesa=attese.append, apri=apri_404))
 
-    def test_pipeline_completa_offline(self):
-        """5 giorni (lun-ven) di dati costruiti: CSV, ingestione, partizione 70/30, commitment verificabile, nonce
-        fuori dalla cartella dei dati, cache usata al secondo giro."""
+    def scarica_finta(self, richieste):
         giorni = {date(2026, 1, 5) + timedelta(days=i): bi5(giornata()) for i in range(5)}
-        richieste = []
 
         def scarica(url):
             richieste.append(url)
@@ -181,29 +200,57 @@ class TestScaricamentoEPipeline(unittest.TestCase):
                 if url == DK.url_giorno("XAUUSD", g):
                     return dati
             return None
+        return scarica
 
+    def test_pipeline_senza_partizione_non_sigilla(self):
+        """Senza partizione decisa (DA-26) si scaricano e controllano i dati, ma non si sigilla nulla: niente più 70/30
+        per numero di candele. La cache è usata al secondo giro."""
+        richieste = []
+        scarica = self.scarica_finta(richieste)
         with tempfile.TemporaryDirectory() as tmp:
             reali, nonce, cache = Path(tmp) / "reali", Path(tmp) / "fuori" / "nonce", Path(tmp) / "cache"
             meta = DK.esegui("XAUUSD", date(2026, 1, 5), date(2026, 1, 11), reali, nonce, scarica, cache,
                              pausa=lambda: None, stampa=lambda *a: None)
             self.assertEqual(meta["candele_15m"], 5 * 23 * 4)            # 23 ore di mercato al giorno
             self.assertEqual(meta["giorni_senza_dati"], 2)              # sabato e domenica
-            self.assertEqual(meta["in_sample"]["candele"] + meta["out_of_sample"]["candele"], 460)
-            self.assertEqual(meta["in_sample"]["candele"], 322)          # int(460 × 0,7)
             self.assertEqual(meta["controlli"], {"buchi_per_tipo": {"pausa giornaliera": 5},
                                                  "buchi_da_verificare": [], "anomali": 0})
-            self.assertEqual(meta["in_sample"]["da"], "2026-01-05T00:00:00+00:00")
-            self.assertEqual(meta["out_of_sample"]["a"], "2026-01-10T00:00:00+00:00")
-            part = reali / "partizioni" / "XAUUSD_15m"
-            esito = DatasetPartitioner.verify_commitment(part / "out_of_sample.jsonl", part / "commitment.json",
-                                                         nonce / "sealed_nonce.secret")
-            self.assertTrue(esito["valid"], esito)
-            self.assertFalse((part / "sealed_nonce.secret").exists())    # il nonce non sta con i dati
+            self.assertIn("non decisa", meta["partizione"])
+            self.assertNotIn("in_sample", meta)
+            self.assertFalse((reali / "partizioni").exists())
+            self.assertFalse(nonce.exists())
             self.assertTrue((reali / "XAUUSD_15m.meta.json").exists())
             n = len(richieste)
             DK.esegui("XAUUSD", date(2026, 1, 5), date(2026, 1, 11), reali, nonce, scarica, cache,
                       pausa=lambda: None, stampa=lambda *a: None)
             self.assertEqual(len(richieste), n)                          # tutto dalla cache
+
+    def test_pipeline_con_partizione_per_date(self):
+        """Sviluppo 5–6 gennaio, embargo il 7, verifica 8–9: 184 + 184 candele, 92 escluse; sigillo verificabile,
+        nonce fuori dalla cartella dei dati."""
+        from brain.dati.pipeline import partizione_date as PD
+        part = {"schema": PD.SCHEMA, "simbolo": "XAUUSD", "embargo_giorni": 1, "blocco": [
+            {"nome": "sviluppo", "ruolo": "sviluppo", "inizio": "2026-01-05", "fine": "2026-01-07"},
+            {"nome": "verifica", "ruolo": "verifica", "inizio": "2026-01-08", "fine": "2026-01-10"}]}
+        with tempfile.TemporaryDirectory() as tmp:
+            reali, nonce = Path(tmp) / "reali", Path(tmp) / "fuori" / "nonce"
+            meta = DK.esegui("XAUUSD", date(2026, 1, 5), date(2026, 1, 9), reali, nonce, self.scarica_finta([]), None,
+                             pausa=lambda: None, stampa=lambda *a: None, partizione=part, partizione_sha256="cd" * 32)
+            self.assertEqual({b["nome"]: b["candele"] for b in meta["partizione"]["blocchi"]},
+                             {"sviluppo": 184, "verifica": 184})
+            self.assertEqual(meta["partizione"]["candele_escluse"], 92)
+            cartella = reali / "partizioni" / "XAUUSD_15m_date"
+            self.assertEqual(meta["partizione"]["commitment_json_sha256"],
+                             hashlib.sha256((cartella / "commitment.json").read_bytes()).hexdigest())
+            self.assertTrue(PD.verifica(cartella, nonce / "sealed_nonce.secret")["valido"])
+            self.assertFalse((cartella / "sealed_nonce.secret").exists())
+
+    def test_periodo_dalla_partizione(self):
+        from brain.dati.pipeline import partizione_date as PD
+        part = {"schema": PD.SCHEMA, "simbolo": "XAUUSD", "embargo_giorni": 14, "blocco": [
+            {"nome": "vecchia", "ruolo": "verifica", "inizio": "2010-01-01", "fine": "2013-01-01"},
+            {"nome": "sviluppo", "ruolo": "sviluppo", "inizio": "2013-01-15", "fine": "2024-01-01"}]}
+        self.assertEqual(DK.periodo_da_partizione(part), (date(2010, 1, 1), date(2023, 12, 31)))
 
     def test_buco_anomalo_ferma_salvo_accetta_buchi(self):
         dati = bi5(giornata(salto=range(600, 630)))                     # 10:00-10:30 senza scambi
