@@ -2,9 +2,15 @@
 
 Leggere prima di iniziare. Regole in [`PROTOCOLLO-OPERATIVO.md`](PROTOCOLLO-OPERATIVO.md) §4 (provvisorio).
 
-Stato generale: **SVILUPPO SOSPESO** (D-12), tranne l'**audit architetturale** affidato a Claude (D-13, concluso il 11/11/2026, `audit/AUDIT-ARCH-20261111/`) · Fase: **revisione V3.3 consegnata** (`revisione-materiali-gemini/R-CLAUDE-20261112-05-V33/`, esito VALIDATA CON RISERVE, errata proposto); **audit dell'architettura V2 di Gemini consegnato** (`R-CLAUDE-20261112-06-ARCH-V2/`); valutazione della controverifica di Gemini (`R-CLAUDE-20261112-07-CONTROVERIFICA-GEMINI/`); proposta `da-claude/CLAUDE_QUANTITATIVE_BRAIN_PROPOSAL.md` consegnata (non implementata). Claude in attesa dell'utente.
+**Aggiornata il 13/11/2026 (commit `b9e4cc8`): leggere prima `CONTINUITA.md`.** Le righe di stato precedenti erano ferme all'11–12/11 e sono superate.
 
-**Versione di riferimento della revisione: commit `1b051df`** (le impronte in `pacchetto-per-gemini/MANIFEST.sha256` corrispondono a quel commit). I commit successivi toccano solo file di continuità e registro (`CONTINUITA.md`, `collaborazione/LOCK.md`, `governance/DECISIONI.md`, `governance/REGISTRO-MODIFICHE.md`).
+Stato generale:
+- G0 consultivo e journal: completi su `main`.
+- Laboratorio (Binario B, `dati/pipeline`, `laboratorio/backtester`): preso in carico da Claude su mandato dell'utente.
+- **Gate 2:** dati XAUUSD in scaricamento sul Mac dell'utente. Il sigillo sui 3 anni con 70/30 è **provvisorio** (DA-26), perché l'Out-of-Sample degli ultimi ~11 mesi è già stato visto.
+- **Proposte aperte:** piano di diversificazione (`governance/PIANO-DIVERSIFICAZIONE.md`, DA-27, DA-28).
+
+**Regola per tutti, Gemini compreso:** nessuno analizza i dati storici prima che le ipotesi siano scritte e sigillate (Gate 3). Come Claude, anche Gemini conosce dall'addestramento l'andamento dei mercati recenti.
 
 ## File congelati
 | File | Motivo | Da | Fino a |
@@ -17,9 +23,9 @@ Stato generale: **SVILUPPO SOSPESO** (D-12), tranne l'**audit architetturale** a
 ## In corso
 | Attività | File coinvolti | Chi | Inizio | Fine prevista |
 |---|---|---|---|---|
-| Revisione L2.4–L2.6, architettura e registri | sola lettura del Brain; scrittura in `da-gemini/` | Gemini | da avviare | — |
-| Consegna materiali FTMO / motore / test / rulebook / Discovery Lab | `da-gemini/consegne/` | Gemini | da avviare | — |
-| Revisione indipendente dei materiali di Gemini | `revisione-materiali-gemini/` | Claude | alla ricezione | — |
+| Scaricamento XAUUSD da Dukascopy (Gate 2) | `dati/reali/` (dati esclusi da git) | utente, sul Mac | 2026-11-12 | fine del ciclo; poi DA-26 |
+| Revisione critica indipendente di DA-26, DA-27, DA-28 e del piano di diversificazione | sola lettura; rapporto in `da-gemini/` | Gemini | alla richiesta dell'utente | — |
+| Estensione dello scaricatore a più strumenti (fase D1) | `dati/pipeline/dukascopy.py`, `dati/tests/` | Claude | dopo DA-26 e DA-27 | — |
 
 ## Sospese (D-10)
 | Attività | Chi |
