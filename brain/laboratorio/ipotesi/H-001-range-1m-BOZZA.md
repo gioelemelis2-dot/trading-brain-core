@@ -19,6 +19,7 @@ Lettura di Claude, da confermare: **contro-tendenza ai bordi del range.** Vendit
    | 0,50 USD | 100% | 67% | 56% | 50% | 44% |
 
    Senza costi basterebbe il 33%. Nei range piccoli i costi decidono tutto.
+   - **Dati reali (Studio 1, E-001):** la candela mediana a 1 minuto si muove di circa 1,9–2,2 USD e quella a 5 minuti di 4,5–5 USD. Un range di 5 minuti sull'oro di oggi è largo tipicamente qualche dollaro. Con 0,35 USD di costo servono circa il 45–50% di vincite: non impossibile, ma senza margine per stop eseguiti male.
 4. **Si vende proprio dove avvengono le rotture.** Ogni range finisce con una rottura, e la rottura parte dal bordo dove si entra. Lo stop stretto viene preso esattamente lì, spesso con slittamento (lo slippage dei movimenti veloci).
 5. **Gli ordini limite si riempiono soprattutto quando il prezzo sfonda** (selezione avversa). Toccare il livello sul grafico non vuol dire essere eseguiti.
 6. **Dentro una candela da 1 minuto non si sa se è arrivato prima lo stop o il target.** Ipotesi prudente: prima lo stop.
