@@ -357,6 +357,7 @@ DA-13 rulebook (Q-09) ──► DA-11 G0 minimo ──► DA-12 indicatori compo
   - per Fibonacci e order block, ogni variante di tracciamento conta come una prova.
 
 ### DA-30 · Esecuzione automatica della strategia H-001 sul conto demo
+**Nota del 14/11/2026:** H-001 è chiusa dopo lo Studio 2. Il percorso di automazione qui sotto resta valido per la prima strategia che supererà i test.
 **Deciso dall'utente il 14/11/2026:** la strategia di scalping nei micro-range (H-001) sarà **automatizzata fin dall'inizio** sul conto demo, dopo revisione e test. Non sarà eseguita a mano.
 
 **Proposta di Claude (da confermare):**

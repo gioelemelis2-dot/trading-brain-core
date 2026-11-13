@@ -1,6 +1,8 @@
 # H-001 · Scalping nei micro-range a 1 minuto (BOZZA, NON sigillata)
 
-**Stato:** bozza di Claude sull'idea grezza dell'utente (14/11/2026). Mancano le risposte dell'utente (domande in fondo), i dati dello Studio 1 (E-001) e gli spread misurati. **Non si testa finché non è sigillata.**
+**Stato: CHIUSA il 14/11/2026 dopo lo Studio 2 (E-002, commit `eaa28fc`).** Sui micro-range a 1 minuto l'oro si comporta come il caso. L'unico indizio (+3 punti contro il range, solo con le chiusure) vale circa 2 centesimi lordi a trade, contro 7–40 centesimi di costi. Non si riapre ritoccando i numeri: un'eventuale versione su range più ampi è un'ipotesi nuova.
+
+**Stato precedente:** bozza di Claude sull'idea grezza dell'utente (14/11/2026). Mancano le risposte dell'utente (domande in fondo), i dati dello Studio 1 (E-001) e gli spread misurati. **Non si testa finché non è sigillata.**
 
 ## Idea dell'utente (testuale)
 «Range di accumulo che durano anche 5 minuti… entrare al top e vendere al bottom, sono movimenti brevi, in cui si mette uno stop loss strettissimo e un tp stretto sempre rispettando il rapporto rischio rendimento.»
