@@ -532,6 +532,24 @@ class TestRevisioneDeepSeek(unittest.TestCase):
         self.assertIsNone(O.simula(g, "acquisto", O.V_T))
 
 
+class TestFestiviUfficiali(unittest.TestCase):
+    """I festivi del codice coincidono con il file ufficiale gov.uk (dati/riferimenti/uk_bank_holidays.json, commit
+    ac17502), che copre dal 2019 al 2028. Per il 2005–2018 il file non c'è: le date straordinarie del 2011 e del 2012
+    restano dalla conoscenza di Claude (dichiarato nella scheda)."""
+
+    def test_coincidono_con_gov_uk(self):
+        import json
+        f = repo_root / "brain" / "dati" / "riferimenti" / "uk_bank_holidays.json"
+        eventi = json.loads(f.read_text(encoding="utf-8"))["england-and-wales"]["events"]
+        ufficiali = {}
+        for e in eventi:
+            d = date.fromisoformat(e["date"])
+            ufficiali.setdefault(d.year, set()).add(d)
+        self.assertEqual(min(ufficiali), 2019)
+        for anno, giorni in ufficiali.items():
+            self.assertEqual(O.festivi_inglesi(anno), giorni, anno)
+
+
 class TestBenchmarkEMetriche(unittest.TestCase):
     def test_specchio_stessa_distanza_dalla_parte_giusta(self):
         m = Mercato()

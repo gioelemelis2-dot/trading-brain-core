@@ -41,8 +41,8 @@ Dopo i primi 30 minuti di Londra, la prima chiusura a 15 minuti fuori dal range 
   - i bank holiday di Inghilterra e Galles: Capodanno, Venerdì Santo, lunedì di Pasqua, primo e ultimo lunedì di maggio, ultimo lunedì di agosto, Natale, Santo Stefano;
   - i giorni sostitutivi quando un festivo cade nel fine settimana;
   - gli spostamenti e le aggiunte straordinarie: 2011-04-29; 2012-06-04 al posto del 2012-05-28; 2012-06-05; 2020-05-08 al posto del 2020-05-04; 2022-06-02 al posto del 2022-05-30; 2022-06-03; 2022-09-19; 2023-05-08.
-    - Per il 2024–2026 Claude non conosce date straordinarie.
-    - **Prima del sigillo** l'elenco si confronta con il file ufficiale `bank-holidays.json` di gov.uk, scaricato sul Mac e versionato (da questo ambiente gov.uk non è raggiungibile);
+    - **Verificato:** per il 2019–2028 l'elenco del codice coincide esattamente con il file ufficiale di gov.uk (`dati/riferimenti/uk_bank_holidays.json`, commit `ac17502`); un test lo controlla.
+    - Per il 2005–2018 il file ufficiale non c'è: le date straordinarie del 2011 e del 2012 vengono dalla conoscenza di Claude (limite dichiarato);
   - in più: 24, 25, 26 e 31 dicembre, 1° gennaio.
   - Le chiusure anticipate USA (13:00–13:30 di New York) cadono dopo la fine della sessione di Londra e non la toccano.
 - **Mediane** sulle **20 sessioni di base precedenti**; meno di 20 → giorno non valido. La sessione corrente non entra mai.
