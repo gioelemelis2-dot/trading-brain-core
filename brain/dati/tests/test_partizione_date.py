@@ -117,18 +117,19 @@ class TestPartizione(unittest.TestCase):
         self.assertEqual(hashlib.sha256((nonce + v).encode("utf-8")).hexdigest(), b["verifica_recente"]["commitment_hash"])
         self.assertEqual(json.loads((self.dati / "commitment.json").read_text(encoding="utf-8")), comm)
         self.assertFalse((self.dati / "sealed_nonce.secret").exists())  # il nonce non sta con i dati
-        self.assertTrue(PD.verifica(self.dati, self.nonce / "sealed_nonce.secret")["valido"])
+        self.assertTrue(PD.verifica(self.dati, self.nonce / "sealed_nonce.secret", TRE, "ab" * 32)["valido"])
 
     def test_blocco_manomesso_scoperto(self):
         PD.partiziona(self.cc, TRE, self.dati, self.nonce, partizione_sha256="00" * 32)
         f = self.dati / "verifica_vecchia.jsonl"
         f.write_text(f.read_text(encoding="utf-8").replace("2650", "2651", 1), encoding="utf-8")
-        esito = PD.verifica(self.dati, self.nonce / "sealed_nonce.secret")
+        esito = PD.verifica(self.dati, self.nonce / "sealed_nonce.secret", TRE, "00" * 32)
         self.assertFalse(esito["valido"])
         self.assertEqual(esito["blocchi"]["verifica_vecchia"], {"sha256": False, "commitment": False})
         self.assertEqual(esito["blocchi"]["verifica_recente"], {"sha256": True, "commitment": True})
         PD.partiziona(self.cc, TRE, self.dati / "altra", self.nonce / "altro", partizione_sha256="00" * 32)
-        self.assertEqual(PD.verifica(self.dati / "altra", self.nonce / "altro" / "sealed_nonce.secret")["blocchi"]
+        self.assertEqual(PD.verifica(self.dati / "altra", self.nonce / "altro" / "sealed_nonce.secret", TRE,
+                                     "00" * 32)["blocchi"]
                          ["sviluppo"], {"sha256": True, "commitment": None})
 
     def test_nonce_sbagliato_scoperto(self):
@@ -137,10 +138,44 @@ class TestPartizione(unittest.TestCase):
         PD.partiziona(self.cc, TRE, self.dati, self.nonce, partizione_sha256="00" * 32)
         altro = self.nonce.parent / "altro.secret"
         altro.write_text("0" * 64 + "\n", encoding="utf-8")
-        esito = PD.verifica(self.dati, altro)
+        esito = PD.verifica(self.dati, altro, TRE, "00" * 32)
         self.assertFalse(esito["valido"])
         self.assertEqual(esito["blocchi"]["verifica_recente"], {"sha256": True, "commitment": False})
         self.assertEqual(esito["blocchi"]["sviluppo"], {"sha256": True, "commitment": None})
+
+    def test_ruoli_declassati_nel_commitment_scoperti(self):
+        """Rilievo di Gemini G3-02 (riprodotto da Claude): dati di verifica alterati, TUTTI i blocchi di verifica
+        declassati a «sviluppo» in commitment.json con SHA-256 ricalcolato e nonce finto. La verifica confronta i
+        blocchi con la partizione (il file TOML pubblicato), quindi non è valida."""
+        PD.partiziona(self.cc, TRE, self.dati, self.nonce, partizione_sha256="00" * 32)
+        comm = json.loads((self.dati / "commitment.json").read_text(encoding="utf-8"))
+        for b in comm["blocchi"]:
+            if b["ruolo"] == "verifica":
+                f = self.dati / f"{b['nome']}.jsonl"
+                testo = f.read_text(encoding="utf-8").replace("2650", "2651", 1)
+                f.write_text(testo, encoding="utf-8")
+                b["ruolo"] = "sviluppo"
+                b["sha256"] = hashlib.sha256(testo.encode("utf-8")).hexdigest()
+                del b["commitment_hash"]
+        (self.dati / "commitment.json").write_text(json.dumps(comm), encoding="utf-8")
+        finto = self.nonce.parent / "finto.secret"
+        finto.write_text("deadbeef\n", encoding="utf-8")
+        esito = PD.verifica(self.dati, finto, TRE, "00" * 32)
+        self.assertFalse(esito["valido"])
+        self.assertFalse(esito["partizione"])
+
+    def test_partizione_o_protocollo_diversi_scoperti(self):
+        PD.partiziona(self.cc, TRE, self.dati, self.nonce, partizione_sha256="00" * 32)
+        nonce = self.nonce / "sealed_nonce.secret"
+        self.assertTrue(PD.verifica(self.dati, nonce, TRE, "00" * 32)["valido"])
+        self.assertFalse(PD.verifica(self.dati, nonce, TRE, "11" * 32)["valido"])          # file TOML diverso
+        altra = json.loads(json.dumps(TRE))
+        altra["blocco"][2]["fine"] = "2026-01-12"
+        self.assertFalse(PD.verifica(self.dati, nonce, altra, "00" * 32)["valido"])        # confini diversi
+        comm = json.loads((self.dati / "commitment.json").read_text(encoding="utf-8"))
+        comm["protocol"] = "ALTRO"
+        (self.dati / "commitment.json").write_text(json.dumps(comm), encoding="utf-8")
+        self.assertFalse(PD.verifica(self.dati, nonce, TRE, "00" * 32)["valido"])
 
     def test_nonce_esistente_non_si_sovrascrive(self):
         """Un nuovo nonce renderebbe inverificabile il sigillo già pubblicato: ci si ferma, prima di scrivere."""

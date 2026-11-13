@@ -53,6 +53,15 @@ class TestDecodificaEAggregazione(unittest.TestCase):
         self.assertEqual((t, o, h, lo, c, v), (datetime(2026, 1, 5, tzinfo=UTC), D("2650.123"), D("2650.500"),
                                                 D("2650.000"), D("2650.456"), D("1.5")))
 
+    def test_record_non_validi_fermano(self):
+        """Rilievo di Gemini G3-06: secondi fuori dal giorno, prezzi non positivi o volume non finito sono errori di
+        dati (ErroreDati), non eccezioni generiche né minuti accettati."""
+        p = 2650000
+        for rec in ((86400, p, p, p - 3, p + 5, 1.0), (-60, p, p, p - 3, p + 5, 1.0), (60, 0, 0, 0, 0, 1.0),
+                    (60, p, p, p - 3, p + 5, float("nan")), (60, p, p, p - 3, p + 5, float("inf"))):
+            with self.assertRaises(DK.ErroreDati, msg=repr(rec)):
+                DK.decodifica(bi5([rec]), date(2026, 1, 5), 3)
+
     def test_campi_in_ordine_diverso_o_file_troncato_fermano(self):
         g = date(2026, 1, 5)
         with self.assertRaises(DK.ErroreDati):                        # low sopra high: ordine dei campi sbagliato
@@ -127,6 +136,30 @@ class TestControlli(unittest.TestCase):
         buco = [self.candela(datetime(2026, 1, 14, 10, 0, tzinfo=UTC)),
                 self.candela(datetime(2026, 1, 14, 10, 45, tzinfo=UTC))]                    # 30 minuti alle 10:15
         self.assertEqual(DK.controlla(buco)["anomali"], 1)
+
+    def test_buco_lungo_di_giorno_e_anomalo(self):
+        """Rilievo di Gemini G3-03: un buco di 2 ore e 15 minuti alle 10:00 UTC di mercoledì non è una festività.
+        Le chiusure lunghe accettate cominciano la sera (dalle 17:00 UTC: chiusure anticipate dei festivi USA, Natale,
+        Capodanno), come le 22 trovate nei dati reali del 2023–2026."""
+        mer = datetime(2026, 1, 7, 10, 0, tzinfo=UTC)
+        self.assertTrue(DK.classifica_buco(mer, mer + timedelta(hours=2, minutes=15)).startswith("ANOMALO"))
+        for da, a in ((datetime(2025, 11, 27, 19, 30, tzinfo=UTC), datetime(2025, 11, 27, 23, 0, tzinfo=UTC)),
+                      (datetime(2025, 12, 24, 18, 45, tzinfo=UTC), datetime(2025, 12, 25, 23, 0, tzinfo=UTC)),
+                      (datetime(2025, 12, 31, 22, 0, tzinfo=UTC), datetime(2026, 1, 1, 23, 0, tzinfo=UTC)),
+                      (datetime(2024, 5, 27, 18, 30, tzinfo=UTC), datetime(2024, 5, 27, 22, 0, tzinfo=UTC))):
+            self.assertEqual(DK.classifica_buco(da, a), "festività o chiusura lunga (da verificare)", da)
+        self.assertTrue(DK.classifica_buco(datetime(2026, 1, 7, 16, 45, tzinfo=UTC),
+                                           datetime(2026, 1, 7, 19, 0, tzinfo=UTC)).startswith("ANOMALO"))
+
+    def test_ampiezza_dentro_la_candela_ferma(self):
+        """Rilievo di Gemini G3-03: un picco dentro la candela (massimo 9.999 con apertura e chiusura a 2.650) resta
+        nella banda dell'anno ma è un errore di dati. Oltre il 25% fra massimo e minimo ci si ferma."""
+        t = datetime(2026, 1, 5, 10, tzinfo=UTC)
+        c = dict(self.candela(t), high=D("9999"))
+        with self.assertRaises(DK.ErroreDati) as e:
+            DK.controlla([c])
+        self.assertIn("ampiezza", str(e.exception))
+        DK.controlla([dict(self.candela(t), high=D("2700"), low=D("2600"))])
 
     def test_ordine_non_crescente_ferma(self):
         t = datetime(2026, 1, 5, 10, tzinfo=UTC)
@@ -242,8 +275,27 @@ class TestScaricamentoEPipeline(unittest.TestCase):
             cartella = reali / "partizioni" / "XAUUSD_15m_date"
             self.assertEqual(meta["partizione"]["commitment_json_sha256"],
                              hashlib.sha256((cartella / "commitment.json").read_bytes()).hexdigest())
-            self.assertTrue(PD.verifica(cartella, nonce / "sealed_nonce.secret")["valido"])
+            self.assertTrue(PD.verifica(cartella, nonce / "sealed_nonce.secret", part, "cd" * 32)["valido"])
             self.assertFalse((cartella / "sealed_nonce.secret").exists())
+
+    def test_nonce_esistente_ferma_prima_di_scrivere(self):
+        """Rilievo di Gemini G3-04: con un nonce già presente ci si ferma PRIMA di scaricare e di scrivere il CSV,
+        non dopo averlo sovrascritto."""
+        from brain.dati.pipeline import partizione_date as PD
+        part = {"schema": PD.SCHEMA, "simbolo": "XAUUSD", "embargo_giorni": 1, "blocco": [
+            {"nome": "sviluppo", "ruolo": "sviluppo", "inizio": "2026-01-05", "fine": "2026-01-07"},
+            {"nome": "verifica", "ruolo": "verifica", "inizio": "2026-01-08", "fine": "2026-01-10"}]}
+        richieste = []
+        with tempfile.TemporaryDirectory() as tmp:
+            reali, nonce = Path(tmp) / "reali", Path(tmp) / "fuori" / "nonce"
+            nonce.mkdir(parents=True)
+            (nonce / PD.NONCE).write_text("vecchio\n", encoding="utf-8")
+            with self.assertRaises(FileExistsError):
+                DK.esegui("XAUUSD", date(2026, 1, 5), date(2026, 1, 9), reali, nonce, self.scarica_finta(richieste),
+                          None, pausa=lambda: None, stampa=lambda *a: None, partizione=part, partizione_sha256="cd" * 32)
+            self.assertEqual(richieste, [])
+            self.assertFalse((reali / "XAUUSD_15m.csv").exists())
+            self.assertEqual((nonce / PD.NONCE).read_text(encoding="utf-8"), "vecchio\n")
 
     def test_periodo_dalla_partizione(self):
         from brain.dati.pipeline import partizione_date as PD

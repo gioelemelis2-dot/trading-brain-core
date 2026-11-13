@@ -70,6 +70,40 @@ class TestSogliaConScala(unittest.TestCase):
                 DSR(0.10, 20, 600, varianza_sr_prove=v)
 
 
+class TestInputNonValidi(unittest.TestCase):
+    """Rilievo di Gemini G3-01: con SR = NaN la probabilità diventava 1,0 (min(1.0, nan) == 1.0 in Python) e
+    N <= 0 era trattato come N = 1."""
+
+    def test_valori_non_finiti_rifiutati(self):
+        base = dict(sharpe_estimated=0.10, num_trials=20, track_record_length=600, skewness=0.0, kurtosis=3.0,
+                    benchmark_sharpe=0.0)
+        for campo in ("sharpe_estimated", "skewness", "kurtosis", "benchmark_sharpe"):
+            for x in (float("nan"), float("inf"), float("-inf")):
+                with self.assertRaises(ValueError, msg=f"{campo}={x}"):
+                    DSR(**dict(base, **{campo: x}))
+
+    def test_numero_prove_non_valido(self):
+        for n in (0, -3, 2.5, True):
+            with self.assertRaises(ValueError, msg=repr(n)):
+                DSR(0.10, n, 600)
+
+    def test_lunghezza_non_intera(self):
+        for t in (600.5, True):
+            with self.assertRaises(ValueError, msg=repr(t)):
+                DSR(0.10, 20, t)
+        self.assertEqual(DSR(0.10, 20, 1), (None, None))             # caso patologico già previsto
+
+    def test_nota_con_una_sola_prova(self):
+        """Con N = 1 la soglia è 0 e nessuna varianza delle prove entra nel calcolo: la nota non deve citarla."""
+        with tempfile.TemporaryDirectory() as tmp:
+            pnls = [Decimal("100") if i % 2 == 0 else Decimal("-50") for i in range(35)]
+            m = DSRCalculator.evaluate_portfolio(portafoglio(pnls), registry_path=Path(tmp) / "r.json", dry_run=True)
+        nota = m["deflated_sharpe_ratio"].nota
+        self.assertIn("N=1", nota)
+        self.assertIn("soglia 0", nota)
+        self.assertNotIn("varianza", nota)
+
+
 class TestVarianzaDalRegistro(unittest.TestCase):
     """evaluate_portfolio usa V = max(1/(T − 1), varianza empirica degli Sharpe registrati + quello corrente):
     scelta prudente (STIMA di Claude). Con prove molto disperse la soglia sale."""
