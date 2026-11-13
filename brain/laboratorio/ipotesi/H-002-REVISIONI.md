@@ -59,5 +59,12 @@ Verificato su GitHub: il ramo esiste e tocca solo quel file. Revisione di alta q
 | Robustezza con `dry_run=True` e veto binario scritto prima, fuori da N | **accolto** | È la stessa posizione di Claude, contro la proposta di DeepSeek di N = 32 |
 | Annotare 09:30 New York contro 08:20/08:30 e il fixing LBMA delle 15:00 di Londra; non aggiungere varianti ora | **accolto** | Annotato fra le idee future |
 
+## Decisioni dell'utente (14/11/2026)
+- **Sessione:** solo **Londra**, per ora.
+- **Uscita:** **entrambe** le varianti, V-T (target 1,5R) e V-S (fine sessione). Quindi **N = 2** prove dichiarate.
+- **Range di apertura molto grandi:** si escludono, con il tetto di 2 × la mediana, finché non c'è il calendario delle notizie (P-08).
+- **Prezzi ASK:** da scaricare per avere lo spread storico vero (scaricatore esteso in TDD, opzione `--lato ASK`).
+- **Rapporto di Gemini:** unito su main.
+
 ## Prossimo passo
 Quando arriva R2: versione 2 della scheda con le correzioni accolte, e l'elenco delle scelte che restano all'utente (sessione, uscita, stop, numero di prove). Solo dopo, il sigillo.

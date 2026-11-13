@@ -84,6 +84,10 @@ M = {
     "K10 volume non finito accettato (G3-06)": [(DK, "if not math.isfinite(vol):", "if False:")],
     "K11 prezzo non positivo accettato (G3-06)": [(DK, "        if lo <= 0:", "        if False:")],
     "K12 nonce controllato solo dopo aver scritto (G3-04)": [(DK, "if vecchio.exists():", "if False:")],
+    "K13 lato ignorato nell'indirizzo (sempre BID)": [(DK, "giorno=giorno.day, lato=lato)", 'giorno=giorno.day, lato="BID")')],
+    "K14 lato non valido accettato": [(DK, "    if lato not in LATI:\n        raise ValueError(f\"lato {lato!r} non in {LATI}\")\n    return URL", "    return URL")],
+    "K15 file ASK con il nome dei file BID": [(DK, 'nome = f"{simbolo}_15m" if lato == "BID" else f"{simbolo}_{lato}_15m"', 'nome = f"{simbolo}_15m"')],
+    "K16 sigillo ammesso sui dati ASK (riga di comando)": [(DK, 'if x.lato != "BID" and x.partizione:', "if False:")],
     "K06 periodo fino alla fine esclusa": [
         (DK, 'blocchi[-1]["fine_utc"].date() - timedelta(days=1)', 'blocchi[-1]["fine_utc"].date()')],
 }

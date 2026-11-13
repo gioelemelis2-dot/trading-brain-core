@@ -327,7 +327,16 @@ class TestScaricamentoEPipeline(unittest.TestCase):
 
     def test_ask_con_partizione_rifiutato(self):
         """Il sigillo si fa sui dati BID; per l'ASK nessun sigillo in questo giro: ci si ferma prima della rete."""
-        self.assertEqual(DK.main(["--lato", "ASK", "--partizione", "non_esiste.toml"]), 2)
+        with tempfile.TemporaryDirectory() as tmp:
+            f = Path(tmp) / "p.toml"                                   # partizione VALIDA: il rifiuto viene dal lato
+            f.write_text('schema = "partizione-date/1"\nsimbolo = "XAUUSD"\nembargo_giorni = 1\n\n'
+                         '[[blocco]]\nnome = "sviluppo"\nruolo = "sviluppo"\ninizio = "2026-01-01"\nfine = "2026-01-05"\n\n'
+                         '[[blocco]]\nnome = "verifica"\nruolo = "verifica"\ninizio = "2026-01-06"\nfine = "2026-01-09"\n',
+                         encoding="utf-8")
+            self.assertEqual(DK.main(["--lato", "ASK", "--partizione", str(f)]), 2)
+        with self.assertRaises(ValueError):                            # seconda difesa, dentro esegui
+            DK.esegui("XAUUSD", date(2026, 1, 5), date(2026, 1, 5), Path("x"), Path("y"), lambda u: None, None,
+                      partizione={"schema": "partizione-date/1"}, partizione_sha256="00", lato="ASK")
 
     def test_periodo_dalla_partizione(self):
         from brain.dati.pipeline import partizione_date as PD

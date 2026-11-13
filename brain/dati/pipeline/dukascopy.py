@@ -45,7 +45,8 @@ from decimal import Decimal
 from pathlib import Path
 from typing import Callable, Dict, List, Optional, Tuple
 
-URL = "https://datafeed.dukascopy.com/datafeed/{simbolo}/{anno:04d}/{mese0:02d}/{giorno:02d}/BID_candles_min_1.bi5"
+URL = "https://datafeed.dukascopy.com/datafeed/{simbolo}/{anno:04d}/{mese0:02d}/{giorno:02d}/{lato}_candles_min_1.bi5"
+LATI = ("BID", "ASK")
 SCALA = {"XAUUSD": 3}                       # cifre decimali: prezzo = intero × 10^-3
 RECORD = struct.Struct(">iiiiif")           # secondi, open, close, low, high, volume
 QUINDICI = timedelta(minutes=15)
@@ -68,8 +69,10 @@ class ErroreDati(ValueError):
 # ---------------------------------------------------------------------------------------------------------------
 # Scaricamento
 # ---------------------------------------------------------------------------------------------------------------
-def url_giorno(simbolo: str, giorno: date) -> str:
-    return URL.format(simbolo=simbolo, anno=giorno.year, mese0=giorno.month - 1, giorno=giorno.day)
+def url_giorno(simbolo: str, giorno: date, lato: str = "BID") -> str:
+    if lato not in LATI:
+        raise ValueError(f"lato {lato!r} non in {LATI}")
+    return URL.format(simbolo=simbolo, anno=giorno.year, mese0=giorno.month - 1, giorno=giorno.day, lato=lato)
 
 
 def scarica_http(url: str, tentativi: int = 10, attesa: Callable[[float], None] = time.sleep,
@@ -96,14 +99,15 @@ def scarica_http(url: str, tentativi: int = 10, attesa: Callable[[float], None] 
     raise ConnectionError(f"{url}: nessuna risposta valida dopo {tentativi} tentativi")
 
 
-def scarica_giorno(simbolo: str, giorno: date, cache: Optional[Path], scarica: Callable[[str], Optional[bytes]]):
+def scarica_giorno(simbolo: str, giorno: date, cache: Optional[Path], scarica: Callable[[str], Optional[bytes]],
+                   lato: str = "BID"):
     """bi5 grezzo del giorno, dalla cache se presente. Un giorno senza dati viene annotato in cache come vuoto."""
     if cache is not None:
         f = cache / f"{giorno.isoformat()}.bi5"
         if f.exists():
             return f.read_bytes() or None
     try:
-        dati = scarica(url_giorno(simbolo, giorno))
+        dati = scarica(url_giorno(simbolo, giorno, lato))
     except ConnectionError as e:                     # nell'URL i mesi partono da 00: si dichiara la data vera
         raise ConnectionError(f"giorno {giorno.isoformat()} (nell'URL il mese parte da 00): {e}") from None
     if cache is not None:
@@ -253,12 +257,16 @@ def periodo_da_partizione(partizione: dict) -> Tuple[date, date]:
 def esegui(simbolo: str, inizio: date, fine: date, cartella_reali: Path, cartella_nonce: Path,
            scarica: Callable[[str], Optional[bytes]], cache: Optional[Path], accetta_buchi: bool = False,
            pausa: Callable[[], None] = lambda: time.sleep(PAUSA_S), stampa=print,
-           partizione: Optional[dict] = None, partizione_sha256: Optional[str] = None) -> dict:
+           partizione: Optional[dict] = None, partizione_sha256: Optional[str] = None, lato: str = "BID") -> dict:
     """Pipeline completa del Gate 2. Restituisce il riepilogo (scritto anche nel file .meta.json). Sigilla solo
     se `partizione` è data (DA-26)."""
     from .ingestion import DataIngestionPipeline
     from . import partizione_date
 
+    if lato not in LATI:
+        raise ValueError(f"lato {lato!r} non in {LATI}")
+    if partizione is not None and lato != "BID":
+        raise ValueError("il sigillo si fa solo sui dati BID")
     if partizione is not None:
         partizione_date.valida(partizione)
         if partizione["simbolo"] != simbolo:
@@ -272,7 +280,7 @@ def esegui(simbolo: str, inizio: date, fine: date, cartella_reali: Path, cartell
     cifre = SCALA[simbolo]
     minuti, giorni_vuoti, giorno = [], 0, inizio
     while giorno <= fine:
-        dati = scarica_giorno(simbolo, giorno, cache, scarica)
+        dati = scarica_giorno(simbolo, giorno, cache, scarica, lato)
         if dati:
             minuti += decodifica(dati, giorno, cifre)
         else:
@@ -286,7 +294,8 @@ def esegui(simbolo: str, inizio: date, fine: date, cartella_reali: Path, cartell
     if rapporto["anomali"] and not accetta_buchi:
         raise ErroreDati(f"{rapporto['anomali']} buchi anomali in orario di mercato (vedi elenco): fermo. "
                          f"Primi: {rapporto['buchi_da_verificare'][:5]}. Per procedere comunque: --accetta-buchi")
-    csv_path = cartella_reali / f"{simbolo}_15m.csv"
+    nome = f"{simbolo}_15m" if lato == "BID" else f"{simbolo}_{lato}_15m"
+    csv_path = cartella_reali / f"{nome}.csv"
     sha_csv = scrivi_csv(candele, csv_path)
 
     adesso = datetime.now(timezone.utc)
@@ -307,8 +316,8 @@ def esegui(simbolo: str, inizio: date, fine: date, cartella_reali: Path, cartell
             "commitment_json_sha256": hashlib.sha256((out_dir / "commitment.json").read_bytes()).hexdigest(),
         }
     meta = {
-        "schema": "dati-reali-meta/1", "simbolo": simbolo, "timeframe": "15m", "lato": "BID",
-        "fonte": URL.replace("{simbolo}", simbolo), "scala_prezzi": f"intero × 10^-{cifre}",
+        "schema": "dati-reali-meta/1", "simbolo": simbolo, "timeframe": "15m", "lato": lato,
+        "fonte": URL.replace("{simbolo}", simbolo).replace("{lato}", lato), "scala_prezzi": f"intero × 10^-{cifre}",
         "scaricato_utc": _z(adesso), "python": platform.python_version(),
         "periodo_richiesto": [inizio.isoformat(), fine.isoformat()], "giorni_senza_dati": giorni_vuoti,
         "minuti_scambiati": len(minuti), "candele_15m": len(candele),
@@ -316,7 +325,7 @@ def esegui(simbolo: str, inizio: date, fine: date, cartella_reali: Path, cartell
         "csv": csv_path.name, "csv_sha256": sha_csv, "controlli": rapporto, "partizione": info_partizione,
         "licenza": "da verificare nei termini d'uso di Dukascopy: per questo il CSV resta fuori da git",
     }
-    meta_path = cartella_reali / f"{simbolo}_15m.meta.json"
+    meta_path = cartella_reali / f"{nome}.meta.json"
     meta_path.write_text(json.dumps(meta, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
     return meta
 
@@ -331,7 +340,11 @@ def main(argv=None) -> int:
     a.add_argument("--accetta-buchi", action="store_true", help="procedi anche con buchi anomali (elencati nel meta)")
     a.add_argument("--pausa", type=float, default=PAUSA_S, help="secondi fra una richiesta e l'altra")
     a.add_argument("--partizione", help="file TOML della partizione per date (DA-26): periodo e blocchi da sigillare")
+    a.add_argument("--lato", default="BID", choices=LATI, help="prezzi BID (predefinito) o ASK (per lo spread storico)")
     x = a.parse_args(argv)
+    if x.lato != "BID" and x.partizione:
+        print("ERRORE: il sigillo si fa solo sui dati BID; per l'ASK niente --partizione", file=sys.stderr)
+        return 2
     from . import partizione_date
     partizione = sha_partizione = None
     if x.partizione:
@@ -349,11 +362,12 @@ def main(argv=None) -> int:
     if RADICE in nonce.resolve().parents:
         print("ERRORE: il nonce deve stare fuori dal repository", file=sys.stderr)
         return 2
-    print(f"Gate 2: {x.simbolo} 15m dal {inizio} al {fine} (Dukascopy, BID). Cache: {reali / 'cache_dukascopy'}")
+    cache = reali / "cache_dukascopy" / (x.simbolo if x.lato == "BID" else f"{x.simbolo}_{x.lato}")
+    print(f"Gate 2: {x.simbolo} 15m dal {inizio} al {fine} (Dukascopy, {x.lato}). Cache: {cache}")
     try:
-        meta = esegui(x.simbolo, inizio, fine, reali, nonce, scarica_http, reali / "cache_dukascopy" / x.simbolo,
+        meta = esegui(x.simbolo, inizio, fine, reali, nonce, scarica_http, cache,
                       accetta_buchi=x.accetta_buchi, pausa=lambda: time.sleep(x.pausa),
-                      partizione=partizione, partizione_sha256=sha_partizione)
+                      partizione=partizione, partizione_sha256=sha_partizione, lato=x.lato)
     except FileExistsError as e:
         print(f"FERMO: esiste già un nonce ({e.filename}). Un nuovo sigillo renderebbe inverificabile quello vecchio: "
               f"non cancellarlo; usare un'altra --nonce-dir solo se il vecchio sigillo non è mai stato pubblicato.",
