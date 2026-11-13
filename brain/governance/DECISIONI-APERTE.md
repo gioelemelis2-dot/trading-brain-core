@@ -262,6 +262,15 @@ DA-13 rulebook (Q-09) ──► DA-11 G0 minimo ──► DA-12 indicatori compo
 - **Strumento pronto (ramo `fix/dsr-e-partizione-date`, da unire con l'autorizzazione dell'utente):**
   - partizione per date UTC in blocchi di sviluppo e verifica, con embargo, da un file TOML scritto prima (`dati/pipeline/partizione_date.py`, opzione `--partizione` dello scaricatore);
   - senza file non si sigilla nulla.
+- **Fatti del 13/11/2026 (Mac dell'utente; nessun prezzo guardato):**
+  - **Scaricamento dei 3 anni finito:** 71.008 candele da 15 minuti, dal 2023-11-12T23:00Z al 2026-11-13T00:00Z, 0 giorni senza dati.
+  - **Buchi:** 598 pause giornaliere, 156 fine settimana (= 3 × 52), 22 chiusure lunghe, 0 anomali.
+  - **Le 22 chiusure lunghe** sono chiusure anticipate nei festivi USA: Thanksgiving, MLK, Presidents' Day, Memorial Day, Juneteenth, 4 luglio, Labor Day, Natale e Capodanno. Claude ha controllato date e giorni della settimana. Quando il festivo cade di venerdì (Venerdì Santo, 4 luglio 2025, Juneteenth 2026) il buco si unisce al fine settimana: è coerente.
+  - **Sigillo 70/30 creato in locale ma NON pubblicato:** è provvisorio. Il nonce è in `~/.trading_brain/nonce/XAUUSD_15m/` e va conservato.
+  - **Prova degli anni su Dukascopy:**
+    - 2005, 2008, 2011, 2014 e 2024: risposta 200, 11–16 KB;
+    - 2003: risposta 429 (troppe richieste), quindi non sappiamo ancora se ci sono dati.
+  - **Il 2005 pesa meno** (10,9 KB contro circa 14–15 KB): forse meno minuti scambiati. La qualità degli anni vecchi va misurata con i buchi per anno.
 - **Proposta di Gemini (G-20261113-01):**
   - blocco A: verifica vecchia;
   - blocco B: circa 10 anni di sviluppo, con walk-forward interno;
