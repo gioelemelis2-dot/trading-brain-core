@@ -1,0 +1,76 @@
+// Trading Brain — sessioni e range di apertura (XAUUSD, 15 minuti). Solo visualizzazione: NON è una strategia.
+// Regole (DA-26, inversione decisa dall'utente il 14/11/2026):
+// - si guarda solo il periodo di SVILUPPO, dal 15/11/2023 in poi;
+// - prima di quella data i dati sono la VERIFICA SIGILLATA: questo indicatore copre le candele e oscura lo sfondo.
+//   È un promemoria, non un lucchetto: spegnere l'indicatore o scorrere indietro rompe il test cieco.
+// - non usare lo Strategy Tester di TradingView per provare idee: ogni prova va nel registro (DSR).
+// Orari nei fusi delle borse: l'ora legale è gestita da TradingView.
+//@version=5
+indicator("TB Sessioni e range di apertura", overlay=true, max_boxes_count=500, max_lines_count=500)
+
+inizioSviluppo = input.time(timestamp("UTC", 2023, 11, 15, 0, 0), "Inizio periodo di sviluppo")
+copriSigillato = input.bool(true, "Copri il periodo sigillato")
+sAsia = input.session("0900-1500", "Tokyo (ora di Tokyo)")
+sLon = input.session("0800-1630", "Londra (ora di Londra)")
+sNy = input.session("0930-1600", "New York (ora di New York)")
+rLon = input.session("0800-0830", "Range di apertura di Londra")
+rNy = input.session("0930-1000", "Range di apertura di New York")
+
+dentro(string sess, string fuso) =>
+    not na(time(timeframe.period, sess, fuso))
+
+sigillato = time < inizioSviluppo
+
+// --- copertura del periodo sigillato ---
+copri = copriSigillato and sigillato
+bgcolor(copri ? color.new(color.gray, 20) : na, title="Periodo sigillato")
+plotcandle(copri ? open : na, copri ? high : na, copri ? low : na, copri ? close : na, "Copertura",
+     color=chart.bg_color, wickcolor=chart.bg_color, bordercolor=chart.bg_color)
+
+// --- box di una sessione: massimo e minimo dall'inizio alla fine ---
+boxSessione(bool attiva, color col) =>
+    var box b = na
+    var float hi = na
+    var float lo = na
+    if attiva and not attiva[1]
+        hi := high
+        lo := low
+        b := box.new(bar_index, hi, bar_index, lo, border_color=col, bgcolor=color.new(col, 90))
+    else if attiva and not na(b)
+        hi := math.max(hi, high)
+        lo := math.min(lo, low)
+        box.set_top(b, hi)
+        box.set_bottom(b, lo)
+        box.set_right(b, bar_index)
+
+// --- range di apertura: linee di massimo e minimo, prolungate fino alla fine della sessione ---
+rangeApertura(bool inRange, bool inSessione, color col) =>
+    var float h = na
+    var float l = na
+    var line lh = na
+    var line ll = na
+    if inRange and not inRange[1]
+        h := high
+        l := low
+    else if inRange
+        h := math.max(h, high)
+        l := math.min(l, low)
+    if not inRange and inRange[1] and not na(h)
+        lh := line.new(bar_index - 1, h, bar_index, h, color=col, width=2)
+        ll := line.new(bar_index - 1, l, bar_index, l, color=col, width=2)
+    else if inSessione and not inRange and not na(lh)
+        line.set_x2(lh, bar_index)
+        line.set_x2(ll, bar_index)
+
+visibile = not sigillato
+boxSessione(visibile and dentro(sAsia, "Asia/Tokyo"), color.purple)
+boxSessione(visibile and dentro(sLon, "Europe/London"), color.blue)
+boxSessione(visibile and dentro(sNy, "America/New_York"), color.orange)
+rangeApertura(visibile and dentro(rLon, "Europe/London"), visibile and dentro(sLon, "Europe/London"), color.blue)
+rangeApertura(visibile and dentro(rNy, "America/New_York"), visibile and dentro(sNy, "America/New_York"), color.orange)
+
+// --- promemoria ---
+var table avviso = table.new(position.top_right, 1, 1)
+if barstate.islast
+    table.cell(avviso, 0, 0, "Prima del " + str.format_time(inizioSviluppo, "dd/MM/yyyy", "UTC") +
+         ": VERIFICA SIGILLATA, non guardare", text_color=color.white, bgcolor=color.new(color.red, 20), text_size=size.small)

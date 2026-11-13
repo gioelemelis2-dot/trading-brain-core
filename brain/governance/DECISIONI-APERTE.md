@@ -271,6 +271,16 @@ DA-13 rulebook (Q-09) ──► DA-11 G0 minimo ──► DA-12 indicatori compo
     - 2005, 2008, 2011, 2014 e 2024: risposta 200, 11–16 KB;
     - 2003: risposta 429 (troppe richieste), quindi non sappiamo ancora se ci sono dati.
   - **Il 2005 pesa meno** (10,9 KB contro circa 14–15 KB): forse meno minuti scambiati. La qualità degli anni vecchi va misurata con i buchi per anno.
+- **Deciso dall'utente il 14/11/2026: INVERSIONE dei ruoli** (proposta di Claude).
+  - **Sviluppo:** gli ultimi 3 anni già scaricati, dal 15/11/2023 in poi. Sono già stati visti, quindi vanno bene per sviluppare.
+  - **Verifica sigillata:** tutto il periodo dal 2005 a circa il 31/10/2023 (date esatte dopo il conteggio dei buchi), con embargo prima dello sviluppo. Nessuno lo guarda: né i dati, né i grafici, né TradingView.
+  - **Test finale:** il futuro, cioè la demo.
+  - Motivi: si parte subito; i dati già visti vanno dove la contaminazione non fa danni; la verifica è più lunga (circa 18 anni, molti tipi di mercato) e più cieca.
+  - Limiti: lo sviluppo copre un solo tipo di mercato e pochi trade, quindi molte idee falliranno in verifica; il mercato di oggi è diverso da quello del 2005–2012.
+  - Sostituisce le strutture A/B/C precedenti (di Claude e di Gemini).
+- **TradingView (14/11/2026):** nessun connettore disponibile. Si lavora con screenshot e indicatori Pine scritti da Claude (`laboratorio/tradingview/`).
+  - Si guarda solo dal 15/11/2023 in poi; l'indicatore copre il periodo sigillato.
+  - Vietato provare idee con lo Strategy Tester di TradingView: sarebbero prove non registrate.
 - **Deciso dall'utente il 13/11/2026:** scaricare XAUUSD dal 2005, senza sigillo. Cosa usare e come dividerlo si decide dopo aver contato i buchi anno per anno.
   - Motivi: più tipi di mercato (dal 2008 al 2022), abbastanza trade per la potenza statistica, anni recenti già visti dall'utente.
   - Limiti dichiarati: mercato del 2005 diverso da quello di oggi, quindi gli anni vecchi servono per la verifica e non per lo sviluppo; qualità dei dati vecchi da misurare.
