@@ -330,6 +330,11 @@ DA-13 rulebook (Q-09) ──► DA-11 G0 minimo ──► DA-12 indicatori compo
     - Probabilità di passare la fase 1 FTMO: la formula coincide con la simulazione entro circa 2 punti.
   - **Conseguenza:** la demo da sola non dimostra in fretta un vantaggio piccolo: 350 trade a 3 a settimana sono più di 2 anni. Il peso statistico lo porta il backtest lungo (DSR con tutte le prove). La demo verifica la fedeltà e che i risultati non contraddicano il backtest. Più strategie in parallelo accorciano i tempi.
   - **CUSUM:** per controllare se il vantaggio si esaurisce dopo la promozione, più avanti, su FTMO.
+  - **Correzioni dopo la revisione di Gemini G-20261114-01 (verificate da Claude):**
+    - la potenza effettiva con il taglio a 600 trade è circa il 64%, non l'80% nominale;
+    - l'obiettivo è in Sharpe standardizzato θ1 = μ1/σ = 0,10, con σ presa dal backtest prima della demo (mai stimata sui primi trade): con σ = 2R le soglie in R fisse daranno l'84% di indecise;
+    - il controllo di fedeltà riguarda solo esecuzione e attriti (segnali, orari, prezzi, spread, slippage), mai P/L o percentuale di vincite.
+    - Proposte ancora aperte: varianza di lungo periodo contro le perdite a grappoli e avvio del test dopo 30–50 trade; due chiavi per passare a FTMO; criterio di discordanza Dukascopy–MT5.
 - **Da aggiungere (Gemini G-20261113-01, accolto da Claude):**
   - permutation test, ablation e sensibilità dei parametri (±20–30%: la strategia deve reggere);
   - in demo, un arresto sequenziale al posto della regola grezza dei 100 trade;
