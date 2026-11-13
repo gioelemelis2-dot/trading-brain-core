@@ -306,3 +306,13 @@ Formato: data · versione della base · cosa · perché · file.
 - **Scaricamento Dukascopy:** timeout di lettura, connessioni chiuse e risposte troncate sono nuovi tentativi (TDD: `994373f` rosso, `42cf512` verde). Su Python 3.9 `socket.timeout` non è un `TimeoutError` e faceva fermare lo script sul Mac.
 - **Utente:** circa 2 anni di trading, strategie passate non profittevoli. Le idee di partenza (Fibonacci e order block, anche insieme) diventano ipotesi da sigillare al Gate 3; i dettagli si scrivono prima di guardare i dati.
 - **Percorso:** FTMO solo dopo una lunga incubazione su più conti demo gratuiti di broker diversi; nessuna data.
+
+## 2026-11-13 · v1.22 (piano di diversificazione; DA-27, DA-28)
+
+- **Richiesta dell'utente:** diversificazione centrale, più mercati, più backtesting, raccogliendo prima i dati come per l'oro.
+- **Nuovo `governance/PIANO-DIVERSIFICAZIONE.md` (proposta):**
+  - cosa cambia rispetto all'oro, verificato nel codice: scaricatore solo XAUUSD, backtester su un solo strumento, registro delle prove per strumento;
+  - 6 regole: calendario comune, un mercato alla volta, mercati dichiarati prima, conteggio unico, correlazioni misurate, P-06 invariata;
+  - mercati candidati e ordine, tempi stimati, dati oltre ai prezzi, fasi D0–D6.
+- **Nuove decisioni aperte:** DA-27 (mercati e calendario comune) e DA-28 (registro unico e mercati dichiarati prima).
+- **Documento del progetto:** nuova sezione «Diversificazione su più mercati».

@@ -261,6 +261,19 @@ DA-13 rulebook (Q-09) ──► DA-11 G0 minimo ──► DA-12 indicatori compo
 - **Fino ad allora:** il sigillo sui 3 anni con 70/30 è provvisorio e non va pubblicato come definitivo.
 - Le altre contromisure approvate (seconda fonte di dati, costi veri, replica indipendente, regole decise prima, «come lo sai?», niente nuova infrastruttura) sono nel documento «Trading Brain — Progetto generale», sezione «Contro l'autoinganno».
 
+### DA-27 · Mercati della diversificazione e calendario comune
+- **Proposta (13/11/2026):** dettagli in `governance/PIANO-DIVERSIFICAZIONE.md`.
+  - Ordine: EURUSD, S&P 500, XAGUSD (come prova di robustezza), GBPUSD e USDJPY, DAX e petrolio; cripto solo alla fine.
+  - Stesso periodo di sviluppo e stesso periodo di verifica, in date, per tutti i mercati, perché i mercati legati fra loro fanno trapelare il periodo chiuso.
+  - Un mercato alla volta, dopo il sigillo dell'oro.
+- **Da verificare per ogni mercato:** il codice su Dukascopy, l'anno di inizio e la disponibilità su FTMO e sui broker demo.
+
+### DA-28 · Registro unico delle prove e mercati dichiarati prima
+- **Proposta:**
+  - ogni coppia ipotesi–mercato è una prova, in un unico conteggio che entra nel DSR (estende DA-19);
+  - ogni ipotesi dichiara prima su quali mercati vale e con quali parametri, e non si ritocca da un mercato all'altro.
+- **Oggi:** il registro è per strumento (`dati/operativo/trial_registry_xauusd.json`).
+
 ---
 
 ## Fonti di questo registro
