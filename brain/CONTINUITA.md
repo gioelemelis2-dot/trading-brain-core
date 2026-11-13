@@ -106,7 +106,8 @@ Il G0 **non** è ancora utilizzabile per decidere: serve la riconciliazione con 
 
 **Gate operativi** (denominazione dell'utente; nel Brain non c'è ancora una definizione formale dei gate):
 - **Gate 0, chiuso:** verifica completa del codice. Guardian e Binario B sono su `main`, con ALTO-2 e ALTO-7 verificati e 108/108 test.
-- **Gate 1, chiuso:** conto demo broker ECN su MetaTrader 5, 50.000 USD, XAU/USD.
+- **Gate 1, configurato ma NON riconciliato** (rilievo di Gemini G-20261113-01; prima era scritto «chiuso»): conto demo broker ECN su MetaTrader 5, 50.000 USD, XAU/USD.
+  - Il 13/11/2026 l'utente ha detto di **non avere easyMarkets**: il broker del conto va confermato. FP Markets è previsto come nuovo conto demo.
   - Scheda: `dati/reali/demo_broker_mt5_50k_xauusd.toml`, rinominata da `demo_mt5_50k_xauusd.toml`.
   - Regole interne 5% giornaliero (2.500 USD) e 10% totale (5.000 USD), simulate con lo schema `ftmo_2step`.
   - Commissione ECN round-turn 7,00 USD/lotto. Specifiche del contratto e commissione sono da verificare sul broker (stato C).

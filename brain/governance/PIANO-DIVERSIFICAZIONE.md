@@ -18,6 +18,20 @@
 5. **Correlazioni misurate** solo sul periodo di sviluppo, anche nei periodi di crisi.
 6. **P-06 resta 1 posizione:** per ora la diversificazione è in sequenza. Più posizioni insieme solo con DA-23, dopo l'incubazione.
 
+## Regole proposte da Gemini (G-20261113-01), accolte da Claude come proposte
+7. **Segretezza fra mercati:** mentre si sviluppa la prima ipotesi sull'oro, niente statistiche né grafici degli altri mercati.
+8. **Invarianza dimensionale:** stop, target e tolleranze sono espressi in multipli di ATR o in percentuale, mai in punti, pip o USD.
+9. **Correlazione nelle code:** si misura anche nei giorni peggiori (5%) e attorno alle notizie importanti, non solo in media.
+10. **Pre-filtro dei costi:** prima di consumare prove su un mercato nuovo, (spread + commissione + swap) / ATR deve stare sotto una soglia decisa prima.
+
+**Ordine alternativo di Gemini:**
+1. EURUSD;
+2. un cross senza dollaro (EURJPY o EURGBP);
+3. S&P 500;
+4. XAGUSD solo come stress test dell'oro;
+5. poi DAX, GBPUSD e USDJPY.
+WTI e BTCUSD sono fuori dalla prima fase.
+
 ## Mercati candidati e ordine
 Per ognuno vanno verificati il codice su Dukascopy, l'anno di inizio e la disponibilità su FTMO e sui broker demo. Ordine proposto:
 1. EURUSD;
