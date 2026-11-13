@@ -101,7 +101,8 @@ Il G0 **non** è ancora utilizzabile per decidere: serve la riconciliazione con 
   - Dalla radice del repository: `python3 -s -B -W error -m unittest brain.dati.tests.test_pipeline brain.dati.tests.test_dukascopy brain.laboratorio.tests.test_backtester brain.laboratorio.tests.test_anti_frode_statico`.
 - `brain/guardian/`: verde anche su Python 3.11 e 3.12 (76/76 all'ultima prova su quelle versioni, prima del test sulle frazioni).
 - ALTO-8 (race nel recupero del lock orfano senza `fcntl`, da una revisione esterna) corretto in TDD sul ramo `fix/lock-orfano-toctou` e unito a `main`.
-- Mutanti non equivalenti uccisi: 80/80 su 3.13 e 79/79 su 3.9 (V48 equivalente prima di 3.11, E01 equivalente su tutte le versioni).
+- Mutanti non equivalenti uccisi: 80/80 su 3.13 e 79/79 su 3.9 (V48 equivalente prima di 3.11, E01 equivalente su tutte le versioni). Riconfermati con le 14 regole personali attive.
+- **Progetto generale** (13/11/2026), documento condiviso fuori dal repository: «Trading Brain — Progetto generale» (claude.ai). Contiene architettura, Gate 0–7 (i Gate 3–7 sono proposte da approvare), numeri per validare una strategia, regole, rischi e decisioni aperte, più i prompt per i revisori esterni (DeepSeek e ChatGPT, in corso).
 
 **Gate operativi** (denominazione dell'utente; nel Brain non c'è ancora una definizione formale dei gate):
 - **Gate 0, chiuso:** verifica completa del codice. Guardian e Binario B sono su `main`, con ALTO-2 e ALTO-7 verificati e 108/108 test.
@@ -109,7 +110,11 @@ Il G0 **non** è ancora utilizzabile per decidere: serve la riconciliazione con 
   - Scheda: `dati/reali/demo_broker_mt5_50k_xauusd.toml`, rinominata da `demo_mt5_50k_xauusd.toml`.
   - Regole interne 5% giornaliero (2.500 USD) e 10% totale (5.000 USD), simulate con lo schema `ftmo_2step`.
   - Commissione ECN round-turn 7,00 USD/lotto. Specifiche del contratto e commissione sono da verificare sul broker (stato C).
-  - Regole personali confermate dall'utente il 12/11/2026: **P-01 = 0,5%** (250 USD per trade) e **P-05 = 1,5%** (750 USD al giorno). Nella scheda risultano «2 confermate su 15».
+  - Regole personali confermate dall'utente il 12/11/2026: **P-01 = 0,5%** (250 USD per trade) e **P-05 = 1,5%** (750 USD al giorno).
+  - Il 13/11/2026 confermate anche P-02…P-04 e P-06…P-14, su proposta di Claude. Valori: P-06 = 1 posizione aperta, P-08 = 15 minuti attorno alle news, P-11 = 15 minuti di pausa dopo una perdita, P-12 = 60 secondi prima del click, P-14 = 7 ore di sonno.
+  - P-15 resta proposta: con lo 0,5% a trade coincide con P-05.
+  - Nella scheda risultano «14 confermate su 15».
+  - La «perdita massima 1,5%» indicata dall'utente è giornaliera, cioè coincide con P-05.
   - Scheda **non riconciliata** con la piattaforma (DA-25): finché non lo è, la scheda dichiara di non usarne i numeri per decidere.
 - **Gate 2, pronto ma NON chiuso:** lo storico reale e il `commitment.json` non esistono ancora.
   - Dal container cloud il server Dukascopy rifiuta le richieste: prima il proxy (host poi consentito nell'ambiente cloud), poi il server stesso, con 429 e connessioni chiuse. I tentativi ripetuti sono stati fermati dal controllo dei permessi. Nessun dato è stato inventato o simulato al posto di quello reale.

@@ -275,3 +275,19 @@ Formato: data · versione della base · cosa · perché · file.
 - **Scheda del G0:** le frazioni si mostrano con 3 decimali; P-01 si legge «0,005» invece di «0,01». In TDD (`8d1ae16` rosso, `5961613` verde), con il nuovo mutante V80.
 - **Esito:** 118/118 test (77 Guardian, 32 Binario B, 9 Dukascopy) su Python 3.13 e 3.9; mutanti non equivalenti uccisi 80/80 su 3.13 e 79/79 su 3.9.
 - Il Gate 2 si chiude quando `XAUUSD_15m.meta.json` e `commitment.json` sono su GitHub.
+
+## 2026-11-13 · v1.20 (regole personali confermate; progetto generale)
+
+- **Regole personali:** l'utente ha confermato la proposta di Claude («confermo la prop»).
+  - P-02…P-04 e P-06…P-14 sono attive. Valori: P-06 = 1 posizione aperta, P-08 = 15 minuti attorno alle news ad alto impatto, P-11 = 15 minuti, P-12 = 60 secondi, P-14 = 7 ore.
+  - P-15 resta proposta (coincide con P-05 allo 0,5% a trade).
+  - La scheda mostra «14 confermate su 15». Commit `92339cb`.
+- **Perdita massima:** l'utente ha chiarito che l'1,5% è giornaliero, cioè coincide con P-05.
+- **Verifiche:** 118/118 test su Python 3.13 e 3.9; mutanti non equivalenti uccisi 80/80 su 3.13 e 79/79 su 3.9, con le regole attive.
+- **Progetto generale** in un documento condiviso, «Trading Brain — Progetto generale». Contiene:
+  - obiettivi dell'utente e valutazione di Claude;
+  - architettura e Gate 0–7 (i Gate 3–7 sono proposte);
+  - calcolo dei trade necessari per validare una strategia;
+  - proposta sulle regole personali, rischi, decisioni aperte;
+  - prompt per i revisori esterni.
+- Esportato in PDF per DeepSeek. Primo giro di domande all'utente in corso.
