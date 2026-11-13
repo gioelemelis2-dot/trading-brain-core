@@ -68,3 +68,10 @@ Verificato su GitHub: il ramo esiste e tocca solo quel file. Revisione di alta q
 
 ## Prossimo passo
 Quando arriva R2: versione 2 della scheda con le correzioni accolte, e l'elenco delle scelte che restano all'utente (sessione, uscita, stop, numero di prove). Solo dopo, il sigillo.
+
+## Correzioni di testo da applicare alla v2 PRIMA del sigillo (trovate da Claude scrivendo il simulatore)
+1. **§5, dimensione.** La formula «500 / (rischio + commissione + slittamento d'ingresso e di stop)», con un rischio misurato fra prezzi eseguiti, conterebbe due volte lo slittamento d'ingresso. Testo corretto:
+   - **once** = floor(500 / (perdita per oncia allo stop + commissione));
+   - **perdita per oncia allo stop** = differenza fra il prezzo d'ingresso eseguito (spread e slittamento compresi) e il prezzo d'uscita eseguito allo stop (livello ± slittamento ± stress).
+2. **§4.3, rischio per il filtro dei 0,25 × A e per il target.** Rischio = distanza fra il prezzo d'ingresso eseguito e il **livello** dello stop, senza lo slittamento dello stop.
+

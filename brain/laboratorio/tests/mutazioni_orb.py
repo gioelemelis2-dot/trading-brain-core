@@ -1,0 +1,84 @@
+"""Mutation testing del simulatore di H-002 (laboratorio/simulatori/orb_londra.py). Ogni mutante è una copia di
+brain/ con UN difetto; la copia non mutata deve superare i test; ogni sostituzione deve comparire una sola volta.
+Uso (dalla radice del repository): python3 -s -B brain/laboratorio/tests/mutazioni_orb.py <cartella dei mutanti>
+"""
+import shutil
+import subprocess
+import sys
+from pathlib import Path
+
+if len(sys.argv) != 2:
+    sys.exit(__doc__)
+BRAIN, OUT = Path(__file__).resolve().parents[2], Path(sys.argv[1]).resolve()
+F = "laboratorio/simulatori/orb_londra.py"
+SUITE = ["brain.laboratorio.tests.test_orb_londra"]
+M = {
+    "O01 mediana con la sessione corrente (sguardo al futuro)": [
+        (F, "        rif = median(storico_a[-par.sessioni_rif:]) if len(storico_a) >= par.sessioni_rif else None\n"
+            "        storico_a.append(a)",
+         "        storico_a.append(a)\n"
+         "        rif = median(storico_a[-par.sessioni_rif:]) if len(storico_a) >= par.sessioni_rif else None")],
+    "O02 tetto con >=": [(F, "if a > par.tetto * rif:", "if a >= par.tetto * rif:")],
+    "O03 minimo dei costi ignorato": [(F, "if a < par.a_min:", "if False:")],
+    "O04 minuti del range non controllati": [(F, "len(or_t) < par.minuti_or_min * par.or_minuti", "False")],
+    "O05 festivi non esclusi": [(F, "or g in esclusi(g.year) ", "")],
+    "O06 chiusura della candela dal primo minuto": [(F, "chiusura = bid[dentro[-1]][3]", "chiusura = bid[dentro[0]][3]")],
+    "O07 ultimo segnale escluso": [(F, "while t_candela <= ultimo:", "while t_candela < ultimo:")],
+    "O08 acquisto al BID": [(F, "entrata = a0[0] + par.slip_ingresso + par.stress", "entrata = b0[0] + par.slip_ingresso + par.stress")],
+    "O09 stop della vendita sul BID": [(F, "tocca_stop = b[2] <= stop if su else a[1] >= stop",
+                                         "tocca_stop = b[2] <= stop if su else b[1] >= stop")],
+    "O10 target anche nel minuto d'ingresso": [(F, "if k > 0 and target is not None:", "if target is not None:")],
+    "O11 target prima dello stop": [(F, "        if tocca_stop:\n", "        if tocca_stop and not ((b[1] >= target) if (su and target) else False):\n")],
+    "O12 fine sessione con >": [(F, "        if t >= fine:", "        if t > fine:")],
+    "O13 slittamento dello stop ignorato": [(F, "uscita = (stop - par.slip_uscita - par.stress) if su else (stop + par.slip_uscita + par.stress)",
+                                              "uscita = stop")],
+    "O14 commissione ignorata": [(F, "netto = once * (per_oncia - par.commissione)", "netto = once * per_oncia")],
+    "O15 dimensione senza commissione": [(F, "once = floor(par.rischio_usd / (perdita_allo_stop + par.commissione))",
+                                           "once = floor(par.rischio_usd / perdita_allo_stop)")],
+    "O16 filtro del rischio minimo ignorato": [(F, "if rischio < par.rischio_min_a * giorno.a:", "if False:")],
+    "O17 prezzo già oltre lo stop ammesso": [(F, "        if b0[0] <= stop:\n            return None\n", "")],
+    "O18 stress non applicato": [(F, "entrata = a0[0] + par.slip_ingresso + par.stress", "entrata = a0[0] + par.slip_ingresso")],
+    "O19 specchio: stop non alla stessa distanza": [(F, "stop = entrata - distanza if lato == \"acquisto\" else entrata + distanza",
+                                                       "stop = entrata - 2 * distanza if lato == \"acquisto\" else entrata + 2 * distanza")],
+    "O20 drawdown dal minimo invece che dal picco": [(F, "dd = max(dd, picco - cum)", "dd = max(dd, -cum)")],
+}
+
+
+def copia(dest):
+    if dest.exists():
+        shutil.rmtree(dest)
+    for parte in ("dati", "laboratorio", "guardian"):
+        shutil.copytree(BRAIN / parte, dest / "brain" / parte,
+                        ignore=shutil.ignore_patterns("__pycache__", "cache_dukascopy", "partizioni", "*.csv", "*.secret"))
+
+
+def suite(radice):
+    return subprocess.run([sys.executable, "-s", "-B", "-W", "error", "-m", "unittest", *SUITE], cwd=radice,
+                          capture_output=True, text=True, timeout=600).returncode == 0
+
+
+def main():
+    OUT.mkdir(parents=True, exist_ok=True)
+    copia(OUT / "M00")
+    if not suite(OUT / "M00"):
+        sys.exit("M00 NON supera la suite: fermo")
+    print("M00 copia non mutata: suite verde")
+    uccisi = 0
+    for i, (nome, sost) in enumerate(M.items(), 1):
+        dest = OUT / f"M{i:02d}"
+        copia(dest)
+        for f, vecchio, nuovo in sost:
+            testo = (BRAIN / f).read_text(encoding="utf-8")
+            if testo.count(vecchio) != 1:
+                sys.exit(f"{nome}: la sostituzione compare {testo.count(vecchio)} volte")
+            (dest / "brain" / f).write_text(testo.replace(vecchio, nuovo), encoding="utf-8")
+        vivo = suite(dest)
+        uccisi += not vivo
+        print(f"{'VIVO  ' if vivo else 'UCCISO'} {nome}")
+        shutil.rmtree(dest)
+    print(f"\n{uccisi}/{len(M)} mutanti uccisi")
+    return 0 if uccisi == len(M) else 1
+
+
+if __name__ == "__main__":
+    sys.exit(main())
