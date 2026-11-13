@@ -274,6 +274,26 @@ DA-13 rulebook (Q-09) ──► DA-11 G0 minimo ──► DA-12 indicatori compo
   - ogni ipotesi dichiara prima su quali mercati vale e con quali parametri, e non si ritocca da un mercato all'altro.
 - **Oggi:** il registro è per strumento (`dati/operativo/trial_registry_xauusd.json`).
 
+### DA-29 · Obiettivi in numeri e criteri di arresto (completa DA-20)
+**Deciso dall'utente il 13/11/2026:**
+- **Weekend chiuso:** nessuna posizione aperta nel weekend. Ogni ipotesi lo rispetta, e così il backtest.
+- **Obiettivo:** essere in positivo. L'1–2% al mese su un futuro conto FTMO da 100.000 va benissimo; il 5% al mese sarebbe bello, ma l'utente sa che è molto alto.
+- **Challenge FTMO:** solo dopo avere più strategie testate.
+- **Arresto:** «ci fermiamo quando la probabilità non è a nostro favore». Va tradotto in numeri.
+
+**Proposte di Claude, da confermare:**
+- **Obiettivi tradotti in R.** Con P-01 = 0,5% a trade, l'1% al mese vale +2R al mese netti e il 2% vale +4R. Con 15–20 trade al mese servono circa +0,10–0,25R netti a trade. Il 5% al mese è +10R al mese, circa l'80% l'anno composto: non è un obiettivo di progetto.
+- **Soglia minima per promuovere una strategia:** aspettativa netta di almeno +0,05R a trade, dimostrata statisticamente (DSR con tutte le prove contate). Obiettivo: +0,10R.
+- **Arresto di una strategia in demo:**
+  - drawdown di 10R dall'inizio (il 5% a 0,5% di rischio, metà del limite FTMO);
+  - oppure aspettativa ≤ 0 dopo 100 trade.
+  - Con 100 trade l'incertezza è di circa ±0,2R: la regola protegge dal danno, non dimostra nulla.
+- **Arresto di un giro di ricerca:** al massimo 20 ipotesi a giro. Se nessuna passa, ci si ferma e si ripensa, senza allentare i criteri.
+- **Overnight (l'utente non sa):**
+  - le prime ipotesi sono solo intraday;
+  - l'overnight è ammesso solo se l'ipotesi lo dichiara prima e il backtest include lo swap.
+  - Le regole FTMO sull'overnight nel conto Standard sono da verificare (`prop_firm_ftmo.toml`, stato V-parziale).
+
 ---
 
 ## Fonti di questo registro

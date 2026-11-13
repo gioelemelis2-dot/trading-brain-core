@@ -124,6 +124,12 @@ Il G0 **non** è ancora utilizzabile per decidere: serve la riconciliazione con 
 - **Diversificazione (13/11/2026, proposta):** l'utente la vuole centrale. Piano in `governance/PIANO-DIVERSIFICAZIONE.md`, decisioni DA-27 e DA-28.
   - Ordine: un mercato alla volta dopo l'oro, con lo stesso calendario per tutti; si parte da EURUSD.
   - Prima va esteso lo scaricatore, che oggi conosce solo XAUUSD.
+- **Risposte dell'utente del 13/11/2026 (DA-29):**
+  - weekend chiuso;
+  - obiettivo «in positivo», l'1–2% al mese va bene;
+  - challenge FTMO solo dopo più strategie testate.
+  - Overnight e criteri numerici di arresto: proposti da Claude, da confermare.
+  - Vuole aprire nuovi conti demo scegliendo i broker in base allo spread.
   - Dal container cloud il server Dukascopy rifiuta le richieste: prima il proxy (host poi consentito nell'ambiente cloud), poi il server stesso, con 429 e connessioni chiuse. I tentativi ripetuti sono stati fermati dal controllo dei permessi. Nessun dato è stato inventato o simulato al posto di quello reale.
   - Pronto `brain/dati/pipeline/dukascopy.py`, da eseguire **sul Mac**, dalla radice del repository: `python3 -s -B -m brain.dati.pipeline.dukascopy --anni 3`.
   - Cosa fa: scarica le candele BID da 1 minuto e le aggrega a 15 minuti UTC; controlla scala, OHLC, ordine e buchi; poi ingestione e partizione In-Sample 70% / Out-of-Sample 30%, con `commitment.json` e il nonce fuori dal repository (`~/.trading_brain/nonce/`).
