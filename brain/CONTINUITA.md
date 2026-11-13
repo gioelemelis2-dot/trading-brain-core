@@ -124,6 +124,12 @@ Il G0 **non** è ancora utilizzabile per decidere: serve la riconciliazione con 
 - **Diversificazione (13/11/2026, proposta):** l'utente la vuole centrale. Piano in `governance/PIANO-DIVERSIFICAZIONE.md`, decisioni DA-27 e DA-28.
   - Ordine: un mercato alla volta dopo l'oro, con lo stesso calendario per tutti; si parte da EURUSD.
   - Prima va esteso lo scaricatore, che oggi conosce solo XAUUSD.
+- **Correzioni del 13/11/2026 (ramo `fix/dsr-e-partizione-date`, NON ancora su main):** rilievi di Gemini G-20261113-01, verificati da Claude e autorizzati dall'utente.
+  - **DSR:** prima, con N ≥ 2, bocciava tutto. Ora usa la scala sqrt(V).
+  - **Partizione per date** con embargo; senza partizione decisa non si sigilla.
+  - **Bande di prezzo per periodo** e controllo dei salti di scala.
+  - **Test:** 63/63 su Python 3.13 e 3.9; nuovi mutanti 26/26 su entrambe le versioni; vecchi mutanti del laboratorio 31/31.
+  - **Prima del merge:** revisione di Gemini, con i suoi vettori di prova indipendenti per il DSR.
 - **Risposte dell'utente del 13/11/2026 (DA-29):**
   - weekend chiuso;
   - obiettivo «in positivo», l'1–2% al mese va bene;

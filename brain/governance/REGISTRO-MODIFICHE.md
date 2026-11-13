@@ -316,3 +316,15 @@ Formato: data · versione della base · cosa · perché · file.
   - mercati candidati e ordine, tempi stimati, dati oltre ai prezzi, fasi D0–D6.
 - **Nuove decisioni aperte:** DA-27 (mercati e calendario comune) e DA-28 (registro unico e mercati dichiarati prima).
 - **Documento del progetto:** nuova sezione «Diversificazione su più mercati».
+
+## 2026-11-13 · v1.23 (rilievi di Gemini G-20261113-01: DSR, partizione per date, bande di prezzo)
+
+- **Revisione critica di Gemini** (G-20261113-01). Claude ha letto solo il riassunto: il ramo non era su GitHub. Rilievi verificati sul codice e accolti; esiti in `collaborazione/da-claude/ESITI.md`.
+- **Correzioni sul ramo `fix/dsr-e-partizione-date`,** autorizzate dall'utente, in TDD (`c74ca2b` rosso, `19b70de` verde):
+  - DSR con la scala sqrt(V) di Bailey e López de Prado: prima, con N ≥ 2 prove, bocciava qualunque strategia;
+  - partizione per date con embargo (`partizione_date.py`);
+  - niente più 70/30; bande di prezzo per periodo;
+  - controllo dei salti di scala.
+- **Mutation testing:** nuovo `dati/tests/mutazioni_dsr_partizione.py`, 26/26 su Python 3.13 e 3.9. Al primo giro il mutante P11 (la verifica ignorava il sigillo) era sopravvissuto: aggiunto un test.
+- **Divisione del lavoro in `LOCK.md`:** Claude corregge; Gemini prepara vettori di prova indipendenti per il DSR e rivede il ramo.
+- **Merge su main solo con l'autorizzazione dell'utente,** dopo la revisione di Gemini.

@@ -259,6 +259,16 @@ DA-13 rulebook (Q-09) ──► DA-11 G0 minimo ──► DA-12 indicatori compo
   - il futuro, cioè l'incubazione sui conti demo, come test finale.
 - **Da decidere:** quanti anni (prima va verificato da quale anno Dukascopy ha XAUUSD), quale periodo di sviluppo, quale periodo di verifica.
 - **Fino ad allora:** il sigillo sui 3 anni con 70/30 è provvisorio e non va pubblicato come definitivo.
+- **Strumento pronto (ramo `fix/dsr-e-partizione-date`, da unire con l'autorizzazione dell'utente):**
+  - partizione per date UTC in blocchi di sviluppo e verifica, con embargo, da un file TOML scritto prima (`dati/pipeline/partizione_date.py`, opzione `--partizione` dello scaricatore);
+  - senza file non si sigilla nulla.
+- **Proposta di Gemini (G-20261113-01):**
+  - blocco A: verifica vecchia;
+  - blocco B: circa 10 anni di sviluppo, con walk-forward interno;
+  - blocco C: dal 2024 a oggi, già visto, solo come filtro dei costi attuali;
+  - blocco D: il futuro, cioè la demo;
+  - embargo di 14 giorni; regole in ATR o percentuale, mai in USD fissi.
+  - Il periodo vecchio è una verifica su un altro regime, **non un test cieco**: anche i modelli conoscono il 2008, il 2013 e il 2020.
 - Le altre contromisure approvate (seconda fonte di dati, costi veri, replica indipendente, regole decise prima, «come lo sai?», niente nuova infrastruttura) sono nel documento «Trading Brain — Progetto generale», sezione «Contro l'autoinganno».
 
 ### DA-27 · Mercati della diversificazione e calendario comune
@@ -293,6 +303,10 @@ DA-13 rulebook (Q-09) ──► DA-11 G0 minimo ──► DA-12 indicatori compo
   - le prime ipotesi sono solo intraday;
   - l'overnight è ammesso solo se l'ipotesi lo dichiara prima e il backtest include lo swap.
   - Le regole FTMO sull'overnight nel conto Standard sono da verificare (`prop_firm_ftmo.toml`, stato V-parziale).
+- **Da aggiungere (Gemini G-20261113-01, accolto da Claude):**
+  - permutation test, ablation e sensibilità dei parametri (±20–30%: la strategia deve reggere);
+  - in demo, un arresto sequenziale al posto della regola grezza dei 100 trade;
+  - per Fibonacci e order block, ogni variante di tracciamento conta come una prova.
 
 ---
 

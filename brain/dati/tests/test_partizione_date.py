@@ -131,6 +131,17 @@ class TestPartizione(unittest.TestCase):
         self.assertEqual(PD.verifica(self.dati / "altra", self.nonce / "altro" / "sealed_nonce.secret")["blocchi"]
                          ["sviluppo"], {"sha256": True, "commitment": None})
 
+    def test_nonce_sbagliato_scoperto(self):
+        """Dati intatti ma nonce diverso: lo SHA-256 torna, il sigillo no, e la verifica non è valida
+        (mutante P11 sopravvissuto al primo giro: la verifica guardava solo lo SHA-256)."""
+        PD.partiziona(self.cc, TRE, self.dati, self.nonce, partizione_sha256="00" * 32)
+        altro = self.nonce.parent / "altro.secret"
+        altro.write_text("0" * 64 + "\n", encoding="utf-8")
+        esito = PD.verifica(self.dati, altro)
+        self.assertFalse(esito["valido"])
+        self.assertEqual(esito["blocchi"]["verifica_recente"], {"sha256": True, "commitment": False})
+        self.assertEqual(esito["blocchi"]["sviluppo"], {"sha256": True, "commitment": None})
+
     def test_nonce_esistente_non_si_sovrascrive(self):
         """Un nuovo nonce renderebbe inverificabile il sigillo già pubblicato: ci si ferma, prima di scrivere."""
         PD.partiziona(self.cc, TRE, self.dati, self.nonce, partizione_sha256="00" * 32)
