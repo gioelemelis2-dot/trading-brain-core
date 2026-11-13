@@ -42,7 +42,7 @@ RECORD = struct.Struct(">iiiiif")           # secondi, open, close, low, high, v
 QUINDICI = timedelta(minutes=15)
 PREZZO_MIN, PREZZO_MAX = Decimal("1000"), Decimal("10000")   # oro 2023-2026: una scala ×10 o ÷10 ne esce
 RADICE = Path(__file__).resolve().parents[3]
-PAUSA_S = 0.6
+PAUSA_S = 1.5                               # Dukascopy limita le richieste: meglio lenti che bloccati
 
 
 class ErroreDati(ValueError):
@@ -56,10 +56,11 @@ def url_giorno(simbolo: str, giorno: date) -> str:
     return URL.format(simbolo=simbolo, anno=giorno.year, mese0=giorno.month - 1, giorno=giorno.day)
 
 
-def scarica_http(url: str, tentativi: int = 6, attesa: Callable[[float], None] = time.sleep,
+def scarica_http(url: str, tentativi: int = 10, attesa: Callable[[float], None] = time.sleep,
                  apri=urllib.request.urlopen) -> Optional[bytes]:
     """Contenuto dell'URL; None se il giorno non esiste (404) o è vuoto. Nuovi tentativi con attesa crescente su
-    429/5xx ed errori di rete (rispettando Retry-After). User-Agent generico: nessun dato personale."""
+    429/5xx ed errori di rete (rispettando Retry-After): 5, 10, 20, … secondi fino a 5 minuti, circa 20 minuti in
+    tutto prima di arrendersi. User-Agent generico: nessun dato personale."""
     richiesta = urllib.request.Request(url, headers={"User-Agent": "trading-brain-dati/1.0"})
     for n in range(tentativi):
         try:
@@ -74,7 +75,7 @@ def scarica_http(url: str, tentativi: int = 6, attesa: Callable[[float], None] =
             ritardo = float(e.headers.get("Retry-After") or 0) if e.headers else 0.0
         except (urllib.error.URLError, ConnectionError, TimeoutError):
             ritardo = 0.0
-        attesa(max(ritardo, 2.0 * 2 ** n))
+        attesa(max(ritardo, min(300.0, 5.0 * 2 ** n)))
     raise ConnectionError(f"{url}: nessuna risposta valida dopo {tentativi} tentativi")
 
 
@@ -84,7 +85,10 @@ def scarica_giorno(simbolo: str, giorno: date, cache: Optional[Path], scarica: C
         f = cache / f"{giorno.isoformat()}.bi5"
         if f.exists():
             return f.read_bytes() or None
-    dati = scarica(url_giorno(simbolo, giorno))
+    try:
+        dati = scarica(url_giorno(simbolo, giorno))
+    except ConnectionError as e:                     # nell'URL i mesi partono da 00: si dichiara la data vera
+        raise ConnectionError(f"giorno {giorno.isoformat()} (nell'URL il mese parte da 00): {e}") from None
     if cache is not None:
         cache.mkdir(parents=True, exist_ok=True)
         tmp = cache / f".{giorno.isoformat()}.tmp"
@@ -261,6 +265,7 @@ def main(argv=None) -> int:
     a.add_argument("--nonce-dir", default=str(Path.home() / ".trading_brain" / "nonce"),
                    help="cartella del nonce segreto del sigillo OOS: FUORI dal repository")
     a.add_argument("--accetta-buchi", action="store_true", help="procedi anche con buchi anomali (elencati nel meta)")
+    a.add_argument("--pausa", type=float, default=PAUSA_S, help="secondi fra una richiesta e l'altra")
     x = a.parse_args(argv)
     fine = date.fromisoformat(x.fine) if x.fine else (datetime.now(timezone.utc).date() - timedelta(days=1))
     inizio = fine - timedelta(days=int(round(365.25 * x.anni)))
@@ -272,10 +277,14 @@ def main(argv=None) -> int:
     print(f"Gate 2: {x.simbolo} 15m dal {inizio} al {fine} (Dukascopy, BID). Cache: {reali / 'cache_dukascopy'}")
     try:
         meta = esegui(x.simbolo, inizio, fine, reali, nonce, scarica_http, reali / "cache_dukascopy" / x.simbolo,
-                      accetta_buchi=x.accetta_buchi)
+                      accetta_buchi=x.accetta_buchi, pausa=lambda: time.sleep(x.pausa))
     except ErroreDati as e:
         print(f"FERMO, dati non validi: {e}", file=sys.stderr)
         return 1
+    except ConnectionError as e:
+        print(f"DUKASCOPY NON RISPONDE: {e}\nRilanciare più tardi lo stesso comando: i giorni già scaricati restano "
+              f"in cache e non vengono richiesti di nuovo.", file=sys.stderr)
+        return 3
     print(json.dumps({k: meta[k] for k in ("candele_15m", "prima_candela_utc", "ultima_candela_utc", "csv_sha256",
                                            "in_sample", "out_of_sample", "commitment_hash",
                                            "commitment_json_sha256")}, ensure_ascii=False, indent=2))

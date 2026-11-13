@@ -129,11 +129,23 @@ class TestScaricamentoEPipeline(unittest.TestCase):
         def apri(richiesta, timeout):
             chiamate.append(richiesta.get_header("User-agent"))
             if len(chiamate) == 1:
-                raise urllib.error.HTTPError(richiesta.full_url, 429, "Too Many Requests", {"Retry-After": "3"}, None)
+                raise urllib.error.HTTPError(richiesta.full_url, 429, "Too Many Requests", {"Retry-After": "30"}, None)
             return _Risposta(b"dati")
 
         self.assertEqual(DK.scarica_http("http://x", attesa=attese.append, apri=apri), b"dati")
-        self.assertEqual(attese, [3.0])
+        self.assertEqual(attese, [30.0])                                 # Retry-After rispettato
+
+        def apri_sempre_429(richiesta, timeout):
+            raise urllib.error.HTTPError(richiesta.full_url, 429, "Too Many Requests", {}, None)
+        attese.clear()
+        with self.assertRaises(ConnectionError):
+            DK.scarica_http("http://x", attesa=attese.append, apri=apri_sempre_429)
+        self.assertEqual(attese, [5.0, 10.0, 20.0, 40.0, 80.0, 160.0, 300.0, 300.0, 300.0, 300.0])   # ~25 minuti
+
+        def scarica_rotto(url):
+            raise ConnectionError(url)
+        with self.assertRaisesRegex(ConnectionError, r"giorno 2026-09-20 .*2026/08/20"):       # data vera e URL
+            DK.scarica_giorno("XAUUSD", date(2026, 9, 20), None, scarica_rotto)
         self.assertEqual(chiamate[0], "trading-brain-dati/1.0")        # nessun dato personale nell'User-Agent
 
         def apri_404(richiesta, timeout):
