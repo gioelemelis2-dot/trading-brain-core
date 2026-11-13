@@ -1,6 +1,8 @@
 # Regole personali dell'utente, tipo REGOLA (origine: personale).
 # STATO DEL FILE: PROPOSTA, da confermare dall'utente regola per regola. Nessuna regola qui è attiva finché
-# l'utente non la conferma (campo `confermata`). Confermate al 12/11/2026: P-01 (0,5%) e P-05 (1,5%).
+# l'utente non la conferma (campo `confermata`). Confermate: P-01 (0,5%) e P-05 (1,5%) il 12/11/2026;
+# P-02…P-04 e P-06…P-14 il 13/11/2026 (P-06 = 1 posizione, P-08 = 15 min, P-11 = 15 min, P-12 = 60 s,
+# P-14 = 7 ore). P-15 resta proposta: con lo 0,5% a trade coincide con P-05.
 #
 # Provenienza di ogni regola:
 #   "manuale" = Manuale v1 dell'utente (brain/originale/manuale-v1.txt), cioè regole già scritte dall'utente;
@@ -12,7 +14,7 @@
 
 [meta]
 schema = "guardian-regole-personali/1"
-stato = "proposta, con P-01 e P-05 confermate dall'utente il 12/11/2026 (Gate 1); le altre restano proposta"
+stato = "P-01 e P-05 confermate il 12/11/2026; P-02…P-04 e P-06…P-14 confermate il 13/11/2026; P-15 resta proposta"
 data = "2026-11-12"
 modifica = "solo a mercato chiuso, per iscritto, con versione (Manuale v1, Lezione 8; procedura completa: DA-23)"
 
@@ -32,21 +34,24 @@ id = "P-02"
 testo = "Stop deciso prima dell'ingresso e inserito subito. Non si allarga mai."
 provenienza = "manuale, Lezione 8, regola 2; rulebook-gemini GATE_02 e GATE_04"
 controllo_g0 = "posizione senza stop; stop spostato più lontano dall'ingresso"
-confermata = false
+conferma = "utente, 13/11/2026 («confermo la proposta» di Claude, documento Trading Brain — Progetto generale)"
+confermata = true
 
 [[regola]]
 id = "P-03"
 testo = "Nessun ingresso senza checklist pre-trade."
 provenienza = "manuale, Lezione 8, regola 3"
 controllo_g0 = "checklist del journal non compilata prima dell'ingresso"
-confermata = false
+conferma = "utente, 13/11/2026 («confermo la proposta» di Claude, documento Trading Brain — Progetto generale)"
+confermata = true
 
 [[regola]]
 id = "P-04"
 testo = "Solo i setup scritti nelle regole di ingaggio. Fuori dalle regole si sta fermi."
 provenienza = "manuale, Lezione 8, regola 4; rulebook-gemini GATE_01"
 controllo_g0 = "trade senza riferimento a un setup scritto"
-confermata = false
+conferma = "utente, 13/11/2026 («confermo la proposta» di Claude, documento Trading Brain — Progetto generale)"
+confermata = true
 
 [[regola]]
 id = "P-05"
@@ -63,73 +68,86 @@ confermata = true
 id = "P-06"
 testo = "Un solo rischio per fattore correlato alla volta."
 provenienza = "manuale, Lezione 8, regola 6"
+parametro = "posizioni_aperte_max"
+valore = "1"
 proposte_esistenti = "rulebook-gemini: al massimo 1,5R aperti su attivi correlati"
 controllo_g0 = "più posizioni aperte sullo stesso fattore (definizione dei fattori: DA DEFINIRE)"
-confermata = false
+conferma = "utente, 13/11/2026 («confermo la proposta» di Claude, documento Trading Brain — Progetto generale)"
+confermata = true
 
 [[regola]]
 id = "P-07"
 testo = "Ogni trade nel journal entro fine giornata, con stato emotivo e voto di aderenza."
 provenienza = "manuale, Lezione 8, regola 7"
 controllo_g0 = "trade senza voce nel journal alle 23:59"
-confermata = false
+conferma = "utente, 13/11/2026 («confermo la proposta» di Claude, documento Trading Brain — Progetto generale)"
+confermata = true
 
 [[regola]]
 id = "P-08"
 testo = "Non opero nelle condizioni proibite: news ad alto impatto, stanchezza, tilt, noia."
 provenienza = "manuale, Lezione 8, regola 8"
 parametro = "finestra_news_minuti"
-valore = "DA DEFINIRE"
+valore = "15"
 proposte_esistenti = "rulebook-gemini GATE_05: 15 minuti attorno alle notizie ad alto impatto"
 controllo_g0 = "ingresso dentro la finestra di una notizia del calendario (richiede un calendario macro: dati)"
-confermata = false
+conferma = "utente, 13/11/2026 («confermo la proposta» di Claude, documento Trading Brain — Progetto generale)"
+confermata = true
 
 [[regola]]
 id = "P-09"
 testo = "Non modifico le regole durante la sessione."
 provenienza = "manuale, Lezione 8, regola 9"
 controllo_g0 = "modifica di questo file con data e ora dentro una sessione di trading"
-confermata = false
+conferma = "utente, 13/11/2026 («confermo la proposta» di Claude, documento Trading Brain — Progetto generale)"
+confermata = true
 
 [[regola]]
 id = "P-10"
 testo = "Se non so perché sono in un trade, esco."
 provenienza = "manuale, Lezione 8, regola 10"
 controllo_g0 = "nessuno automatico: domanda nella checklist"
-confermata = false
+conferma = "utente, 13/11/2026 («confermo la proposta» di Claude, documento Trading Brain — Progetto generale)"
+confermata = true
 
 [[regola]]
 id = "P-11"
 testo = "Alla prima avvisaglia di tilt: mani lontane dalla tastiera, 10–15 minuti fuori dallo schermo; se ancora attivato, chiudo per la giornata."
 provenienza = "manuale, Lezione 21"
 parametro = "pausa_dopo_perdita_minuti"
-valore = "10–15 (dal Manuale); da confermare come numero unico"
+valore = "15"
 proposte_esistenti = "rulebook-gemini: 15 minuti obbligatori dopo ogni perdita"
 controllo_g0 = "nuovo ingresso prima che sia trascorsa la pausa dopo una perdita"
-confermata = false
+conferma = "utente, 13/11/2026 («confermo la proposta» di Claude, documento Trading Brain — Progetto generale)"
+confermata = true
 
 [[regola]]
 id = "P-12"
 testo = "Timer di 60–90 secondi tra «vedo il setup» e «clicco»; trade detto ad alta voce (setup, entrata, stop, perché)."
 provenienza = "manuale, Lezione 21; rulebook-gemini GATE_06"
+parametro = "attesa_prima_del_click_secondi"
+valore = "60"
 controllo_g0 = "registrazione dell'ora del setup e dell'ora dell'ordine nel journal (misura autodichiarata)"
-confermata = false
+conferma = "utente, 13/11/2026 («confermo la proposta» di Claude, documento Trading Brain — Progetto generale)"
+confermata = true
 
 [[regola]]
 id = "P-13"
 testo = "Dopo il kill switch, rientro il giorno dopo a size dimezzata finché non completo 5 trade con aderenza >= 4 su 5."
 provenienza = "manuale, Lezione 21; rulebook-gemini recovery_protocol"
 controllo_g0 = "size del giorno successivo e conteggio dei trade conformi"
-confermata = false
+conferma = "utente, 13/11/2026 («confermo la proposta» di Claude, documento Trading Brain — Progetto generale)"
+confermata = true
 
 [[regola]]
 id = "P-14"
 testo = "Meno di 6–7 ore di sonno o sonno frammentato: size ridotta o nessun nuovo trade."
 provenienza = "manuale, Lezione 22; rulebook-gemini min_sleep_hours = 6"
 parametro = "ore_sonno_minime"
-valore = "6–7 (dal Manuale); da confermare come numero unico"
+valore = "7"
 controllo_g0 = "ore di sonno dichiarate nel journal (dato personale sensibile: resta in locale)"
-confermata = false
+conferma = "utente, 13/11/2026 («confermo la proposta» di Claude, documento Trading Brain — Progetto generale)"
+confermata = true
 
 [[regola]]
 id = "P-15"
