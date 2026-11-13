@@ -7,12 +7,19 @@ Cosa fa, in ordine:
 1. scarica, un giorno alla volta, https://datafeed.dukascopy.com/datafeed/XAUUSD/AAAA/MM/GG/BID_candles_min_1.bi5
    (MM da 00 a 11), con pause fra le richieste, nuovi tentativi su 429/5xx e una cache locale dei file grezzi;
 2. decodifica le candele da 1 minuto, scarta i minuti senza scambi (volume 0) e aggrega a 15 minuti (UTC);
-3. CONTROLLA i dati e si ferma se non tornano: OHLC incoerenti, prezzi fuori dall'intervallo plausibile per l'oro
-   (segno di una scala sbagliata), ordine non crescente; classifica i buchi temporali (pausa giornaliera, fine
-   settimana, festività) e si ferma sui buchi anomali in orario di mercato, salvo --accetta-buchi;
+3. CONTROLLA i dati e si ferma se non tornano: OHLC incoerenti, prezzi fuori dalla banda plausibile dell'anno o
+   salti oltre il 25% fra candele consecutive (segni di una scala sbagliata), ordine non crescente; classifica i
+   buchi temporali (pausa giornaliera, fine settimana, festività) e si ferma sui buchi anomali in orario di
+   mercato, salvo --accetta-buchi;
 4. scrive brain/dati/reali/XAUUSD_15m.csv (escluso da git) e XAUUSD_15m.meta.json (fonte, periodo, SHA-256, buchi);
-5. ingestione con DataIngestionPipeline e partizione In-Sample 70% / Out-of-Sample 30% con DatasetPartitioner:
-   commitment.json in brain/dati/reali/partizioni/XAUUSD_15m/, nonce segreto FUORI dal repository.
+5. ingestione con DataIngestionPipeline;
+6. SOLO con --partizione FILE (DA-26 decisa): partizione per date in blocchi con embargo (partizione_date.py),
+   commitment.json in brain/dati/reali/partizioni/XAUUSD_15m_date/, nonce segreto FUORI dal repository. Il periodo
+   da scaricare è preso dal file. Senza --partizione nulla viene sigillato (la vecchia divisione 70/30 per numero
+   di candele non c'è più: rilievo di Gemini G-20261113-01).
+
+Esempio: prima solo dati (--anni 15), poi, decisa la partizione, lo stesso comando con --partizione: i giorni già
+scaricati vengono dalla cache.
 
 Formato dei file (NON documentato ufficialmente da Dukascopy: dedotto, e per questo controllato al punto 3):
 LZMA; record di 24 byte big-endian = secondi dall'inizio del giorno UTC (int32), open, close, low, high (int32,
@@ -41,7 +48,14 @@ URL = "https://datafeed.dukascopy.com/datafeed/{simbolo}/{anno:04d}/{mese0:02d}/
 SCALA = {"XAUUSD": 3}                       # cifre decimali: prezzo = intero × 10^-3
 RECORD = struct.Struct(">iiiiif")           # secondi, open, close, low, high, volume
 QUINDICI = timedelta(minutes=15)
-PREZZO_MIN, PREZZO_MAX = Decimal("1000"), Decimal("10000")   # oro 2023-2026: una scala ×10 o ÷10 ne esce
+# Bande di prezzo plausibili per anno: (primo anno, ultimo anno, minimo, massimo). STIMA di Claude, larga apposta:
+# servono solo a scoprire una scala sbagliata (×10 o ÷10 esce dalla banda di ogni periodo), non a validare i
+# prezzi, che si confrontano con una seconda fonte (MT5). Un anno senza banda ferma: la banda si aggiunge a mano.
+BANDE = {"XAUUSD": ((2003, 2007, Decimal("200"), Decimal("1200")),
+                    (2008, 2012, Decimal("500"), Decimal("2500")),
+                    (2013, 2019, Decimal("900"), Decimal("2200")),
+                    (2020, 2030, Decimal("1200"), Decimal("10000")))}
+SALTO_MAX = Decimal("1.25")                 # chiusura -> apertura successiva: oltre +25% o sotto -20% si ferma
 RADICE = Path(__file__).resolve().parents[3]
 PAUSA_S = 1.5                               # Dukascopy limita le richieste: meglio lenti che bloccati
 
@@ -154,14 +168,23 @@ def classifica_buco(fine: datetime, inizio_successivo: datetime) -> str:
     return "ANOMALO (in orario di mercato)"
 
 
-def controlla(candele: List[dict], prezzo_min: Decimal = PREZZO_MIN, prezzo_max: Decimal = PREZZO_MAX) -> dict:
-    """Solleva ErroreDati su prezzi non plausibili, OHLC incoerenti o ordine non crescente. Restituisce il
-    rapporto sui buchi (conteggi per tipo ed elenco dei non ordinari)."""
+def banda(simbolo: str, anno: int) -> Tuple[Decimal, Decimal]:
+    for primo, ultimo, minimo, massimo in BANDE.get(simbolo, ()):
+        if primo <= anno <= ultimo:
+            return minimo, massimo
+    raise ErroreDati(f"{simbolo}: nessuna banda di prezzo plausibile per il {anno} (aggiungerla in BANDE)")
+
+
+def controlla(candele: List[dict], simbolo: str = "XAUUSD") -> dict:
+    """Solleva ErroreDati su prezzi fuori dalla banda dell'anno, salti di scala fra candele consecutive, OHLC
+    incoerenti o ordine non crescente. Restituisce il rapporto sui buchi (conteggi per tipo ed elenco dei non
+    ordinari)."""
     if not candele:
         raise ErroreDati("nessuna candela")
     buchi: Dict[str, int] = {}
     elenco = []
     for i, c in enumerate(candele):
+        prezzo_min, prezzo_max = banda(simbolo, c["open_time"].year)
         for k in ("open", "high", "low", "close"):
             if not prezzo_min <= c[k] <= prezzo_max:
                 raise ErroreDati(f"{c['open_time'].isoformat()}: {k} = {c[k]} fuori da [{prezzo_min}; {prezzo_max}] "
@@ -172,6 +195,10 @@ def controlla(candele: List[dict], prezzo_min: Decimal = PREZZO_MIN, prezzo_max:
             p = candele[i - 1]
             if c["open_time"] < p["close_time"]:
                 raise ErroreDati(f"{c['open_time'].isoformat()}: ordine non crescente o sovrapposizione")
+            rapporto = c["open"] / p["close"]
+            if rapporto > SALTO_MAX or rapporto < 1 / SALTO_MAX:
+                raise ErroreDati(f"{c['open_time'].isoformat()}: salto da {p['close']} a {c['open']} fra candele "
+                                 f"consecutive (scala sbagliata in un giorno?)")
             if c["open_time"] > p["close_time"]:
                 tipo = classifica_buco(p["close_time"], c["open_time"])
                 buchi[tipo] = buchi.get(tipo, 0) + 1
@@ -201,12 +228,29 @@ def scrivi_csv(candele: List[dict], path: Path) -> str:
     return hashlib.sha256(testo.encode("utf-8")).hexdigest()
 
 
+def periodo_da_partizione(partizione: dict) -> Tuple[date, date]:
+    """Primo e ultimo giorno da scaricare: dall'inizio del primo blocco al giorno prima della fine (esclusa)
+    dell'ultimo."""
+    from .partizione_date import valida
+    blocchi = valida(partizione)
+    return blocchi[0]["inizio_utc"].date(), blocchi[-1]["fine_utc"].date() - timedelta(days=1)
+
+
 def esegui(simbolo: str, inizio: date, fine: date, cartella_reali: Path, cartella_nonce: Path,
            scarica: Callable[[str], Optional[bytes]], cache: Optional[Path], accetta_buchi: bool = False,
-           pausa: Callable[[], None] = lambda: time.sleep(PAUSA_S), stampa=print) -> dict:
-    """Pipeline completa del Gate 2. Restituisce il riepilogo (scritto anche nel file .meta.json)."""
+           pausa: Callable[[], None] = lambda: time.sleep(PAUSA_S), stampa=print,
+           partizione: Optional[dict] = None, partizione_sha256: Optional[str] = None) -> dict:
+    """Pipeline completa del Gate 2. Restituisce il riepilogo (scritto anche nel file .meta.json). Sigilla solo
+    se `partizione` è data (DA-26)."""
     from .ingestion import DataIngestionPipeline
-    from .partitioning import DatasetPartitioner
+    from . import partizione_date
+
+    if partizione is not None:
+        partizione_date.valida(partizione)
+        if partizione["simbolo"] != simbolo:
+            raise ErroreDati(f"partizione per {partizione['simbolo']}, dati di {simbolo}")
+        if not isinstance(partizione_sha256, str):
+            raise ValueError("partizione_sha256 obbligatorio con la partizione")
 
     cifre = SCALA[simbolo]
     minuti, giorni_vuoti, giorno = [], 0, inizio
@@ -221,7 +265,7 @@ def esegui(simbolo: str, inizio: date, fine: date, cartella_reali: Path, cartell
         giorno += timedelta(days=1)
         pausa()
     candele = aggrega(minuti)
-    rapporto = controlla(candele)
+    rapporto = controlla(candele, simbolo)
     if rapporto["anomali"] and not accetta_buchi:
         raise ErroreDati(f"{rapporto['anomali']} buchi anomali in orario di mercato (vedi elenco): fermo. "
                          f"Primi: {rapporto['buchi_da_verificare'][:5]}. Per procedere comunque: --accetta-buchi")
@@ -233,11 +277,18 @@ def esegui(simbolo: str, inizio: date, fine: date, cartella_reali: Path, cartell
     validate = pipeline.parse_csv_stream(csv_path)
     if len(validate) != len(candele):
         raise ErroreDati("l'ingestione non ha riletto tutte le candele scritte")
-    out_dir = cartella_reali / "partizioni" / f"{simbolo}_15m"
-    _, _, commitment_path = DatasetPartitioner(0.7).split(validate, output_dir=out_dir, nonce_dir=cartella_nonce)
-    commitment = json.loads(commitment_path.read_text(encoding="utf-8"))
-    is_righe = (out_dir / "in_sample.jsonl").read_text(encoding="utf-8").splitlines()
-    oos_righe = (out_dir / "out_of_sample.jsonl").read_text(encoding="utf-8").splitlines()
+    if partizione is None:
+        info_partizione: object = "non decisa (DA-26): nessun sigillo. Rilanciare con --partizione FILE"
+    else:
+        out_dir = cartella_reali / "partizioni" / f"{simbolo}_15m_date"
+        comm = partizione_date.partiziona(validate, partizione, out_dir, cartella_nonce, partizione_sha256)
+        info_partizione = {
+            "partizione_sha256": partizione_sha256, "embargo_giorni": comm["embargo_giorni"],
+            "candele_escluse": comm["candele_escluse"],
+            "blocchi": [{k: b[k] for k in ("nome", "ruolo", "inizio", "fine", "candele", "prima_utc", "ultima_utc")}
+                        for b in comm["blocchi"]],
+            "commitment_json_sha256": hashlib.sha256((out_dir / "commitment.json").read_bytes()).hexdigest(),
+        }
     meta = {
         "schema": "dati-reali-meta/1", "simbolo": simbolo, "timeframe": "15m", "lato": "BID",
         "fonte": URL.replace("{simbolo}", simbolo), "scala_prezzi": f"intero × 10^-{cifre}",
@@ -245,13 +296,7 @@ def esegui(simbolo: str, inizio: date, fine: date, cartella_reali: Path, cartell
         "periodo_richiesto": [inizio.isoformat(), fine.isoformat()], "giorni_senza_dati": giorni_vuoti,
         "minuti_scambiati": len(minuti), "candele_15m": len(candele),
         "prima_candela_utc": _z(candele[0]["open_time"]), "ultima_candela_utc": _z(candele[-1]["close_time"]),
-        "csv": csv_path.name, "csv_sha256": sha_csv, "controlli": rapporto,
-        "in_sample": {"candele": len(is_righe), "da": json.loads(is_righe[0])["open_time"],
-                      "a": json.loads(is_righe[-1])["close_time"]},
-        "out_of_sample": {"candele": len(oos_righe), "da": json.loads(oos_righe[0])["open_time"],
-                          "a": json.loads(oos_righe[-1])["close_time"]},
-        "commitment_json_sha256": hashlib.sha256(commitment_path.read_bytes()).hexdigest(),
-        "commitment_hash": commitment["commitment_hash"], "oos_sha256": commitment["oos_sha256"],
+        "csv": csv_path.name, "csv_sha256": sha_csv, "controlli": rapporto, "partizione": info_partizione,
         "licenza": "da verificare nei termini d'uso di Dukascopy: per questo il CSV resta fuori da git",
     }
     meta_path = cartella_reali / f"{simbolo}_15m.meta.json"
@@ -268,18 +313,35 @@ def main(argv=None) -> int:
                    help="cartella del nonce segreto del sigillo OOS: FUORI dal repository")
     a.add_argument("--accetta-buchi", action="store_true", help="procedi anche con buchi anomali (elencati nel meta)")
     a.add_argument("--pausa", type=float, default=PAUSA_S, help="secondi fra una richiesta e l'altra")
+    a.add_argument("--partizione", help="file TOML della partizione per date (DA-26): periodo e blocchi da sigillare")
     x = a.parse_args(argv)
-    fine = date.fromisoformat(x.fine) if x.fine else (datetime.now(timezone.utc).date() - timedelta(days=1))
-    inizio = fine - timedelta(days=int(round(365.25 * x.anni)))
+    from . import partizione_date
+    partizione = sha_partizione = None
+    if x.partizione:
+        try:
+            partizione, sha_partizione = partizione_date.leggi(Path(x.partizione))
+            inizio, fine = periodo_da_partizione(partizione)
+        except (OSError, ValueError) as e:
+            print(f"ERRORE nel file di partizione: {e}", file=sys.stderr)
+            return 2
+    else:
+        fine = date.fromisoformat(x.fine) if x.fine else (datetime.now(timezone.utc).date() - timedelta(days=1))
+        inizio = fine - timedelta(days=int(round(365.25 * x.anni)))
     reali = RADICE / "brain" / "dati" / "reali"
-    nonce = Path(x.nonce_dir).expanduser() / f"{x.simbolo}_15m"
+    nonce = Path(x.nonce_dir).expanduser() / f"{x.simbolo}_15m_date"
     if RADICE in nonce.resolve().parents:
         print("ERRORE: il nonce deve stare fuori dal repository", file=sys.stderr)
         return 2
     print(f"Gate 2: {x.simbolo} 15m dal {inizio} al {fine} (Dukascopy, BID). Cache: {reali / 'cache_dukascopy'}")
     try:
         meta = esegui(x.simbolo, inizio, fine, reali, nonce, scarica_http, reali / "cache_dukascopy" / x.simbolo,
-                      accetta_buchi=x.accetta_buchi, pausa=lambda: time.sleep(x.pausa))
+                      accetta_buchi=x.accetta_buchi, pausa=lambda: time.sleep(x.pausa),
+                      partizione=partizione, partizione_sha256=sha_partizione)
+    except FileExistsError as e:
+        print(f"FERMO: esiste già un nonce ({e.filename}). Un nuovo sigillo renderebbe inverificabile quello vecchio: "
+              f"non cancellarlo; usare un'altra --nonce-dir solo se il vecchio sigillo non è mai stato pubblicato.",
+              file=sys.stderr)
+        return 2
     except ErroreDati as e:
         print(f"FERMO, dati non validi: {e}", file=sys.stderr)
         return 1
@@ -288,12 +350,15 @@ def main(argv=None) -> int:
               f"in cache e non vengono richiesti di nuovo.", file=sys.stderr)
         return 3
     print(json.dumps({k: meta[k] for k in ("candele_15m", "prima_candela_utc", "ultima_candela_utc", "csv_sha256",
-                                           "in_sample", "out_of_sample", "commitment_hash",
-                                           "commitment_json_sha256")}, ensure_ascii=False, indent=2))
+                                           "partizione")}, ensure_ascii=False, indent=2))
     print(f"Buchi: {meta['controlli']['buchi_per_tipo']}; da verificare: {len(meta['controlli']['buchi_da_verificare'])}")
-    print(f"Nonce segreto (NON versionare, conservare): {nonce / 'sealed_nonce.secret'}")
-    print("Poi: git add brain/dati/reali/XAUUSD_15m.meta.json brain/dati/reali/partizioni/XAUUSD_15m/commitment.json"
-          " && git commit -m 'Gate 2: metadati XAUUSD 15m e commitment OOS' && git push origin main")
+    if partizione is None:
+        print("Nessun sigillo: decidere la partizione (DA-26) e rilanciare con --partizione FILE "
+              "(i dati vengono dalla cache). Non pubblicare nulla come sigillo.")
+    else:
+        print(f"Nonce segreto (NON versionare, NON cancellare, conservare): {nonce / 'sealed_nonce.secret'}")
+        print(f"Poi, con l'autorizzazione dell'utente: git add brain/dati/reali/{x.simbolo}_15m.meta.json "
+              f"brain/dati/reali/partizioni/{x.simbolo}_15m_date/commitment.json {x.partizione}")
     return 0
 
 

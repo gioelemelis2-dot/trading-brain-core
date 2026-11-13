@@ -138,6 +138,20 @@ class DSRCalculator:
             self._write_atomic_unlocked(data)
             return n
 
+    @staticmethod
+    def _sharpe_registrati(data: Dict[str, Any]) -> List[float]:
+        """Sharpe delle prove già registrate (quelle con Sharpe stimabile), come float finiti."""
+        out = []
+        for t in data.get("trials", []):
+            s = t.get("sharpe_ratio")
+            if s is None:
+                continue
+            x = float(s)
+            if not math.isfinite(x):
+                raise ValueError(f"trial_registry: sharpe_ratio non finito nella prova {t.get('trial_id')!r}")
+            out.append(x)
+        return out
+
     def get_total_trials(self) -> int:
         if not self.registry_path.exists():
             return 0
@@ -157,11 +171,20 @@ class DSRCalculator:
         skewness: float = 0.0,
         kurtosis: float = 3.0,
         benchmark_sharpe: float = 0.0,
+        varianza_sr_prove: Optional[float] = None,
     ) -> Tuple[Optional[float], Optional[float]]:
         """
         Restituisce (dsr_probability, std_error_sr), oppure (None, None) in caso patologico
         (es. variance_term <= 0 o track_record_length <= 1).
+
+        Soglia con N > 1 prove (Bailey e López de Prado 2014):
+            SR0 = sqrt(V) * [(1 - gamma) * inv_cdf(1 - 1/N) + gamma * inv_cdf(1 - 1/(N e))]
+        V = varianza degli Sharpe stimati delle prove; se non è data, la varianza dello stimatore sotto l'ipotesi
+        nulla, 1/(T - 1). Senza sqrt(V) (versione precedente) la soglia era in unità sbagliate e, per Sharpe per
+        trade, bocciava qualunque strategia già con N = 2.
         """
+        if varianza_sr_prove is not None and not (math.isfinite(varianza_sr_prove) and varianza_sr_prove > 0):
+            raise ValueError(f"varianza_sr_prove deve essere finita e positiva: {varianza_sr_prove!r}")
         if track_record_length <= 1:
             return None, None
 
@@ -170,7 +193,11 @@ class DSRCalculator:
         else:
             gamma_euler = 0.57721566490153286060
             inv_cdf = statistics.NormalDist().inv_cdf
-            sr_star = (1.0 - gamma_euler) * inv_cdf(1.0 - 1.0 / num_trials) + gamma_euler * inv_cdf(1.0 - 1.0 / (num_trials * math.e))
+            v = varianza_sr_prove if varianza_sr_prove is not None else 1.0 / (track_record_length - 1)
+            sr_star = math.sqrt(v) * (
+                (1.0 - gamma_euler) * inv_cdf(1.0 - 1.0 / num_trials)
+                + gamma_euler * inv_cdf(1.0 - 1.0 / (num_trials * math.e))
+            )
 
         sr = sharpe_estimated
         variance_term = 1.0 - (skewness * sr) + (((kurtosis - 1.0) / 4.0) * (sr ** 2))
@@ -220,7 +247,7 @@ class DSRCalculator:
 
         calc = cls(registry_path=registry_path, readonly=dry_run)
 
-        def _build_inferential_metrics(num_trials: int) -> Tuple[Valore, Valore, Valore, Valore]:
+        def _build_inferential_metrics(num_trials: int, sr_registrati: List[float]) -> Tuple[Valore, Valore, Valore, Valore]:
             if t_len < 30:
                 return (
                     Valore(
@@ -263,12 +290,20 @@ class DSRCalculator:
             skew_float = sum(x ** 3 for x in diffs_norm) / t_len
             kurt_float = sum(x ** 4 for x in diffs_norm) / t_len
 
+            # V = max(varianza sotto l'ipotesi nulla, varianza empirica degli Sharpe delle prove): scelta prudente
+            # (STIMA di Claude, 13/11/2026). Prove molto disperse alzano la soglia; prove quasi uguali non la
+            # abbassano sotto 1/(T - 1).
+            v_nulla = 1.0 / (t_len - 1)
+            campione = sr_registrati + [sharpe_float]
+            v_emp = statistics.variance(campione) if len(campione) >= 2 else 0.0
+            varianza = max(v_nulla, v_emp)
             dsr_float, std_sr = cls.calculate_dsr_analytical(
                 sharpe_estimated=sharpe_float,
                 num_trials=max(1, num_trials),
                 track_record_length=t_len,
                 skewness=skew_float,
                 kurtosis=kurt_float,
+                varianza_sr_prove=varianza,
             )
 
             skew_v = Valore(
@@ -305,7 +340,9 @@ class DSRCalculator:
                     valore=Decimal(str(round(dsr_float, 6))),
                     unita="", tipo="STIMA", operazione="inferenza", fonte="DSRCalculator",
                     incertezza=f"+/-{round(std_sr, 4)}",
-                    nota=f"Deflated Sharpe Ratio (N={max(1, num_trials)} trials)",
+                    nota=(f"Deflated Sharpe Ratio (N={max(1, num_trials)} trials; varianza degli Sharpe = "
+                          f"{'empirica delle prove' if v_emp > v_nulla else 'sotto ipotesi nulla 1/(T-1)'} "
+                          f"{round(varianza, 6)})"),
                 )
             return sharpe_v, dsr_v, skew_v, kurt_v
 
@@ -326,15 +363,20 @@ class DSRCalculator:
 
         if dry_run:
             # Readonly: non crea ne' modifica trial_registry.json, usa N = total_trials + 1
-            trials = calc.get_total_trials() + 1
-            sr_v, dsr_v, skew_v, kurt_v = _build_inferential_metrics(trials)
+            if calc.registry_path.exists():
+                with open(calc.registry_path, "r", encoding="utf-8") as f:
+                    dati_reg = json.load(f)
+            else:
+                dati_reg = cls._default_registry_data()
+            trials = int(dati_reg.get("total_trials", 0)) + 1
+            sr_v, dsr_v, skew_v, kurt_v = _build_inferential_metrics(trials, cls._sharpe_registrati(dati_reg))
             return _assemble_results(sr_v, dsr_v, skew_v, kurt_v)
 
         # Operazione atomica sotto lock esclusivo: lettura N, calcolo DSR, incremento e scrittura
         with calc._exclusive_lock():
             data = calc._read_or_init_unlocked(create_if_missing=True)
             trials = int(data.get("total_trials", 0)) + 1
-            sr_v, dsr_v, skew_v, kurt_v = _build_inferential_metrics(trials)
+            sr_v, dsr_v, skew_v, kurt_v = _build_inferential_metrics(trials, cls._sharpe_registrati(data))
             results = _assemble_results(sr_v, dsr_v, skew_v, kurt_v)
             data["total_trials"] = trials
             data["trials"].append(calc._build_record(trials, strategy_name, parameters, results))
