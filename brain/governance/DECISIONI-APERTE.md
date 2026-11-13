@@ -271,6 +271,9 @@ DA-13 rulebook (Q-09) ──► DA-11 G0 minimo ──► DA-12 indicatori compo
     - 2005, 2008, 2011, 2014 e 2024: risposta 200, 11–16 KB;
     - 2003: risposta 429 (troppe richieste), quindi non sappiamo ancora se ci sono dati.
   - **Il 2005 pesa meno** (10,9 KB contro circa 14–15 KB): forse meno minuti scambiati. La qualità degli anni vecchi va misurata con i buchi per anno.
+- **Deciso dall'utente il 13/11/2026:** scaricare XAUUSD dal 2005, senza sigillo. Cosa usare e come dividerlo si decide dopo aver contato i buchi anno per anno.
+  - Motivi: più tipi di mercato (dal 2008 al 2022), abbastanza trade per la potenza statistica, anni recenti già visti dall'utente.
+  - Limiti dichiarati: mercato del 2005 diverso da quello di oggi, quindi gli anni vecchi servono per la verifica e non per lo sviluppo; qualità dei dati vecchi da misurare.
 - **Proposta di Gemini (G-20261113-01):**
   - blocco A: verifica vecchia;
   - blocco B: circa 10 anni di sviluppo, con walk-forward interno;
