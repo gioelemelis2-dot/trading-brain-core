@@ -297,6 +297,38 @@ class TestScaricamentoEPipeline(unittest.TestCase):
             self.assertFalse((reali / "XAUUSD_15m.csv").exists())
             self.assertEqual((nonce / PD.NONCE).read_text(encoding="utf-8"), "vecchio\n")
 
+    def test_url_del_lato_ask(self):
+        """Prezzi ASK (rilievi di Gemini G-20261113-01 e G-20261114-02): stesso indirizzo, ASK_ al posto di BID_."""
+        self.assertTrue(DK.url_giorno("XAUUSD", date(2026, 1, 5)).endswith("/XAUUSD/2026/00/05/BID_candles_min_1.bi5"))
+        self.assertTrue(DK.url_giorno("XAUUSD", date(2026, 1, 5), "ASK").endswith(
+            "/XAUUSD/2026/00/05/ASK_candles_min_1.bi5"))
+        with self.assertRaises(ValueError):
+            DK.url_giorno("XAUUSD", date(2026, 1, 5), "MID")
+
+    def test_pipeline_ask_scrive_file_separati(self):
+        richieste = []
+        dati = bi5(giornata(base=2650350))                             # ASK = BID + 0,35
+
+        def scarica(url):
+            richieste.append(url)
+            return dati if url == DK.url_giorno("XAUUSD", date(2026, 1, 5), "ASK") else None
+
+        with tempfile.TemporaryDirectory() as tmp:
+            reali, cache = Path(tmp) / "reali", Path(tmp) / "cache_ask"
+            meta = DK.esegui("XAUUSD", date(2026, 1, 5), date(2026, 1, 5), reali, Path(tmp) / "nonce", scarica, cache,
+                             pausa=lambda: None, stampa=lambda *a: None, lato="ASK")
+            self.assertEqual(meta["lato"], "ASK")
+            self.assertIn("ASK_candles_min_1.bi5", meta["fonte"])
+            self.assertEqual(meta["csv"], "XAUUSD_ASK_15m.csv")
+            self.assertTrue((reali / "XAUUSD_ASK_15m.meta.json").exists())
+            self.assertFalse((reali / "XAUUSD_15m.csv").exists())          # i file BID non si toccano
+            self.assertTrue(all("ASK_candles" in u for u in richieste))
+            self.assertTrue((cache / "2026-01-05.bi5").exists())
+
+    def test_ask_con_partizione_rifiutato(self):
+        """Il sigillo si fa sui dati BID; per l'ASK nessun sigillo in questo giro: ci si ferma prima della rete."""
+        self.assertEqual(DK.main(["--lato", "ASK", "--partizione", "non_esiste.toml"]), 2)
+
     def test_periodo_dalla_partizione(self):
         from brain.dati.pipeline import partizione_date as PD
         part = {"schema": PD.SCHEMA, "simbolo": "XAUUSD", "embargo_giorni": 14, "blocco": [
