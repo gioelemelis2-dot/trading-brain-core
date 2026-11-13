@@ -22,6 +22,7 @@ from __future__ import annotations
 
 import argparse
 import hashlib
+import http.client
 import json
 import lzma
 import os
@@ -73,7 +74,8 @@ def scarica_http(url: str, tentativi: int = 10, attesa: Callable[[float], None] 
             if e.code != 429 and e.code < 500:
                 raise
             ritardo = float(e.headers.get("Retry-After") or 0) if e.headers else 0.0
-        except (urllib.error.URLError, ConnectionError, TimeoutError):
+        except (urllib.error.URLError, OSError, http.client.HTTPException):   # rete, timeout (anche socket.timeout
+            # di Python 3.9, che non è un TimeoutError), connessioni chiuse, risposte troncate
             ritardo = 0.0
         attesa(max(ritardo, min(300.0, 5.0 * 2 ** n)))
     raise ConnectionError(f"{url}: nessuna risposta valida dopo {tentativi} tentativi")
