@@ -45,6 +45,6 @@ Per ognuno vanno verificati il codice su Dukascopy, l'anno di inizio e la dispon
 - **D1:** scaricatore per più strumenti (TDD, Python 3.13 e 3.9, una richiesta di prova per strumento).
 - **D2:** download un mercato alla volta, con lo stesso calendario.
 - **D3:** seconda fonte e costi reali.
-- **D4:** registro unico e backtester su più strumenti.
+- **D4:** registro unico e backtester su più strumenti, **solo dopo la prima ipotesi testata sull'oro** (contromisura 8: niente nuova infrastruttura prima). Scaricare altri mercati (D1–D2) è raccolta dati del Gate 2 e può procedere; il portafoglio no.
 - **D5:** ipotesi con i mercati dichiarati prima, replica indipendente di Gemini, criteri DA-20.
 - **D6:** portafoglio entro l'1,5% al giorno, durante l'incubazione.
