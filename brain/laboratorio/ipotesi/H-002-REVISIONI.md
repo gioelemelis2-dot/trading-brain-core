@@ -34,8 +34,30 @@
 | Contare in anticipo i trade possibili per verificare il minimo di 300 | **respinto** | Contarli vuol dire far girare i segnali sui dati di sviluppo prima del sigillo. Stima senza dati: circa 750 giorni in 3 anni, quasi sempre con rottura, quindi ben sopra 300 per sessione |
 | Saltare i giorni del cambio d'ora | **respinto** | Non serve (vedi A2) |
 
-## R2 · Gemini (Antigravity)
-In attesa. Rivede la stessa bozza, commit 417094c.
+## R2 · Gemini (Antigravity), 14/11/2026: `da-gemini/G-20261114-02-revisione-H-002.md`, ramo `rev/gemini-h002`, commit `f12b8b9`
+Verificato su GitHub: il ramo esiste e tocca solo quel file. Revisione di alta qualità: legge anche il codice (engine, portfolio, dsr) e trova problemi che né Claude né DeepSeek avevano visto.
+
+| Rilievo di Gemini | Esito | Verifica e motivo di Claude |
+|---|---|---|
+| Londra e New York si sovrappongono (Londra apre fino alle 16:30 di Londra), quindi il conflitto con P-06 (una posizione) e con `Portfolio.on_fill()` | **accolto** | Vero. Le 4 varianti si testano come portafogli separati. Se in demo girassero insieme: un segnale di New York con una posizione di Londra aperta viene saltato (regola scritta prima) |
+| Il motore controlla stop e target alla risoluzione dei dati (15 minuti); a 1 minuto i buchi senza scambi spostano le aperture | **accolto** | Vero. Per H-002 serve un simulatore minuto per minuto con convenzioni esplicite, scritto in TDD, non `engine.py` com'è |
+| Gli stop delle vendite non scattano sull'ASK in `engine.py`; slittamento applicato anche al target limite | **accolto** | Verificato nel codice: per la vendita lo stop scatta su `bar.high >= stop` (BID) e lo slittamento viene applicato a ogni uscita. Nel simulatore di H-002: lo stop di una vendita scatta quando l'ASK tocca il livello, e il target limite non ha slittamento |
+| Ultimo ingresso: l'ingresso reale è alle 15:30 di Londra e alle 15:00 di New York, non alle 15:15 e 14:45 | **accolto (chiarimento)** | La tabella indicava la candela del segnale: va scritto in modo esplicito |
+| Le 22 chiusure anticipate dei festivi USA farebbero restare aperta la posizione oltre la chiusura (overnight) | **accolto, importante** | Vero. Quei giorni si escludono usando il calendario dei festivi, che è noto in anticipo, quindi non è uno sguardo al futuro |
+| Confronto casuale impossibile: una direzione opposta alla rottura con lo stop su RA alto o RA basso | **accolto** | Vero: lo stop starebbe dalla parte sbagliata. Il confronto usa lo stesso orario e lo stesso rischio R, con stop e target simmetrici rispetto all'ingresso |
+| Il filtro dei giorni pieni (`MINUTI_GIORNO_PIENO`) va controllato solo fino al segnale | **accolto (cautela)** | La scheda usa il controllo solo sui minuti del range di apertura, noti alla fine del range. Nessun filtro sulla giornata intera |
+| Contaminazione dallo Studio 1 (E-001): le scelte [P] fatte dopo averne letto i risultati | **accolto** | Va dichiarato nella scheda. E-001 non ha trovato strutture direzionali, ma la trasparenza è dovuta |
+| Chiusura della candela da 15 minuti forzata a t + 15 quando mancano gli ultimi minuti | **respinto** | Il segnale si legge comunque alla fine nominale della candela: nessuna informazione futura. Effetto trascurabile |
+| Commissione FP Markets Raw: 3 USD per lato (6 andata e ritorno) secondo il sito; FTMO senza commissione sui metalli | **da verificare** | Plausibile. Si userà la commissione misurata sul conto demo; quella FTMO va controllata alla fonte prima di FTMO |
+| Costi fissi in USD su 20 anni: nel 2005–2012 l'oro valeva 400–1.000 USD, quindi gli stessi dollari pesano molto di più | **accolto, importante** | Vero, e nemmeno la proporzione al prezzo è corretta (gli spread relativi si sono ristretti molto). Soluzione: scaricare anche le candele **ASK** di Dukascopy per avere lo spread storico vero minuto per minuto (era già un rilievo di G-20261113-01) |
+| DSR ≥ 0,95 nello sviluppo è troppo severo (3 anni, circa 300–500 trade) | **accolto, importante** | Ricalcolato da Claude: con N = 4 e T = 500 la soglia è circa 0,047 di Sharpe per trade. Una strategia da +0,10R con target 1,5R ha Sharpe ≈ 0,08, quindi DSR ≈ 0,77, e verrebbe bocciata anche se è buona. Lo sviluppo diventa uno **screening** (soglie su aspettativa e Sharpe); DSR ≥ 0,95 solo sulla verifica sigillata (circa 2.500 trade) |
+| La verifica con il 60% degli anni positivi tollera molti anni negativi recenti | **accolto** | Si aggiunge: risultato positivo anche negli ultimi 5 anni della verifica (2018–2023) |
+| Manca un vincolo sulle vendite | **accolto in parte** | Il benchmark «sempre acquisto / sempre vendita» lo copre in gran parte. Proposta: aspettativa delle vendite non sotto −0,05R |
+| Tetto di 2 × la mediana arbitrario; filtro di economicità A ≥ 6 × costi | **accolto in parte** | Si usa A ≥ 6 × costi come limite inferiore, una sola scelta prima del test, senza prove in più. Il tetto di 2 × la mediana resta come protezione rozza dai giorni di notizie finché non c'è P-08: la scelta spetta all'utente |
+| Dimensione calcolata sul capitale iniziale fisso | **accolto** | Comunque le metriche sono in R |
+| Tutte e 4 le varianti valutate con lo stesso N finale (prove precedenti + 4), non con N = 1, 2, 3, 4 in sequenza come farebbe `dsr.py` | **accolto, importante** | Vero: con `evaluate_portfolio` la prima variante verrebbe valutata con N = 1. Le 4 varianti si registrano insieme e si valutano con lo stesso N |
+| Robustezza con `dry_run=True` e veto binario scritto prima, fuori da N | **accolto** | È la stessa posizione di Claude, contro la proposta di DeepSeek di N = 32 |
+| Annotare 09:30 New York contro 08:20/08:30 e il fixing LBMA delle 15:00 di Londra; non aggiungere varianti ora | **accolto** | Annotato fra le idee future |
 
 ## Prossimo passo
 Quando arriva R2: versione 2 della scheda con le correzioni accolte, e l'elenco delle scelte che restano all'utente (sessione, uscita, stop, numero di prove). Solo dopo, il sigillo.
