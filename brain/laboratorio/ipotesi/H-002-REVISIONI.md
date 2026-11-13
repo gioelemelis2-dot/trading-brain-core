@@ -132,3 +132,13 @@ Non ha ricevuto di nuovo `test_orb_londra.py` (allegata ancora la bozza v1), qui
 | Sigillo bloccato finché non c'è il programma dei criteri | **d'accordo** | È il piano |
 | Casi della sua lista senza test | **accolto** | Aggiunti 3 test: stress che non cambia i giorni ammessi, fine sessione al primo minuto disponibile, minuto senza ASK non contato come spread negativo |
 
+## Stato di test e mutanti (aggiornato a ogni modifica)
+- **14/11/2026, commit `a79a342`:** 43 test verdi su Python 3.13 e 3.9; mutation testing 33/33 su entrambe le versioni.
+
+## R6 · ChatGPT, prima revisione (parziale, 14/11/2026)
+Eseguiti i 43 test nel suo ambiente: verdi, codice di uscita 0. Non ha potuto completare il mutation testing: un errore di permessi su `/tmp/mutanti_h002`, poi il limite di tempo di esecuzione. L'esecuzione di Python sarà di nuovo disponibile più avanti. Giudizio sul sigillo sospeso, correttamente: ha scritto che senza prove non attribuisce esiti positivi.
+
+| Rilievo | Esito | Applicazione |
+|---|---|---|
+| La scheda dichiarava 39 test, ma i test sono 43 | **accolto** | I numeri non stanno più nella scheda (invecchiano), ma qui |
+

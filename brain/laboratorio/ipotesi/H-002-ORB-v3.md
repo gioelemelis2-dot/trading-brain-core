@@ -7,7 +7,7 @@
   - le 2 correzioni trovate da Claude scrivendo il simulatore.
 - **v3.1:** chiarimenti dalla revisione esterna di DeepSeek (esiti in `H-002-REVISIONI.md`, R4).
 - **Cosa è già codice e cosa no** (la v3 diceva «ogni regola», ed era falso: rilievo di DeepSeek):
-  - §2–§5, i benchmark direzionali e le metriche del §6 sono eseguiti da `laboratorio/simulatori/orb_londra.py`, con 39 test e mutation testing 33/33;
+  - §2–§5, i benchmark direzionali e le metriche del §6 sono eseguiti da `laboratorio/simulatori/orb_londra.py`, con test e mutation testing. I numeri aggiornati non sono scritti qui, perché cambiano a ogni revisione e la scheda sigillata non deve contenere dati che invecchiano: sono in `H-002-REVISIONI.md`. Rilievo di ChatGPT: qui era rimasto «39 test» mentre erano già 43;
   - il confronto casuale (§6), la robustezza e il veto (§7) e i criteri del §8, DSR compreso, saranno eseguiti da un programma a parte. **Va scritto, testato e rivisto PRIMA del sigillo.**
 
 **Contaminazione dichiarata (DA-17):**
