@@ -1,0 +1,108 @@
+"""Sigillo delle schede e registro delle prove (DA-19, DA-28; scheda H-002 v3.1 §7 e §10).
+
+Il registro è un file JSON, scritto solo in aggiunta e in modo atomico:
+- `prove`: le prove dichiarate al sigillo (ruolo «selezionabile»). Sono loro il numero N del DSR;
+- `sigilli`: un sigillo per ipotesi, con l'impronta SHA-256 della scheda;
+- `esecuzioni`: ogni esecuzione (sviluppo, robustezza, verifica). Le esecuzioni NON entrano in N: N conta le
+  varianti fra cui si sceglie, dichiarate prima.
+
+Lo strumento è pronto ma NON va eseguito sul registro vero senza la decisione dell'utente (mandato del 14/11/2026).
+"""
+import hashlib
+import json
+import os
+from pathlib import Path
+from typing import List
+
+SCHEMA = "registro-prove/1"
+RUOLI_ESECUZIONE = ("sviluppo", "robustezza", "verifica")
+
+
+class NonSigillata(RuntimeError):
+    """La scheda non risulta sigillata nel registro: niente esecuzioni."""
+
+
+def impronta(scheda: Path) -> str:
+    return hashlib.sha256(Path(scheda).read_bytes()).hexdigest()
+
+
+def leggi(registro: Path) -> dict:
+    """Contenuto del registro; se il file non esiste, un registro vuoto (il file NON viene creato)."""
+    registro = Path(registro)
+    if not registro.exists():
+        return {"schema": SCHEMA, "prove": [], "sigilli": [], "esecuzioni": []}
+    dati = json.loads(registro.read_text(encoding="utf-8"))
+    if dati.get("schema") != SCHEMA:
+        raise ValueError(f"{registro}: schema {dati.get('schema')!r}, atteso {SCHEMA!r}")
+    for chiave in ("prove", "sigilli", "esecuzioni"):
+        if not isinstance(dati.get(chiave), list):
+            raise ValueError(f"{registro}: manca l'elenco {chiave!r}")
+    return dati
+
+
+def _scrivi(registro: Path, dati: dict) -> None:
+    registro = Path(registro)
+    registro.parent.mkdir(parents=True, exist_ok=True)
+    tmp = registro.with_name(f".{registro.name}.{os.getpid()}.tmp")
+    with open(tmp, "w", encoding="utf-8") as f:
+        json.dump(dati, f, indent=2, ensure_ascii=False)
+        f.write("\n")
+        f.flush()
+        os.fsync(f.fileno())
+    os.replace(tmp, registro)
+
+
+def _sigillo(dati: dict, ipotesi: str):
+    trovati = [s for s in dati["sigilli"] if s["ipotesi"] == ipotesi]
+    return trovati[0] if trovati else None
+
+
+def n_prove(dati: dict) -> int:
+    """N per il DSR: tutte le prove selezionabili nel registro, di tutte le ipotesi."""
+    return sum(1 for p in dati["prove"] if p["ruolo"] == "selezionabile")
+
+
+def sigilla(registro: Path, ipotesi: str, scheda: Path, varianti: List[str], ora: str) -> dict:
+    """Registra l'impronta della scheda e le sue prove dichiarate. Rifiuta il doppio sigillo e un'ipotesi che ha
+    già esecuzioni registrate (nessuna esecuzione prima del sigillo)."""
+    if not varianti or len(set(varianti)) != len(varianti) or not all(isinstance(v, str) and v for v in varianti):
+        raise ValueError(f"varianti non valide: {varianti!r} (servono nomi distinti, almeno uno)")
+    dati = leggi(registro)
+    if _sigillo(dati, ipotesi) is not None:
+        raise ValueError(f"{ipotesi} è già sigillata: ogni cambiamento è un'ipotesi nuova")
+    if any(e["ipotesi"] == ipotesi for e in dati["esecuzioni"]):
+        raise ValueError(f"{ipotesi} ha già esecuzioni registrate prima del sigillo")
+    s = {"ipotesi": ipotesi, "scheda": Path(scheda).name, "scheda_sha256": impronta(scheda),
+         "varianti": list(varianti), "ora": ora}
+    dati["sigilli"].append(s)
+    dati["prove"] += [{"id": f"{ipotesi}/{v}", "ipotesi": ipotesi, "ruolo": "selezionabile", "ora": ora}
+                      for v in varianti]
+    _scrivi(registro, dati)
+    return s
+
+
+def controlla_sigillo(registro: Path, ipotesi: str, scheda: Path) -> dict:
+    """Il sigillo dell'ipotesi, solo se la scheda sul disco è ancora quella sigillata."""
+    s = _sigillo(leggi(registro), ipotesi)
+    if s is None:
+        raise NonSigillata(f"{ipotesi} non risulta sigillata nel registro {registro}")
+    if impronta(scheda) != s["scheda_sha256"]:
+        raise ValueError(f"la scheda {scheda} è stata modificata dopo il sigillo di {ipotesi}")
+    return s
+
+
+def registra_esecuzione(registro: Path, ipotesi: str, voce: dict, ora: str) -> dict:
+    """Aggiunge un'esecuzione. La verifica sigillata si esegue una volta sola per variante."""
+    dati = leggi(registro)
+    if _sigillo(dati, ipotesi) is None:
+        raise NonSigillata(f"{ipotesi} non risulta sigillata: nessuna esecuzione")
+    ruolo = voce.get("ruolo")
+    if ruolo not in RUOLI_ESECUZIONE:
+        raise ValueError(f"ruolo {ruolo!r} non in {RUOLI_ESECUZIONE}")
+    if ruolo == "verifica" and any(e["ipotesi"] == ipotesi and e["ruolo"] == "verifica"
+                                   and e.get("variante") == voce.get("variante") for e in dati["esecuzioni"]):
+        raise ValueError(f"verifica di {ipotesi} {voce.get('variante')} già eseguita: si fa una volta sola")
+    e = dict(voce, ipotesi=ipotesi, ora=ora)
+    dati["esecuzioni"].append(e)
+    _scrivi(registro, dati)
+    return e
