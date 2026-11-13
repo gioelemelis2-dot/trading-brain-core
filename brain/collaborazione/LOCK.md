@@ -23,8 +23,6 @@ Stato generale:
 ## In corso
 | Attività | File coinvolti | Chi | Inizio | Fine prevista |
 |---|---|---|---|---|
-| Scaricamento XAUUSD da Dukascopy (Gate 2) | `dati/reali/` (dati esclusi da git) | utente, sul Mac | 2026-11-12 | fine del ciclo; poi DA-26 |
-| Revisione critica indipendente di DA-26, DA-27, DA-28 e del piano di diversificazione | sola lettura; rapporto in `da-gemini/` | Gemini | alla richiesta dell'utente | — |
 | Scaricamento XAUUSD dal 2005 (senza sigillo) e conteggio dei buchi per anno, per decidere DA-26 | `dati/reali/` (dati esclusi da git) | utente, sul Mac | dopo il merge | — |
 | Estensione dello scaricatore a più strumenti (fase D1) | `dati/pipeline/dukascopy.py`, `dati/tests/` | Claude | dopo DA-26 e DA-27 | — |
 
@@ -39,6 +37,8 @@ Stato generale:
 ## Concluse
 | Attività | Chi | Data | Esito |
 |---|---|---|---|
+| Scaricamento XAUUSD 3 anni (Gate 2): 71.008 candele, buchi verificati; sigillo 70/30 solo locale e provvisorio | utente, sul Mac | 2026-11-13 | non pubblicato (DA-26) |
+| Revisione critica di DA-26, DA-27, DA-28 e del piano di diversificazione | Gemini | 2026-11-13 | G-20261113-01 |
 | Correzione del DSR, partizione per date, controlli dei dati (ramo `fix/dsr-e-partizione-date`) e revisioni di Gemini G-20261113-01…04 | Claude e Gemini | 2026-11-13 | merge su main autorizzato dall'utente, commit `8ba5373`; aperti G3-05, G3-07, G4-01 |
 | Sprint S1 | Claude | 2026-11-11 | commit `fbb5256` |
 | Sprint S2 | Claude | 2026-11-11 | commit `9cbcca4` |
