@@ -10,7 +10,7 @@ import argparse
 from dataclasses import replace
 from datetime import date, datetime, time, timedelta, timezone
 from pathlib import Path
-from statistics import mean, median
+from statistics import mean, median, stdev
 import sys
 
 RADICE = Path(__file__).resolve().parents[3]
@@ -184,6 +184,159 @@ def _riassunto(v: str, res_v: dict, sim, prep, par) -> dict:
     }
 
 
+def _dettaglio_trade(giorni, par) -> list:
+    """Restituisce per ogni trade eseguito anche la distanza dallo stop e il costo diretto dello slittamento."""
+    out = []
+    for g in giorni:
+        if not (g.valido and g.lato):
+            continue
+        t = O.simula(g, g.lato, par)
+        if not t:
+            continue
+        t0, b0, a0 = g.minuti[0]
+        su = (g.lato == "acquisto")
+        stop = g.ra_basso if su else g.ra_alto
+        entrata_mkt = a0[0] if su else b0[0]
+        dist_mkt = abs(entrata_mkt - stop)
+        dist_exec = abs(t["entrata"] - stop)
+        perd_stop_comm = dist_exec + par.slip_uscita + par.stress + par.commissione
+        slip_usc_eff = 0.0 if t["motivo"] == "target" else (par.slip_uscita + par.stress)
+        slip_usd_oz = (par.slip_ingresso + par.stress) + slip_usc_eff
+        slip_dir_r = (slip_usd_oz * t["once"]) / par.rischio_usd
+        comm_dir_r = (par.commissione * t["once"]) / par.rischio_usd
+        out.append(dict(
+            t,
+            dist_mkt=dist_mkt,
+            dist_exec=dist_exec,
+            perd_stop_comm=perd_stop_comm,
+            slip_usd_oz=slip_usd_oz,
+            slip_dir_r=slip_dir_r,
+            comm_dir_r=comm_dir_r,
+            r_lordo_dir=t["r"] + slip_dir_r,
+            r_lordo_puro_dir=t["r"] + slip_dir_r + comm_dir_r,
+        ))
+    return out
+
+
+def _stat_lista(xs: list) -> dict:
+    s = sorted(xs)
+    return {
+        "media": mean(s),
+        "mediana": median(s),
+        "sd": stdev(s) if len(s) > 1 else 0.0,
+        "min": s[0],
+        "max": s[-1],
+        "somma": sum(s),
+    }
+
+
+def _misura_4(bid, ask) -> None:
+    print("=== QUARTA MISURA: LORDO SENZA SLITTAMENTO/STRESS, DISTANZA STOP, COSTO SLITTAMENTO IN R ===")
+    prep = E._Giorni(O, bid, ask)
+    rob_noslip = {
+        v: {rn: {k: val for k, val in ch.items()} for rn, ch in E.ROBUSTEZZA[v].items()}
+        for v in E.VARIANTI
+    }
+    var_noslip = {v: replace(par, slip_ingresso=0.0, slip_uscita=0.0, stress=0.0) for v, par in E.VARIANTI.items()}
+    var_lordo_puro = {
+        v: replace(par, slip_ingresso=0.0, slip_uscita=0.0, stress=0.0, commissione=0.0)
+        for v, par in E.VARIANTI.items()
+    }
+    res_noslip = E.esegui_sviluppo(bid, ask, varianti=var_noslip, robustezza=rob_noslip, stress=0.0)
+    res_lordo_puro = E.esegui_sviluppo(bid, ask, varianti=var_lordo_puro, robustezza=rob_noslip, stress=0.0)
+
+    for v, par_base in E.VARIANTI.items():
+        det_base = _dettaglio_trade(prep(par_base), par_base)
+        giorni_base = prep(par_base)
+        det_noslip_stessi_g = _dettaglio_trade(giorni_base, var_noslip[v])
+        det_puro_stessi_g = _dettaglio_trade(giorni_base, var_lordo_puro[v])
+        det_noslip = _dettaglio_trade(prep(var_noslip[v]), var_noslip[v])
+
+        # Scomposizione esatta vinti nella baseline
+        fs_vinti = sum(1 for x in det_base if x["motivo"] == "fine sessione" and x["r"] > 0)
+        tgt_vinti = sum(1 for x in det_base if x["motivo"] == "target" and x["r"] > 0)
+        stop_vinti = sum(1 for x in det_base if x["motivo"] == "stop" and x["r"] > 0)
+
+        # Confronto appaiato per data tra baseline e senza slip (con comm 0.07)
+        map_base = {x["data"]: x for x in det_base}
+        map_ns = {x["data"]: x for x in det_noslip}
+        comuni = sorted(set(map_base) & set(map_ns))
+        diff_sim_r = [map_ns[d]["r"] - map_base[d]["r"] for d in comuni]
+        solo_base = sorted(set(map_base) - set(map_ns))
+        solo_ns = sorted(set(map_ns) - set(map_base))
+        cambi_motivo = sum(1 for d in comuni if map_ns[d]["motivo"] != map_base[d]["motivo"])
+
+        print(f"--- {v} ---")
+        print("Baseline breakdown vinti:", {
+            "n": len(det_base),
+            "vinti_tot": sum(1 for x in det_base if x["r"] > 0),
+            "pct_vinti": 100.0 * sum(1 for x in det_base if x["r"] > 0) / len(det_base),
+            "target_vinti": tgt_vinti,
+            "fine_sessione_vinti": fs_vinti,
+            "stop_vinti": stop_vinti,
+        })
+        print("Distanza stop USD |entrata_mkt - stop| (senza slip):", _stat_lista([x["dist_mkt"] for x in det_base]))
+        print("Distanza stop USD |entrata_exec - stop| (baseline, +0.10):", _stat_lista([x["dist_exec"] for x in det_base]))
+        print("Perdita attesa allo stop + comm USD/oz (baseline):", _stat_lista([x["perd_stop_comm"] for x in det_base]))
+        print("Once baseline:", _stat_lista([x["once"] for x in det_base]))
+        print("Costo diretto slittamento in R (trade-by-trade su path fisso, tutti):", _stat_lista([x["slip_dir_r"] for x in det_base]))
+        for mot in sorted({x["motivo"] for x in det_base}):
+            xs = [x["slip_dir_r"] for x in det_base if x["motivo"] == mot]
+            print(f"  Costo diretto slip in R [{mot}] (n={len(xs)}):", _stat_lista(xs))
+        print("Costo diretto commissione in R (0.07 USD/oz):", _stat_lista([x["comm_dir_r"] for x in det_base]))
+        print("R medio lordo diretto a path fisso (con comm 0.07):", mean(x["r_lordo_dir"] for x in det_base))
+        print("R medio lordo diretto a path fisso (anche senza comm):", mean(x["r_lordo_puro_dir"] for x in det_base))
+        print("Sim sugli STESSI giorni base SENZA slip/stress (con comm 0.07):", {
+            "n": len(det_noslip_stessi_g),
+            "vinti_pct": 100.0 * sum(1 for x in det_noslip_stessi_g if x["r"] > 0) / len(det_noslip_stessi_g),
+            "r_medio": mean(x["r"] for x in det_noslip_stessi_g),
+            "motivi": {m: sum(1 for x in det_noslip_stessi_g if x["motivo"] == m) for m in sorted({x["motivo"] for x in det_noslip_stessi_g})},
+        })
+        print("Sim sugli STESSI giorni base LORDO PURO (senza slip/stress/comm 0.0):", {
+            "n": len(det_puro_stessi_g),
+            "vinti_pct": 100.0 * sum(1 for x in det_puro_stessi_g if x["r"] > 0) / len(det_puro_stessi_g),
+            "r_medio": mean(x["r"] for x in det_puro_stessi_g),
+        })
+
+        r_ns = res_noslip["varianti"][v]
+        m_ns = r_ns["metriche"]
+        print("Simulazione completa SENZA slittamento/stress (con comm 0.07):", {
+            "n": m_ns["n"],
+            "vinti_pct": 100.0 * m_ns["vinti"],
+            "r_medio": m_ns["r_medio"],
+            "sharpe": m_ns["sharpe"],
+            "dd_max": m_ns["dd_max"],
+            "r_acquisti": m_ns["r_acquisti"],
+            "r_vendite": m_ns["r_vendite"],
+            "casuale_p95": r_ns["casuale"]["percentile_95"],
+            "bench_compro": r_ns["benchmark"]["r_compro"],
+            "bench_vendo": r_ns["benchmark"]["r_vendo"],
+            "veto": r_ns["veto"],
+            "promossa": r_ns["screening"]["promossa"],
+            "criteri_passati": [(c["nome"], c["passa"]) for c in r_ns["screening"]["criteri"]],
+        })
+        print("Confronto appaiato (sim senza slip vs baseline):", {
+            "comuni": len(comuni),
+            "solo_base": len(solo_base),
+            "solo_no_slip": len(solo_ns),
+            "cambi_motivo_uscita": cambi_motivo,
+            "delta_R_sim_appaiato": _stat_lista(diff_sim_r),
+        })
+
+        r_p = res_lordo_puro["varianti"][v]
+        m_p = r_p["metriche"]
+        print("Simulazione completa LORDO PURO (senza slip/stress/comm 0.07):", {
+            "n": m_p["n"],
+            "vinti_pct": 100.0 * m_p["vinti"],
+            "r_medio": m_p["r_medio"],
+            "sharpe": m_p["sharpe"],
+            "dd_max": m_p["dd_max"],
+            "veto": r_p["veto"],
+            "promossa": r_p["screening"]["promossa"],
+            "criteri_passati": sum(1 for c in r_p["screening"]["criteri"] if c["passa"]),
+        })
+
+
 def main() -> None:
     ap = argparse.ArgumentParser()
     ap.add_argument("--cache", type=Path,
@@ -226,6 +379,9 @@ def main() -> None:
         print(f"=== {nome_scen} ===")
         for v, par in E.VARIANTI.items():
             print(_riassunto(v, res["varianti"][v], sim, prep, par))
+
+    # 3) Quarta misura: R medio lordo senza slittamento/stress, distanza stop USD, costo slittamento in R
+    _misura_4(bid, ask)
 
 
 if __name__ == "__main__":
