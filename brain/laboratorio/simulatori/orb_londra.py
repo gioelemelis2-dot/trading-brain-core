@@ -185,7 +185,8 @@ def prepara(bid: Dict[datetime, Quota], ask: Dict[datetime, Quota], par: Paramet
                     giorno.minuti_scartati = sum(1 for t in dopo_segnale if t in ask_t and not eseguibile(t))
                     eseguibili = [t for t in dopo_segnale if eseguibile(t)]
                     sessione = [t for t in eseguibili if t < fine]
-                    dopo = [t for t in eseguibili if fine <= t < fine + par.attesa_max][:1]
+                    # Proposta causale (DGS-03): primo minuto eseguibile in avanti da `fine`, senza ripiegare < fine
+                    dopo = [t for t in eseguibili if t >= fine][:1]
                     if not sessione:
                         giorno.motivo = "nessun minuto eseguibile dopo il segnale"
                     elif sessione[0] >= fine_candela + par.attesa_max:
@@ -226,7 +227,7 @@ def simula(giorno: Giorno, lato: str, par: Parametri, stop_livello: Optional[flo
     for k, (t, b, a) in enumerate(giorno.minuti):
         if t >= fine:                                                    # fine sessione: apertura del minuto
             uscita = (b[0] - par.slip_uscita - par.stress) if su else (a[0] + par.slip_uscita + par.stress)
-            motivo = "fine sessione"
+            motivo = "fine sessione" if t < fine + par.attesa_max else "fine sessione in ritardo"
             break
         tocca_stop = b[2] <= stop if su else a[1] >= stop
         if tocca_stop:                                                   # in salto: all'apertura, peggiore
@@ -238,10 +239,8 @@ def simula(giorno: Giorno, lato: str, par: Parametri, stop_livello: Optional[flo
             if (b[1] >= target) if su else (a[2] <= target):
                 uscita, motivo = target, "target"
                 break
-    if uscita is None:                         # nessuna quotazione fra le 16:30 e le 16:45: ultima chiusura nota
-        t, b, a = giorno.minuti[-1]
-        uscita = (b[3] - par.slip_uscita - par.stress) if su else (a[3] + par.slip_uscita + par.stress)
-        motivo = "fine sessione senza quotazioni"
+    if uscita is None:                         # causale (DGS-03): mai ripiegare su giorno.minuti[-1] prima delle 16:30
+        return None
     per_oncia = (uscita - entrata) if su else (entrata - uscita)
     perdita_allo_stop = (entrata - (stop - par.slip_uscita - par.stress)) if su else \
         ((stop + par.slip_uscita + par.stress) - entrata)

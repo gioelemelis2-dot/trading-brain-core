@@ -356,12 +356,34 @@ class TestRiletturaGemini(unittest.TestCase):
         self.assertAlmostEqual(x["uscita"], 2003.2)
 
     def test_fine_sessione_senza_quotazioni_vicine(self):
-        """Mancano i minuti dalle 16:30 alle 16:50: il primo dopo è alle 16:51, oltre le 16:45. Si esce alla chiusura
-        dell'ultimo minuto prima delle 16:30 (BID 2012) − 0,2 = 2011,8, mai più tardi."""
+        """Proposta causale (DGS-03): mancano 16:30–16:50, si esce all'apertura del primo minuto in avanti (16:51)
+        invece di ripiegare prima delle 16:30."""
         togli = [datetime(2026, 1, 7, 16, k, tzinfo=UTC) for k in range(30, 51)]
         x = O.trade(self.prepara(rialzo, togli), O.V_S)[0]
-        self.assertEqual(x["motivo"], "fine sessione senza quotazioni")
+        self.assertEqual(x["motivo"], "fine sessione in ritardo")
         self.assertAlmostEqual(x["uscita"], 2011.8)
+
+    def test_dgs03_solo_in_avanti_mai_prima_delle_16_30(self):
+        """Se mancano 16:30–16:50 ma alle 16:51 il prezzo salta a 2015, conta il prezzo delle 16:51 (mai 16:29);
+        se non esiste nessun minuto >= 16:30, simula restituisce None anziché guardare prima delle 16:30."""
+        togli = [datetime(2026, 1, 7, 16, k, tzinfo=UTC) for k in range(30, 51)]
+        m = Mercato()
+        m.storia(G)
+        m.giornata(G, rialzo)
+        for t in togli:
+            m.bid.pop(t, None)
+            m.ask.pop(t, None)
+        t_51 = datetime(2026, 1, 7, 16, 51, tzinfo=UTC)
+        m.minuto(t_51, 2015.0, 2015.0, 2015.0, 2015.0)
+        x = O.trade(O.prepara(m.bid, m.ask, O.V_S), O.V_S)[0]
+        self.assertEqual(x["motivo"], "fine sessione in ritardo")
+        self.assertAlmostEqual(x["uscita"], 2014.8)
+
+        from dataclasses import replace
+        g_senza_fine = O.prepara(m.bid, m.ask, O.V_S)
+        g_valido = [g for g in g_senza_fine if g.data == G][0]
+        g_monco = replace(g_valido, minuti=[x for x in g_valido.minuti if x[0] < datetime(2026, 1, 7, 16, 30, tzinfo=UTC)])
+        self.assertIsNone(O.simula(g_monco, "acquisto", O.V_S))
 
     def test_ingresso_solo_dentro_la_candela_successiva(self):
         """Il segnale finisce alle 08:45; se mancano tutti i minuti dalle 08:45 alle 08:59, l'ingresso alle 09:00 è
@@ -794,12 +816,12 @@ class TestCasiScopertiGemini(unittest.TestCase):
         return 1993.0, 1993.0, 1993.0, 1993.0
 
     def test_vendita_senza_quotazioni_alle_16_30(self):
-        """V-S. Entrata BID 1997 − 0,10 = 1996,9. Mancano 16:30–16:50: uscita alla chiusura ASK dell'ultimo minuto prima
-        delle 16:30, 1993,3 + 0,20 = 1993,5. Perdita allo stop (2002 + 0,2) − 1996,9 = 5,3; once floor(500 / 5,37) = 93;
-        R = 93 × (3,4 − 0,07) / 500 = 0,61938."""
+        """V-S (causale DGS-03). Entrata BID 1997 − 0,10 = 1996,9. Mancano 16:30–16:50: uscita solo in avanti
+        all'apertura ASK delle 16:51, 1993,3 + 0,20 = 1993,5. Perdita allo stop (2002 + 0,2) − 1996,9 = 5,3;
+        once floor(500 / 5,37) = 93; R = 93 × (3,4 − 0,07) / 500 = 0,61938."""
         togli = [datetime(2026, 1, 7, 16, k, tzinfo=UTC) for k in range(30, 51)]
         x = O.trade(self.prepara(self.discesa, togli, par=O.V_S), O.V_S)[0]
-        self.assertEqual((x["lato"], x["motivo"], x["once"]), ("vendita", "fine sessione senza quotazioni", 93))
+        self.assertEqual((x["lato"], x["motivo"], x["once"]), ("vendita", "fine sessione in ritardo", 93))
         self.assertAlmostEqual(x["entrata"], 1996.9)
         self.assertAlmostEqual(x["uscita"], 1993.5)
         self.assertAlmostEqual(x["r"], 0.61938, places=9)
