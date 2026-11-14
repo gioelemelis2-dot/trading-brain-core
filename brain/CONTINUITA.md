@@ -155,6 +155,10 @@ Il G0 **non** è ancora utilizzabile per decidere: serve la riconciliazione con 
     - Si guarda solo dal 15/11/2023; vietato lo Strategy Tester per provare idee.
   - **DA-29:** arresto in demo con controllo di fedeltà (solo esecuzione) e test sequenziale di Wald (θ1 = Sharpe 0,10, σ dal backtest, potenza effettiva circa 64% con taglio a 600 trade).
     - Simulazione riproducibile: `laboratorio/studi/simulazione_sprt.py`.
+- **ChatGPT = Direttore generale della sicurezza (DGS)** dal 15/11:
+  - materiali in `collaborazione/da-claude/direttore-sicurezza/`;
+  - consegne in `collaborazione/da-chatgpt/`;
+  - giro R11 su H-002 a Gemini e al DGS sullo stesso commit.
 - **Collaborazione:** le chat di Gemini sul sito non vedono il repository e possono ragionare su stati superati (è successo il 14/11 con un «mandato di audit» del vecchio sigillo 70/30, da NON eseguire). Per lo stato del progetto fanno fede il repository, Antigravity o Claude.
 - Rami su GitHub già uniti e da pulire (con il via libera dell'utente): `feat/fix-g0-journal`, `fix/red-team-guardian`, `fix/lock-orfano-toctou`, `fix/dsr-e-partizione-date`, `rev/dati-diversificazione-gemini`, `rev/vettori-dsr-gemini`, `rev/gemini-20261114`, `rev/gemini-h002`.
 

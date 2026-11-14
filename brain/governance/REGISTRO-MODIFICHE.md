@@ -382,3 +382,16 @@ Formato: data · versione della base · cosa · perché · file.
 - **Applicate in via prudenziale,** da ratificare dall'utente: A2, A3, A8 (fine provvisoria 31/10/2023) e A11 (finestra ancorata alla fine). Nuove proposte A19–A21.
 - **Registro dei difetti:** #23–#32. È corretta la lettura del 15/11: la convergenza vale per il simulatore, non ancora per il programma dei criteri.
 - **Prompt R11** per Gemini e ChatGPT; il prompt R9-bis non inviato è stato sostituito.
+
+## 2026-11-15 · v1.29 (ChatGPT come Direttore generale della sicurezza)
+
+- **Richiesta dell'utente:** ChatGPT non è più solo revisore, ma Direttore generale della sicurezza (DGS). Ruolo critico e costruttivo, mai compiacente, con tutta la documentazione.
+- **Materiali in `collaborazione/da-claude/direttore-sicurezza/`:**
+  - guida per l'utente;
+  - istruzioni permanenti del Progetto ChatGPT (5.053 caratteri);
+  - messaggio 1 (insediamento e ispezione generale);
+  - messaggio 2 (revisione tecnica R11);
+  - controllo della prima relazione da parte di DeepSeek;
+  - indice dei documenti.
+- **Cartella `collaborazione/da-chatgpt/`** per le consegne del DGS, archiviate senza modifiche.
+- **`piano/PROGETTO-GENERALE-20261115.md`:** esportazione del documento condiviso «Progetto generale». Gli schemi dei gate e dell'architettura sono trascritti; le parti superate sono annotate.
