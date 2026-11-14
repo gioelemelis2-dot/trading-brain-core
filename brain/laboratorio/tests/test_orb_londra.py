@@ -150,6 +150,8 @@ class TestVenditaStopSullAsk(unittest.TestCase):
         self.assertAlmostEqual(x["uscita"], 2002.2)
         self.assertLess(x["r"], -0.99)
         self.assertGreater(x["r"], -1.0001)
+        self.assertEqual(x["once"], 93)                                 # floor(500 / (5,3 + 0,07))
+        self.assertAlmostEqual(x["r"], -0.99882, places=9)              # 93 × (−5,3 − 0,07) / 500 (caso d'oro 3)
 
 
 class TestFiltriEGiorni(unittest.TestCase):

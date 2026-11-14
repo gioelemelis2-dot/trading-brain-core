@@ -162,3 +162,13 @@ Eseguiti i 43 test nel suo ambiente: verdi, codice di uscita 0. Non ha potuto co
 - **Correzioni:** ramo `fix/orb-replica-gemini` da main, commit rosso `b26be54`, poi verde. Test di H-002: 46 su Python 3.13 e 3.9. Mutanti: 35/35 su entrambe (O15 aggiornato, O34 e O35 nuovi).
 - **Effetto sul ramo `feat/esecutore-h002`:** cambiano solo le prove di robustezza con range 20 e 45. Dopo il merge di questa correzione va riallineato e i suoi test vanno rieseguiti.
 - **Da chiedere a Gemini:** rieseguire `confronto.py` sul ramo corretto e confermare 30 configurazioni su 30.
+
+### Dopo R8 (15/11/2026, ramo `fix/orb-replica-gemini`)
+- **Test strutturali** (`TestStrutturali`):
+  - taglio dei dati contro lo sguardo al futuro;
+  - simmetria acquisti/vendite a spread zero.
+- **8 casi** segnalati da Gemini come non coperti (`TestCasiScopertiGemini`).
+- **Mutanti nuovi** O36–O40, tutti uccisi. O36 (segnale dalla chiusura della giornata) lo prende solo il test del taglio; O37 lo prende il test di simmetria.
+- **Stato:** 56 test di H-002; mutanti 40/40 su Python 3.13 e 3.9.
+- **Registro dei difetti:** `laboratorio/REGISTRO-DIFETTI.md`.
+- **Proposta v3.2:** `H-002-v3.2-PROPOSTA.md`. Contiene A1–A14 da decidere, 16 casi d'oro e la regola d'uscita per il sigillo.

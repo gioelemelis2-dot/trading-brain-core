@@ -350,3 +350,15 @@ Formato: data · versione della base · cosa · perché · file.
 - **Correzione in TDD** sul ramo `fix/orb-replica-gemini`: `b26be54` rosso, poi verde. 46 test e 35/35 mutanti su Python 3.13 e 3.9.
 - **Ambiguità nuove** A12–A14 (solo diagnostiche, o casi limite) in `laboratorio/ipotesi/H-002-REVISIONI.md`, R8. Scheda non toccata.
 - **Merge su main solo con l'autorizzazione dell'utente.**
+
+## 2026-11-15 · v1.27 (controlli strutturali, registro dei difetti, proposta v3.2)
+
+- **Ramo `fix/orb-replica-gemini`:**
+  - test contro lo sguardo al futuro (taglio dei dati) e di simmetria;
+  - 8 casi scoperti segnalati da Gemini;
+  - mutanti 40/40 su Python 3.13 e 3.9 (`cd7fdb9`).
+- **`laboratorio/REGISTRO-DIFETTI.md`:** 22 difetti trovati dal 13/11, con gravità, scopritore e metodo. Dal 15/11 nessun difetto critico.
+- **`laboratorio/ipotesi/H-002-v3.2-PROPOSTA.md`:** solo proposta.
+  - Ambiguità A1–A14 da decidere.
+  - 16 casi d'oro, ognuno legato a un test che passa.
+  - Regola d'uscita per il sigillo: replica 100%, mutanti 100%, due revisioni di fila pulite, impronte anche del codice.
