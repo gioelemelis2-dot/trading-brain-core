@@ -64,15 +64,34 @@ class _Giorni:
         return self.memo[chiave]
 
 
-def _r_medio(sim, giorni, par) -> Optional[float]:
-    return sim.metriche(sim.trade(giorni, par)).get("r_medio")
+def _stat_trade(sim, giorni, par) -> dict:
+    tr = sim.trade(giorni, par)
+    return K.stats_serie([x["r"] for x in tr])
+
+
+def _arricchisci_metriche(m: dict, tr: list) -> dict:
+    out = dict(m)
+    if not m.get("n"):
+        return out
+    out["ic95"] = K.stats_serie([x["r"] for x in tr])["ic95"]
+    for lato, k_es, k_ic in (("acquisto", "es_acquisti", "ic95_acquisti"),
+                             ("vendita", "es_vendite", "ic95_vendite")):
+        st = K.stats_serie([x["r"] for x in tr if x["lato"] == lato])
+        out[k_es] = st["errore_std"]
+        out[k_ic] = st["ic95"]
+    per_anno_stats = {}
+    for anno, (n_a, media_a, somma_a) in m.get("per_anno", {}).items():
+        st_a = K.stats_serie([x["r"] for x in tr if x["data"].year == anno])
+        per_anno_stats[anno] = (n_a, media_a, somma_a, st_a["errore_std"], st_a["ic95"])
+    out["per_anno_stats"] = per_anno_stats
+    return out
 
 
 def valuta_variante(sim, prep: _Giorni, par, robustezza: Dict[str, dict], stress: float, ripetizioni: int,
                     seme: int) -> dict:
     giorni = prep(par)
     tr = sim.trade(giorni, par)
-    m = sim.metriche(tr)
+    m = _arricchisci_metriche(sim.metriche(tr), tr)
     strategia = {x["data"]: x["r"] for x in tr}
     compro = {x["data"]: x["r"] for x in sim.specchio(giorni, par, lato_fisso="acquisto")}
     vendo = {x["data"]: x["r"] for x in sim.specchio(giorni, par, lato_fisso="vendita")}
@@ -84,15 +103,20 @@ def valuta_variante(sim, prep: _Giorni, par, robustezza: Dict[str, dict], stress
         r_comuni = mean(strategia[d] for d in comuni)
         casuale = dict(K.confronto_casuale(esiti, r_comuni, ripetizioni, seme), r_strategia=r_comuni,
                        copertura=len(comuni) / len(strategia))
-    r_stress = _r_medio(sim, giorni, replace(par, stress=stress))
-    rob = {}
+    stress_stat = _stat_trade(sim, giorni, replace(par, stress=stress))
+    r_stress = stress_stat["r_medio"]
+    rob, rob_stat = {}, {}
     for nome, cambi in robustezza.items():                       # SEMPRE, qualunque sia il risultato base
         p = replace(par, **cambi)
-        rob[nome] = _r_medio(sim, prep(p), p)
+        st = _stat_trade(sim, prep(p), p)
+        rob[nome] = st["r_medio"]
+        rob_stat[nome] = st
     veto, motivi = K.veto_robustezza(m.get("r_medio"), rob)
-    return {"metriche": m, "casuale": casuale, "benchmark": benchmark, "r_stress": r_stress, "robustezza": rob,
+    return {"metriche": m, "casuale": casuale, "benchmark": benchmark, "r_stress": r_stress,
+            "r_stress_stat": stress_stat, "robustezza": rob, "robustezza_stat": rob_stat,
             "veto": veto, "motivi_veto": motivi,
-            "screening": K.screening(m, casuale or {}, benchmark, veto, r_stress)}
+            "screening": K.screening(m, casuale or {}, benchmark, veto, r_stress,
+                                     es_stress=stress_stat["errore_std"])}
 
 
 def esegui_sviluppo(bid, ask, varianti=None, robustezza=None, stress: float = STRESS,
@@ -120,7 +144,8 @@ def esegui_verifica(bid, ask, promosse: List[str], n_prove: int, anni, varianti=
     out = {}
     for v in promosse:
         altri = [s for k, s in sharpe.items() if k != v and s is not None]
-        out[v] = {"metriche": metriche[v], "verifica": K.verifica(trade[v], n_prove, anni=anni, sharpe_prove=altri)}
+        out[v] = {"metriche": _arricchisci_metriche(metriche[v], trade[v]),
+                  "verifica": K.verifica(trade[v], n_prove, anni=anni, sharpe_prove=altri)}
     return {"modalita": "verifica", "n_prove": n_prove, "sharpe_prove": sharpe,
             "resoconto": sim.resoconto(bid, ask, varianti[promosse[0]]), "varianti": out}
 
@@ -136,16 +161,26 @@ def _f(x, cifre=4) -> str:
     return str(x)
 
 
+def _ic(ic) -> str:
+    if ic is None:
+        return "—"
+    return f"[{ic[0]:.4f}, {ic[1]:.4f}]"
+
+
 def _metriche(m: dict) -> List[str]:
     if not m.get("n"):
         return ["Nessun trade."]
-    righe = [f"- Trade: {m['n']} · vinti {m['vinti']:.1%} · R medio netto {_f(m['r_medio'])} · "
-             f"Sharpe per trade {_f(m['sharpe'])} · errore standard {_f(m['errore_std'])}",
+    righe = [f"- Trade: {m['n']} · vinti {m['vinti']:.1%} · R medio netto {_f(m['r_medio'])} "
+             f"(ES {_f(m['errore_std'])}, IC 95% {_ic(m.get('ic95'))}) · Sharpe per trade {_f(m['sharpe'])}",
              f"- Drawdown massimo {_f(m['dd_max'], 2)} R · serie peggiore di perdite {m['serie_perdite']}",
-             f"- Acquisti: {m['n_acquisti']}, R medio {_f(m['r_acquisti'])} · "
-             f"vendite: {m['n_vendite']}, R medio {_f(m['r_vendite'])}",
-             "", "| anno | trade | R medio | somma R |", "|---|---|---|---|"]
-    righe += [f"| {a} | {n} | {_f(media)} | {_f(somma, 2)} |" for a, (n, media, somma) in m["per_anno"].items()]
+             f"- Acquisti: {m['n_acquisti']}, R medio {_f(m['r_acquisti'])} "
+             f"(ES {_f(m.get('es_acquisti'))}, IC 95% {_ic(m.get('ic95_acquisti'))}) · "
+             f"vendite: {m['n_vendite']}, R medio {_f(m['r_vendite'])} "
+             f"(ES {_f(m.get('es_vendite'))}, IC 95% {_ic(m.get('ic95_vendite'))})",
+             "", "| anno | trade | R medio | ES | IC 95% | somma R |", "|---|---|---|---|---|---|"]
+    per_anno = m.get("per_anno_stats") or {a: (n, mu, somma, None, None) for a, (n, mu, somma) in m["per_anno"].items()}
+    righe += [f"| {a} | {n} | {_f(media)} | {_f(es)} | {_ic(ic)} | {_f(somma, 2)} |"
+              for a, (n, media, somma, es, ic) in per_anno.items()]
     return righe
 
 
@@ -165,12 +200,24 @@ def rapporto(ris: dict, titolo: str, info: dict) -> str:
             "nessun giorno." if c is None else
             f"{c['n_giorni']} giorni ({c['copertura']:.1%} dei giorni della strategia), {c['ripetizioni']} "
             f"ripetizioni, seme {c['seme']}; R della strategia sugli stessi giorni {_f(c['r_strategia'])}; "
-            f"media casuale {_f(c['media_casuale'])}, 95° percentile {_f(c['percentile_95'])}.")]
-        righe += [f"**Benchmark sui giorni comuni ({b['n_comuni']}):** strategia {_f(b['r_strategia'])}, "
-                  f"compro sempre {_f(b['r_compro'])}, vendo sempre {_f(b['r_vendo'])}."]
-        righe += [f"**Scenario di stress (+{STRESS:.2f} USD contro su ingresso e uscita):** R medio {_f(x['r_stress'])}."]
-        righe += ["", "**Prove di robustezza (fuori da N, sempre eseguite):**", "", "| prova | R medio |", "|---|---|"]
-        righe += [f"| {k} | {_f(r)} |" for k, r in x["robustezza"].items()]
+            f"media casuale {_f(c['media_casuale'])}, SD casuale {_f(c.get('sd_casuale'))}, "
+            f"95° percentile {_f(c['percentile_95'])}, percentile esatto {_f(c.get('percentile_esatto'), 1)}° "
+            f"(z = {_f(c.get('z_casuale'), 2)}).")]
+        righe += [f"**Benchmark sui giorni comuni ({b['n_comuni']}):** strategia {_f(b['r_strategia'])} "
+                  f"(ES {_f(b.get('es_strategia'))}, IC 95% {_ic(b.get('ic95_strategia'))}), "
+                  f"compro sempre {_f(b['r_compro'])} (ES {_f(b.get('es_compro'))}, IC 95% {_ic(b.get('ic95_compro'))}), "
+                  f"vendo sempre {_f(b['r_vendo'])} (ES {_f(b.get('es_vendo'))}, IC 95% {_ic(b.get('ic95_vendo'))}); "
+                  f"diff vs compro {_f(b.get('diff_compro'))} (ES {_f(b.get('es_diff_compro'))}, IC 95% {_ic(b.get('ic95_diff_compro'))}), "
+                  f"diff vs vendo {_f(b.get('diff_vendo'))} (ES {_f(b.get('es_diff_vendo'))}, IC 95% {_ic(b.get('ic95_diff_vendo'))})."]
+        rs_stat = x.get("r_stress_stat") or {"errore_std": None, "ic95": None}
+        righe += [f"**Scenario di stress (+{STRESS:.2f} USD contro su ingresso e uscita):** R medio {_f(x['r_stress'])} "
+                  f"(ES {_f(rs_stat.get('errore_std'))}, IC 95% {_ic(rs_stat.get('ic95'))})."]
+        righe += ["", "**Prove di robustezza (fuori da N, sempre eseguite):**", "",
+                  "| prova | R medio | ES | IC 95% |", "|---|---|---|---|"]
+        rob_stat = x.get("robustezza_stat") or {}
+        for k, r in x["robustezza"].items():
+            st = rob_stat.get(k) or {}
+            righe.append(f"| {k} | {_f(r)} | {_f(st.get('errore_std'))} | {_ic(st.get('ic95'))} |")
         righe += ["", "Veto: " + ("sì — " + "; ".join(x["motivi_veto"]) if x["veto"] else "no"), ""]
         righe += [K.rapporto_screening(f"{v}, screening", x["screening"])]
     return "\n".join(righe) + "\n"
@@ -264,8 +311,10 @@ def main(argv=None) -> int:
                 ver = r["verifica"]
                 quota = [c["valore"] for c in ver["criteri"] if c["nome"].startswith("quota")][0]
                 S.registra_esecuzione(x.registro, IPOTESI, {
-                    "ruolo": "esito", "variante": v, "promossa": ver["promossa"], "dsr": ver["dsr"],
-                    "r_medio": r["metriche"].get("r_medio"), "quota_anni": quota, "rapporto_sha256": impronta}, ora)
+                    "ruolo": "esito", "variante": v, "promossa": ver["promossa"], "verdetto": ver["verdetto"],
+                    "dsr": ver["dsr"], "r_medio": r["metriche"].get("r_medio"),
+                    "errore_std": r["metriche"].get("errore_std"), "ic95": r["metriche"].get("ic95"),
+                    "quota_anni": quota, "rapporto_sha256": impronta}, ora)
         else:
             ris = esegui_sviluppo(bid, ask)
             testo = rapporto(ris, f"{IPOTESI}: screening sullo sviluppo", intestazione)
@@ -273,9 +322,11 @@ def main(argv=None) -> int:
             for v, r in ris["varianti"].items():
                 m = r["metriche"]
                 S.registra_esecuzione(x.registro, IPOTESI, dict(
-                    traccia, ruolo="sviluppo", variante=v, n=m["n"], r_medio=m.get("r_medio"), sharpe=m.get("sharpe"),
-                    promossa=r["screening"]["promossa"], ripetizioni=K.RIPETIZIONI, seme=K.SEME,
-                    rapporto_sha256=impronta), ora)
+                    traccia, ruolo="sviluppo", variante=v, n=m["n"], r_medio=m.get("r_medio"),
+                    errore_std=m.get("errore_std"), ic95=m.get("ic95"), sharpe=m.get("sharpe"),
+                    promossa=r["screening"]["promossa"], verdetto=r["screening"]["verdetto"],
+                    verdetto_attesa=r["screening"]["verdetto_attesa"],
+                    ripetizioni=K.RIPETIZIONI, seme=K.SEME, rapporto_sha256=impronta), ora)
                 for nome, rm in r["robustezza"].items():
                     S.registra_esecuzione(x.registro, IPOTESI, {"ruolo": "robustezza", "variante": f"{v} {nome}",
                                                                 "periodo": periodo, "r_medio": rm}, ora)

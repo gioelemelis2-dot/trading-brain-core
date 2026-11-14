@@ -460,3 +460,52 @@ class TestCasiAlLimite(Cartella):
                      self.scheda)
         with self.assertRaises(ValueError):
             C.carica(self.dir, self.dir, date(2024, 2, 1), date(2024, 1, 1), "sviluppo")
+
+
+class TestIncertezzaETreVerdetti(Cartella):
+    """Proposta R12: ES e IC 95% su ogni R medio, 3 verdetti (promossa / bocciata / non decidibile)."""
+
+    def test_tre_verdetti_in_screening_e_rapporto(self):
+        m_nd = metriche_buone(r_medio=0.06, errore_std=0.04, r_vendite=0.02, es_vendite=0.02)
+        cas = {"sopra": True, "percentile_95": 0.04}
+        ben = {"batte_entrambi": True, "r_compro": 0.01, "r_vendo": -0.02,
+               "diff_compro": 0.05, "es_diff_compro": 0.01, "diff_vendo": 0.08, "es_diff_vendo": 0.01}
+        e_nd = K.screening(m_nd, cas, ben, False, 0.03, es_stress=0.01)
+        # C1 r_medio=0.06 ± 1.96*0.04 -> [-0.0184, +0.1384] contiene 0.05 -> non decidibile (promossa=False!)
+        self.assertEqual(e_nd["verdetto"], "non decidibile")
+        self.assertEqual(e_nd["verdetto_attesa"], "non decidibile")
+        self.assertFalse(e_nd["promossa"])
+        self.assertIn("NON DECIDIBILE", K.rapporto_screening("V-T", e_nd))
+
+        # Tutto l'IC 95% sotto soglia -> bocciata certa
+        m_boc = metriche_buone(r_medio=-0.10, errore_std=0.02, r_vendite=0.02, es_vendite=0.01)
+        e_boc = K.screening(m_boc, cas, ben, False, 0.03, es_stress=0.01)
+        self.assertEqual(e_boc["verdetto"], "bocciata")
+        self.assertFalse(e_boc["promossa"])
+
+        # Tutto l'IC 95% sopra soglia e tutti i criteri verdi -> promossa certa
+        m_ok = metriche_buone(r_medio=0.15, errore_std=0.02, r_vendite=0.02, es_vendite=0.01)
+        e_ok = K.screening(m_ok, cas, ben, False, 0.05, es_stress=0.01)
+        self.assertEqual(e_ok["verdetto"], "promossa")
+        self.assertTrue(e_ok["promossa"])
+        self.assertIn("PROMOSSA", K.rapporto_screening("V-T", e_ok))
+
+    def test_verifica_non_decidibile_e_campi_benchmark_casuale(self):
+        rs = [1.0, -0.95] * 25
+        tr = [trade(2005 + k // 12, 1 + k % 12, r) for k, r in enumerate(rs)]
+        # media +0.025, SD ~ 0.985, ES ~ 0.139 -> IC 95% include 0 -> non decidibile su R medio
+        v = K.verifica(tr, n_prove=1)
+        c_r = [c for c in v["criteri"] if c["nome"] == "R medio netto"][0]
+        self.assertEqual(c_r["verdetto"], "non decidibile")
+        self.assertIsNotNone(v["errore_std"])
+        self.assertIsNotNone(v["ic95"])
+
+        c = K.confronto_casuale([(1.0, -1.0)] * 50, 0.0, ripetizioni=100, seme=5)
+        for k in ("sd_casuale", "percentile_esatto", "z_casuale"):
+            self.assertIn(k, c)
+        d = [date(2025, 1, k) for k in range(2, 5)]
+        b = K.confronto_benchmark({d[0]: 1.0, d[1]: 0.0, d[2]: 0.5},
+                                  {d[0]: 0.2, d[1]: -0.2, d[2]: 0.0},
+                                  {d[0]: -0.1, d[1]: -0.3, d[2]: -0.2})
+        for k in ("es_strategia", "ic95_strategia", "diff_compro", "es_diff_compro", "ic95_diff_compro"):
+            self.assertIsNotNone(b[k], k)

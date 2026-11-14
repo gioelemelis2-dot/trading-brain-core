@@ -98,7 +98,8 @@ class TestMercatiInventati(unittest.TestCase):
         self.assertGreater(r["resoconto"]["giorni_per_motivo"]["valido"], 300)
         testo = E.rapporto(r, "H-002 su dati inventati", {"modalita": "sviluppo", "fonte": "mercato inventato"})
         for parola in ("H-002 su dati inventati", "V-T", "V-S", "BOCCIATA", "robustezza", "stress", "valido",
-                       "mercato inventato", "confronto casuale"):
+                       "mercato inventato", "confronto casuale", "IC 95%", "ES ", "SD casuale", "percentile esatto",
+                       "diff vs compro"):
             self.assertIn(parola, testo)
         self.assertIn("PROMOSSA", E.rapporto(self.ris["vantaggio"], "x", {}))
 
