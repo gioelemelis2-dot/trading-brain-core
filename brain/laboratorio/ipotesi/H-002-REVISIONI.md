@@ -267,7 +267,7 @@ Eseguiti i 43 test nel suo ambiente: verdi, codice di uscita 0. Non ha potuto co
 - **Errore di Claude nei test nuovi:** la prima stesura del test P4 dalla riga di comando usava un mercato con il 2010 negativo, e accettava 0 o 1/3. Non distingueva i due casi e il mutante E16 sopravviveva. Corretto: mercato con il 2010 positivo, valore esatto 1/3.
 
 **Stato dopo R10:**
-- test di H-002 (simulatore e programma dei criteri): 120;
+- test di H-002 (simulatore e programma dei criteri): 119;
 - tutte le suite di dati e laboratorio: 210 test verdi; Guardian: 77/77;
 - mutanti: simulatore 40/40, programma dei criteri 70/70, su Python 3.13 e 3.9.
 
