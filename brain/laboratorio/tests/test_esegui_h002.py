@@ -456,6 +456,21 @@ class TestRevisioneR11Gemini(BaseRiga):
         self.assertEqual(self.lancia("--modalita", "sviluppo"), 2)
         self.assertEqual(self.esecuzioni("sviluppo"), [])
 
+    def test_mr02_ask_senza_minuti_anche_senza_giorni_feriali(self):
+        """Periodo di soli giorni non feriali (sabato e domenica): BID con un minuto, ASK vuoto. Nessun giorno feriale
+        vuoto da segnalare, ma zero minuti ASK: fermo (mutante MR02, coperto altrimenti dal controllo dei feriali)."""
+        from datetime import datetime, timezone
+        self.periodi(sviluppo=(date(2024, 1, 6), date(2024, 1, 7)))
+        t = datetime(2024, 1, 6, 10, 0, tzinfo=timezone.utc)
+        SN.scrivi_cache({t: (2000.0, 2000.5, 1999.5, 2000.2)}, self.cache / "XAUUSD", inizio=date(2024, 1, 6),
+                        fine=date(2024, 1, 7))
+        SN.scrivi_cache({}, self.cache / "XAUUSD_ASK", inizio=date(2024, 1, 6), fine=date(2024, 1, 7))
+        self.sigilla()
+        rc, err = self.lancia_errore("--modalita", "sviluppo")
+        self.assertEqual(rc, 2)
+        self.assertIn("minuti 1/0", err)
+        self.assertEqual(self.esecuzioni("sviluppo"), [])
+
     def test_s4_rapporto_non_scrivibile_non_brucia_la_verifica(self):
         self.cache_di(date(2010, 1, 1), 59)
         self.sigilla()

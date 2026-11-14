@@ -395,3 +395,16 @@ Formato: data · versione della base · cosa · perché · file.
   - indice dei documenti.
 - **Cartella `collaborazione/da-chatgpt/`** per le consegne del DGS, archiviate senza modifiche.
 - **`piano/PROGETTO-GENERALE-20261115.md`:** esportazione del documento condiviso «Progetto generale». Gli schemi dei gate e dell'architettura sono trascritti; le parti superate sono annotate.
+
+## 2026-11-15 · v1.30 (secondo attacco di Gemini R11: nessuna scelta libera, codice sigillato)
+
+- **Gemini R11:** 3 difetti critici, 4 importanti e 1 minore, di nuovo nei collegamenti.
+- **Correzione di classe** (`d4a5dc9` rosso, `f248f8a` verde):
+  - periodi, ripetizioni e seme fissi nel codice;
+  - impronte del codice nel sigillo;
+  - controllo dei giorni feriali vuoti;
+  - impronta dei dati e stessa cache fra sviluppo e verifica;
+  - esito della verifica nel registro;
+  - copertura minima 90% dei confronti (A23, in via prudenziale).
+- **Stato:** 229 test verdi più 77 del Guardian; mutanti 40/40 e 89/89 su Python 3.13 e 3.9.
+- **Registro dei difetti** #33–#40; proposta v3.2 con A22–A25 e le posizioni di Gemini su A12–A21.

@@ -299,3 +299,10 @@ Prossimo giro: R11, a Gemini e a ChatGPT sullo stesso commit (`collaborazione/da
 
 - **Test rivisti dopo il commit rosso:** il test P4 (anni senza trade) usava anni **senza dati**, che dopo S2 sono un buco dei dati e vengono rifiutati, giustamente. Ora usa anni con i dati ma senza trade (mercato piatto).
 - **Posizioni di Gemini su A12–A21:** registrate nella proposta v3.2.
+
+**Stato dopo R11:**
+- test di H-002: 138; tutte le suite di dati e laboratorio: 229 verdi; Guardian 77/77; su Python 3.13 e 3.9.
+- Mutanti:
+  - simulatore 40/40;
+  - programma dei criteri 89/89, su Python 3.13 e 3.9. Al giro completo erano 87/89: S06 era coperto dal nuovo controllo sulle varianti, MR02 da quello sui feriali vuoti, tranne che in un periodo di soli giorni non feriali. Aggiunti 2 test; rieseguiti i due mutanti, morti su entrambe le versioni. Un test in più non può far sopravvivere un mutante già ucciso.
+- Prossimo giro: R12 (Gemini) e messaggio 2 del DGS (ChatGPT), sullo stesso commit.

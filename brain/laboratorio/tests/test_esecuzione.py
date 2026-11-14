@@ -74,7 +74,7 @@ class TestSigillo(Cartella):
         with self.assertRaises(ValueError):
             S.registra_esecuzione(self.registro, "H-999", {"ruolo": "verifica", "variante": "V-T"}, ORA)
         with self.assertRaises(ValueError):
-            S.registra_esecuzione(self.registro, "H-999", {"ruolo": "altro"}, ORA)
+            S.registra_esecuzione(self.registro, "H-999", {"ruolo": "altro", "variante": "V-T"}, ORA)   # variante valida
         dati = S.leggi(self.registro)
         self.assertEqual(len(dati["esecuzioni"]), 3)
         self.assertEqual(S.n_prove(dati), 1)                         # la robustezza non entra in N
