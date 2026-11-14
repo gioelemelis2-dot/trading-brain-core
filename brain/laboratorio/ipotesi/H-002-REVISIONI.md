@@ -272,3 +272,30 @@ Eseguiti i 43 test nel suo ambiente: verdi, codice di uscita 0. Non ha potuto co
 - mutanti: simulatore 40/40, programma dei criteri 70/70, su Python 3.13 e 3.9.
 
 Prossimo giro: R11, a Gemini e a ChatGPT sullo stesso commit (`collaborazione/da-claude/PROMPT-R11-GEMINI-E-CHATGPT.md`).
+
+## R11 · Gemini, secondo attacco al programma dei criteri (`da-gemini/G-20261115-R11.md`, ramo `rev/gemini-r11`, `f8fbc7b`)
+- **Sul commit `83c8956`:**
+  - le sonde R7 P1–P7 risultano tutte bloccate;
+  - la replica (adeguata solo ad A2 e A3) coincide entro 3,3e-16;
+  - test 119/119; mutanti 40/40 e 70/70 su Python 3.9.6.
+- **Secondo attacco:** 3 critici, 4 importanti e 1 minore. Tutti nei **collegamenti** (riga di comando, registro, caricatore), di nuovo.
+- **Ramo controllato da Claude:** tocca solo `da-gemini/`.
+- **Diagnosi di Claude:** il difetto comune è che la riga di comando lasciava **scelte libere** (periodi, ripetizioni, seme, cartella dei dati). **Correzione di classe:**
+  - periodi, ripetizioni e seme diventano costanti del codice;
+  - **il sigillo registra le impronte SHA-256 del codice che esegue la scheda**, e ogni esecuzione le controlla;
+  - la riga di comando sceglie solo la modalità.
+
+| Rilievo | Gravità | Esito | Correzione (TDD: `d4a5dc9` rosso, poi verde) | Mutanti |
+|---|---|---|---|---|
+| S1: verifica promossa con 2 trade (DSR = 1,0); finestra di verifica scelta a mano | critica | **accolto** | Periodo di verifica fisso nel codice (2005-01-01 → 2023-10-31, provvisorio); DSR solo con almeno 30 trade (come `dsr.py`) | R01 |
+| S2: file vuoti nei giorni feriali aggiravano il controllo dei dati | critica | **accolto** | Un giorno feriale senza minuti, BID o ASK, ferma tutto e viene elencato. Tollerati solo il 1° gennaio, il 25 dicembre e il Venerdì Santo | R02, R03, R04 |
+| S3: `--ripetizioni 1 --seme 1` accettati e non registrati | critica | **accolto** | Opzioni tolte: 1.000 ripetizioni e seme fisso, scritti nel registro | R12 |
+| S4: rapporto non scrivibile bruciava la verifica; esito non registrato | importante | **accolto** | Controllo del rapporto prima di registrare; esito (promossa, DSR, R, quota, impronta del rapporto) registrato | R05, R06 |
+| S5: copertura dei confronti non vincolante (5,7% promossa) | importante | **accolto** (A23 in via prudenziale) | Criteri 4 e 5 richiedono copertura ≥ 90% | R07, R08 |
+| S6: cache diversa fra sviluppo e verifica; `anni=None` nell'API | importante | **accolto** | La verifica usa la stessa cache dello sviluppo; impronta SHA-256 dei dati letti nel registro; `anni` obbligatorio | R09, R13 |
+| S7: varianti inventate nel registro | minore | **accolto** | Si registrano solo varianti del sigillo (anche robustezza ed esito) | R10 |
+| MR01–MR07 sopravvissuti | importante (test) | **accolto** | Test nuovi. MR05 (seme della riga di comando) non esiste più: l'opzione è tolta | MR01–MR04, MR06, MR07 |
+| — | — | **aggiunta di Claude** | Impronta del codice nel sigillo: con il codice cambiato, nessuna esecuzione | R11 |
+
+- **Test rivisti dopo il commit rosso:** il test P4 (anni senza trade) usava anni **senza dati**, che dopo S2 sono un buco dei dati e vengono rifiutati, giustamente. Ora usa anni con i dati ma senza trade (mercato piatto).
+- **Posizioni di Gemini su A12–A21:** registrate nella proposta v3.2.

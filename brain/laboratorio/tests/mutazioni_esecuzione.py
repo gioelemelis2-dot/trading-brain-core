@@ -48,8 +48,8 @@ M = {
                            "_criterio(\"R medio netto\", r, f\"≥ {r_min}\", r is not None and r > r_min)")],
     "K10 Sharpe ignorato": [(K, "_ge(m.get(\"sharpe\"), sharpe_min)", "True")],
     "K11 trade minimi con >": [(K, "m.get(\"n\", 0) >= trade_min", "m.get(\"n\", 0) > trade_min")],
-    "K12 confronto casuale ignorato": [(K, "casuale.get(\"sopra\", False)),", "True),")],
-    "K13 benchmark ignorati": [(K, "benchmark.get(\"batte_entrambi\", False)),", "True),")],
+    "K12 confronto casuale ignorato": [(K, "casuale.get(\"sopra\", False) and cop_casuale >= copertura_min),", "True),")],
+    "K13 benchmark ignorati": [(K, "benchmark.get(\"batte_entrambi\", False) and cop_bench >= copertura_min),", "True),")],
     "K14 vendite ignorate": [(K, "_ge(m.get(\"r_vendite\"), vendite_min)", "True")],
     "K15 drawdown dello screening a 13R": [(K, "dd_max: float = 12.0", "dd_max: float = 13.0")],
     "K16 veto ignorato": [(K, "\"nessun veto\", not veto),", "\"nessun veto\", True),")],
@@ -73,7 +73,7 @@ M = {
     "C04 high e low scambiati": [(C, "out[t] = (float(o), float(h), float(l), float(c))",
                                   "out[t] = (float(o), float(l), float(h), float(c))")],
     "C05 giorni mancanti non contati": [(C, "            mancanti += 1\n", "            pass\n")],
-    "C06 ASK letti dalla cartella BID": [(C, "ask, ma = _leggi_cache(cartella_ask,", "ask, ma = _leggi_cache(cartella_bid,")],
+    "C06 ASK letti dalla cartella BID": [(C, "ask, ma, va = _leggi_cache(cartella_ask,", "ask, ma, va = _leggi_cache(cartella_bid,")],
     "C07 modalità non controllata": [(C, "if modalita not in MODALITA:", "if False:")],
     "C08 periodo rovesciato ammesso": [(C, "if fine < inizio:", "if False:")],
     "E01 robustezza solo se la base è positiva": [(E, "for nome, cambi in robustezza.items():",
@@ -85,7 +85,8 @@ M = {
     "E05 vendo sempre = compro sempre": [(E, "sim.specchio(giorni, par, lato_fisso=\"vendita\")",
                                           "sim.specchio(giorni, par, lato_fisso=\"acquisto\")")],
     "E06 sigillo non controllato dalla riga di comando": [
-        (E, "sigillo = S.controlla_sigillo(x.registro, x.ipotesi, x.scheda)", "sigillo = {\"scheda_sha256\": \"-\"}")],
+        (E, "sigillo = S.controlla_sigillo(x.registro, IPOTESI, x.scheda, codice=impronte_codice())",
+         "sigillo = {\"scheda_sha256\": \"-\", \"varianti\": list(VARIANTI)}")],
     "E07 robustezza non registrata": [(E, "for nome, rm in r[\"robustezza\"].items():", "for nome, rm in []:")],
     "E08 rapporto senza impronta": [(E, "\"scheda\": f\"{x.scheda.name}, SHA-256 {sigillo['scheda_sha256']}\",",
                                      "\"scheda\": x.scheda.name,")],
@@ -100,19 +101,20 @@ M = {
                                                "    sharpe = {v: metriche[v].get(\"sharpe\") for v in varianti}")],
     "E12 verifica senza --varianti ammessa": [(E, "if not promosse or ignote:\n                raise",
                                                "if ignote:\n                raise")],
-    "E13 basta una promozione (P1 di Gemini)": [(E, "esiti_sviluppo.get(v) and all(esiti_sviluppo[v])",
-                                                 "esiti_sviluppo.get(v) and any(esiti_sviluppo[v])")],
+    "E13 basta una promozione (P1 di Gemini)": [(E, "and all(bool(e.get(\"promossa\")) for e in esiti_sviluppo[v])",
+                                                 "and any(bool(e.get(\"promossa\")) for e in esiti_sviluppo[v])")],
     "E14 verifica di una parte delle promosse (P2 di Gemini)": [
         (E, "if sorted(promosse) != sorted(da_verificare):", "if not set(promosse) <= set(da_verificare):")],
     "E15 sigillo con varianti diverse ammesso (P3 di Gemini)": [
         (E, "if sorted(sigillo[\"varianti\"]) != sorted(VARIANTI):", "if False:")],
     "E16 anni del periodo non passati (P4 di Gemini)": [
-        (E, "anni=range(x.inizio.year, x.fine.year + 1)", "anni=None")],
+        (E, "esegui_verifica(bid, ask, promosse, n, range(inizio.year, fine.year + 1))",
+         "esegui_verifica(bid, ask, promosse, n, None)")],
     "E17 casuale contro l'R di tutti i trade (P5 di Gemini)": [
         (E, "r_comuni = mean(strategia[d] for d in comuni)", "r_comuni = m[\"r_medio\"]")],
     "E18 dati incompleti ammessi (P6 di Gemini)": [
         (E, "if info[\"giorni_bid_mancanti\"] or info[\"giorni_ask_mancanti\"] or not info[\"minuti_bid\"] \\\n"
-            "                or not info[\"minuti_ask\"]:",
+            "                or not info[\"minuti_ask\"] or info[\"feriali_vuoti_bid\"] or info[\"feriali_vuoti_ask\"]:",
          "if not info[\"minuti_bid\"] and not info[\"minuti_ask\"]:")],
     "K28 ultimi 5 anni dall'ultimo trade (P4 di Gemini)": [
         (K, "ultimo = max(anni) if anni is not None else max(x[\"data\"].year for x in tr)",
@@ -127,6 +129,45 @@ M = {
          "cumulato is not None and cumulato > 0),\n        _criterio(\"drawdown massimo (R)\", dd, f\"< {dd_max}\", dd is not None and dd <= dd_max),")],
     "MG06 varianza nulla 1/T (Gemini)": [(K, "        v = 1.0 / (len(rs) - 1)", "        v = 1.0 / len(rs)")],
     "MG07 ultimi 5 anni con >= (Gemini)": [(K, "cumulato is not None and cumulato > 0),", "cumulato is not None and cumulato >= 0),")],
+    "R01 DSR anche con 2 trade (R11-S1 di Gemini)": [(K, "T_MIN_DSR = 30", "T_MIN_DSR = 2")],
+    "R02 giorni feriali vuoti ammessi (R11-S2)": [
+        (E, "or not info[\"minuti_ask\"] or info[\"feriali_vuoti_bid\"] or info[\"feriali_vuoti_ask\"]:",
+         "or not info[\"minuti_ask\"]:")],
+    "R03 feriali vuoti non contati (R11-S2)": [
+        (C, "if not minuti and giorno.weekday() < 5 and giorno not in chiusure_note(giorno.year):", "if False:")],
+    "R04 chiusure note ignorate (R11-S2)": [
+        (C, "return {date(anno, 1, 1), date(anno, 12, 25), pasqua(anno) - timedelta(days=2)}", "return set()")],
+    "R05 rapporto non controllato prima di registrare (R11-S4)": [(E, "if x.rapporto.is_dir():", "if False:")],
+    "R06 esito della verifica non registrato (R11-S4)": [
+        (E, "for v, r in ris[\"varianti\"].items():                                  # R11-S4", "for v, r in []:")],
+    "R07 copertura del casuale ignorata (R11-S5)": [
+        (K, "casuale.get(\"sopra\", False) and cop_casuale >= copertura_min),", "casuale.get(\"sopra\", False)),")],
+    "R08 copertura dei benchmark ignorata (R11-S5)": [
+        (K, "benchmark.get(\"batte_entrambi\", False) and cop_bench >= copertura_min),",
+         "benchmark.get(\"batte_entrambi\", False)),")],
+    "R09 cache della verifica diversa da quella dello sviluppo (R11-S6)": [
+        (E, "if cache_sviluppo != {str(cache)}:", "if False:")],
+    "R10 variante fuori dal sigillo (R11-S7)": [
+        (SG, "if str(voce.get(\"variante\") or \"\").split(\" \")[0] not in _sigillo(dati, ipotesi)[\"varianti\"]:",
+         "if False:")],
+    "R11 codice non controllato": [(SG, "if codice is not None and s.get(\"codice\") != codice:", "if False:")],
+    "R12 ripetizioni e seme non registrati (R11-S3)": [
+        (E, "ripetizioni=K.RIPETIZIONI, seme=K.SEME,", "ripetizioni=1, seme=1,")],
+    "R13 impronta dei dati vuota (R11-S6)": [
+        (C, "            impronta.update(f\"{Path(cartella).name}", "            (lambda *a: None)(f\"{Path(cartella).name}")],
+    "MR01 ASK mancanti non controllati (Gemini R11)": [
+        (E, "info[\"giorni_bid_mancanti\"] or info[\"giorni_ask_mancanti\"] or not info[\"minuti_bid\"]",
+         "info[\"giorni_bid_mancanti\"] or not info[\"minuti_bid\"]")],
+    "MR02 zero minuti ASK ammessi (Gemini R11)": [
+        (E, "or not info[\"minuti_ask\"] or info[\"feriali_vuoti_bid\"]", "or info[\"feriali_vuoti_bid\"]")],
+    "MR03 sviluppo di un'altra ipotesi (Gemini R11)": [
+        (E, "if e[\"ipotesi\"] == IPOTESI and e[\"ruolo\"] == \"sviluppo\":", "if e[\"ruolo\"] == \"sviluppo\":")],
+    "MR04 verifica di un'altra ipotesi (Gemini R11)": [
+        (E, "if e[\"ipotesi\"] == IPOTESI\n                     and e[\"ruolo\"] == \"verifica\"",
+         "if True\n                     and e[\"ruolo\"] == \"verifica\"")],
+    "MR06 DSR con > (Gemini R11)": [(K, "_ge(dsr, dsr_min)", "dsr is not None and dsr > dsr_min")],
+    "MR07 promossa sempre vera nel registro (Gemini R11)": [
+        (E, "promossa=r[\"screening\"][\"promossa\"],", "promossa=True,")],
 }
 
 

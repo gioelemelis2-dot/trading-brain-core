@@ -51,6 +51,14 @@ Fonti: `laboratorio/ipotesi/H-002-REVISIONI.md` (R1–R8), `collaborazione/da-cl
 | 30 | 15/11 | `sigillo.py` | codice | importante | P8: scritture concorrenti nel registro senza blocco; il test di Claude ha mostrato esecuzioni **perse** | Gemini (R10), confermato da Claude | test con 4 fili |
 | 31 | 15/11 | `test_esecuzione.py`, `test_esegui_h002.py` | test | importante | 5 mutanti di Gemini sopravvissuti (V senza le altre promosse; confini di R medio, drawdown, 1/(T−1), ultimi 5 anni) | Gemini (R10) | mutanti nuovi |
 | 32 | 15/11 | `test_esegui_h002.py` | test | minore | Test P4 di Claude troppo debole (2010 negativo: non distingueva 0 da 1/3), mutante E16 sopravvissuto | Claude | mutation testing |
+| 33 | 15/11 | `criteri.py`, `esegui_h002.py` | codice | critica | R11-S1: verifica promossa con 2 trade; finestra di verifica scelta a mano | Gemini (R11) | sonde |
+| 34 | 15/11 | `caricatore.py`, `esegui_h002.py` | codice | critica | R11-S2: file vuoti nei giorni feriali aggiravano il controllo dei dati | Gemini (R11) | sonde |
+| 35 | 15/11 | `esegui_h002.py` | codice | critica | R11-S3: ripetizioni e seme liberi e non registrati | Gemini (R11) | sonde |
+| 36 | 15/11 | `esegui_h002.py` | codice | importante | R11-S4: rapporto non scrivibile bruciava la verifica; esito non registrato | Gemini (R11) | sonde |
+| 37 | 15/11 | `criteri.py` | codice | importante | R11-S5: copertura dei confronti non vincolante | Gemini (R11) | sonde |
+| 38 | 15/11 | `esegui_h002.py` | codice | importante | R11-S6: cache diversa fra sviluppo e verifica; `anni=None` nell'API | Gemini (R11) | sonde |
+| 39 | 15/11 | `sigillo.py` | codice | minore | R11-S7: varianti fuori dal sigillo accettate nel registro | Gemini (R11) | sonde |
+| 40 | 15/11 | test del programma dei criteri | test | importante | 7 mutanti di Gemini (MR01–MR07) sopravvissuti | Gemini (R11) | mutanti nuovi |
 
 ## Lettura (aggiornata al 15/11/2026, dopo R10)
 | Componente | Critici | Importanti | Minori | Ultimo giro |
@@ -58,10 +66,11 @@ Fonti: `laboratorio/ipotesi/H-002-REVISIONI.md` (R1–R8), `collaborazione/da-cl
 | Dati, DSR, sigillo dei dati (#1–#7) | 3 | 3 | 1 | 13/11 |
 | Studi (#8) | 1 | — | — | 14/11 |
 | Simulatore di H-002 (#9–#18, #20–#22) | 3 | 5 | 4 | 15/11: 1 importante, 2 minori; replica di Gemini 30/30 dopo la correzione |
-| Programma dei criteri e sigillo (#19, #23–#32) | **5** | 4 | 2 | 15/11 (primo giro di revisione) |
+| Programma dei criteri e sigillo (#19, #23–#40) | **8** | 8 | 3 | 15/11: primo giro 5 critici, secondo giro (R11) 3 critici |
 
 - **Correzione di quanto scritto prima:** il 15/11 avevo scritto «dal 15/11 nessun difetto critico». Valeva per il simulatore, non per il programma dei criteri. Scritto in una notte, al primo giro di revisione ha avuto **5 difetti critici**. Tutti erano nei collegamenti fra le parti (registro, sviluppo, verifica, riga di comando), non nei calcoli dei singoli criteri: la replica di Gemini dei calcoli coincide a 0.
 - **Il simulatore converge:** dopo tre giri i difetti si sono spostati dal centro ai bordi, e la replica indipendente coincide al 100%.
+- **Dopo R11:** il secondo giro ha trovato altri 3 critici, sempre nei collegamenti. Claude ha cambiato approccio: non più un buco alla volta, ma **nessuna scelta libera** nella riga di comando, e **codice sigillato** con le impronte. Il terzo giro dirà se basta.
 - **Il programma dei criteri NON ha ancora mostrato convergenza:** servono altri giri. Per la regola d'uscita (proposta v3.2, §C) ne servono due di fila senza difetti critici o importanti.
 - **Il controllo più efficace** resta la replica indipendente con sonde mirate (#20–#30). Test e mutanti scritti dall'autore non hanno visto i difetti nei collegamenti.
 - **Contromisure prese:**

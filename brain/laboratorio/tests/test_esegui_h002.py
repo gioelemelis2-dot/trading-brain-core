@@ -330,10 +330,16 @@ class TestRevisioneR7Gemini(BaseRiga):
         self.assertEqual(S.leggi(self.registro)["esecuzioni"], [])
 
     def test_p4_anni_del_periodo_nella_riga_di_comando(self):
-        """Mercato solo nel 2010 (R medio +0,164: anno positivo), verifica dal 2008: il 2008 e il 2009 contano come anni
-        non positivi, quindi la quota è 1/3 e non 1 (mutante E16; la prima stesura usava un 2010 negativo e non
-        distingueva i due casi)."""
-        self.cache_di(date(2010, 1, 1), 59, da=date(2008, 1, 1), spinta=0.03)
+        """Verifica dal 2008: nel 2008 e nel 2009 ci sono i dati ma nessun trade (mercato piatto, range sotto il minimo
+        dei costi); nel 2010 25 trade con R medio +0,27 (anno positivo). Il 2008 e il 2009 contano come anni non
+        positivi: quota 1/3, non 1 (mutante E16). Prima stesura: 2010 negativo, non distingueva i casi. Seconda: 2008–2009
+        senza dati, che dopo R11-S2 sono un buco dei dati, non «anni senza trade»."""
+        piatto_b, piatto_a = SN.mercato(date(2008, 1, 1), 731, seme=2, sd=0.001)
+        bid, ask = SN.mercato(date(2010, 1, 1), 59, seme=2, sd=0.7, spinta=0.03)
+        piatto_b.update(bid)
+        piatto_a.update(ask)
+        SN.scrivi_cache(piatto_b, self.cache / "XAUUSD", inizio=date(2008, 1, 1), fine=date(2010, 2, 28))
+        SN.scrivi_cache(piatto_a, self.cache / "XAUUSD_ASK", inizio=date(2008, 1, 1), fine=date(2010, 2, 28))
         self.sigilla(["V-T", "V-S"])
         self.sviluppo_finto(V_T=True, V_S=False)
         self.periodi(verifica=(date(2008, 1, 1), date(2010, 2, 28)))

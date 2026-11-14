@@ -15,10 +15,10 @@ import os
 import threading
 from contextlib import contextmanager
 from pathlib import Path
-from typing import List
+from typing import Dict, List, Optional
 
 SCHEMA = "registro-prove/1"
-RUOLI_ESECUZIONE = ("sviluppo", "robustezza", "verifica")
+RUOLI_ESECUZIONE = ("sviluppo", "robustezza", "verifica", "esito")       # esito: risultato della verifica
 
 
 class NonSigillata(RuntimeError):
@@ -79,23 +79,25 @@ def n_prove(dati: dict) -> int:
     return sum(1 for p in dati["prove"] if p["ruolo"] == "selezionabile")
 
 
-def sigilla(registro: Path, ipotesi: str, scheda: Path, varianti: List[str], ora: str) -> dict:
+def sigilla(registro: Path, ipotesi: str, scheda: Path, varianti: List[str], ora: str,
+            codice: Optional[Dict[str, str]] = None) -> dict:
     """Registra l'impronta della scheda e le sue prove dichiarate. Rifiuta il doppio sigillo e un'ipotesi che ha
     già esecuzioni registrate (nessuna esecuzione prima del sigillo)."""
     if not varianti or len(set(varianti)) != len(varianti) or not all(isinstance(v, str) and v for v in varianti):
         raise ValueError(f"varianti non valide: {varianti!r} (servono nomi distinti, almeno uno)")
     with _bloccato(registro):
-        return _sigilla(registro, ipotesi, scheda, varianti, ora)
+        return _sigilla(registro, ipotesi, scheda, varianti, ora, codice)
 
 
-def _sigilla(registro: Path, ipotesi: str, scheda: Path, varianti: List[str], ora: str) -> dict:
+def _sigilla(registro: Path, ipotesi: str, scheda: Path, varianti: List[str], ora: str,
+             codice: Optional[Dict[str, str]]) -> dict:
     dati = leggi(registro)
     if _sigillo(dati, ipotesi) is not None:
         raise ValueError(f"{ipotesi} è già sigillata: ogni cambiamento è un'ipotesi nuova")
     if any(e["ipotesi"] == ipotesi for e in dati["esecuzioni"]):
         raise ValueError(f"{ipotesi} ha già esecuzioni registrate prima del sigillo")
     s = {"ipotesi": ipotesi, "scheda": Path(scheda).name, "scheda_sha256": impronta(scheda),
-         "varianti": list(varianti), "ora": ora}
+         "varianti": list(varianti), "ora": ora, "codice": dict(codice or {})}
     dati["sigilli"].append(s)
     dati["prove"] += [{"id": f"{ipotesi}/{v}", "ipotesi": ipotesi, "ruolo": "selezionabile", "ora": ora}
                       for v in varianti]
@@ -103,13 +105,17 @@ def _sigilla(registro: Path, ipotesi: str, scheda: Path, varianti: List[str], or
     return s
 
 
-def controlla_sigillo(registro: Path, ipotesi: str, scheda: Path) -> dict:
-    """Il sigillo dell'ipotesi, solo se la scheda sul disco è ancora quella sigillata."""
+def controlla_sigillo(registro: Path, ipotesi: str, scheda: Path, codice: Optional[Dict[str, str]] = None) -> dict:
+    """Il sigillo dell'ipotesi, solo se la scheda sul disco è ancora quella sigillata e, se `codice` è dato, se
+    le impronte del codice che la esegue sono quelle registrate al sigillo."""
     s = _sigillo(leggi(registro), ipotesi)
     if s is None:
         raise NonSigillata(f"{ipotesi} non risulta sigillata nel registro {registro}")
     if impronta(scheda) != s["scheda_sha256"]:
         raise ValueError(f"la scheda {scheda} è stata modificata dopo il sigillo di {ipotesi}")
+    if codice is not None and s.get("codice") != codice:
+        diversi = sorted(k for k in set(codice) | set(s.get("codice") or {}) if codice.get(k) != (s.get("codice") or {}).get(k))
+        raise ValueError(f"il codice che esegue {ipotesi} non è quello sigillato: {diversi}")
     return s
 
 
@@ -126,6 +132,8 @@ def _registra(registro: Path, ipotesi: str, voce: dict, ora: str) -> dict:
     ruolo = voce.get("ruolo")
     if ruolo not in RUOLI_ESECUZIONE:
         raise ValueError(f"ruolo {ruolo!r} non in {RUOLI_ESECUZIONE}")
+    if str(voce.get("variante") or "").split(" ")[0] not in _sigillo(dati, ipotesi)["varianti"]:   # R11-S7
+        raise ValueError(f"variante {voce.get('variante')!r} non dichiarata nel sigillo di {ipotesi}")
     if ruolo == "verifica" and any(e["ipotesi"] == ipotesi and e["ruolo"] == "verifica"
                                    and e.get("variante") == voce.get("variante") for e in dati["esecuzioni"]):
         raise ValueError(f"verifica di {ipotesi} {voce.get('variante')} già eseguita: si fa una volta sola")

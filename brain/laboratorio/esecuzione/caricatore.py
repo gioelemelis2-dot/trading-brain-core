@@ -6,11 +6,13 @@ Due modalità (DA-26):
 - «verifica»: parte solo se la scheda risulta sigillata nel registro delle prove e con la stessa impronta, e
   rifiuta qualunque data dal 15/11/2023 in poi.
 """
+import hashlib
 from datetime import date, datetime, timedelta
 from pathlib import Path
 from typing import Dict, Optional, Tuple
 
 from ...dati.pipeline import dukascopy as DK
+from ..simulatori.orb_londra import pasqua
 from . import sigillo as S
 
 INIZIO_SVILUPPO = date(2023, 11, 15)
@@ -19,9 +21,17 @@ MODALITA = ("sviluppo", "verifica")
 Quota = Tuple[float, float, float, float]
 
 
-def _leggi_cache(cartella: Path, inizio: date, fine: date, simbolo: str) -> Tuple[Dict[datetime, Quota], int]:
+def chiusure_note(anno: int) -> set:
+    """Giorni feriali in cui l'oro può non avere scambi: 1° gennaio, 25 dicembre, Venerdì Santo (R11-S2)."""
+    return {date(anno, 1, 1), date(anno, 12, 25), pasqua(anno) - timedelta(days=2)}
+
+
+def _leggi_cache(cartella: Path, inizio: date, fine: date, simbolo: str, impronta):
+    """Minuti, giorni senza file, giorni feriali con il file vuoto o senza minuti (fuori dalle chiusure note).
+    Aggiorna `impronta` con nome e SHA-256 di ogni file letto."""
     out: Dict[datetime, Quota] = {}
     mancanti = 0
+    feriali_vuoti = []
     giorno = inizio
     while giorno <= fine:
         f = Path(cartella) / f"{giorno.isoformat()}.bi5"
@@ -29,11 +39,14 @@ def _leggi_cache(cartella: Path, inizio: date, fine: date, simbolo: str) -> Tupl
             mancanti += 1
         else:
             dati = f.read_bytes()
-            if dati:                                              # file vuoto: giorno senza dati, già annotato
-                for t, o, h, l, c, _v in DK.decodifica(dati, giorno, DK.SCALA[simbolo]):
-                    out[t] = (float(o), float(h), float(l), float(c))
+            impronta.update(f"{Path(cartella).name}/{giorno.isoformat()}:{hashlib.sha256(dati).hexdigest()}\n".encode())
+            minuti = DK.decodifica(dati, giorno, DK.SCALA[simbolo]) if dati else []
+            for t, o, h, l, c, _v in minuti:
+                out[t] = (float(o), float(h), float(l), float(c))
+            if not minuti and giorno.weekday() < 5 and giorno not in chiusure_note(giorno.year):
+                feriali_vuoti.append(giorno.isoformat())
         giorno += timedelta(days=1)
-    return out, mancanti
+    return out, mancanti, feriali_vuoti
 
 
 def carica(cartella_bid: Path, cartella_ask: Path, inizio: date, fine: date, modalita: str,
@@ -52,8 +65,10 @@ def carica(cartella_bid: Path, cartella_ask: Path, inizio: date, fine: date, mod
         S.controlla_sigillo(registro, ipotesi, scheda)
         if fine > FINE_VERIFICA:
             raise ValueError(f"la verifica finisce il {FINE_VERIFICA} (poi embargo e sviluppo): {fine} è oltre")
-    bid, mb = _leggi_cache(cartella_bid, inizio, fine, simbolo)
-    ask, ma = _leggi_cache(cartella_ask, inizio, fine, simbolo)
+    impronta = hashlib.sha256()
+    bid, mb, vb = _leggi_cache(cartella_bid, inizio, fine, simbolo, impronta)
+    ask, ma, va = _leggi_cache(cartella_ask, inizio, fine, simbolo, impronta)
     info = {"modalita": modalita, "inizio": inizio.isoformat(), "fine": fine.isoformat(),
-            "giorni_bid_mancanti": mb, "giorni_ask_mancanti": ma, "minuti_bid": len(bid), "minuti_ask": len(ask)}
+            "giorni_bid_mancanti": mb, "giorni_ask_mancanti": ma, "minuti_bid": len(bid), "minuti_ask": len(ask),
+            "feriali_vuoti_bid": vb, "feriali_vuoti_ask": va, "dati_sha256": impronta.hexdigest()}
     return bid, ask, info

@@ -12,6 +12,8 @@ from ..backtester.dsr import DSRCalculator
 
 RIPETIZIONI = 1000
 SEME = 20261115
+T_MIN_DSR = 30            # sotto i 30 trade il DSR non si stima (come backtester/dsr.py)
+COPERTURA_MIN = 0.9       # quota minima dei giorni della strategia nei confronti (A23, in via prudenziale)
 
 
 def percentile(valori: Sequence[float], q: float) -> float:
@@ -72,19 +74,24 @@ def _ge(x, s) -> bool:
 
 def screening(m: dict, casuale: dict, benchmark: dict, veto: bool, r_stress: Optional[float],
               r_min: float = 0.05, sharpe_min: float = 0.06, trade_min: int = 300, vendite_min: float = -0.05,
-              dd_max: float = 12.0) -> dict:
+              dd_max: float = 12.0, copertura_min: float = COPERTURA_MIN) -> dict:
     """I 9 criteri dello screening sullo sviluppo, nell'ordine della scheda. Un valore mancante boccia."""
     r = m.get("r_medio")
     dd = m.get("dd_max")
+    n = m.get("n", 0)
+    cop_casuale = casuale.get("copertura", 1.0)                                    # R11-S5: copertura vincolante
+    cop_bench = (benchmark.get("n_comuni", n) / n) if n else 0.0
     criteri = [
         _criterio("R medio netto", r, f"≥ {r_min}", _ge(r, r_min)),
         _criterio("Sharpe per trade", m.get("sharpe"), f"≥ {sharpe_min}", _ge(m.get("sharpe"), sharpe_min)),
         _criterio("numero di trade", m.get("n", 0), f"≥ {trade_min}", m.get("n", 0) >= trade_min),
-        _criterio("sopra il 95° percentile del confronto casuale", casuale.get("percentile_95"), "> percentile",
-                  casuale.get("sopra", False)),
+        _criterio("sopra il 95° percentile del confronto casuale", (casuale.get("percentile_95"), cop_casuale),
+                  f"> percentile, copertura ≥ {copertura_min:.0%}",
+                  casuale.get("sopra", False) and cop_casuale >= copertura_min),
         _criterio("batte «compro sempre» e «vendo sempre»",
-                  (benchmark.get("r_compro"), benchmark.get("r_vendo")), "> entrambi",
-                  benchmark.get("batte_entrambi", False)),
+                  (benchmark.get("r_compro"), benchmark.get("r_vendo"), cop_bench),
+                  f"> entrambi, copertura ≥ {copertura_min:.0%}",
+                  benchmark.get("batte_entrambi", False) and cop_bench >= copertura_min),
         _criterio("R medio delle vendite", m.get("r_vendite"), f"≥ {vendite_min}", _ge(m.get("r_vendite"), vendite_min)),
         _criterio("drawdown massimo (R)", dd, f"< {dd_max}", dd is not None and dd < dd_max),
         _criterio("nessun veto di robustezza", veto, "nessun veto", not veto),
@@ -134,7 +141,7 @@ def verifica(tr: List[dict], n_prove: int, dsr_min: float = 0.95, quota_anni: fl
     `sharpe_prove` delle ALTRE varianti eseguite sullo stesso periodo più quello di questa)."""
     rs = [x["r"] for x in sorted(tr, key=lambda x: x["data"])]
     dsr = sr = None
-    if len(rs) > 1 and stdev(rs) > 0:
+    if len(rs) >= T_MIN_DSR and stdev(rs) > 0:                          # R11-S1: niente DSR con pochi trade
         sr = mean(rs) / stdev(rs)
         asim, curt = _momenti(rs)
         v = 1.0 / (len(rs) - 1)
