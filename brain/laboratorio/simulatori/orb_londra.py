@@ -10,7 +10,7 @@ Non apre dati da solo e non sceglie periodi: riceve i minuti dal chiamante, che 
 """
 from dataclasses import dataclass, replace
 from datetime import date, datetime, time, timedelta, timezone
-from math import floor, sqrt
+from math import sqrt
 from statistics import mean, median, stdev
 from typing import Dict, List, Optional, Tuple
 from zoneinfo import ZoneInfo
@@ -39,6 +39,7 @@ class Parametri:
     attesa_max: timedelta = timedelta(minutes=15)              # ingresso e uscita di fine sessione entro 15 minuti
 
 
+MICRO = 1_000_000
 V_T = Parametri()
 V_S = Parametri(target_r=None)
 
@@ -151,7 +152,8 @@ def prepara(bid: Dict[datetime, Quota], ask: Dict[datetime, Quota], par: Paramet
         rif = median(storico_a[-par.sessioni_rif:]) if len(storico_a) >= par.sessioni_rif else None
         spread_prec = [s for s in storico_spread[-par.sessioni_rif:] if s is not None]
         storico_a.append(a)                                     # mediane: solo le sessioni PRECEDENTI
-        primo_eseguibile = [t for t in per_data[g] if t >= fine_or and eseguibile(t)][:1]
+        inizio_spread = _utc(g, time(8, 30))                    # §3: dalle 08:30, qualunque sia il range
+        primo_eseguibile = [t for t in per_data[g] if t >= inizio_spread and eseguibile(t)][:1]
         storico_spread.append((ask[primo_eseguibile[0]][0] - bid[primo_eseguibile[0]][0]) if primo_eseguibile else None)
         if rif is None:
             out.append(Giorno(g, a, alto, basso, False, "meno di 20 sessioni precedenti"))
@@ -243,7 +245,8 @@ def simula(giorno: Giorno, lato: str, par: Parametri, stop_livello: Optional[flo
     per_oncia = (uscita - entrata) if su else (entrata - uscita)
     perdita_allo_stop = (entrata - (stop - par.slip_uscita - par.stress)) if su else \
         ((stop + par.slip_uscita + par.stress) - entrata)
-    once = floor(par.rischio_usd / (perdita_allo_stop + par.commissione))
+    # aritmetica esatta ai milionesimi di USD: in float 10,00 può valere 10,000000000000064 e togliere un'oncia
+    once = round(par.rischio_usd * MICRO) // round((perdita_allo_stop + par.commissione) * MICRO)
     if once < 1:
         return None
     netto = once * (per_oncia - par.commissione)

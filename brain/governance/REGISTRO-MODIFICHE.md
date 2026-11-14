@@ -341,3 +341,12 @@ Formato: data · versione della base · cosa · perché · file.
 - **Correzioni** in TDD: `d0c8c4d` rosso, poi verde.
 - **Mutation testing:** 40 mutanti (14 nuovi), 40/40 su Python 3.13 e 3.9. Al primo giro il mutante P14 (ruoli presi dal commitment) era sopravvissuto: aggiunto un controllo sul sigillo dei blocchi declassati.
 - **Collaborazione:** Gemini ha lavorato in un worktree separato senza toccare i file di Claude. I suoi rami sono stati pubblicati dall'utente.
+
+## 2026-11-15 · v1.26 (replica indipendente di Gemini: 2 errori del simulatore di H-002 corretti)
+
+- **Replica alla cieca di Gemini** (G-20261115-01, ramo `rev/gemini-replica-h002`): coincidenza su 25 configurazioni su 30. Due errori reali, riprodotti da Claude prima di correggerli:
+  - D1: spread di riferimento dalla fine del range invece che dalle 08:30 (tocca solo la robustezza);
+  - D2: once in virgola mobile, 49 invece di 50 ai bordi interi.
+- **Correzione in TDD** sul ramo `fix/orb-replica-gemini`: `b26be54` rosso, poi verde. 46 test e 35/35 mutanti su Python 3.13 e 3.9.
+- **Ambiguità nuove** A12–A14 (solo diagnostiche, o casi limite) in `laboratorio/ipotesi/H-002-REVISIONI.md`, R8. Scheda non toccata.
+- **Merge su main solo con l'autorizzazione dell'utente.**
