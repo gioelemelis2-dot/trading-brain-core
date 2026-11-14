@@ -23,7 +23,7 @@
 1. **Messaggio 1** (`2-MESSAGGIO-1-MANDATO.md`), in una chat nuova del Progetto: insediamento, inventario, mandato, roadmap, limiti, aspettative, bias, viabilità, proposte.
 2. Portami la sua risposta. La archivio così com'è in `brain/collaborazione/da-chatgpt/` e verifico i rilievi sul codice e sui documenti.
 3. In parallelo puoi mandarla a **DeepSeek** con `4-PROMPT-DEEPSEEK-CONTROLLO-DEL-DGS.md`.
-4. **Messaggio 2** (`3-MESSAGGIO-2-REVISIONE-R11.md`), nella stessa chat: revisione tecnica R11 di H-002. È lo stesso giro che sta facendo Gemini.
+4. **Messaggio 2** (`3-MESSAGGIO-2-REVISIONE-R12.md`), nella stessa chat: revisione tecnica R12 di H-002 (con l'archivio aggiornato). È lo stesso giro che sta facendo Gemini.
 
 ## 4. Cosa NON mandare
 Stipendio, budget, numeri del conto, journal dei trade, nonce, dati di mercato scaricati. Il pacchetto è già pulito: l'ho controllato prima di prepararlo.
