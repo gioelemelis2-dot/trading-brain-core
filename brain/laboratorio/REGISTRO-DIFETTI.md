@@ -59,6 +59,7 @@ Fonti: `laboratorio/ipotesi/H-002-REVISIONI.md` (R1–R8), `collaborazione/da-cl
 | 38 | 15/11 | `esegui_h002.py` | codice | importante | R11-S6: cache diversa fra sviluppo e verifica; `anni=None` nell'API | Gemini (R11) | sonde |
 | 39 | 15/11 | `sigillo.py` | codice | minore | R11-S7: varianti fuori dal sigillo accettate nel registro | Gemini (R11) | sonde |
 | 40 | 15/11 | test del programma dei criteri | test | importante | 7 mutanti di Gemini (MR01–MR07) sopravvissuti | Gemini (R11) | mutanti nuovi |
+| 41 | 15/11 | `orb_londra.py:167-168` e scheda v3.1 | scheda + codice | importante | Accoppiamento fra filtro d'ingresso (`a < 6 * costo`) e parametri di costo (`commissione`, `slip_ingresso`, `slip_uscita`, `median(spread)`): azzerare slittamento e commissione cambia i giorni ammessi (da 456 a 654 su H-002 sviluppo) invece di misurare solo l'attrito sugli stessi trade (`stress` escluso). Da non modificare prima di decisione DGS | Gemini (R12) | misura costi vs lordo puro |
 
 ## Lettura (aggiornata al 15/11/2026, dopo R10)
 | Componente | Critici | Importanti | Minori | Ultimo giro |
