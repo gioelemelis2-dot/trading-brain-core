@@ -351,3 +351,23 @@ Formato: data · versione della base · cosa · perché · file.
 - **Mutation testing** (`laboratorio/tests/mutazioni_esecuzione.py`, 56 mutanti): primo giro 55/56 su Python 3.13 e 3.9. Il sopravvissuto E12 è ucciso da un test aggiunto (`fdf4afe`). Secondo giro intero: 56/56 su entrambe.
 - **Nessun dato reale usato, nessuna richiesta a Dukascopy, nessun sigillo.** Scheda H-002 v3.1 invariata; ambiguità A1–A11 in `laboratorio/ipotesi/H-002-REVISIONI.md`.
 - **Quaderno delle ipotesi** `laboratorio/ipotesi/QUADERNO-IPOTESI.md`: 10 idee dalla letteratura, senza dati; fonti incerte segnate.
+## 2026-11-15 · v1.26 (replica indipendente di Gemini: 2 errori del simulatore di H-002 corretti)
+
+- **Replica alla cieca di Gemini** (G-20261115-01, ramo `rev/gemini-replica-h002`): coincidenza su 25 configurazioni su 30. Due errori reali, riprodotti da Claude prima di correggerli:
+  - D1: spread di riferimento dalla fine del range invece che dalle 08:30 (tocca solo la robustezza);
+  - D2: once in virgola mobile, 49 invece di 50 ai bordi interi.
+- **Correzione in TDD** sul ramo `fix/orb-replica-gemini`: `b26be54` rosso, poi verde. 46 test e 35/35 mutanti su Python 3.13 e 3.9.
+- **Ambiguità nuove** A12–A14 (solo diagnostiche, o casi limite) in `laboratorio/ipotesi/H-002-REVISIONI.md`, R8. Scheda non toccata.
+- **Merge su main solo con l'autorizzazione dell'utente.**
+
+## 2026-11-15 · v1.27 (controlli strutturali, registro dei difetti, proposta v3.2)
+
+- **Ramo `fix/orb-replica-gemini`:**
+  - test contro lo sguardo al futuro (taglio dei dati) e di simmetria;
+  - 8 casi scoperti segnalati da Gemini;
+  - mutanti 40/40 su Python 3.13 e 3.9 (`cd7fdb9`).
+- **`laboratorio/REGISTRO-DIFETTI.md`:** 22 difetti trovati dal 13/11, con gravità, scopritore e metodo. Dal 15/11 nessun difetto critico.
+- **`laboratorio/ipotesi/H-002-v3.2-PROPOSTA.md`:** solo proposta.
+  - Ambiguità A1–A14 da decidere.
+  - 16 casi d'oro, ognuno legato a un test che passa.
+  - Regola d'uscita per il sigillo: replica 100%, mutanti 100%, due revisioni di fila pulite, impronte anche del codice.

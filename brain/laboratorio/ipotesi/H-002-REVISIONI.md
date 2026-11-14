@@ -187,3 +187,32 @@ Eseguiti i 43 test nel suo ambiente: verdi, codice di uscita 0. Non ha potuto co
 - Gemini (Antigravity): replica indipendente e revisione del ramo.
 - DeepSeek: revisione del codice e delle ambiguità.
 - ChatGPT: doppia revisione con il pacchetto eseguibile.
+## R8 · Gemini, replica indipendente alla cieca del simulatore (`da-gemini/G-20261115-01-replica-H-002.md`, ramo `rev/gemini-replica-h002`)
+- **Metodo:** replica scritta dalla sola scheda e committata prima di leggere il codice di Claude (`619a6a4`), poi confronto trade per trade (`106bcc3`). 3 semi, 10 configurazioni, 8.010 giorni-configurazione.
+- **Risultato:** coincidenza ≤ 1e-9 su 25 configurazioni su 30.
+- **Ramo controllato da Claude:** tocca solo `da-gemini/`.
+- **Rilievi riprodotti da Claude con prove proprie prima di correggere** (sonde indipendenti dal codice di Gemini):
+
+| Rilievo | Esito | Applicazione |
+|---|---|---|
+| D1: spread di riferimento cercato dalla fine del range invece che dalle 08:30; con il range di 20 minuti entrano gli ASK delle 08:20–08:29, con quello di 45 si saltano quelli delle 08:30–08:44. Tocca solo la robustezza (con 30 minuti la fine del range è proprio le 08:30) | **accolto, errore di Claude** | Corretto in TDD: lo spread si cerca dalle 08:30 qualunque sia il range. 2 test, mutante O34 |
+| D1 bis: nessun limite superiore (uno spread alle 17:00 viene accettato) | **ambiguità (A12)** | La scheda dice «dalle 08:30 in poi», quindi il codice la rispetta alla lettera. Capita solo in una sessione senza alcun minuto eseguibile. **Proposta per la v3.2:** «fino alle 16:45», come le sessioni di base del `resoconto` |
+| D2: once in virgola mobile; 500 / 10,00 diventa 49,99999999999968 e le once 49 invece di 50 (riprodotto: 1 caso ogni ~200 prezzi a 3 decimali, in acquisto e in vendita) | **accolto, errore di Claude** | Corretto in TDD: divisione intera esatta ai milionesimi di USD. Test con un acquisto e una vendita, mutante O35 |
+| D3: i giorni con ingresso oltre i 15 minuti restano «validi» con motivo «ingresso oltre la candela successiva» nel `resoconto` | **ambiguità (A13), solo diagnostica** | Nessun effetto sui trade. **Proposta per la v3.2:** scrivere che è una categoria del `resoconto` (mancato ingresso, §4.2) |
+| D4: `minuti_scartati` conta anche dopo le 16:45 | **ambiguità (A14), solo diagnostica** | **Proposta per la v3.2:** «fino alle 16:45» |
+| Casi non coperti dai 43 test (robustezza, ora legale di ottobre, 24/30 minuti, ingresso ritardato entro i 15 minuti, vendita senza quotazioni alle 16:30, doppio tocco al minuto d'ingresso, e altri) | **accolto** | Sulla replica coincidono già. Da trasformare in test prima del sigillo |
+| AMB-01, AMB-03…AMB-08 | **d'accordo** | Scelte identiche nelle due implementazioni indipendenti |
+
+- **Correzioni:** ramo `fix/orb-replica-gemini` da main, commit rosso `b26be54`, poi verde. Test di H-002: 46 su Python 3.13 e 3.9. Mutanti: 35/35 su entrambe (O15 aggiornato, O34 e O35 nuovi).
+- **Effetto sul ramo `feat/esecutore-h002`:** cambiano solo le prove di robustezza con range 20 e 45. Dopo il merge di questa correzione va riallineato e i suoi test vanno rieseguiti.
+- **Da chiedere a Gemini:** rieseguire `confronto.py` sul ramo corretto e confermare 30 configurazioni su 30.
+
+### Dopo R8 (15/11/2026, ramo `fix/orb-replica-gemini`)
+- **Test strutturali** (`TestStrutturali`):
+  - taglio dei dati contro lo sguardo al futuro;
+  - simmetria acquisti/vendite a spread zero.
+- **8 casi** segnalati da Gemini come non coperti (`TestCasiScopertiGemini`).
+- **Mutanti nuovi** O36–O40, tutti uccisi. O36 (segnale dalla chiusura della giornata) lo prende solo il test del taglio; O37 lo prende il test di simmetria.
+- **Stato:** 56 test di H-002; mutanti 40/40 su Python 3.13 e 3.9.
+- **Registro dei difetti:** `laboratorio/REGISTRO-DIFETTI.md`.
+- **Proposta v3.2:** `H-002-v3.2-PROPOSTA.md`. Contiene A1–A14 da decidere, 16 casi d'oro e la regola d'uscita per il sigillo.

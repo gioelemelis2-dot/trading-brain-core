@@ -31,8 +31,8 @@ M = {
     "O13 slittamento dello stop ignorato": [(F, "(min(stop, b[0]) - par.slip_uscita - par.stress)",
                                               "(min(stop, b[0]) - par.stress)")],
     "O14 commissione ignorata": [(F, "netto = once * (per_oncia - par.commissione)", "netto = once * per_oncia")],
-    "O15 dimensione senza commissione": [(F, "once = floor(par.rischio_usd / (perdita_allo_stop + par.commissione))",
-                                           "once = floor(par.rischio_usd / perdita_allo_stop)")],
+    "O15 dimensione senza commissione": [(F, "round((perdita_allo_stop + par.commissione) * MICRO)",
+                                           "round(perdita_allo_stop * MICRO)")],
     "O16 filtro del rischio minimo ignorato": [(F, "if rischio < par.rischio_min_a * giorno.a:", "if False:")],
     "O17 prezzo già oltre lo stop ammesso": [(F, "        if b0[0] <= stop:\n            return None\n", "")],
     "O18 stress non applicato": [(F, "entrata = a0[0] + par.slip_ingresso + par.stress", "entrata = a0[0] + par.slip_ingresso")],
@@ -52,6 +52,21 @@ M = {
     "O31 Sharpe con deviazione di popolazione": [(F, "sd = stdev(rs) if len(rs) > 1 else 0.0", "sd = (sum((r - mean(rs)) ** 2 for r in rs) / len(rs)) ** 0.5 if len(rs) > 1 else 0.0")],
     "O32 ultimi anni contati male": [(F, 'if x["data"].year > ultimo - anni)', 'if x["data"].year >= ultimo - anni)')],
     "O33 resoconto senza minuti con spread negativo": [(F, "            negativi += sum(", "            negativi += 0 * sum(")],
+    "O34 spread di riferimento dalla fine del range (D1 di Gemini)": [
+        (F, "if t >= inizio_spread and eseguibile(t)", "if t >= fine_or and eseguibile(t)")],
+    "O35 once in virgola mobile (D2 di Gemini)": [
+        (F, "once = round(par.rischio_usd * MICRO) // round((perdita_allo_stop + par.commissione) * MICRO)",
+         "once = int(par.rischio_usd // (perdita_allo_stop + par.commissione))")],
+    "O36 segnale dalla chiusura della giornata (sguardo al futuro)": [
+        (F, "chiusura = bid[dentro[-1]][3]", "chiusura = bid[per_data[g][-1]][3]")],
+    "O37 slittamento d'ingresso della vendita a favore": [
+        (F, "entrata = b0[0] - par.slip_ingresso - par.stress", "entrata = b0[0] + par.slip_ingresso - par.stress")],
+    "O38 ora legale ignorata": [
+        (F, "return datetime.combine(giorno, ora, tzinfo=LONDRA).astimezone(timezone.utc)",
+         "return datetime.combine(giorno, ora, tzinfo=timezone.utc)")],
+    "O39 servono 25 minuti su 30": [
+        (F, "len(or_t) < par.minuti_or_min * par.or_minuti", "len(or_t) <= par.minuti_or_min * par.or_minuti")],
+    "O40 vendita con ASK già allo stop ammessa": [(F, "if a0[0] >= stop:", "if a0[0] > stop:")],
     "O29 festivi spostati ignorati": [(F, "        s.discard(vecchio)\n        s.add(nuovo)", "        pass")],
 }
 
