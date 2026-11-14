@@ -262,6 +262,78 @@ class TestCaricatore(Cartella):
             C.carica(b, a, date(2010, 3, 1), date(2010, 3, 1), "boh")
 
 
+class TestRevisioneR7GeminiCriteri(Cartella):
+    """Rilievi P4, P7, P8 e mutanti MG03, MG04, MG06, MG07 della revisione R7 di Gemini, scritti PRIMA delle
+    correzioni."""
+
+    def test_p4_ultimi_cinque_anni_della_verifica_non_dell_ultimo_trade(self):
+        t = [trade(a, 1, 1.0 if a <= 2010 else -0.2) for a in range(2005, 2015)]
+        e = K.verifica(t, n_prove=1, anni=range(2005, 2024))
+        q = [c for c in e["criteri"] if c["nome"].startswith("quota")][0]
+        u = [c for c in e["criteri"] if c["nome"].startswith("ultimi 5")][0]
+        self.assertAlmostEqual(q["valore"], 6 / 19)
+        self.assertEqual((u["valore"], u["passa"]), (0.0, False))             # 2019–2023 senza trade
+
+    def criterio(self, t, inizio):
+        return [c for c in K.verifica(t, n_prove=1)["criteri"] if c["nome"].startswith(inizio)][0]
+
+    def test_mg03_r_medio_zero_non_passa(self):
+        self.assertFalse(self.criterio([trade(2005 + k % 10, 1, 1.0 if k % 2 else -1.0) for k in range(100)],
+                                       "R medio")["passa"])
+
+    def test_mg04_drawdown_di_15_esatti_non_passa(self):
+        t = [trade(2005, 1, 1.0)] + [trade(2005, 2, -1.0)] * 15 + [trade(2006, 1, 2.0)] * 20
+        c = self.criterio(t, "drawdown")
+        self.assertEqual((c["valore"], c["passa"]), (15.0, False))
+
+    def test_mg07_ultimi_cinque_anni_a_zero_non_passano(self):
+        t = [trade(a, 1, 3.0) for a in range(2005, 2019)] + [trade(a, m, 1.0 if m == 1 else -1.0)
+                                                            for a in range(2019, 2024) for m in (1, 2)]
+        c = self.criterio(t, "ultimi 5")
+        self.assertEqual((c["valore"], c["passa"]), (0.0, False))
+
+    def test_mg06_dsr_con_la_varianza_nulla_1_su_t_meno_1(self):
+        """Valore atteso ricalcolato a parte: Sharpe campionario, momenti di popolazione, V = 1/(T − 1)."""
+        from statistics import mean, stdev
+        from brain.laboratorio.backtester.dsr import DSRCalculator
+        rs = [0.9, -1.0, 1.5, -1.0, 0.4, 1.5, -1.0, 2.0, -0.3, 0.8]
+        t = [trade(2005, 1 + k, r) for k, r in enumerate(rs)]
+        mu, n = mean(rs), len(rs)
+        m2 = sum((x - mu) ** 2 for x in rs) / n
+        asim = (sum((x - mu) ** 3 for x in rs) / n) / m2 ** 1.5
+        curt = (sum((x - mu) ** 4 for x in rs) / n) / m2 ** 2
+        atteso, _ = DSRCalculator.calculate_dsr_analytical(mu / stdev(rs), 2, n, asim, curt,
+                                                          varianza_sr_prove=1.0 / (n - 1))
+        self.assertAlmostEqual(K.verifica(t, n_prove=2)["dsr"], atteso, places=12)
+
+    def test_p7_embargo_chiuso_in_verifica(self):
+        S.sigilla(self.registro, "H-999", self.scheda, ["V-T"], ORA)
+        with self.assertRaises(ValueError):
+            C.carica(self.dir, self.dir, date(2023, 10, 1), date(2023, 11, 1), "verifica", self.registro, "H-999",
+                     self.scheda)
+        C.carica(self.dir, self.dir, date(2023, 10, 1), date(2023, 10, 31), "verifica", self.registro, "H-999",
+                 self.scheda)
+
+    def test_p8_scritture_concorrenti_non_si_perdono(self):
+        import threading
+        S.sigilla(self.registro, "H-999", self.scheda, ["V-T"], ORA)
+        errori = []
+
+        def scrivi(k):
+            try:
+                for j in range(15):
+                    S.registra_esecuzione(self.registro, "H-999", {"ruolo": "sviluppo", "variante": f"{k}-{j}"}, ORA)
+            except Exception as e:                                       # noqa: BLE001
+                errori.append(e)
+        fili = [threading.Thread(target=scrivi, args=(k,)) for k in range(4)]
+        for f in fili:
+            f.start()
+        for f in fili:
+            f.join()
+        self.assertEqual(errori, [])
+        self.assertEqual(len(S.leggi(self.registro)["esecuzioni"]), 60)
+
+
 if __name__ == "__main__":
     unittest.main()
 

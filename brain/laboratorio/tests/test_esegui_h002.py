@@ -10,7 +10,7 @@ import io
 import sys
 import tempfile
 import unittest
-from datetime import date
+from datetime import date, timedelta
 from pathlib import Path
 
 repo_root = Path(__file__).resolve().parents[3]
@@ -148,7 +148,9 @@ class TestVarianzaDelleProve(unittest.TestCase):
         self.assertLess(K.verifica(tr, n_prove=2, sharpe_prove=[-0.5, 0.6])["dsr"], base)
 
 
-class TestRigaDiComando(unittest.TestCase):
+class BaseRiga(unittest.TestCase):
+    """Strumenti comuni dei test della riga di comando (nessun test qui)."""
+
     def setUp(self):
         self._tmp = tempfile.TemporaryDirectory()
         self.dir = Path(self._tmp.name)
@@ -161,10 +163,19 @@ class TestRigaDiComando(unittest.TestCase):
     def tearDown(self):
         self._tmp.cleanup()
 
-    def cache_di(self, inizio, giorni):
+    def cache_di(self, inizio, giorni, da=None):
+        """Cache completa come quella vera: un file per ogni giorno di calendario, vuoto nei giorni senza dati.
+        `da`: primo giorno della cache, se prima del mercato (giorni vuoti in testa)."""
         bid, ask = SN.mercato(inizio, giorni, seme=2, sd=0.7, spinta=0.01)
-        SN.scrivi_cache(bid, self.cache / "XAUUSD")
-        SN.scrivi_cache(ask, self.cache / "XAUUSD_ASK")
+        fine = inizio + timedelta(days=giorni - 1)
+        SN.scrivi_cache(bid, self.cache / "XAUUSD", inizio=da or inizio, fine=fine)
+        SN.scrivi_cache(ask, self.cache / "XAUUSD_ASK", inizio=da or inizio, fine=fine)
+
+    def sviluppo_finto(self, **promosse):
+        """Esiti dello screening scritti nel registro come li scriverebbe main (per provare la verifica)."""
+        for v, esito in promosse.items():
+            S.registra_esecuzione(self.registro, "H-002", {"ruolo": "sviluppo", "variante": v.replace("_", "-"),
+                                                          "promossa": esito}, ORA)
 
     def lancia(self, *argomenti):
         base = ["--registro", str(self.registro), "--scheda", str(self.scheda), "--cache", str(self.cache),
@@ -172,6 +183,8 @@ class TestRigaDiComando(unittest.TestCase):
         with contextlib.redirect_stdout(io.StringIO()), contextlib.redirect_stderr(io.StringIO()):
             return E.main(base + list(argomenti))
 
+
+class TestRigaDiComando(BaseRiga):
     def test_sviluppo_richiede_il_sigillo(self):
         self.cache_di(date(2024, 1, 1), 60)
         self.assertEqual(self.lancia("--modalita", "sviluppo", "--inizio", "2024-01-01", "--fine", "2024-02-29"), 2)
@@ -202,8 +215,9 @@ class TestRigaDiComando(unittest.TestCase):
         self.assertEqual(S.leggi(self.registro)["esecuzioni"], [])
 
     def test_verifica_una_volta_sola(self):
-        self.cache_di(date(2010, 1, 1), 60)
+        self.cache_di(date(2010, 1, 1), 59)
         S.sigilla(self.registro, "H-002", self.scheda, ["V-T", "V-S"], ORA)
+        self.sviluppo_finto(V_T=True, V_S=False)
         argomenti = ("--modalita", "verifica", "--varianti", "V-T", "--inizio", "2010-01-01", "--fine", "2010-02-28")
         self.assertEqual(self.lancia(*argomenti), 0)
         self.assertIn("verifica", self.uscita.read_text(encoding="utf-8"))
@@ -220,6 +234,125 @@ class TestRigaDiComando(unittest.TestCase):
                          "--inizio", "2010-01-01", "--fine", "2010-02-28"])
         self.assertEqual(rc, 2)
         self.assertIn("--varianti", errore.getvalue())
+
+
+class SimFinto:
+    """Simulatore finto con i trade già decisi per variante (V-T ha il target, V-S no): serve a provare
+    l'esecutore su casi costruiti a mano, senza mercati."""
+
+    def __init__(self, strategia, compro=None, vendo=None):
+        self.strategia, self.compro, self.vendo = strategia, compro or {}, vendo or {}
+
+    @staticmethod
+    def nome(par):
+        return "V-T" if par.target_r is not None else "V-S"
+
+    def prepara(self, bid, ask, par):
+        return []
+
+    def resoconto(self, bid, ask, par):
+        return {"giorni_per_motivo": {}, "minuti_spread_negativo": 0}
+
+    def trade(self, giorni, par):
+        return self.strategia[self.nome(par)]
+
+    def specchio(self, giorni, par, lato_fisso=None, lati=None):
+        return (self.compro if lato_fisso == "acquisto" else self.vendo).get(self.nome(par), [])
+
+    @staticmethod
+    def metriche(tr):
+        from brain.laboratorio.simulatori import orb_londra as O
+        return O.metriche(tr)
+
+
+def tr(d, r, lato="acquisto"):
+    return {"data": d, "lato": lato, "r": r}
+
+
+class TestRevisioneR7Gemini(BaseRiga):
+    """Rilievi P1–P7 della revisione R7 di Gemini (G-20261115-R7, ramo rev/gemini-esecutore-h002), scritti come
+    test PRIMA delle correzioni."""
+
+    def verifica(self, varianti="V-T", inizio="2010-01-01", fine="2010-02-28"):
+        a = ["--modalita", "verifica", "--inizio", inizio, "--fine", fine]
+        return self.lancia(*(a + (["--varianti", varianti] if varianti else [])))
+
+    def verifiche(self):
+        return [e for e in S.leggi(self.registro)["esecuzioni"] if e["ruolo"] == "verifica"]
+
+    def test_p1_verifica_solo_delle_varianti_promosse_in_sviluppo(self):
+        self.cache_di(date(2010, 1, 1), 59)
+        S.sigilla(self.registro, "H-002", self.scheda, ["V-T", "V-S"], ORA)
+        self.assertEqual(self.verifica("V-T"), 2)                       # nessuno screening registrato
+        self.sviluppo_finto(V_T=False, V_S=False)
+        self.assertEqual(self.verifica("V-T"), 2)                       # bocciata in sviluppo
+        self.assertEqual(self.verifiche(), [])
+
+    def test_p1_basta_una_bocciatura(self):
+        """Uno screening ripetuto non cancella una bocciatura (niente «riprova finché passa»)."""
+        self.cache_di(date(2010, 1, 1), 59)
+        S.sigilla(self.registro, "H-002", self.scheda, ["V-T", "V-S"], ORA)
+        self.sviluppo_finto(V_T=False)
+        self.sviluppo_finto(V_T=True, V_S=True)
+        self.assertEqual(self.verifica("V-T"), 2)
+        self.assertEqual(self.verifica("V-S"), 0)
+
+    def test_p2_tutte_e_sole_le_promosse_in_una_chiamata(self):
+        self.cache_di(date(2010, 1, 1), 59)
+        S.sigilla(self.registro, "H-002", self.scheda, ["V-T", "V-S"], ORA)
+        self.sviluppo_finto(V_T=True, V_S=True)
+        self.assertEqual(self.verifica("V-T"), 2)                       # chiamate separate: V del DSR aggirata
+        self.assertEqual(self.verifica("V-S"), 2)
+        self.assertEqual(self.verifiche(), [])
+        self.assertEqual(self.verifica("V-T,V-S"), 0)
+        self.assertEqual(sorted(e["variante"] for e in self.verifiche()), ["V-S", "V-T"])
+
+    def test_p3_sigillo_con_varianti_diverse_da_quelle_dell_esecutore(self):
+        self.cache_di(date(2024, 1, 1), 60)
+        S.sigilla(self.registro, "H-002", self.scheda, ["V-T"], ORA)                 # N = 1 invece di 2
+        self.assertEqual(self.lancia("--modalita", "sviluppo", "--inizio", "2024-01-01", "--fine", "2024-02-29"), 2)
+        self.assertEqual(S.leggi(self.registro)["esecuzioni"], [])
+
+    def test_p4_anni_del_periodo_nella_riga_di_comando(self):
+        """Mercato solo nel 2010, verifica dal 2008: il 2008 e il 2009 contano come anni non positivi."""
+        self.cache_di(date(2010, 1, 1), 59, da=date(2008, 1, 1))
+        S.sigilla(self.registro, "H-002", self.scheda, ["V-T", "V-S"], ORA)
+        self.sviluppo_finto(V_T=True, V_S=False)
+        self.assertEqual(self.verifica("V-T", inizio="2008-01-01"), 0)
+        riga = [r for r in self.uscita.read_text(encoding="utf-8").splitlines() if "quota di anni solari" in r][0]
+        self.assertIn(riga.split("|")[3].strip(), ("0.0000", "0.3333"))
+
+    def test_p6_dati_mancanti_non_bruciano_la_verifica(self):
+        S.sigilla(self.registro, "H-002", self.scheda, ["V-T", "V-S"], ORA)
+        self.sviluppo_finto(V_T=True, V_S=False)
+        self.assertEqual(self.verifica("V-T"), 2)                       # cache inesistente
+        self.cache_di(date(2010, 1, 1), 30)                             # cache fino al 30/1, periodo fino al 28/2
+        self.assertEqual(self.verifica("V-T"), 2)
+        self.assertEqual(self.verifiche(), [])
+        self.assertEqual(self.lancia("--modalita", "sviluppo", "--inizio", "2010-01-01", "--fine", "2010-02-28"), 2)
+
+    def test_p5_confronto_casuale_sugli_stessi_giorni(self):
+        """Caso di Gemini: 100 giorni comuni (strategia +0,02, compro +0,50, vendo −0,30) e 50 giorni solo della
+        strategia a +0,50. Sui 150 giorni R = 0,18 batterebbe il casuale; sui 100 comuni R = 0,02 no."""
+        d = [date(2025, 1, 1) + timedelta(days=k) for k in range(150)]
+        sim = SimFinto({"V-T": [tr(x, 0.02) for x in d[:100]] + [tr(x, 0.50) for x in d[100:]]},
+                       {"V-T": [tr(x, 0.50) for x in d[:100]]}, {"V-T": [tr(x, -0.30, "vendita") for x in d[:100]]})
+        from brain.laboratorio.simulatori import orb_londra as O
+        x = E.valuta_variante(sim, E._Giorni(sim, {}, {}), O.V_T, {}, 0.2, 1000, 42)
+        self.assertAlmostEqual(x["casuale"]["r_strategia"], 0.02)
+        self.assertAlmostEqual(x["casuale"]["copertura"], 100 / 150)
+        self.assertFalse(x["casuale"]["sopra"])
+
+    def test_mg01_la_verifica_usa_gli_sharpe_delle_altre_promosse(self):
+        import random
+        rng = random.Random(5)
+        d = [date(2005, 1, 3) + timedelta(days=k) for k in range(1000)]
+        sim = SimFinto({"V-T": [tr(x, rng.gauss(0.2, 1.0)) for x in d], "V-S": [tr(x, rng.gauss(-0.3, 1.0)) for x in d]})
+        r = E.esegui_verifica({}, {}, ["V-T", "V-S"], 2, sim=sim, anni=range(2005, 2008))
+        vs = sim.metriche(sim.strategia["V-S"])["sharpe"]
+        atteso = K.verifica(sim.strategia["V-T"], 2, anni=range(2005, 2008), sharpe_prove=[vs])["dsr"]
+        self.assertEqual(r["varianti"]["V-T"]["verifica"]["dsr"], atteso)
+        self.assertNotEqual(atteso, K.verifica(sim.strategia["V-T"], 2, anni=range(2005, 2008))["dsr"])
 
 
 if __name__ == "__main__":
