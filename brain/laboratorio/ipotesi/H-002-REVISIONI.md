@@ -216,3 +216,26 @@ Eseguiti i 43 test nel suo ambiente: verdi, codice di uscita 0. Non ha potuto co
 - **Stato:** 56 test di H-002; mutanti 40/40 su Python 3.13 e 3.9.
 - **Registro dei difetti:** `laboratorio/REGISTRO-DIFETTI.md`.
 - **Proposta v3.2:** `H-002-v3.2-PROPOSTA.md`. Contiene A1–A14 da decidere, 16 casi d'oro e la regola d'uscita per il sigillo.
+
+## R9 · ChatGPT, revisione incrociata (15/11/2026): verdetto «non sigillabile»
+**Cosa ha visto:** la scheda v3.1 e le revisioni R1–R5, cioè lo stato **prima** del mandato notturno. Non ha visto il programma dei criteri, R7–R8, le correzioni D1 e D2, i test strutturali e la proposta v3.2.
+
+**Giudizio di Claude sui suoi punti:**
+
+| ID | Suo stato | Giudizio di Claude | Applicazione |
+|---|---|---|---|
+| F-01 minuti senza dati o senza scambi | aperto, alta | **Accolto.** «Minuto mancante = senza scambi» era un'affermazione troppo forte senza un controllo | Proposta A15: definizione di buco, conteggio, scenario pessimistico eliminatorio |
+| F-02 programma dei criteri §6–§8 | aperto, alta | **Già fatto dopo la sua revisione:** `laboratorio/esecuzione/` (49 test, mutanti 56/56) | Da rivedere: pacchetto R9-bis |
+| F-03 ASK storici | aperto, alta | **D'accordo che servono prima della verifica, non prima del sigillo.** Il sigillo fissa le regole; la verifica non può partire senza gli ASK storici scaricati e controllati (stesso controllo dei buchi del BID) | Scritto nella regola d'uscita: la verifica parte solo con gli ASK storici controllati |
+| F-04 lo 0,5% non è la perdita massima | da dichiarare | **Accolto** | Proposta A16 |
+| F-05 spread di riferimento dalle 08:30 | da giustificare | **Accolto:** è un riferimento poco rappresentativo. Nota: Gemini (D1) chiedeva di rispettare le 08:30 scritte nella scheda, e il codice ora lo fa; la scelta dell'orario è dell'utente | Proposta A17 |
+| F-06 N e robustezza | aperto | **Già applicato:** la robustezza si registra con ruolo «robustezza», fuori da N, solo veto, sempre eseguita (`esegui_h002.py`, mutanti E01, E07) | — |
+| F-07 39 contro 43 test | correzione documentale | **Già corretto il 14/11** (R6, commit `3063b98`): i numeri non stanno più nella scheda. Ha rivisto un file precedente | — |
+| F-08 33/33 non riprodotto | non verificato | **Giusto non attribuirlo.** Il pacchetto nuovo fa girare i mutanti a blocchi | Pacchetto R9-bis |
+| F-09 tetto 2× euristico | accettabile | **D'accordo**, è dichiarato come euristica | — |
+| F-10 qualità degli ASK | dati mancanti | **D'accordo** (come F-03) | — |
+| Respingimento «stima di 750 trade» | motivazione debole | **Accolto in parte.** La stima era una stima. Il motivo giusto per non contare i trade prima non è lo «sguardo al futuro», ma il §10: nessuna esecuzione delle regole sui dati prima del sigillo. Il minimo di 300 è un criterio dello screening, verificato dopo | — |
+| Respingimento «confronto casuale con aspettativa zero» | troppo in fretta | **Accolto:** con stop, target e percorsi il payoff non è lineare, e va simulato, non argomentato. Ora il programma lo simula (1.000 ripetizioni). Su un mercato inventato con sola tendenza il 95° percentile del casuale è 0,004 (V-T) e 0,020 (V-S): vicino a zero, ma è un dato su quel mercato, non una prova generale | — |
+| Mediana e asimmetria | motivazione incompleta | **Accolto:** né veto né criterio, ma vanno riportate | Proposta A18 |
+
+**Stato del ramo `feat/esecutore-h002` dopo l'unione con `fix/orb-replica-gemini` (`4e2835a`):** tutte le suite di dati e laboratorio verdi, Guardian 77/77; mutanti del simulatore 40/40 e del programma dei criteri 56/56, su Python 3.13 e 3.9. Pacchetto per ChatGPT: prompt in `collaborazione/da-claude/PROMPT-CHATGPT-R9-BIS.md`.
