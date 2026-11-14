@@ -239,3 +239,36 @@ Eseguiti i 43 test nel suo ambiente: verdi, codice di uscita 0. Non ha potuto co
 | Mediana e asimmetria | motivazione incompleta | **Accolto:** né veto né criterio, ma vanno riportate | Proposta A18 |
 
 **Stato del ramo `feat/esecutore-h002` dopo l'unione con `fix/orb-replica-gemini` (`4e2835a`):** tutte le suite di dati e laboratorio verdi, Guardian 77/77; mutanti del simulatore 40/40 e del programma dei criteri 56/56, su Python 3.13 e 3.9. Pacchetto per ChatGPT: prompt in `collaborazione/da-claude/PROMPT-CHATGPT-R9-BIS.md`.
+
+## R10 · Gemini, revisione R7 del programma dei criteri (`da-gemini/G-20261115-R7-esecutore-h002.md`, ramo `rev/gemini-esecutore-h002`)
+- **Conferma sul simulatore** (`G-20261115-02`, ramo `rev/gemini-replica-h002`, `84dd2a3`): dopo la correzione di D1 e D2, **30 configurazioni su 30 identiche** (6.432 trade e 3.858 benchmark uguali).
+- **Replica alla cieca del programma dei criteri:**
+  - commit della replica `80aab37` prima di leggere `esecuzione/`; rapporto `c97a2e6`;
+  - differenza 0 su tutte le metriche deterministiche dei tre mercati inventati;
+  - 95° percentile del casuale entro 0,0062 (generatore casuale diverso);
+  - test 49/49 e mutanti 56/56 su Python 3.9.6.
+- **Verdetto di Gemini:** «pronto con correzioni obbligatorie prima del sigillo».
+- **Ramo controllato da Claude:** tocca solo `da-gemini/`.
+
+| Rilievo | Gravità (registro dei difetti) | Esito | Correzione (TDD: `6a29aa2` rosso, poi verde) |
+|---|---|---|---|
+| P1: la verifica accettava varianti bocciate o mai provate in sviluppo | critica | **accolto** | Verifica solo delle varianti con screening registrato e **mai bocciate**: uno screening ripetuto non cancella una bocciatura. Mutante E13 |
+| P2: chiamate separate per V-T e V-S svuotavano V nel DSR | critica | **accolto** | Una sola verifica con **tutte e sole** le promosse. Mutante E14 |
+| P3: il programma girava con un sigillo da N = 1 | critica | **accolto** | Le varianti del sigillo devono coincidere con quelle dell'esecutore. Mutante E15 |
+| P4: anni senza trade ignorati; ultimi 5 anni contati dall'ultimo trade | critica | **accolto** (A3 e A11 in via prudenziale) | La riga di comando passa tutti gli anni del periodo; gli ultimi 5 anni partono dalla fine del periodo. Mutanti E16, K28 |
+| P5: R della strategia su tutti i giorni, casuale solo su quelli comuni | critica | **accolto** (A2 in via prudenziale) | Stessi giorni; il rapporto riporta la copertura. Mutante E17 |
+| P6: cache vuota o sbagliata bruciava la verifica | importante | **accolto** | Dati incompleti (giorni senza file o zero minuti): fermo prima di registrare, in sviluppo e in verifica. Mutante E18 |
+| P7: embargo 1–14/11/2023 leggibile in verifica | importante | **accolto** (A8 in via prudenziale) | Fine **provvisoria** della verifica al 31/10/2023, finché DA-26 non fissa la data. Mutanti C03, C09 |
+| P8: registro senza blocco | importante | **accolto, ed era più grave del previsto** | Il test con 4 fili e 60 scritture **perdeva esecuzioni**. Blocco esclusivo (`fcntl`) e file temporaneo per filo. Mutante S10 |
+| P8 bis: simulatore sul ramo precedente alla correzione D1/D2 | — | già risolto | Unione `4e2835a` |
+| MG01, MG03, MG04, MG06, MG07 sopravvissuti | test | **accolto** | Test di confine; i 5 mutanti sono nello script e muoiono |
+| A1–A11 | — | **posizioni registrate** | D'accordo con le proposte. A2, A3 e A8 da applicare subito (fatto, in via prudenziale). A11: preferisce gli ultimi 60 mesi, oppure il 2023 dichiarato |
+
+- **Errore di Claude nei test nuovi:** la prima stesura del test P4 dalla riga di comando usava un mercato con il 2010 negativo, e accettava 0 o 1/3. Non distingueva i due casi e il mutante E16 sopravviveva. Corretto: mercato con il 2010 positivo, valore esatto 1/3.
+
+**Stato dopo R10:**
+- test di H-002 (simulatore e programma dei criteri): 120;
+- tutte le suite di dati e laboratorio: 210 test verdi; Guardian: 77/77;
+- mutanti: simulatore 40/40, programma dei criteri 70/70, su Python 3.13 e 3.9.
+
+Prossimo giro: R11, a Gemini e a ChatGPT sullo stesso commit (`collaborazione/da-claude/PROMPT-R11-GEMINI-E-CHATGPT.md`).

@@ -19,6 +19,7 @@ import sys
 from dataclasses import replace
 from datetime import date, datetime, timezone
 from pathlib import Path
+from statistics import mean
 from typing import Dict, List, Optional
 
 from ..simulatori import orb_londra as O
@@ -67,8 +68,13 @@ def valuta_variante(sim, prep: _Giorni, par, robustezza: Dict[str, dict], stress
     compro = {x["data"]: x["r"] for x in sim.specchio(giorni, par, lato_fisso="acquisto")}
     vendo = {x["data"]: x["r"] for x in sim.specchio(giorni, par, lato_fisso="vendita")}
     benchmark = K.confronto_benchmark(strategia, compro, vendo)
-    esiti = [(compro[d], vendo[d]) for d in sorted(strategia) if d in compro and d in vendo]
-    casuale = K.confronto_casuale(esiti, m["r_medio"], ripetizioni, seme) if esiti else None
+    comuni = [d for d in sorted(strategia) if d in compro and d in vendo]
+    esiti = [(compro[d], vendo[d]) for d in comuni]
+    casuale = None
+    if esiti:                                   # strategia e casuale sugli STESSI giorni (P5 di Gemini, A2)
+        r_comuni = mean(strategia[d] for d in comuni)
+        casuale = dict(K.confronto_casuale(esiti, r_comuni, ripetizioni, seme), r_strategia=r_comuni,
+                       copertura=len(comuni) / len(strategia))
     r_stress = _r_medio(sim, giorni, replace(par, stress=stress))
     rob = {}
     for nome, cambi in robustezza.items():                       # SEMPRE, qualunque sia il risultato base
@@ -91,8 +97,9 @@ def esegui_sviluppo(bid, ask, varianti=None, robustezza=None, stress: float = ST
                          for v, par in varianti.items()}}
 
 
-def esegui_verifica(bid, ask, promosse: List[str], n_prove: int, varianti=None, sim=O) -> dict:
-    """Solo le varianti `promosse` girano sul periodo di verifica. V del DSR: Sharpe delle altre promosse."""
+def esegui_verifica(bid, ask, promosse: List[str], n_prove: int, varianti=None, sim=O, anni=None) -> dict:
+    """Solo le varianti `promosse` girano sul periodo di verifica. V del DSR: Sharpe delle altre promosse.
+    `anni`: tutti gli anni solari del periodo (anni senza trade = non positivi; ultimi 5 anni dalla fine)."""
     varianti = VARIANTI if varianti is None else varianti
     ignote = [v for v in promosse if v not in varianti]
     if not promosse or ignote:
@@ -104,7 +111,7 @@ def esegui_verifica(bid, ask, promosse: List[str], n_prove: int, varianti=None, 
     out = {}
     for v in promosse:
         altri = [s for k, s in sharpe.items() if k != v and s is not None]
-        out[v] = {"metriche": metriche[v], "verifica": K.verifica(trade[v], n_prove, sharpe_prove=altri)}
+        out[v] = {"metriche": metriche[v], "verifica": K.verifica(trade[v], n_prove, anni=anni, sharpe_prove=altri)}
     return {"modalita": "verifica", "n_prove": n_prove, "sharpe_prove": sharpe,
             "resoconto": sim.resoconto(bid, ask, varianti[promosse[0]]), "varianti": out}
 
@@ -147,8 +154,9 @@ def rapporto(ris: dict, titolo: str, info: dict) -> str:
         c, b = x["casuale"], x["benchmark"]
         righe += ["", "**Confronto casuale:** " + (
             "nessun giorno." if c is None else
-            f"{c['n_giorni']} giorni, {c['ripetizioni']} ripetizioni, seme {c['seme']}; media casuale "
-            f"{_f(c['media_casuale'])}, 95° percentile {_f(c['percentile_95'])}.")]
+            f"{c['n_giorni']} giorni ({c['copertura']:.1%} dei giorni della strategia), {c['ripetizioni']} "
+            f"ripetizioni, seme {c['seme']}; R della strategia sugli stessi giorni {_f(c['r_strategia'])}; "
+            f"media casuale {_f(c['media_casuale'])}, 95° percentile {_f(c['percentile_95'])}.")]
         righe += [f"**Benchmark sui giorni comuni ({b['n_comuni']}):** strategia {_f(b['r_strategia'])}, "
                   f"compro sempre {_f(b['r_compro'])}, vendo sempre {_f(b['r_vendo'])}."]
         righe += [f"**Scenario di stress (+{STRESS:.2f} USD contro su ingresso e uscita):** R medio {_f(x['r_stress'])}."]
@@ -180,6 +188,8 @@ def main(argv=None) -> int:
     ora = x.ora or datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
     try:
         sigillo = S.controlla_sigillo(x.registro, x.ipotesi, x.scheda)          # prima di tutto (§10)
+        if sorted(sigillo["varianti"]) != sorted(VARIANTI):                    # N giusto (P3 di Gemini)
+            raise ValueError(f"il sigillo dichiara {sigillo['varianti']}, l'esecutore esegue {list(VARIANTI)}")
         promosse = [v.strip() for v in x.varianti.split(",") if v.strip()]
         if x.modalita == "verifica":
             ignote = [v for v in promosse if v not in VARIANTI]
@@ -189,8 +199,22 @@ def main(argv=None) -> int:
                      and e["ruolo"] == "verifica" and e.get("variante") in promosse]
             if fatte:
                 raise ValueError(f"verifica già eseguita per {[e['variante'] for e in fatte]}: si fa una volta sola")
+            esiti_sviluppo: Dict[str, list] = {}
+            for e in S.leggi(x.registro)["esecuzioni"]:
+                if e["ipotesi"] == x.ipotesi and e["ruolo"] == "sviluppo":
+                    esiti_sviluppo.setdefault(e.get("variante"), []).append(bool(e.get("promossa")))
+            da_verificare = [v for v in VARIANTI if esiti_sviluppo.get(v) and all(esiti_sviluppo[v])]  # P1
+            if not da_verificare:
+                raise ValueError("nessuna variante promossa nello screening registrato: la verifica non si fa")
+            if sorted(promosse) != sorted(da_verificare):                         # P2: insieme, una volta
+                raise ValueError(f"la verifica si fa una volta sola, con tutte e sole le promosse: {da_verificare}")
         bid, ask, info = C.carica(x.cache / SIMBOLO, x.cache / f"{SIMBOLO}_ASK", x.inizio, x.fine, x.modalita,
                                   x.registro, x.ipotesi, x.scheda)
+        if info["giorni_bid_mancanti"] or info["giorni_ask_mancanti"] or not info["minuti_bid"] \
+                or not info["minuti_ask"]:                                    # P6: niente si registra
+            raise ValueError(f"dati incompleti in {x.cache}: giorni senza file BID/ASK "
+                             f"{info['giorni_bid_mancanti']}/{info['giorni_ask_mancanti']}, minuti "
+                             f"{info['minuti_bid']}/{info['minuti_ask']}: scaricarli prima")
         periodo = [x.inizio.isoformat(), x.fine.isoformat()]
         intestazione = {"ipotesi": x.ipotesi, "modalità": x.modalita, "periodo": f"{periodo[0]} → {periodo[1]}",
                         "scheda": f"{x.scheda.name}, SHA-256 {sigillo['scheda_sha256']}",
@@ -204,7 +228,7 @@ def main(argv=None) -> int:
             for v in promosse:                                    # prima del calcolo: una volta sola, anche se cade
                 S.registra_esecuzione(x.registro, x.ipotesi, {"ruolo": "verifica", "variante": v,
                                                               "periodo": periodo, "n_prove": n}, ora)
-            ris = esegui_verifica(bid, ask, promosse, n)
+            ris = esegui_verifica(bid, ask, promosse, n, anni=range(x.inizio.year, x.fine.year + 1))
             intestazione["N (prove nel registro)"] = n
             testo = rapporto(ris, f"{x.ipotesi}: verifica sigillata", intestazione)
         else:

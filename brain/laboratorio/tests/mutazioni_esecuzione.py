@@ -68,7 +68,8 @@ M = {
     "K27 ripetizioni 999": [(K, "RIPETIZIONI = 1000", "RIPETIZIONI = 999")],
     "C01 sviluppo nel periodo sigillato": [(C, "if inizio < INIZIO_SVILUPPO:", "if False:")],
     "C02 verifica senza sigillo": [(C, "        S.controlla_sigillo(registro, ipotesi, scheda)\n", "")],
-    "C03 verifica fino al 15/11 compreso": [(C, "if fine >= INIZIO_SVILUPPO:", "if fine > INIZIO_SVILUPPO:")],
+    "C03 verifica senza il 31/10 compreso": [(C, "if fine > FINE_VERIFICA:", "if fine >= FINE_VERIFICA:")],
+    "C09 embargo aperto (P7 di Gemini)": [(C, "if fine > FINE_VERIFICA:", "if fine >= INIZIO_SVILUPPO:")],
     "C04 high e low scambiati": [(C, "out[t] = (float(o), float(h), float(l), float(c))",
                                   "out[t] = (float(o), float(l), float(h), float(c))")],
     "C05 giorni mancanti non contati": [(C, "            mancanti += 1\n", "            pass\n")],
@@ -99,6 +100,33 @@ M = {
                                                "    sharpe = {v: metriche[v].get(\"sharpe\") for v in varianti}")],
     "E12 verifica senza --varianti ammessa": [(E, "if not promosse or ignote:\n                raise",
                                                "if ignote:\n                raise")],
+    "E13 basta una promozione (P1 di Gemini)": [(E, "esiti_sviluppo.get(v) and all(esiti_sviluppo[v])",
+                                                 "esiti_sviluppo.get(v) and any(esiti_sviluppo[v])")],
+    "E14 verifica di una parte delle promosse (P2 di Gemini)": [
+        (E, "if sorted(promosse) != sorted(da_verificare):", "if not set(promosse) <= set(da_verificare):")],
+    "E15 sigillo con varianti diverse ammesso (P3 di Gemini)": [
+        (E, "if sorted(sigillo[\"varianti\"]) != sorted(VARIANTI):", "if False:")],
+    "E16 anni del periodo non passati (P4 di Gemini)": [
+        (E, "anni=range(x.inizio.year, x.fine.year + 1)", "anni=None")],
+    "E17 casuale contro l'R di tutti i trade (P5 di Gemini)": [
+        (E, "r_comuni = mean(strategia[d] for d in comuni)", "r_comuni = m[\"r_medio\"]")],
+    "E18 dati incompleti ammessi (P6 di Gemini)": [
+        (E, "if info[\"giorni_bid_mancanti\"] or info[\"giorni_ask_mancanti\"] or not info[\"minuti_bid\"] \\\n"
+            "                or not info[\"minuti_ask\"]:",
+         "if not info[\"minuti_bid\"] and not info[\"minuti_ask\"]:")],
+    "K28 ultimi 5 anni dall'ultimo trade (P4 di Gemini)": [
+        (K, "ultimo = max(anni) if anni is not None else max(x[\"data\"].year for x in tr)",
+         "ultimo = max(x[\"data\"].year for x in tr)")],
+    "S10 registro senza blocco (P8 di Gemini)": [
+        (SG, "    with _bloccato(registro):\n        return _registra(", "    if True:\n        return _registra(")],
+    "MG01 V senza gli Sharpe delle altre promosse (Gemini)": [
+        (E, "        altri = [s for k, s in sharpe.items() if k != v and s is not None]", "        altri = []")],
+    "MG03 R medio della verifica con >= (Gemini)": [(K, "r is not None and r > 0),", "r is not None and r >= 0),")],
+    "MG04 drawdown della verifica con <= (Gemini)": [
+        (K, "cumulato is not None and cumulato > 0),\n        _criterio(\"drawdown massimo (R)\", dd, f\"< {dd_max}\", dd is not None and dd < dd_max),",
+         "cumulato is not None and cumulato > 0),\n        _criterio(\"drawdown massimo (R)\", dd, f\"< {dd_max}\", dd is not None and dd <= dd_max),")],
+    "MG06 varianza nulla 1/T (Gemini)": [(K, "        v = 1.0 / (len(rs) - 1)", "        v = 1.0 / len(rs)")],
+    "MG07 ultimi 5 anni con >= (Gemini)": [(K, "cumulato is not None and cumulato > 0),", "cumulato is not None and cumulato >= 0),")],
 }
 
 

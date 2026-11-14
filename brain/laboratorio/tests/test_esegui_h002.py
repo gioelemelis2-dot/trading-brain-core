@@ -163,10 +163,10 @@ class BaseRiga(unittest.TestCase):
     def tearDown(self):
         self._tmp.cleanup()
 
-    def cache_di(self, inizio, giorni, da=None):
+    def cache_di(self, inizio, giorni, da=None, spinta=0.01):
         """Cache completa come quella vera: un file per ogni giorno di calendario, vuoto nei giorni senza dati.
         `da`: primo giorno della cache, se prima del mercato (giorni vuoti in testa)."""
-        bid, ask = SN.mercato(inizio, giorni, seme=2, sd=0.7, spinta=0.01)
+        bid, ask = SN.mercato(inizio, giorni, seme=2, sd=0.7, spinta=spinta)
         fine = inizio + timedelta(days=giorni - 1)
         SN.scrivi_cache(bid, self.cache / "XAUUSD", inizio=da or inizio, fine=fine)
         SN.scrivi_cache(ask, self.cache / "XAUUSD_ASK", inizio=da or inizio, fine=fine)
@@ -314,13 +314,15 @@ class TestRevisioneR7Gemini(BaseRiga):
         self.assertEqual(S.leggi(self.registro)["esecuzioni"], [])
 
     def test_p4_anni_del_periodo_nella_riga_di_comando(self):
-        """Mercato solo nel 2010, verifica dal 2008: il 2008 e il 2009 contano come anni non positivi."""
-        self.cache_di(date(2010, 1, 1), 59, da=date(2008, 1, 1))
+        """Mercato solo nel 2010 (R medio +0,164: anno positivo), verifica dal 2008: il 2008 e il 2009 contano come anni
+        non positivi, quindi la quota è 1/3 e non 1 (mutante E16; la prima stesura usava un 2010 negativo e non
+        distingueva i due casi)."""
+        self.cache_di(date(2010, 1, 1), 59, da=date(2008, 1, 1), spinta=0.03)
         S.sigilla(self.registro, "H-002", self.scheda, ["V-T", "V-S"], ORA)
         self.sviluppo_finto(V_T=True, V_S=False)
         self.assertEqual(self.verifica("V-T", inizio="2008-01-01"), 0)
         riga = [r for r in self.uscita.read_text(encoding="utf-8").splitlines() if "quota di anni solari" in r][0]
-        self.assertIn(riga.split("|")[3].strip(), ("0.0000", "0.3333"))
+        self.assertEqual(riga.split("|")[3].strip(), "0.3333")
 
     def test_p6_dati_mancanti_non_bruciano_la_verifica(self):
         S.sigilla(self.registro, "H-002", self.scheda, ["V-T", "V-S"], ORA)
@@ -329,7 +331,10 @@ class TestRevisioneR7Gemini(BaseRiga):
         self.cache_di(date(2010, 1, 1), 30)                             # cache fino al 30/1, periodo fino al 28/2
         self.assertEqual(self.verifica("V-T"), 2)
         self.assertEqual(self.verifiche(), [])
-        self.assertEqual(self.lancia("--modalita", "sviluppo", "--inizio", "2010-01-01", "--fine", "2010-02-28"), 2)
+        self.cache_di(date(2024, 1, 1), 30)                             # anche lo sviluppo con dati incompleti
+        self.assertEqual(self.lancia("--modalita", "sviluppo", "--inizio", "2024-01-01", "--fine", "2024-02-29"), 2)
+        self.assertEqual([e for e in S.leggi(self.registro)["esecuzioni"] if e["ruolo"] != "sviluppo" or
+                          "periodo" in e], [])
 
     def test_p5_confronto_casuale_sugli_stessi_giorni(self):
         """Caso di Gemini: 100 giorni comuni (strategia +0,02, compro +0,50, vendo −0,30) e 50 giorni solo della

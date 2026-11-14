@@ -14,6 +14,7 @@ from ...dati.pipeline import dukascopy as DK
 from . import sigillo as S
 
 INIZIO_SVILUPPO = date(2023, 11, 15)
+FINE_VERIFICA = date(2023, 10, 31)          # PROVVISORIA (DA-26 «circa il 31/10/2023»): embargo chiuso (P7, A8)
 MODALITA = ("sviluppo", "verifica")
 Quota = Tuple[float, float, float, float]
 
@@ -49,8 +50,8 @@ def carica(cartella_bid: Path, cartella_ask: Path, inizio: date, fine: date, mod
         if registro is None or ipotesi is None or scheda is None:
             raise S.NonSigillata("la verifica richiede registro, ipotesi e scheda sigillata")
         S.controlla_sigillo(registro, ipotesi, scheda)
-        if fine >= INIZIO_SVILUPPO:
-            raise ValueError(f"la verifica finisce prima del {INIZIO_SVILUPPO}: {fine} è nello sviluppo")
+        if fine > FINE_VERIFICA:
+            raise ValueError(f"la verifica finisce il {FINE_VERIFICA} (poi embargo e sviluppo): {fine} è oltre")
     bid, mb = _leggi_cache(cartella_bid, inizio, fine, simbolo)
     ask, ma = _leggi_cache(cartella_ask, inizio, fine, simbolo)
     info = {"modalita": modalita, "inizio": inizio.isoformat(), "fine": fine.isoformat(),

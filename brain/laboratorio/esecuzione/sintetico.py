@@ -59,8 +59,10 @@ def mercato(inizio: date, giorni: int, seme: int, sd: float = 0.5, spread: float
     return bid, ask
 
 
-def scrivi_cache(minuti: Dict[datetime, Quota], cartella: Path, cifre: int = 3) -> int:
-    """Un file .bi5 per giorno UTC (formato Dukascopy: secondi, open, close, low, high, volume). Restituisce i file."""
+def scrivi_cache(minuti: Dict[datetime, Quota], cartella: Path, cifre: int = 3, inizio: date = None,
+                 fine: date = None) -> int:
+    """Un file .bi5 per giorno UTC (formato Dukascopy: secondi, open, close, low, high, volume). Con `inizio` e
+    `fine` scrive anche un file VUOTO per ogni giorno senza dati, come la cache vera. Restituisce i file con dati."""
     cartella = Path(cartella)
     cartella.mkdir(parents=True, exist_ok=True)
     per_giorno: Dict[date, list] = {}
@@ -73,4 +75,10 @@ def scrivi_cache(minuti: Dict[datetime, Quota], cartella: Path, cifre: int = 3) 
             o, h, l, c = (round(x * scala) for x in minuti[t])
             record.append(DK.RECORD.pack(t.hour * 3600 + t.minute * 60, o, c, l, h, 1.0))
         (cartella / f"{g.isoformat()}.bi5").write_bytes(lzma.compress(b"".join(record), format=lzma.FORMAT_ALONE))
+    if inizio is not None and fine is not None:
+        g = inizio
+        while g <= fine:
+            if g not in per_giorno:
+                (cartella / f"{g.isoformat()}.bi5").write_bytes(b"")
+            g += timedelta(days=1)
     return len(per_giorno)

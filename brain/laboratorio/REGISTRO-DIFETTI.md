@@ -41,17 +41,31 @@ Fonti: `laboratorio/ipotesi/H-002-REVISIONI.md` (R1–R8), `collaborazione/da-cl
 | 20 | 15/11 | `orb_londra.py` | codice | importante | D1: spread di riferimento dalla fine del range invece che dalle 08:30 (solo robustezza con range di 20 e 45 minuti; poteva cambiare il veto) | Gemini (R8) | **replica indipendente** |
 | 21 | 15/11 | `orb_londra.py` | codice | minore | D2: once in virgola mobile, 49 invece di 50 ai bordi interi (~1 caso ogni 200 prezzi, −2% sulla taglia di quel trade) | Gemini (R8) | **replica indipendente** |
 | 22 | 15/11 | `test_orb_londra.py` | test | minore | Due valori attesi sbagliati da Claude nei test nuovi (filtro del rischio dimenticato; minimo dei costi dimenticato) | Claude | esecuzione dei test, prima del commit |
+| 23 | 15/11 | `esecuzione/esegui_h002.py` | codice | critica | P1: la verifica accettava varianti bocciate o mai provate in sviluppo | Gemini (R10) | **replica e sonde** |
+| 24 | 15/11 | `esegui_h002.py` | codice | critica | P2: chiamate separate per variante svuotavano V del DSR (Gemini: DSR 0,07 → 0,99999 su un caso costruito) | Gemini (R10) | sonde |
+| 25 | 15/11 | `esegui_h002.py` | codice | critica | P3: il programma girava con un sigillo da N = 1 | Gemini (R10) | sonde |
+| 26 | 15/11 | `esegui_h002.py`, `criteri.py` | codice | critica | P4: anni senza trade ignorati e ultimi 5 anni contati dall'ultimo trade (verifica più indulgente) | Gemini (R10) | sonde |
+| 27 | 15/11 | `esegui_h002.py` | codice | critica | P5: confronto casuale su giorni diversi da quelli della strategia (falso positivo possibile) | Gemini (R10) | sonde |
+| 28 | 15/11 | `esegui_h002.py` | codice | importante | P6: cache vuota o sbagliata bruciava l'unica verifica | Gemini (R10) | sonde |
+| 29 | 15/11 | `caricatore.py` | codice | importante | P7: embargo 1–14/11/2023 leggibile in verifica | Gemini (R10) | sonde |
+| 30 | 15/11 | `sigillo.py` | codice | importante | P8: scritture concorrenti nel registro senza blocco; il test di Claude ha mostrato esecuzioni **perse** | Gemini (R10), confermato da Claude | test con 4 fili |
+| 31 | 15/11 | `test_esecuzione.py`, `test_esegui_h002.py` | test | importante | 5 mutanti di Gemini sopravvissuti (V senza le altre promosse; confini di R medio, drawdown, 1/(T−1), ultimi 5 anni) | Gemini (R10) | mutanti nuovi |
+| 32 | 15/11 | `test_esegui_h002.py` | test | minore | Test P4 di Claude troppo debole (2010 negativo: non distingueva 0 da 1/3), mutante E16 sopravvissuto | Claude | mutation testing |
 
-## Lettura (aggiornata al 15/11/2026)
-| Periodo | Critici | Importanti | Minori | Dove stavano |
+## Lettura (aggiornata al 15/11/2026, dopo R10)
+| Componente | Critici | Importanti | Minori | Ultimo giro |
 |---|---|---|---|---|
-| 13/11 (dati e DSR) | 3 | 3 | 1 | controlli di base: DSR, sigillo, scaricamento |
-| 14/11 (studi e simulatore, prima della v3.1) | 4 | 5 | 2 | cuore della strategia: esecuzione degli stop, sguardo al futuro, giorni |
-| 15/11 (dopo la v3.1) | 0 | 1 | 3 | bordi: robustezza, arrotondamenti, diagnostica |
+| Dati, DSR, sigillo dei dati (#1–#7) | 3 | 3 | 1 | 13/11 |
+| Studi (#8) | 1 | — | — | 14/11 |
+| Simulatore di H-002 (#9–#18, #20–#22) | 3 | 5 | 4 | 15/11: 1 importante, 2 minori; replica di Gemini 30/30 dopo la correzione |
+| Programma dei criteri e sigillo (#19, #23–#32) | **5** | 4 | 2 | 15/11 (primo giro di revisione) |
 
-- **Tendenza:** dal 15/11 nessun difetto critico; quello importante tocca solo la robustezza. Va confermato dai prossimi giri: due revisioni di fila senza rilievi critici o importanti sono una condizione del sigillo (bozza v3.2, §10).
-- **Il controllo più efficace** sul codice di H-002 è stato la replica indipendente (#20, #21): ha trovato ciò che test, mutanti e tre revisori in lettura non avevano visto.
+- **Correzione di quanto scritto prima:** il 15/11 avevo scritto «dal 15/11 nessun difetto critico». Valeva per il simulatore, non per il programma dei criteri. Scritto in una notte, al primo giro di revisione ha avuto **5 difetti critici**. Tutti erano nei collegamenti fra le parti (registro, sviluppo, verifica, riga di comando), non nei calcoli dei singoli criteri: la replica di Gemini dei calcoli coincide a 0.
+- **Il simulatore converge:** dopo tre giri i difetti si sono spostati dal centro ai bordi, e la replica indipendente coincide al 100%.
+- **Il programma dei criteri NON ha ancora mostrato convergenza:** servono altri giri. Per la regola d'uscita (proposta v3.2, §C) ne servono due di fila senza difetti critici o importanti.
+- **Il controllo più efficace** resta la replica indipendente con sonde mirate (#20–#30). Test e mutanti scritti dall'autore non hanno visto i difetti nei collegamenti.
 - **Contromisure prese:**
-  - test contro lo sguardo al futuro con il taglio dei dati e test di simmetria (`TestStrutturali`);
-  - replica di Gemini come cancello fisso prima del sigillo;
-  - casi d'oro nella scheda (bozza v3.2).
+  - test strutturali (taglio dei dati, simmetria);
+  - replica come cancello fisso;
+  - casi d'oro;
+  - controlli di coerenza nella riga di comando (sigillo, sviluppo, verifica, completezza dei dati), ognuno con il suo mutante.

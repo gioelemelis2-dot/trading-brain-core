@@ -8,9 +8,12 @@ Il registro è un file JSON, scritto solo in aggiunta e in modo atomico:
 
 Lo strumento è pronto ma NON va eseguito sul registro vero senza la decisione dell'utente (mandato del 14/11/2026).
 """
+import fcntl
 import hashlib
 import json
 import os
+import threading
+from contextlib import contextmanager
 from pathlib import Path
 from typing import List
 
@@ -43,13 +46,27 @@ def leggi(registro: Path) -> dict:
 def _scrivi(registro: Path, dati: dict) -> None:
     registro = Path(registro)
     registro.parent.mkdir(parents=True, exist_ok=True)
-    tmp = registro.with_name(f".{registro.name}.{os.getpid()}.tmp")
+    tmp = registro.with_name(f".{registro.name}.{os.getpid()}.{threading.get_ident()}.tmp")
     with open(tmp, "w", encoding="utf-8") as f:
         json.dump(dati, f, indent=2, ensure_ascii=False)
         f.write("\n")
         f.flush()
         os.fsync(f.fileno())
     os.replace(tmp, registro)
+
+
+@contextmanager
+def _bloccato(registro: Path):
+    """Blocco esclusivo per leggere, modificare e riscrivere il registro senza perdere scritture concorrenti
+    (rilievo P8 di Gemini). Il file .lock sta accanto al registro."""
+    registro = Path(registro)
+    registro.parent.mkdir(parents=True, exist_ok=True)
+    with open(registro.with_name(registro.name + ".lock"), "a") as f:
+        fcntl.flock(f, fcntl.LOCK_EX)
+        try:
+            yield
+        finally:
+            fcntl.flock(f, fcntl.LOCK_UN)
 
 
 def _sigillo(dati: dict, ipotesi: str):
@@ -67,6 +84,11 @@ def sigilla(registro: Path, ipotesi: str, scheda: Path, varianti: List[str], ora
     già esecuzioni registrate (nessuna esecuzione prima del sigillo)."""
     if not varianti or len(set(varianti)) != len(varianti) or not all(isinstance(v, str) and v for v in varianti):
         raise ValueError(f"varianti non valide: {varianti!r} (servono nomi distinti, almeno uno)")
+    with _bloccato(registro):
+        return _sigilla(registro, ipotesi, scheda, varianti, ora)
+
+
+def _sigilla(registro: Path, ipotesi: str, scheda: Path, varianti: List[str], ora: str) -> dict:
     dati = leggi(registro)
     if _sigillo(dati, ipotesi) is not None:
         raise ValueError(f"{ipotesi} è già sigillata: ogni cambiamento è un'ipotesi nuova")
@@ -93,6 +115,11 @@ def controlla_sigillo(registro: Path, ipotesi: str, scheda: Path) -> dict:
 
 def registra_esecuzione(registro: Path, ipotesi: str, voce: dict, ora: str) -> dict:
     """Aggiunge un'esecuzione. La verifica sigillata si esegue una volta sola per variante."""
+    with _bloccato(registro):
+        return _registra(registro, ipotesi, voce, ora)
+
+
+def _registra(registro: Path, ipotesi: str, voce: dict, ora: str) -> dict:
     dati = leggi(registro)
     if _sigillo(dati, ipotesi) is None:
         raise NonSigillata(f"{ipotesi} non risulta sigillata: nessuna esecuzione")

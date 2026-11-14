@@ -371,3 +371,14 @@ Formato: data · versione della base · cosa · perché · file.
   - Ambiguità A1–A14 da decidere.
   - 16 casi d'oro, ognuno legato a un test che passa.
   - Regola d'uscita per il sigillo: replica 100%, mutanti 100%, due revisioni di fila pulite, impronte anche del codice.
+
+## 2026-11-15 · v1.28 (revisione R7 di Gemini sul programma dei criteri: 8 difetti corretti)
+
+- **Gemini:**
+  - conferma 30/30 sul simulatore corretto;
+  - replica alla cieca del programma dei criteri: differenza 0 sui calcoli;
+  - P1–P8 nei collegamenti fra sigillo, registro, sviluppo, verifica e riga di comando: 5 critici e 3 importanti.
+- **Correzioni in TDD** (`6a29aa2` rosso, poi verde). Mutanti: programma dei criteri 70/70 (14 nuovi, di cui 5 di Gemini), simulatore 40/40, su Python 3.13 e 3.9.
+- **Applicate in via prudenziale,** da ratificare dall'utente: A2, A3, A8 (fine provvisoria 31/10/2023) e A11 (finestra ancorata alla fine). Nuove proposte A19–A21.
+- **Registro dei difetti:** #23–#32. È corretta la lettura del 15/11: la convergenza vale per il simulatore, non ancora per il programma dei criteri.
+- **Prompt R11** per Gemini e ChatGPT; il prompt R9-bis non inviato è stato sostituito.

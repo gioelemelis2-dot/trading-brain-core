@@ -143,7 +143,7 @@ def verifica(tr: List[dict], n_prove: int, dsr_min: float = 0.95, quota_anni: fl
         dsr, _ = DSRCalculator.calculate_dsr_analytical(sr, n_prove, len(rs), asim, curt, varianza_sr_prove=v)
     r = mean(rs) if rs else None
     if rs:
-        ultimo = max(x["data"].year for x in tr)
+        ultimo = max(anni) if anni is not None else max(x["data"].year for x in tr)     # fine del periodo (P4)
         cumulato = sum(x["r"] for x in tr if x["data"].year > ultimo - ultimi)
     else:
         cumulato = None
