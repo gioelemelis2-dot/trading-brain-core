@@ -128,14 +128,14 @@ class TestCasiLimite(unittest.TestCase):
 
     def test_verifica(self):
         bid, ask = SN.mercato(date(2008, 1, 1), 800, seme=4, sd=0.7, spinta=0.01)
-        r = E.esegui_verifica(bid, ask, ["V-T"], n_prove=2)
+        r = E.esegui_verifica(bid, ask, ["V-T"], n_prove=2, anni=range(2008, 2011))
         self.assertTrue(r["varianti"]["V-T"]["verifica"]["promossa"], r["varianti"]["V-T"]["verifica"])
         self.assertNotIn("V-S", r["varianti"])
         self.assertEqual(list(r["sharpe_prove"]), ["V-T"])                  # solo le promosse girano in verifica
         bid, ask = SN.mercato(date(2008, 1, 1), 800, seme=4, sd=0.7)
-        self.assertFalse(E.esegui_verifica(bid, ask, ["V-T", "V-S"], n_prove=2)["varianti"]["V-S"]["verifica"]["promossa"])
+        self.assertFalse(E.esegui_verifica(bid, ask, ["V-T", "V-S"], n_prove=2, anni=range(2008, 2011))["varianti"]["V-S"]["verifica"]["promossa"])
         with self.assertRaises(ValueError):
-            E.esegui_verifica(bid, ask, ["V-X"], n_prove=2)
+            E.esegui_verifica(bid, ask, ["V-X"], n_prove=2, anni=range(2008, 2011))
 
 
 class TestVarianzaDelleProve(unittest.TestCase):
@@ -159,9 +159,23 @@ class BaseRiga(unittest.TestCase):
         self.scheda.write_text("# H-002 di prova\n", encoding="utf-8")
         self.registro = self.dir / "registro.json"
         self.uscita = self.dir / "rapporto.md"
+        self.periodi(sviluppo=(date(2024, 1, 1), date(2024, 2, 29)), verifica=(date(2010, 1, 1), date(2010, 2, 28)))
 
     def tearDown(self):
         self._tmp.cleanup()
+
+    def periodi(self, sviluppo=None, verifica=None):
+        """I periodi sono costanti del codice (R11-S1): i test li sostituiscono con periodi brevi."""
+        from unittest import mock
+        for nome, valore in (("PERIODO_SVILUPPO", sviluppo), ("PERIODO_VERIFICA", verifica)):
+            if valore is not None:
+                cerotto = mock.patch.object(E, nome, valore)
+                cerotto.start()
+                self.addCleanup(cerotto.stop)
+
+    def sigilla(self, varianti=("V-T", "V-S"), codice=None, ipotesi="H-002", scheda=None):
+        S.sigilla(self.registro, ipotesi, scheda or self.scheda, list(varianti), ORA,
+                  codice=E.impronte_codice() if codice is None else codice)
 
     def cache_di(self, inizio, giorni, da=None, spinta=0.01):
         """Cache completa come quella vera: un file per ogni giorno di calendario, vuoto nei giorni senza dati.
@@ -171,15 +185,16 @@ class BaseRiga(unittest.TestCase):
         SN.scrivi_cache(bid, self.cache / "XAUUSD", inizio=da or inizio, fine=fine)
         SN.scrivi_cache(ask, self.cache / "XAUUSD_ASK", inizio=da or inizio, fine=fine)
 
-    def sviluppo_finto(self, **promosse):
+    def sviluppo_finto(self, ipotesi="H-002", cache=None, **promosse):
         """Esiti dello screening scritti nel registro come li scriverebbe main (per provare la verifica)."""
         for v, esito in promosse.items():
-            S.registra_esecuzione(self.registro, "H-002", {"ruolo": "sviluppo", "variante": v.replace("_", "-"),
-                                                          "promossa": esito}, ORA)
+            S.registra_esecuzione(self.registro, ipotesi, {"ruolo": "sviluppo", "variante": v.replace("_", "-"),
+                                                          "promossa": esito,
+                                                          "cache": str(Path(cache or self.cache).resolve())}, ORA)
 
     def lancia(self, *argomenti):
         base = ["--registro", str(self.registro), "--scheda", str(self.scheda), "--cache", str(self.cache),
-                "--rapporto", str(self.uscita), "--ora", ORA, "--ripetizioni", "100"]
+                "--rapporto", str(self.uscita), "--ora", ORA]
         with contextlib.redirect_stdout(io.StringIO()), contextlib.redirect_stderr(io.StringIO()):
             return E.main(base + list(argomenti))
 
@@ -187,14 +202,14 @@ class BaseRiga(unittest.TestCase):
 class TestRigaDiComando(BaseRiga):
     def test_sviluppo_richiede_il_sigillo(self):
         self.cache_di(date(2024, 1, 1), 60)
-        self.assertEqual(self.lancia("--modalita", "sviluppo", "--inizio", "2024-01-01", "--fine", "2024-02-29"), 2)
+        self.assertEqual(self.lancia("--modalita", "sviluppo"), 2)
         self.assertFalse(self.uscita.exists())
         self.assertFalse(self.registro.exists())
 
     def test_sviluppo_registra_le_esecuzioni(self):
         self.cache_di(date(2024, 1, 1), 60)
-        S.sigilla(self.registro, "H-002", self.scheda, ["V-T", "V-S"], ORA)
-        self.assertEqual(self.lancia("--modalita", "sviluppo", "--inizio", "2024-01-01", "--fine", "2024-02-29"), 0)
+        self.sigilla(["V-T", "V-S"])
+        self.assertEqual(self.lancia("--modalita", "sviluppo"), 0)
         testo = self.uscita.read_text(encoding="utf-8")
         self.assertIn("H-002", testo)
         self.assertIn(S.impronta(self.scheda), testo)
@@ -206,32 +221,33 @@ class TestRigaDiComando(BaseRiga):
 
     def test_periodi_e_scheda_modificata(self):
         self.cache_di(date(2024, 1, 1), 60)
-        S.sigilla(self.registro, "H-002", self.scheda, ["V-T", "V-S"], ORA)
-        self.assertEqual(self.lancia("--modalita", "sviluppo", "--inizio", "2023-11-01", "--fine", "2024-02-29"), 2)
-        self.assertEqual(self.lancia("--modalita", "verifica", "--varianti", "V-T",
-                                     "--inizio", "2024-01-01", "--fine", "2024-02-29"), 2)
+        self.sigilla(["V-T", "V-S"])
+        self.periodi(sviluppo=(date(2023, 11, 1), date(2024, 2, 29)), verifica=(date(2024, 1, 1), date(2024, 2, 29)))
+        self.assertEqual(self.lancia("--modalita", "sviluppo"), 2)                  # sviluppo nel periodo sigillato
+        self.sviluppo_finto(V_T=True, V_S=False)
+        self.assertEqual(self.lancia("--modalita", "verifica", "--varianti", "V-T"), 2)   # verifica nello sviluppo
+        self.periodi(sviluppo=(date(2024, 1, 1), date(2024, 2, 29)))
         self.scheda.write_text("# H-002 cambiata\n", encoding="utf-8")
-        self.assertEqual(self.lancia("--modalita", "sviluppo", "--inizio", "2024-01-01", "--fine", "2024-02-29"), 2)
-        self.assertEqual(S.leggi(self.registro)["esecuzioni"], [])
+        self.assertEqual(self.lancia("--modalita", "sviluppo"), 2)
+        self.assertEqual([e for e in S.leggi(self.registro)["esecuzioni"] if "periodo" in e], [])
 
     def test_verifica_una_volta_sola(self):
         self.cache_di(date(2010, 1, 1), 59)
-        S.sigilla(self.registro, "H-002", self.scheda, ["V-T", "V-S"], ORA)
+        self.sigilla(["V-T", "V-S"])
         self.sviluppo_finto(V_T=True, V_S=False)
-        argomenti = ("--modalita", "verifica", "--varianti", "V-T", "--inizio", "2010-01-01", "--fine", "2010-02-28")
+        argomenti = ("--modalita", "verifica", "--varianti", "V-T")
         self.assertEqual(self.lancia(*argomenti), 0)
         self.assertIn("verifica", self.uscita.read_text(encoding="utf-8"))
         self.assertEqual(self.lancia(*argomenti), 2)
-        self.assertEqual(self.lancia("--modalita", "verifica", "--inizio", "2010-01-01", "--fine", "2010-02-28"), 2)
+        self.assertEqual(self.lancia("--modalita", "verifica"), 2)
 
     def test_verifica_senza_varianti_fermata_prima_dei_dati(self):
         """Senza --varianti la verifica si ferma PRIMA di leggere i dati sigillati (mutante E12)."""
-        S.sigilla(self.registro, "H-002", self.scheda, ["V-T", "V-S"], ORA)
+        self.sigilla(["V-T", "V-S"])
         errore = io.StringIO()
         with contextlib.redirect_stdout(io.StringIO()), contextlib.redirect_stderr(errore):
             rc = E.main(["--registro", str(self.registro), "--scheda", str(self.scheda), "--cache", str(self.cache),
-                         "--rapporto", str(self.uscita), "--ora", ORA, "--modalita", "verifica",
-                         "--inizio", "2010-01-01", "--fine", "2010-02-28"])
+                         "--rapporto", str(self.uscita), "--ora", ORA, "--modalita", "verifica"])
         self.assertEqual(rc, 2)
         self.assertIn("--varianti", errore.getvalue())
 
@@ -273,8 +289,8 @@ class TestRevisioneR7Gemini(BaseRiga):
     """Rilievi P1–P7 della revisione R7 di Gemini (G-20261115-R7, ramo rev/gemini-esecutore-h002), scritti come
     test PRIMA delle correzioni."""
 
-    def verifica(self, varianti="V-T", inizio="2010-01-01", fine="2010-02-28"):
-        a = ["--modalita", "verifica", "--inizio", inizio, "--fine", fine]
+    def verifica(self, varianti="V-T"):
+        a = ["--modalita", "verifica"]
         return self.lancia(*(a + (["--varianti", varianti] if varianti else [])))
 
     def verifiche(self):
@@ -282,7 +298,7 @@ class TestRevisioneR7Gemini(BaseRiga):
 
     def test_p1_verifica_solo_delle_varianti_promosse_in_sviluppo(self):
         self.cache_di(date(2010, 1, 1), 59)
-        S.sigilla(self.registro, "H-002", self.scheda, ["V-T", "V-S"], ORA)
+        self.sigilla(["V-T", "V-S"])
         self.assertEqual(self.verifica("V-T"), 2)                       # nessuno screening registrato
         self.sviluppo_finto(V_T=False, V_S=False)
         self.assertEqual(self.verifica("V-T"), 2)                       # bocciata in sviluppo
@@ -291,7 +307,7 @@ class TestRevisioneR7Gemini(BaseRiga):
     def test_p1_basta_una_bocciatura(self):
         """Uno screening ripetuto non cancella una bocciatura (niente «riprova finché passa»)."""
         self.cache_di(date(2010, 1, 1), 59)
-        S.sigilla(self.registro, "H-002", self.scheda, ["V-T", "V-S"], ORA)
+        self.sigilla(["V-T", "V-S"])
         self.sviluppo_finto(V_T=False)
         self.sviluppo_finto(V_T=True, V_S=True)
         self.assertEqual(self.verifica("V-T"), 2)
@@ -299,7 +315,7 @@ class TestRevisioneR7Gemini(BaseRiga):
 
     def test_p2_tutte_e_sole_le_promosse_in_una_chiamata(self):
         self.cache_di(date(2010, 1, 1), 59)
-        S.sigilla(self.registro, "H-002", self.scheda, ["V-T", "V-S"], ORA)
+        self.sigilla(["V-T", "V-S"])
         self.sviluppo_finto(V_T=True, V_S=True)
         self.assertEqual(self.verifica("V-T"), 2)                       # chiamate separate: V del DSR aggirata
         self.assertEqual(self.verifica("V-S"), 2)
@@ -309,8 +325,8 @@ class TestRevisioneR7Gemini(BaseRiga):
 
     def test_p3_sigillo_con_varianti_diverse_da_quelle_dell_esecutore(self):
         self.cache_di(date(2024, 1, 1), 60)
-        S.sigilla(self.registro, "H-002", self.scheda, ["V-T"], ORA)                 # N = 1 invece di 2
-        self.assertEqual(self.lancia("--modalita", "sviluppo", "--inizio", "2024-01-01", "--fine", "2024-02-29"), 2)
+        self.sigilla(["V-T"])                 # N = 1 invece di 2
+        self.assertEqual(self.lancia("--modalita", "sviluppo"), 2)
         self.assertEqual(S.leggi(self.registro)["esecuzioni"], [])
 
     def test_p4_anni_del_periodo_nella_riga_di_comando(self):
@@ -318,21 +334,22 @@ class TestRevisioneR7Gemini(BaseRiga):
         non positivi, quindi la quota è 1/3 e non 1 (mutante E16; la prima stesura usava un 2010 negativo e non
         distingueva i due casi)."""
         self.cache_di(date(2010, 1, 1), 59, da=date(2008, 1, 1), spinta=0.03)
-        S.sigilla(self.registro, "H-002", self.scheda, ["V-T", "V-S"], ORA)
+        self.sigilla(["V-T", "V-S"])
         self.sviluppo_finto(V_T=True, V_S=False)
-        self.assertEqual(self.verifica("V-T", inizio="2008-01-01"), 0)
+        self.periodi(verifica=(date(2008, 1, 1), date(2010, 2, 28)))
+        self.assertEqual(self.verifica("V-T"), 0)
         riga = [r for r in self.uscita.read_text(encoding="utf-8").splitlines() if "quota di anni solari" in r][0]
         self.assertEqual(riga.split("|")[3].strip(), "0.3333")
 
     def test_p6_dati_mancanti_non_bruciano_la_verifica(self):
-        S.sigilla(self.registro, "H-002", self.scheda, ["V-T", "V-S"], ORA)
+        self.sigilla(["V-T", "V-S"])
         self.sviluppo_finto(V_T=True, V_S=False)
         self.assertEqual(self.verifica("V-T"), 2)                       # cache inesistente
         self.cache_di(date(2010, 1, 1), 30)                             # cache fino al 30/1, periodo fino al 28/2
         self.assertEqual(self.verifica("V-T"), 2)
         self.assertEqual(self.verifiche(), [])
         self.cache_di(date(2024, 1, 1), 30)                             # anche lo sviluppo con dati incompleti
-        self.assertEqual(self.lancia("--modalita", "sviluppo", "--inizio", "2024-01-01", "--fine", "2024-02-29"), 2)
+        self.assertEqual(self.lancia("--modalita", "sviluppo"), 2)
         self.assertEqual([e for e in S.leggi(self.registro)["esecuzioni"] if e["ruolo"] != "sviluppo" or
                           "periodo" in e], [])
 
@@ -358,6 +375,151 @@ class TestRevisioneR7Gemini(BaseRiga):
         atteso = K.verifica(sim.strategia["V-T"], 2, anni=range(2005, 2008), sharpe_prove=[vs])["dsr"]
         self.assertEqual(r["varianti"]["V-T"]["verifica"]["dsr"], atteso)
         self.assertNotEqual(atteso, K.verifica(sim.strategia["V-T"], 2, anni=range(2005, 2008))["dsr"])
+
+
+class TestRevisioneR11Gemini(BaseRiga):
+    """Rilievi R11-S1…S7 e mutanti MR01–MR07 del secondo attacco di Gemini (G-20261115-R11, ramo rev/gemini-r11),
+    scritti come test PRIMA delle correzioni. Principio: la riga di comando non lascia scelte libere."""
+
+    def lancia_errore(self, *argomenti):
+        base = ["--registro", str(self.registro), "--scheda", str(self.scheda), "--cache", str(self.cache),
+                "--rapporto", str(self.uscita), "--ora", ORA]
+        errore = io.StringIO()
+        with contextlib.redirect_stdout(io.StringIO()), contextlib.redirect_stderr(errore):
+            rc = E.main(base + list(argomenti))
+        return rc, errore.getvalue()
+
+    def esecuzioni(self, ruolo):
+        return [e for e in S.leggi(self.registro)["esecuzioni"] if e["ruolo"] == ruolo]
+
+    def test_s1_s3_nessuna_scelta_libera_dalla_riga_di_comando(self):
+        """Periodi, ripetizioni e seme non si scelgono: un'opzione in più è un errore di argparse."""
+        for extra in (["--inizio", "2022-08-01"], ["--fine", "2023-10-31"], ["--ripetizioni", "1"], ["--seme", "1"]):
+            with self.assertRaises(SystemExit), contextlib.redirect_stderr(io.StringIO()):
+                E.main(["--modalita", "sviluppo", "--rapporto", str(self.uscita)] + extra)
+
+    def test_s1_periodo_di_verifica_fisso_nel_codice(self):
+        self.assertEqual(E.PERIODO_VERIFICA[1], date(2010, 2, 28))                 # sostituito dal test
+        from unittest import mock
+        with mock.patch.object(E, "PERIODO_VERIFICA", E.PERIODO_VERIFICA):
+            pass
+        import importlib
+        modulo = importlib.reload(E)                                               # valori veri del codice
+        try:
+            self.assertEqual(modulo.PERIODO_VERIFICA, (date(2005, 1, 1), date(2023, 10, 31)))
+            self.assertEqual(modulo.PERIODO_SVILUPPO, (date(2023, 11, 15), date(2026, 11, 12)))
+        finally:
+            self.periodi(sviluppo=(date(2024, 1, 1), date(2024, 2, 29)), verifica=(date(2010, 1, 1), date(2010, 2, 28)))
+
+    def test_s3_e_mr07_lo_sviluppo_registra_esito_ripetizioni_seme_e_dati(self):
+        """Mercato casuale di 60 giorni: lo screening boccia (meno di 300 trade) e il registro lo dice."""
+        self.cache_di(date(2024, 1, 1), 60)
+        self.sigilla()
+        self.assertEqual(self.lancia("--modalita", "sviluppo"), 0)
+        sv = self.esecuzioni("sviluppo")
+        self.assertEqual(len(sv), 2)
+        for e in sv:
+            self.assertIs(e["promossa"], False)                                    # MR07
+            self.assertEqual((e["ripetizioni"], e["seme"]), (K.RIPETIZIONI, K.SEME))
+            self.assertEqual(e["cache"], str(self.cache.resolve()))
+            self.assertEqual(len(e["dati_sha256"]), 64)
+
+    def test_s2_giorni_feriali_vuoti_fermano_tutto(self):
+        """File presenti ma vuoti in un giorno feriale = dati mancanti; tollerate solo le chiusure note dell'oro
+        (1° gennaio, 25 dicembre, Venerdì Santo)."""
+        self.cache_di(date(2024, 1, 1), 60)
+        self.sigilla()
+        for lato in ("XAUUSD", "XAUUSD_ASK"):
+            (self.cache / lato / "2024-01-01.bi5").write_bytes(b"")              # Capodanno: chiusura nota
+        self.assertEqual(self.lancia("--modalita", "sviluppo"), 0)
+        self.registro.unlink()
+        self.sigilla()
+        (self.cache / "XAUUSD_ASK" / "2024-01-03.bi5").write_bytes(b"")          # mercoledì qualunque, solo ASK
+        rc, err = self.lancia_errore("--modalita", "sviluppo")
+        self.assertEqual(rc, 2)
+        self.assertIn("2024-01-03", err)
+        self.assertEqual(self.esecuzioni("sviluppo"), [])
+
+    def test_mr01_mr02_dati_ask_incompleti(self):
+        self.cache_di(date(2024, 1, 1), 60)
+        self.sigilla()
+        (self.cache / "XAUUSD_ASK" / "2024-02-12.bi5").unlink()                  # un giorno ASK mancante
+        self.assertEqual(self.lancia("--modalita", "sviluppo"), 2)
+        for f in (self.cache / "XAUUSD_ASK").glob("*.bi5"):                     # tutti gli ASK vuoti
+            f.write_bytes(b"")
+        self.assertEqual(self.lancia("--modalita", "sviluppo"), 2)
+        self.assertEqual(self.esecuzioni("sviluppo"), [])
+
+    def test_s4_rapporto_non_scrivibile_non_brucia_la_verifica(self):
+        self.cache_di(date(2010, 1, 1), 59)
+        self.sigilla()
+        self.sviluppo_finto(V_T=True, V_S=False)
+        self.uscita.mkdir()                                                      # il rapporto è una cartella
+        self.assertEqual(self.lancia("--modalita", "verifica", "--varianti", "V-T"), 2)
+        self.assertEqual(self.esecuzioni("verifica"), [])
+
+    def test_s4_la_verifica_registra_l_esito(self):
+        self.cache_di(date(2010, 1, 1), 59)
+        self.sigilla()
+        self.sviluppo_finto(V_T=True, V_S=False)
+        self.assertEqual(self.lancia("--modalita", "verifica", "--varianti", "V-T"), 0)
+        esito = self.esecuzioni("esito")
+        self.assertEqual(len(esito), 1)
+        for chiave in ("variante", "promossa", "dsr", "r_medio", "quota_anni", "rapporto_sha256"):
+            self.assertIn(chiave, esito[0])
+        import hashlib
+        self.assertEqual(esito[0]["rapporto_sha256"], hashlib.sha256(self.uscita.read_bytes()).hexdigest())
+        self.assertEqual(self.esecuzioni("verifica")[0]["cache"], str(self.cache.resolve()))
+
+    def test_s5_copertura_minima_dei_confronti(self):
+        """350 giorni della strategia, benchmark e casuale solo su 20 (5,7%): criteri 4 e 5 non passano."""
+        d = [date(2025, 1, 1) + timedelta(days=k) for k in range(350)]
+        sim = SimFinto({"V-T": [tr(x, 0.30 if k % 2 else -0.10) for k, x in enumerate(d)]},
+                       {"V-T": [tr(x, -0.50) for x in d[:20]]}, {"V-T": [tr(x, -0.50, "vendita") for x in d[:20]]})
+        from brain.laboratorio.simulatori import orb_londra as O
+        x = E.valuta_variante(sim, E._Giorni(sim, {}, {}), O.V_T, {}, 0.0, 1000, 42)
+        nomi = {c["nome"]: c["passa"] for c in x["screening"]["criteri"]}
+        self.assertFalse(nomi["sopra il 95° percentile del confronto casuale"])
+        self.assertFalse(nomi["batte «compro sempre» e «vendo sempre»"])
+        self.assertFalse(x["screening"]["promossa"])
+
+    def test_s6_stessa_cache_dello_sviluppo(self):
+        self.cache_di(date(2010, 1, 1), 59)
+        self.sigilla()
+        self.sviluppo_finto(V_T=True, V_S=False, cache=self.dir / "altra_cache")
+        self.assertEqual(self.lancia("--modalita", "verifica", "--varianti", "V-T"), 2)
+        self.assertEqual(self.esecuzioni("verifica"), [])
+
+    def test_s6_anni_obbligatori_nella_funzione(self):
+        with self.assertRaises(TypeError):
+            E.esegui_verifica({}, {}, ["V-T"], 2)
+
+    def test_mr03_mr04_ipotesi_diverse_nello_stesso_registro(self):
+        self.cache_di(date(2010, 1, 1), 59)
+        altra = self.dir / "H-999.md"
+        altra.write_text("# H-999\n", encoding="utf-8")
+        self.sigilla()
+        self.sigilla(ipotesi="H-999", scheda=altra)
+        self.sviluppo_finto(ipotesi="H-999", V_T=True)                           # promossa in UN'ALTRA ipotesi
+        self.assertEqual(self.lancia("--modalita", "verifica", "--varianti", "V-T"), 2)     # MR03
+        S.registra_esecuzione(self.registro, "H-999", {"ruolo": "verifica", "variante": "V-T"}, ORA)
+        self.sviluppo_finto(V_T=True, V_S=False)
+        self.assertEqual(self.lancia("--modalita", "verifica", "--varianti", "V-T"), 0)     # MR04
+
+    def test_codice_sigillato(self):
+        """Il sigillo registra l'impronta del codice che esegue la scheda: se il codice cambia, niente esecuzioni."""
+        self.cache_di(date(2024, 1, 1), 60)
+        altro = dict(E.impronte_codice())
+        primo = sorted(altro)[0]
+        altro[primo] = "0" * 64
+        self.sigilla(codice=altro)
+        rc, err = self.lancia_errore("--modalita", "sviluppo")
+        self.assertEqual(rc, 2)
+        self.assertIn("codice", err)
+        self.registro.unlink()
+        S.sigilla(self.registro, "H-002", self.scheda, ["V-T", "V-S"], ORA)        # sigillo senza codice
+        self.assertEqual(self.lancia("--modalita", "sviluppo"), 2)
+        self.assertEqual(self.esecuzioni("sviluppo"), [])
 
 
 if __name__ == "__main__":

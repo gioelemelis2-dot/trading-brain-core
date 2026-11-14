@@ -296,8 +296,8 @@ class TestRevisioneR7GeminiCriteri(Cartella):
         """Valore atteso ricalcolato a parte: Sharpe campionario, momenti di popolazione, V = 1/(T − 1)."""
         from statistics import mean, stdev
         from brain.laboratorio.backtester.dsr import DSRCalculator
-        rs = [0.9, -1.0, 1.5, -1.0, 0.4, 1.5, -1.0, 2.0, -0.3, 0.8]
-        t = [trade(2005, 1 + k, r) for k, r in enumerate(rs)]
+        rs = [0.9, -1.0, 1.5, -1.0, 0.4, 1.5, -1.0, 2.0, -0.3, 0.8] * 4                 # 40 trade (DSR da 30)
+        t = [trade(2005 + k // 12, 1 + k % 12, r) for k, r in enumerate(rs)]
         mu, n = mean(rs), len(rs)
         m2 = sum((x - mu) ** 2 for x in rs) / n
         asim = (sum((x - mu) ** 3 for x in rs) / n) / m2 ** 1.5
@@ -322,7 +322,8 @@ class TestRevisioneR7GeminiCriteri(Cartella):
         def scrivi(k):
             try:
                 for j in range(15):
-                    S.registra_esecuzione(self.registro, "H-999", {"ruolo": "sviluppo", "variante": f"{k}-{j}"}, ORA)
+                    S.registra_esecuzione(self.registro, "H-999", {"ruolo": "sviluppo", "variante": f"V-T {k}-{j}"},
+                                          ORA)
             except Exception as e:                                       # noqa: BLE001
                 errori.append(e)
         fili = [threading.Thread(target=scrivi, args=(k,)) for k in range(4)]
@@ -332,6 +333,67 @@ class TestRevisioneR7GeminiCriteri(Cartella):
             f.join()
         self.assertEqual(errori, [])
         self.assertEqual(len(S.leggi(self.registro)["esecuzioni"]), 60)
+
+
+class TestRevisioneR11GeminiCriteri(Cartella):
+    """R11-S1 (DSR con pochi trade), R11-S2 (giorni feriali vuoti), R11-S6 (impronta dei dati), R11-S7 (varianti
+    fuori dal sigillo), MR06 (DSR al confine), impronta del codice nel sigillo. Scritti PRIMA delle correzioni."""
+
+    def test_s1_niente_dsr_sotto_30_trade(self):
+        e = K.verifica([trade(2005, 1, 1.0), trade(2006, 1, 2.0)], n_prove=1)
+        self.assertIsNone(e["dsr"])
+        self.assertFalse(e["promossa"])
+        rs = [1.0, -0.5] * 15
+        self.assertIsNotNone(K.verifica([trade(2005 + k // 12, 1 + k % 12, r) for k, r in enumerate(rs)], 1)["dsr"])
+
+    def test_mr06_dsr_uguale_alla_soglia_passa(self):
+        rs = [1.0, -0.6, 0.4, -0.2, 0.9] * 10
+        t = [trade(2005 + k // 12, 1 + k % 12, r) for k, r in enumerate(rs)]
+        d = K.verifica(t, n_prove=2)["dsr"]
+        c = [c for c in K.verifica(t, n_prove=2, dsr_min=d)["criteri"] if c["nome"].startswith("DSR")][0]
+        self.assertTrue(c["passa"])
+
+    def test_s7_varianti_fuori_dal_sigillo(self):
+        S.sigilla(self.registro, "H-999", self.scheda, ["V-T"], ORA)
+        with self.assertRaises(ValueError):
+            S.registra_esecuzione(self.registro, "H-999", {"ruolo": "sviluppo", "variante": "INVENTATA"}, ORA)
+        with self.assertRaises(ValueError):
+            S.registra_esecuzione(self.registro, "H-999", {"ruolo": "sviluppo"}, ORA)
+        S.registra_esecuzione(self.registro, "H-999", {"ruolo": "robustezza", "variante": "V-T range 20'"}, ORA)
+        S.registra_esecuzione(self.registro, "H-999", {"ruolo": "esito", "variante": "V-T", "promossa": False}, ORA)
+
+    def test_codice_nel_sigillo(self):
+        S.sigilla(self.registro, "H-999", self.scheda, ["V-T"], ORA, codice={"a.py": "1" * 64})
+        self.assertEqual(S.controlla_sigillo(self.registro, "H-999", self.scheda, codice={"a.py": "1" * 64})["codice"],
+                         {"a.py": "1" * 64})
+        with self.assertRaises(ValueError):
+            S.controlla_sigillo(self.registro, "H-999", self.scheda, codice={"a.py": "2" * 64})
+
+    def test_s2_giorni_feriali_vuoti_e_chiusure_note(self):
+        for nome in ("bid", "ask"):
+            d = self.dir / nome
+            d.mkdir()
+            for g in (date(2026, 1, 1), date(2026, 1, 2), date(2026, 1, 3), date(2026, 4, 3)):   # gio, ven, sab, Ven. Santo
+                (d / f"{g.isoformat()}.bi5").write_bytes(b"")
+            (d / "2026-01-05.bi5").write_bytes(bi5([(480 * 60, 2650000, 2650010, 2649990, 2650020, 1.0)]))
+        _, _, info = C.carica(self.dir / "bid", self.dir / "ask", date(2026, 1, 1), date(2026, 1, 5), "sviluppo")
+        self.assertEqual(info["feriali_vuoti_bid"], ["2026-01-02"])               # il 1/1 è chiusura nota
+        self.assertEqual(info["feriali_vuoti_ask"], ["2026-01-02"])
+        _, _, info = C.carica(self.dir / "bid", self.dir / "ask", date(2026, 4, 3), date(2026, 4, 3), "sviluppo")
+        self.assertEqual(info["feriali_vuoti_bid"], [])                           # Venerdì Santo
+
+    def test_s6_impronta_dei_dati_letti(self):
+        for nome in ("bid", "ask"):
+            d = self.dir / nome
+            d.mkdir()
+            (d / "2026-01-05.bi5").write_bytes(bi5([(480 * 60, 2650000, 2650010, 2649990, 2650020, 1.0)]))
+        a = C.carica(self.dir / "bid", self.dir / "ask", date(2026, 1, 5), date(2026, 1, 5), "sviluppo")[2]
+        self.assertEqual(len(a["dati_sha256"]), 64)
+        self.assertEqual(a["dati_sha256"],
+                         C.carica(self.dir / "bid", self.dir / "ask", date(2026, 1, 5), date(2026, 1, 5), "sviluppo")[2]["dati_sha256"])
+        (self.dir / "ask" / "2026-01-05.bi5").write_bytes(bi5([(480 * 60, 2650300, 2650310, 2650290, 2650320, 1.0)]))
+        b = C.carica(self.dir / "bid", self.dir / "ask", date(2026, 1, 5), date(2026, 1, 5), "sviluppo")[2]
+        self.assertNotEqual(a["dati_sha256"], b["dati_sha256"])
 
 
 if __name__ == "__main__":
