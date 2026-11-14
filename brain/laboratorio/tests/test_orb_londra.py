@@ -615,5 +615,57 @@ class TestBenchmarkEMetriche(unittest.TestCase):
         self.assertEqual(x["per_anno"], {2025: (2, 0.0, 0.0), 2026: (2, 0.5, 1.0)})
 
 
+class TestReplicaGemini(unittest.TestCase):
+    """Rilievi D1 e D2 della replica indipendente di Gemini (G-20261115-01, ramo rev/gemini-replica-h002),
+    riprodotti da Claude con prove proprie prima della correzione."""
+
+    def storia_con_ask(self, o_min, ask_da, ask_a):
+        """20 sessioni precedenti con range di `o_min` minuti largo 5 e ASK (spread 0,1) solo in [ask_da, ask_a)."""
+        m = Mercato()
+        for d in giorni_lavorativi_prima(G, 20):
+            t = datetime(d.year, d.month, d.day, 7, 0, tzinfo=UTC)
+            while t < datetime(d.year, d.month, d.day, 17, 0, tzinfo=UTC):
+                dentro = time(8, 0) <= t.time() < (datetime(2026, 1, 1, 8, 0) + timedelta(minutes=o_min)).time()
+                a = 5.0 if dentro else 0.0
+                m.bid[t] = (2000.0, 2000.0 + a / 2, 2000.0 - a / 2, 2000.0)
+                if ask_da <= t.time() < ask_a:
+                    m.ask[t] = (2000.1, 2000.1 + a / 2, 2000.1 - a / 2, 2000.1)
+                t += timedelta(minutes=1)
+        return m
+
+    def giorno(self, m, par):
+        m.giornata(G, lambda t: (2000.0, 2002.5, 1997.5, 2000.0) if time(8, 0) <= t.time() < time(8, 20)
+                   else (2000.0,) * 4)
+        return [x for x in O.prepara(m.bid, m.ask, par) if x.data == G][0]
+
+    def test_d1_spread_dalle_0830_anche_con_il_range_di_20_minuti(self):
+        """§3: spread del primo minuto eseguibile DALLE 08:30, qualunque sia la durata del range."""
+        m = self.storia_con_ask(20, time(8, 20), time(8, 30))       # ASK solo prima delle 08:30
+        self.assertEqual(self.giorno(m, O.Parametri(or_minuti=20)).motivo, "manca lo spread delle sessioni precedenti")
+
+    def test_d1_spread_dalle_0830_anche_con_il_range_di_45_minuti(self):
+        m = self.storia_con_ask(45, time(8, 30), time(8, 45))       # ASK solo fra le 08:30 e le 08:45
+        self.assertNotEqual(self.giorno(m, O.Parametri(or_minuti=45)).motivo,
+                            "manca lo spread delle sessioni precedenti")
+
+    def minuti(self, b0, a0):
+        t0 = datetime(G.year, G.month, G.day, 9, 0, tzinfo=UTC)
+        fine = datetime(G.year, G.month, G.day, 16, 30, tzinfo=UTC)
+        return [(t0, (b0,) * 4, (a0,) * 4), (fine, (b0,) * 4, (a0,) * 4)]
+
+    def test_d2_once_esatte_ai_bordi_interi(self):
+        """§5: once = floor(500 / (perdita allo stop + commissione)) in aritmetica esatta. In float il
+        denominatore 10,00 diventa 10,000000000000064 e le once 49 invece di 50."""
+        par = O.Parametri(stress=0.20)
+        # vendita: entrata 2000,7 − 0,10 − 0,20 = 2000,40; uscita allo stop 2009,93 + 0,20 + 0,20 = 2010,33;
+        # perdita 9,93 + commissione 0,07 = 10,00 → 50 once
+        g = O.Giorno(G, 5.0, 2009.93, 2004.93, True, "valido", "vendita", self.minuti(2000.7, 2000.8))
+        self.assertEqual(O.simula(g, "vendita", par)["once"], 50)
+        # acquisto: entrata 2009,23 + 0,30 = 2009,53; uscita allo stop 1990,00 − 0,40 = 1989,60;
+        # perdita 19,93 + 0,07 = 20,00 → 25 once
+        g = O.Giorno(G, 20.0, 2010.0, 1990.0, True, "valido", "acquisto", self.minuti(2009.13, 2009.23))
+        self.assertEqual(O.simula(g, "acquisto", par)["once"], 25)
+
+
 if __name__ == "__main__":
     unittest.main()
