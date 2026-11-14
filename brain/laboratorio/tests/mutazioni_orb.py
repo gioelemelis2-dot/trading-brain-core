@@ -57,6 +57,16 @@ M = {
     "O35 once in virgola mobile (D2 di Gemini)": [
         (F, "once = round(par.rischio_usd * MICRO) // round((perdita_allo_stop + par.commissione) * MICRO)",
          "once = int(par.rischio_usd // (perdita_allo_stop + par.commissione))")],
+    "O36 segnale dalla chiusura della giornata (sguardo al futuro)": [
+        (F, "chiusura = bid[dentro[-1]][3]", "chiusura = bid[per_data[g][-1]][3]")],
+    "O37 slittamento d'ingresso della vendita a favore": [
+        (F, "entrata = b0[0] - par.slip_ingresso - par.stress", "entrata = b0[0] + par.slip_ingresso - par.stress")],
+    "O38 ora legale ignorata": [
+        (F, "return datetime.combine(giorno, ora, tzinfo=LONDRA).astimezone(timezone.utc)",
+         "return datetime.combine(giorno, ora, tzinfo=timezone.utc)")],
+    "O39 servono 25 minuti su 30": [
+        (F, "len(or_t) < par.minuti_or_min * par.or_minuti", "len(or_t) <= par.minuti_or_min * par.or_minuti")],
+    "O40 vendita con ASK già allo stop ammessa": [(F, "if a0[0] >= stop:", "if a0[0] > stop:")],
     "O29 festivi spostati ignorati": [(F, "        s.discard(vecchio)\n        s.add(nuovo)", "        pass")],
 }
 

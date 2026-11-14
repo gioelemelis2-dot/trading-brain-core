@@ -667,5 +667,182 @@ class TestReplicaGemini(unittest.TestCase):
         self.assertEqual(O.simula(g, "acquisto", par)["once"], 25)
 
 
+def mercato_casuale(seme, giorni=90, spread=(0.2, 0.5), inizio=date(2026, 1, 5), centro=None):
+    """Passeggiata casuale a seme fisso, prezzi interi in millesimi (07:00–17:00 UTC dei giorni feriali).
+    `spread` = intervallo dello spread casuale per minuto; (0, 0) = ASK uguale al BID.
+    Con `centro` restituisce anche il mercato SPECCHIO: prezzo' = 2 × centro − prezzo, alto e basso scambiati."""
+    import random
+    rng = random.Random(seme)
+    bid, ask, sbid, sask = {}, {}, {}, {}
+    p = 2_000_000
+    for k in range(giorni):
+        g = inizio + timedelta(days=k)
+        if g.weekday() >= 5:
+            continue
+        p += round(rng.gauss(0, 3000))
+        t = datetime(g.year, g.month, g.day, 7, 0, tzinfo=UTC)
+        while t < datetime(g.year, g.month, g.day, 17, 0, tzinfo=UTC):
+            percorso = [p]
+            for _ in range(3):
+                percorso.append(percorso[-1] + round(rng.gauss(0, 400)))
+            o, c, h, l = percorso[0], percorso[-1], max(percorso), min(percorso)
+            sp = round(rng.uniform(*spread) * 1000)
+            bid[t] = (o / 1000, h / 1000, l / 1000, c / 1000)
+            ask[t] = ((o + sp) / 1000, (h + sp) / 1000, (l + sp) / 1000, (c + sp) / 1000)
+            if centro is not None:
+                z = 2 * centro * 1000
+                sbid[t] = ((z - o) / 1000, (z - l) / 1000, (z - h) / 1000, (z - c) / 1000)
+                sask[t] = sbid[t]
+            p = c
+            t += timedelta(minutes=1)
+    return (bid, ask) if centro is None else (bid, ask, sbid, sask)
+
+
+class TestStrutturali(unittest.TestCase):
+    """Controlli di intere famiglie di errori, non di un caso alla volta (proposta del 15/11/2026)."""
+
+    def test_nessuno_sguardo_al_futuro(self):
+        """Si tagliano i dati in un istante T. I giorni prima di T devono restare identici in tutto (giorni, minuti,
+        trade); nel giorno di T, range, validità e (se l'ingresso è prima di T) direzione e minuto d'ingresso."""
+        bid, ask = mercato_casuale(11)
+        pieno = {g.data: g for g in O.prepara(bid, ask)}
+        tr_pieno = {x["data"]: x for x in O.trade(list(pieno.values()), O.V_T)}
+        provati = 0
+        for d in sorted(pieno)[24::6]:
+            for ora in (time(9, 30), time(12, 0), time(23, 59)):
+                taglio = datetime.combine(d, ora, tzinfo=O.LONDRA).astimezone(UTC)
+                b = {t: v for t, v in bid.items() if t < taglio}
+                a = {t: v for t, v in ask.items() if t < taglio}
+                parte = {g.data: g for g in O.prepara(b, a)}
+                for g, x in parte.items():
+                    if g < d:
+                        self.assertEqual(x, pieno[g], (d, ora, g))
+                        provati += 1
+                y, x = pieno[d], parte[d]
+                self.assertEqual((x.a, x.ra_alto, x.ra_basso, x.valido), (y.a, y.ra_alto, y.ra_basso, y.valido))
+                if y.minuti and y.minuti[0][0] < taglio:
+                    self.assertEqual((x.lato, x.minuti[0][0] if x.minuti else None), (y.lato, y.minuti[0][0]),
+                                     (d, ora))
+                for g, t in {t["data"]: t for t in O.trade(list(parte.values()), O.V_T)}.items():
+                    if g < d:
+                        self.assertEqual(t, tr_pieno[g])
+        self.assertGreater(provati, 500)
+        self.assertGreater(len(tr_pieno), 20)
+
+    def test_simmetria_acquisti_e_vendite(self):
+        """Con spread zero, nel mercato specchio ogni acquisto diventa una vendita con lo stesso risultato e le
+        stesse once, e viceversa (le regole sono simmetriche; con lo spread non lo sono, per scelta della scheda)."""
+        bid, ask, sbid, sask = mercato_casuale(12, spread=(0.0, 0.0), centro=2000)
+        for par in (O.V_T, O.V_S, O.Parametri(stress=0.2)):
+            a = {x["data"]: x for x in O.trade(O.prepara(bid, ask, par), par)}
+            b = {x["data"]: x for x in O.trade(O.prepara(sbid, sask, par), par)}
+            self.assertEqual(sorted(a), sorted(b))
+            self.assertGreater(len(a), 20)
+            lati = set()
+            for d in a:
+                self.assertNotEqual(a[d]["lato"], b[d]["lato"])
+                self.assertEqual((a[d]["once"], a[d]["motivo"]), (b[d]["once"], b[d]["motivo"]), d)
+                self.assertAlmostEqual(a[d]["r"], b[d]["r"], places=9)
+                lati.add(a[d]["lato"])
+            self.assertEqual(lati, {"acquisto", "vendita"})
+
+
+class TestCasiScopertiGemini(unittest.TestCase):
+    """Casi che la replica di Gemini (G-20261115-01, §5) copriva e i test no. Numeri calcolati a mano."""
+
+    def prepara(self, prezzo_fn, togli=(), togli_ask=(), par=O.V_T):
+        m = Mercato()
+        m.storia(G)
+        m.giornata(G, prezzo_fn)
+        for t in togli:
+            m.bid.pop(t, None)
+            m.ask.pop(t, None)
+        for t in togli_ask:
+            m.ask.pop(t, None)
+        return [x for x in O.prepara(m.bid, m.ask, par) if x.data == G]
+
+    def test_24_minuti_su_30_bastano(self):
+        """Il limite è 0,8 × 30 = 24: tolti 6 minuti il giorno è valido (con 7 no, già provato)."""
+        togli = [datetime(2026, 1, 7, 8, k, tzinfo=UTC) for k in range(6)]
+        g = self.prepara(rialzo, togli)
+        self.assertEqual(len(g), 1)
+        self.assertEqual((g[0].motivo, g[0].ra_alto, g[0].ra_basso), ("valido", 2002.0, 1998.0))
+
+    def test_ingresso_ritardato_dentro_i_15_minuti(self):
+        """Mancano i minuti 08:45–08:58: si entra alle 08:59, BID 2003 + 14 × 0,1 = 2004,4, ASK 2004,7 + 0,10 = 2004,8."""
+        togli = [datetime(2026, 1, 7, 8, k, tzinfo=UTC) for k in range(45, 59)]
+        g = self.prepara(rialzo, togli)[0]
+        self.assertEqual(g.minuti[0][0], datetime(2026, 1, 7, 8, 59, tzinfo=UTC))
+        self.assertAlmostEqual(O.simula(g, "acquisto", O.V_T)["entrata"], 2004.8)
+
+    def test_nessun_minuto_eseguibile_dopo_il_segnale(self):
+        """Dopo le 08:45 non c'è più l'ASK: il segnale c'è ma non si può entrare."""
+        togli = [datetime(2026, 1, 7, 8, 45, tzinfo=UTC) + timedelta(minutes=k) for k in range(8 * 60 + 15)]
+        g = self.prepara(rialzo, togli_ask=togli)[0]
+        self.assertEqual((g.lato, g.motivo, g.minuti), ("acquisto", "nessun minuto eseguibile dopo il segnale", None))
+
+    @staticmethod
+    def discesa(t):
+        """Range 1998–2002 (A = 4); candela 08:30–08:45 a 1997 (vendita); dalle 09:00 piatto a 1993."""
+        hm = t.time()
+        if time(8, 0) <= hm < time(8, 30):
+            return 2000.0, 2002.0, 1998.0, 2000.0
+        if hm < time(9, 0):
+            return 1997.0, 1997.0, 1997.0, 1997.0
+        return 1993.0, 1993.0, 1993.0, 1993.0
+
+    def test_vendita_senza_quotazioni_alle_16_30(self):
+        """V-S. Entrata BID 1997 − 0,10 = 1996,9. Mancano 16:30–16:50: uscita alla chiusura ASK dell'ultimo minuto prima
+        delle 16:30, 1993,3 + 0,20 = 1993,5. Perdita allo stop (2002 + 0,2) − 1996,9 = 5,3; once floor(500 / 5,37) = 93;
+        R = 93 × (3,4 − 0,07) / 500 = 0,61938."""
+        togli = [datetime(2026, 1, 7, 16, k, tzinfo=UTC) for k in range(30, 51)]
+        x = O.trade(self.prepara(self.discesa, togli, par=O.V_S), O.V_S)[0]
+        self.assertEqual((x["lato"], x["motivo"], x["once"]), ("vendita", "fine sessione senza quotazioni", 93))
+        self.assertAlmostEqual(x["entrata"], 1996.9)
+        self.assertAlmostEqual(x["uscita"], 1993.5)
+        self.assertAlmostEqual(x["r"], 0.61938, places=9)
+
+    def test_vendita_con_prezzo_gia_oltre_lo_stop(self):
+        """Vendita con spread largo all'ingresso (BID 2000): ASK di apertura 2002,0 = RA alto, già allo stop: niente
+        trade, anche se il rischio (2002 − 1999,9 = 2,1) supera 0,25 × A = 1. Con ASK 2001,9 il trade si fa."""
+        g = self.prepara(self.discesa)[0]
+        t0, b0, a0 = g.minuti[0]
+        g.minuti[0] = (t0, (2000.0,) * 4, (2002.0,) * 4)
+        self.assertIsNone(O.simula(g, "vendita", O.V_T))
+        g.minuti[0] = (t0, (2000.0,) * 4, (2001.9,) * 4)
+        self.assertAlmostEqual(O.simula(g, "vendita", O.V_T)["entrata"], 1999.9)
+
+    def test_stop_e_target_nel_minuto_d_ingresso(self):
+        """Acquisto: nel minuto d'ingresso il BID apre a 2003, scende a 1997,9 (sotto lo stop 1998) e sale a 2020 (oltre
+        il target): conta lo stop, all'uscita 1998 − 0,20 = 1997,8."""
+        g = self.prepara(rialzo)[0]
+        t0, b0, a0 = g.minuti[0]
+        g.minuti[0] = (t0, (2003.0, 2020.0, 1997.9, 2003.0), a0)
+        x = O.simula(g, "acquisto", O.V_T)
+        self.assertEqual(x["motivo"], "stop")
+        self.assertAlmostEqual(x["uscita"], 1997.8)
+
+    def test_ora_legale_di_ottobre(self):
+        """Domenica 25/10/2026 finisce l'ora legale inglese. Venerdì 23/10 il range è 07:00–07:30 UTC, lunedì 26/10
+        08:00–08:30 UTC. Le 21 sessioni precedenti hanno il range alle 08:00 di Londra (A = 5); i due giorni provati
+        A = 4 (spread 0,1: minimo 2,82) e un'ora prima un range più largo che non deve entrare."""
+        m = Mercato()
+        lunedi = date(2026, 10, 26)
+        for d in giorni_lavorativi_prima(lunedi, 21) + [lunedi]:
+            inizio = datetime.combine(d, time(8, 0), tzinfo=O.LONDRA).astimezone(UTC)
+
+            def f(t, inizio=inizio, d=d):
+                if inizio <= t < inizio + timedelta(minutes=30):
+                    return (2000.0, 2002.0, 1998.0, 2000.0) if d in (date(2026, 10, 23), lunedi) else \
+                        (2000.0, 2002.5, 1997.5, 2000.0)
+                if d in (date(2026, 10, 23), lunedi) and inizio - timedelta(hours=1) <= t < inizio:
+                    return 2000.0, 2004.0, 1996.0, 2000.0         # l'ora prima: non deve entrare nel range
+                return 2000.0, 2000.0, 2000.0, 2000.0
+            m.giornata(d, f, spread=0.1)
+        giorni = {x.data: x for x in O.prepara(m.bid, m.ask)}
+        for d in (date(2026, 10, 23), lunedi):
+            self.assertEqual((giorni[d].ra_alto, giorni[d].ra_basso, giorni[d].motivo), (2002.0, 1998.0, "valido"), d)
+
+
 if __name__ == "__main__":
     unittest.main()
