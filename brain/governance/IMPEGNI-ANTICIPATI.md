@@ -19,3 +19,4 @@
 - **La data e il «prima di» sono dichiarati dall'utente:** Claude non può verificarli. Se esiste l'originale scritto il 14/11 (file, messaggio, nota con data), va archiviato qui o citato con dove si trova e la sua data.
 - **La revisione esterna del 15/11** (`collaborazione/da-revisori-esterni/2026-11-15-nucleo-statistico-e-incidente.md`) la chiama «numero sigillato il 14/11». In questo registro è un **impegno anticipato**, non un sigillo: niente impronta e niente N.
 - **Il «banco di taratura del motore»** non è ancora documentato nel repository: va descritto (cos'è, chi l'ha fatto, quando) per poter fare il confronto.
+- **15/11, dal censimento di Gemini:** il «banco» è con ogni probabilità la taratura di Gemini su mercati inventati (passi 2862–2997 del 14/11), la cui esecuzione completa si è interrotta con log vuoto. Da confermare dall'utente, insieme all'ora della nota rispetto ai piloti.
