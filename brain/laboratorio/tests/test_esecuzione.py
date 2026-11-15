@@ -35,6 +35,12 @@ class Cartella(unittest.TestCase):
     def tearDown(self):
         self._tmp.cleanup()
 
+    def sigillo(self):
+        """Sigillo di prova (una volta sola): anche lo sviluppo legge i dati solo con un sigillo valido."""
+        if not S.leggi(self.registro)["sigilli"]:
+            S.sigilla(self.registro, "H-999", self.scheda, ["V-T"], ORA)
+        return self.registro, "H-999", self.scheda
+
 
 class TestSigillo(Cartella):
     def test_sigillo_registra_le_prove_dichiarate(self):
@@ -236,7 +242,7 @@ class TestCaricatore(Cartella):
         giorni = [date(2026, 1, 5), date(2026, 1, 6)]
         b = self.cache("bid", giorni, 2650000)
         a = self.cache("ask", giorni[:1], 2650300)
-        bid, ask, info = C.carica(b, a, date(2026, 1, 5), date(2026, 1, 7), "sviluppo")
+        bid, ask, info = C.carica(b, a, date(2026, 1, 5), date(2026, 1, 7), "sviluppo", *self.sigillo())
         t = datetime(2026, 1, 5, 8, 0, tzinfo=UTC)
         self.assertEqual(bid[t], (2650.0, 2650.02, 2649.99, 2650.01))      # open, high, low, close
         self.assertEqual(ask[t], (2650.3, 2650.32, 2650.29, 2650.31))
@@ -245,7 +251,7 @@ class TestCaricatore(Cartella):
 
     def test_sviluppo_rifiuta_il_periodo_sigillato(self):
         with self.assertRaises(ValueError):
-            C.carica(self.dir, self.dir, date(2023, 11, 14), date(2023, 12, 1), "sviluppo")
+            C.carica(self.dir, self.dir, date(2023, 11, 14), date(2023, 12, 1), "sviluppo", *self.sigillo())
 
     def test_verifica_richiede_il_sigillo_e_il_periodo_vecchio(self):
         b = self.cache("bid", [date(2010, 3, 1)], 1100000)
@@ -335,6 +341,23 @@ class TestRevisioneR7GeminiCriteri(Cartella):
         self.assertEqual(len(S.leggi(self.registro)["esecuzioni"]), 60)
 
 
+class TestBloccoDelloSviluppo(Cartella):
+    """Incidente del 14/11 (difetto #41): script esterni hanno letto i dati veri dello sviluppo senza sigillo, perché il
+    caricatore lo controllava solo in verifica. Ora lo controlla in entrambe le modalità. Scritto PRIMA del codice."""
+
+    def test_sviluppo_senza_sigillo_rifiutato(self):
+        d = self.dir / "c"
+        d.mkdir()
+        with self.assertRaises(S.NonSigillata):
+            C.carica(d, d, date(2026, 1, 5), date(2026, 1, 5), "sviluppo")
+        with self.assertRaises(S.NonSigillata):
+            C.carica(d, d, date(2026, 1, 5), date(2026, 1, 5), "sviluppo", self.registro, "H-999", self.scheda)
+        C.carica(d, d, date(2026, 1, 5), date(2026, 1, 5), "sviluppo", *self.sigillo())
+        self.scheda.write_text("# H-999 cambiata\n", encoding="utf-8")
+        with self.assertRaises(ValueError):
+            C.carica(d, d, date(2026, 1, 5), date(2026, 1, 5), "sviluppo", self.registro, "H-999", self.scheda)
+
+
 class TestRevisioneR11GeminiCriteri(Cartella):
     """R11-S1 (DSR con pochi trade), R11-S2 (giorni feriali vuoti), R11-S6 (impronta dei dati), R11-S7 (varianti
     fuori dal sigillo), MR06 (DSR al confine), impronta del codice nel sigillo. Scritti PRIMA delle correzioni."""
@@ -376,10 +399,10 @@ class TestRevisioneR11GeminiCriteri(Cartella):
             for g in (date(2026, 1, 1), date(2026, 1, 2), date(2026, 1, 3), date(2026, 4, 3)):   # gio, ven, sab, Ven. Santo
                 (d / f"{g.isoformat()}.bi5").write_bytes(b"")
             (d / "2026-01-05.bi5").write_bytes(bi5([(480 * 60, 2650000, 2650010, 2649990, 2650020, 1.0)]))
-        _, _, info = C.carica(self.dir / "bid", self.dir / "ask", date(2026, 1, 1), date(2026, 1, 5), "sviluppo")
+        _, _, info = C.carica(self.dir / "bid", self.dir / "ask", date(2026, 1, 1), date(2026, 1, 5), "sviluppo", *self.sigillo())
         self.assertEqual(info["feriali_vuoti_bid"], ["2026-01-02"])               # il 1/1 è chiusura nota
         self.assertEqual(info["feriali_vuoti_ask"], ["2026-01-02"])
-        _, _, info = C.carica(self.dir / "bid", self.dir / "ask", date(2026, 4, 3), date(2026, 4, 3), "sviluppo")
+        _, _, info = C.carica(self.dir / "bid", self.dir / "ask", date(2026, 4, 3), date(2026, 4, 3), "sviluppo", *self.sigillo())
         self.assertEqual(info["feriali_vuoti_bid"], [])                           # Venerdì Santo
 
     def test_s6_impronta_dei_dati_letti(self):
@@ -387,12 +410,12 @@ class TestRevisioneR11GeminiCriteri(Cartella):
             d = self.dir / nome
             d.mkdir()
             (d / "2026-01-05.bi5").write_bytes(bi5([(480 * 60, 2650000, 2650010, 2649990, 2650020, 1.0)]))
-        a = C.carica(self.dir / "bid", self.dir / "ask", date(2026, 1, 5), date(2026, 1, 5), "sviluppo")[2]
+        a = C.carica(self.dir / "bid", self.dir / "ask", date(2026, 1, 5), date(2026, 1, 5), "sviluppo", *self.sigillo())[2]
         self.assertEqual(len(a["dati_sha256"]), 64)
         self.assertEqual(a["dati_sha256"],
-                         C.carica(self.dir / "bid", self.dir / "ask", date(2026, 1, 5), date(2026, 1, 5), "sviluppo")[2]["dati_sha256"])
+                         C.carica(self.dir / "bid", self.dir / "ask", date(2026, 1, 5), date(2026, 1, 5), "sviluppo", *self.sigillo())[2]["dati_sha256"])
         (self.dir / "ask" / "2026-01-05.bi5").write_bytes(bi5([(480 * 60, 2650300, 2650310, 2650290, 2650320, 1.0)]))
-        b = C.carica(self.dir / "bid", self.dir / "ask", date(2026, 1, 5), date(2026, 1, 5), "sviluppo")[2]
+        b = C.carica(self.dir / "bid", self.dir / "ask", date(2026, 1, 5), date(2026, 1, 5), "sviluppo", *self.sigillo())[2]
         self.assertNotEqual(a["dati_sha256"], b["dati_sha256"])
 
 
@@ -459,4 +482,4 @@ class TestCasiAlLimite(Cartella):
             C.carica(self.dir, self.dir, date(2023, 11, 1), date(2023, 11, 15), "verifica", self.registro, "H-999",
                      self.scheda)
         with self.assertRaises(ValueError):
-            C.carica(self.dir, self.dir, date(2024, 2, 1), date(2024, 1, 1), "sviluppo")
+            C.carica(self.dir, self.dir, date(2024, 2, 1), date(2024, 1, 1), "sviluppo", *self.sigillo())
