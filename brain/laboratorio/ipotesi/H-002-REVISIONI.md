@@ -325,3 +325,17 @@ Prossimo giro: R11, a Gemini e a ChatGPT sullo stesso commit (`collaborazione/da
 - **Il periodo di verifica resta intatto**, se la dichiarazione di Gemini è vera. È lui la vera prova (DA-26).
 
 **Conseguenze proposte da Claude (decide l'utente):** vedi CONTINUITA, «Incidente del 14/11».
+
+### Revisione esterna del nucleo statistico (15/11), archiviata in `collaborazione/da-revisori-esterni/2026-11-15-nucleo-statistico-e-incidente.md`
+- **Contiene i risultati di H-002 sullo sviluppo,** con l'autorizzazione dell'utente. **Claude l'ha letta per intero il 15/11: da ora è non cieco sullo sviluppo**, cieco sulla verifica.
+- **Punti accolti da Claude:**
+  - N va contato, non dichiarato. V-T e V-S condividono il 100% degli ingressi; il moltiplicatore 6 del filtro è una superficie di selezione mai giustificata;
+  - **il veto di robustezza relativo («−50% rispetto alla base») è mal tarato:** respinge una strategia valida molto spesso (stima del revisore: 24–81% secondo la correlazione fra le prove). La funzione di perdita non è mai stata scritta;
+  - **la verifica 2005–2023 non è lo stesso test senza gli ASK storici:** il costo entra nel filtro d'ammissione;
+  - **lo stato dei dati è da verificare,** non «pronto»: computer spento durante lo scaricamento; copertura storica solo dichiarata.
+- **Controllo di Claude sul rischio di file troncati:**
+  - lo scaricatore scrive in un `.tmp` e poi rinomina (`dati/pipeline/dukascopy.py:115-117`), ma senza forzare la scrittura su disco: dopo uno spegnimento brusco non si può escludere un file vuoto o parziale;
+  - un file parziale fa fallire la decompressione (righe 130-132); un file vuoto in un giorno feriale lo ferma il controllo R11-S2. Restano da cercare i `.tmp` residui.
+- **Da chiarire con l'utente:**
+  - la «soglia r = 0,15 R sigillata il 14/11», che non è nel repository;
+  - il «documento autoportante sul nucleo statistico», consegnato al revisore il 14/11: chi l'ha prodotto, e su quali esecuzioni dei dati veri.
