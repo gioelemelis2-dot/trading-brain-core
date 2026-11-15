@@ -142,6 +142,36 @@ class TestScaricaCache(unittest.TestCase):
         self.assertFalse((self.cache / "2009-06-09.bi5").exists())
         self.assertEqual([x["esito"] for x in self.righe()], ["dati", "http-403"])     # registro già scritto
 
+    def test_continua_su_errore_http_se_richiesto(self):
+        """Con continua_su_http un errore HTTP sconosciuto si registra, il giorno resta SENZA file (quindi «mancante»
+        per il controllo della cache) e si va avanti; ci si ferma dopo troppi errori di fila (blocco vero)."""
+        errore = urllib.error.HTTPError("u", 403, "Forbidden", {}, None)
+        finta = Finta({date(2009, 6, 8): errore, date(2009, 6, 9): bi5(), date(2009, 6, 10): errore})
+        conta = SC.scarica_periodo("XAUUSD", "ASK", date(2009, 6, 8), date(2009, 6, 10), self.cache, self.registro,
+                                   richiesta=finta, pausa=lambda: None, stampa=lambda *a, **k: None,
+                                   continua_su_http=True)
+        self.assertEqual(conta["http"], 2)
+        self.assertFalse((self.cache / "2009-06-08.bi5").exists())
+        self.assertTrue((self.cache / "2009-06-09.bi5").exists())
+        self.assertEqual([x["esito"] for x in self.righe()], ["http-403", "dati", "http-403"])
+        tutti = Finta({date(2009, 7, 1) + __import__("datetime").timedelta(days=k): errore for k in range(30)})
+        with self.assertRaises(SC.Fermo) as e:
+            SC.scarica_periodo("XAUUSD", "ASK", date(2009, 7, 1), date(2009, 7, 30), self.cache, self.registro,
+                               richiesta=tutti, pausa=lambda: None, stampa=lambda *a, **k: None,
+                               continua_su_http=True)
+        self.assertIn("20 errori HTTP di fila", str(e.exception))
+        self.assertEqual(len(tutti.chiamate), 20)
+
+    def test_uscita_della_riga_di_comando_con_errori_http(self):
+        """Finito ma con giorni in errore: codice 5, così lo script non lo scambia per un successo pieno."""
+        from unittest import mock
+        errore = urllib.error.HTTPError("u", 403, "Forbidden", {}, None)
+        with mock.patch.object(SC.DK, "richiesta_http", Finta({date(2009, 6, 8): errore})), \
+                mock.patch.object(SC.time, "sleep", lambda s: None):
+            rc = SC.main(["--lato", "ASK", "--inizio", "2009-06-08", "--fine", "2009-06-09", "--cache", str(self.radice),
+                          "--continua-su-http"])
+        self.assertEqual(rc, 5)
+
     def test_file_danneggiato_dal_server_non_entra_in_cache(self):
         with self.assertRaises(SC.Fermo):
             self.scarica(Finta({date(2009, 6, 8): b"non lzma"}), fine=date(2009, 6, 8))
