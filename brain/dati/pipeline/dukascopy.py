@@ -75,20 +75,22 @@ def url_giorno(simbolo: str, giorno: date, lato: str = "BID") -> str:
     return URL.format(simbolo=simbolo, anno=giorno.year, mese0=giorno.month - 1, giorno=giorno.day, lato=lato)
 
 
-def scarica_http(url: str, tentativi: int = 10, attesa: Callable[[float], None] = time.sleep,
-                 apri=urllib.request.urlopen) -> Optional[bytes]:
-    """Contenuto dell'URL; None se il giorno non esiste (404) o è vuoto. Nuovi tentativi con attesa crescente su
-    429/5xx ed errori di rete (rispettando Retry-After): 5, 10, 20, … secondi fino a 5 minuti, circa 20 minuti in
-    tutto prima di arrendersi. User-Agent generico: nessun dato personale."""
+def richiesta_http(url: str, tentativi: int = 10, attesa: Callable[[float], None] = time.sleep,
+                   apri=urllib.request.urlopen) -> Tuple[int, Optional[bytes], int]:
+    """(codice HTTP, contenuto, tentativi usati): (200, byte anche vuoti, n) oppure (404, None, n). Nuovi tentativi
+    con attesa crescente su 429/5xx ed errori di rete (rispettando Retry-After): 5, 10, 20, … secondi fino a 5
+    minuti, circa 20 minuti in tutto prima di arrendersi (ConnectionError). Altri codici 4xx: HTTPError, senza nuovi
+    tentativi. Distinguere 404, risposta vuota e guasto è la richiesta 1 di DGS-04. User-Agent generico: nessun dato
+    personale."""
     richiesta = urllib.request.Request(url, headers={"User-Agent": "trading-brain-dati/1.0"})
     for n in range(tentativi):
         try:
             with apri(richiesta, timeout=60) as r:
                 dati = r.read()
-            return dati or None
+            return 200, dati, n + 1
         except urllib.error.HTTPError as e:
             if e.code == 404:
-                return None
+                return 404, None, n + 1
             if e.code != 429 and e.code < 500:
                 raise
             ritardo = float(e.headers.get("Retry-After") or 0) if e.headers else 0.0
@@ -97,6 +99,13 @@ def scarica_http(url: str, tentativi: int = 10, attesa: Callable[[float], None] 
             ritardo = 0.0
         attesa(max(ritardo, min(300.0, 5.0 * 2 ** n)))
     raise ConnectionError(f"{url}: nessuna risposta valida dopo {tentativi} tentativi")
+
+
+def scarica_http(url: str, tentativi: int = 10, attesa: Callable[[float], None] = time.sleep,
+                 apri=urllib.request.urlopen) -> Optional[bytes]:
+    """Contenuto dell'URL; None se il giorno non esiste (404) o è vuoto (interfaccia storica della pipeline)."""
+    _codice, dati, _n = richiesta_http(url, tentativi, attesa, apri)
+    return dati or None
 
 
 def scarica_giorno(simbolo: str, giorno: date, cache: Optional[Path], scarica: Callable[[str], Optional[bytes]],

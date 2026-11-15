@@ -48,7 +48,7 @@ class TestRichiestaHttp(unittest.TestCase):
 
         def apri_404(r, timeout):
             raise urllib.error.HTTPError(r.full_url, 404, "Not Found", {}, None)
-        self.assertEqual(DK.richiesta_http("http://x", apri=apri_404), (404, None, 1))
+        self.assertEqual(DK.richiesta_http("http://x", attesa=lambda s: None, apri=apri_404), (404, None, 1))
 
         def apri_500(r, timeout):
             raise urllib.error.HTTPError(r.full_url, 500, "Errore", {}, None)
@@ -57,8 +57,8 @@ class TestRichiestaHttp(unittest.TestCase):
 
         def apri_403(r, timeout):
             raise urllib.error.HTTPError(r.full_url, 403, "Forbidden", {}, None)
-        with self.assertRaises(urllib.error.HTTPError):
-            DK.richiesta_http("http://x", apri=apri_403)
+        with self.assertRaises(urllib.error.HTTPError):                        # subito, senza nuovi tentativi
+            DK.richiesta_http("http://x", tentativi=3, attesa=lambda s: None, apri=apri_403)
 
     def test_tentativi_contati_e_vecchia_interfaccia_invariata(self):
         n = []

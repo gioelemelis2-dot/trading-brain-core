@@ -423,3 +423,19 @@ Formato: data · versione della base · cosa · perché · file.
 
 - **Nuovo `governance/IMPEGNI-ANTICIPATI.md`:** impegni scritti prima di vedere un risultato, da confrontare dopo con la scelta effettiva. Non sono regole operative, non sono sigilli, non entrano in N.
 - **IA-01 (utente, 14/11):** vantaggio minimo che sceglierebbe oggi, 0,15 R per trade, fissato prima del «banco di taratura del motore». La soglia operativa resta quella della scheda H-002 v3.1.
+
+## 2026-11-15 · v1.33 (stato dei dati sul Mac e scaricatore solo-cache)
+
+- **Controllo della cache sul Mac** (eseguito dall'utente):
+  - BID storico fino al 07/06/2009, poi niente fino al 12/11/2023;
+  - ASK storico quasi assente (fermo il 01/01/2005 per un errore HTTP);
+  - nessun file illeggibile, nessun temporaneo; 10 giorni corti, tutti festività;
+  - scaricamento fermo dallo spegnimento del Mac.
+- **Riserva di verifica oggi:** 1.155 giorni feriali su 4.912 (23,5%), finché lo storico non è completo.
+- **Nuovo `dati/pipeline/scarica_cache.py`** (`b59eb0f` rosso, poi verde):
+  - scarica solo nella cache da una data a un'altra, senza attese sui giorni già presenti, senza CSV e senza prezzi;
+  - registro CSV per giorno, scritto subito su disco;
+  - tre esiti distinti: 404, risposta vuota, guasto (richiesta 1 di DGS-04);
+  - controlla ogni file prima di salvarlo e lo forza su disco; si ferma su un errore HTTP sconosciuto.
+- **`dukascopy.richiesta_http`:** stessa politica di nuovi tentativi; `scarica_http` invariato.
+- **Prove:** test 30/30 su Python 3.13 e 3.9; mutanti 12/12. Al primo giro un mio test usava l'attesa vera e bloccava il mutante W12: corretto.
