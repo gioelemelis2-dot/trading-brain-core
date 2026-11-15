@@ -1,0 +1,241 @@
+diff --git a/brain/laboratorio/esecuzione/criteri.py b/brain/laboratorio/esecuzione/criteri.py
+index 4a4546b..b58bb71 100644
+--- a/brain/laboratorio/esecuzione/criteri.py
++++ b/brain/laboratorio/esecuzione/criteri.py
+@@ -152,6 +152,18 @@ def screening(m: dict, casuale: dict, benchmark: dict, veto: bool, r_stress: Opt
+     cop_casuale = casuale.get("copertura", 1.0)                                    # R11-S5: copertura vincolante
+     cop_bench = (benchmark.get("n_comuni", n) / n) if n else 0.0
+     p1, v1, ic1 = _verdetto_ic(r, es_r, r_min, stretto=False)
++    sr = m.get("sharpe")
++    es_sr = math.sqrt((1.0 + 0.5 * sr * sr) / n) if (sr is not None and es_r is not None and n > 1) else None
++    p2, v2, ic2 = _verdetto_ic(sr, es_sr, sharpe_min, stretto=False)
++    v3 = "promossa" if n >= trade_min else ("non decidibile" if n > 0 else "bocciata")
++    passa_cas = casuale.get("sopra", False) and cop_casuale >= copertura_min
++    z_cas = casuale.get("z_casuale")
++    if passa_cas:
++        v4 = "promossa"
++    elif cop_casuale < copertura_min or z_cas is None or z_cas <= -Z95:
++        v4 = "bocciata"
++    else:
++        v4 = "non decidibile"
+     p6, v6, ic6 = _verdetto_ic(m.get("r_vendite"), m.get("es_vendite"), vendite_min, stretto=False)
+     p9, v9, ic9 = _verdetto_ic(r_stress, es_stress, 0.0, stretto=True)
+     # Benchmark appaiato: entrambi > 0; se almeno una differenza è certamente <= 0 (o copertura bassa) -> bocciata
+@@ -169,11 +181,10 @@ def screening(m: dict, casuale: dict, benchmark: dict, veto: bool, r_stress: Opt
+         v5, ic5 = ("promossa" if passa_bench else "bocciata"), None
+     criteri = [
+         _criterio("R medio netto", r, f"≥ {r_min}", p1, v1, es_r, ic1),
+-        _criterio("Sharpe per trade", m.get("sharpe"), f"≥ {sharpe_min}", _ge(m.get("sharpe"), sharpe_min)),
+-        _criterio("numero di trade", m.get("n", 0), f"≥ {trade_min}", m.get("n", 0) >= trade_min),
++        _criterio("Sharpe per trade", sr, f"≥ {sharpe_min}", p2, v2, es_sr, ic2),
++        _criterio("numero di trade", n, f"≥ {trade_min}", n >= trade_min, v3),
+         _criterio("sopra il 95° percentile del confronto casuale", (casuale.get("percentile_95"), cop_casuale),
+-                  f"> percentile, copertura ≥ {copertura_min:.0%}",
+-                  casuale.get("sopra", False) and cop_casuale >= copertura_min),
++                  f"> percentile, copertura ≥ {copertura_min:.0%}", passa_cas, v4),
+         _criterio("batte «compro sempre» e «vendo sempre»",
+                   (benchmark.get("r_compro"), benchmark.get("r_vendo"), cop_bench),
+                   f"> entrambi, copertura ≥ {copertura_min:.0%}",
+diff --git a/brain/laboratorio/esecuzione/esegui_h002.py b/brain/laboratorio/esecuzione/esegui_h002.py
+index 3366699..bf2280d 100644
+--- a/brain/laboratorio/esecuzione/esegui_h002.py
++++ b/brain/laboratorio/esecuzione/esegui_h002.py
+@@ -273,10 +273,16 @@ def main(argv=None) -> int:
+             if fatte:
+                 raise ValueError(f"verifica già eseguita per {[e['variante'] for e in fatte]}: si fa una volta sola")
+             esiti_sviluppo = _esiti_sviluppo(S.leggi(x.registro))
+-            da_verificare = [v for v in VARIANTI if esiti_sviluppo.get(v)
+-                             and all(bool(e.get("promossa")) for e in esiti_sviluppo[v])]          # P1
++            stati = {v: S.stato_sviluppo(esiti_sviluppo.get(v, [])) for v in VARIANTI}
++            da_verificare = [v for v in VARIANTI if stati[v] == "promossa"]                        # P1 + 3 stati
+             if not da_verificare:
+-                raise ValueError("nessuna variante promossa nello screening registrato: la verifica non si fa")
++                parcheggiate = [v for v in VARIANTI if stati[v] == "non decidibile"]
++                if parcheggiate:
++                    raise ValueError(
++                        f"nessuna variante promossa in sviluppo (parcheggiate come non decidibile: {parcheggiate}; "
++                        f"stati: {stati}): la verifica non si fa")
++                raise ValueError(f"nessuna variante promossa nello screening registrato (stati: {stati}): "
++                                 "la verifica non si fa")
+             if sorted(promosse) != sorted(da_verificare):                         # P2: insieme, una volta
+                 raise ValueError(f"la verifica si fa una volta sola, con tutte e sole le promosse: {da_verificare}")
+             cache_sviluppo = {e.get("cache") for v in da_verificare for e in esiti_sviluppo[v]}
+diff --git a/brain/laboratorio/esecuzione/sigillo.py b/brain/laboratorio/esecuzione/sigillo.py
+index 01a91b1..5d8067c 100644
+--- a/brain/laboratorio/esecuzione/sigillo.py
++++ b/brain/laboratorio/esecuzione/sigillo.py
+@@ -15,10 +15,11 @@ import os
+ import threading
+ from contextlib import contextmanager
+ from pathlib import Path
+-from typing import Dict, List, Optional
++from typing import Dict, List, Optional, Sequence
+ 
+ SCHEMA = "registro-prove/1"
+ RUOLI_ESECUZIONE = ("sviluppo", "robustezza", "verifica", "esito")       # esito: risultato della verifica
++VERDETTI = ("promossa", "non decidibile", "bocciata")
+ 
+ 
+ class NonSigillata(RuntimeError):
+@@ -125,6 +126,31 @@ def registra_esecuzione(registro: Path, ipotesi: str, voce: dict, ora: str) -> d
+         return _registra(registro, ipotesi, voce, ora)
+ 
+ 
++def verdetto_esecuzione(e: dict) -> str:
++    """Legge lo stato a tre valori (`promossa`, `non decidibile`, `bocciata`) da una voce del registro."""
++    v = e.get("verdetto")
++    if v in VERDETTI:
++        if "promossa" in e and e["promossa"] is not None and bool(e["promossa"]) != (v == "promossa"):
++            raise ValueError(f"esito incoerente nel registro: verdetto={v!r}, promossa={e['promossa']!r}")
++        return v
++    if v is not None:
++        raise ValueError(f"verdetto {v!r} non in {VERDETTI}")
++    return "promossa" if bool(e.get("promossa")) else "bocciata"
++
++
++def stato_sviluppo(esiti: Sequence[dict]) -> Optional[str]:
++    """Stato cumulativo delle esecuzioni di sviluppo di una variante:
++    - nessuna esecuzione: None;
++    - qualsiasi `bocciata`: 'bocciata' (terminale, resta bloccante);
++    - altrimenti l'ultimo verdetto ('promossa' o 'non decidibile': una parcheggiata può tornare ammissibile)."""
++    if not esiti:
++        return None
++    stati = [verdetto_esecuzione(e) for e in esiti]
++    if "bocciata" in stati:
++        return "bocciata"
++    return stati[-1]
++
++
+ def _registra(registro: Path, ipotesi: str, voce: dict, ora: str) -> dict:
+     dati = leggi(registro)
+     if _sigillo(dati, ipotesi) is None:
+@@ -138,6 +164,10 @@ def _registra(registro: Path, ipotesi: str, voce: dict, ora: str) -> dict:
+                                    and e.get("variante") == voce.get("variante") for e in dati["esecuzioni"]):
+         raise ValueError(f"verifica di {ipotesi} {voce.get('variante')} già eseguita: si fa una volta sola")
+     e = dict(voce, ipotesi=ipotesi, ora=ora)
++    if ruolo in ("sviluppo", "esito") and ("verdetto" in voce or "promossa" in voce):
++        v = verdetto_esecuzione(e)
++        e["verdetto"] = v
++        e["promossa"] = (v == "promossa")
+     dati["esecuzioni"].append(e)
+     _scrivi(registro, dati)
+     return e
+diff --git a/brain/laboratorio/tests/test_esecuzione.py b/brain/laboratorio/tests/test_esecuzione.py
+index 280fd29..fb0af45 100644
+--- a/brain/laboratorio/tests/test_esecuzione.py
++++ b/brain/laboratorio/tests/test_esecuzione.py
+@@ -483,8 +483,8 @@ class TestIncertezzaETreVerdetti(Cartella):
+         self.assertEqual(e_boc["verdetto"], "bocciata")
+         self.assertFalse(e_boc["promossa"])
+ 
+-        # Tutto l'IC 95% sopra soglia e tutti i criteri verdi -> promossa certa
+-        m_ok = metriche_buone(r_medio=0.15, errore_std=0.02, r_vendite=0.02, es_vendite=0.01)
++        # Tutto l'IC 95% sopra soglia e tutti i criteri verdi -> promossa certa (SR=0,20 con n=400 -> ES=0,0505 -> lo=0,101 >= 0,06)
++        m_ok = metriche_buone(r_medio=0.15, errore_std=0.02, sharpe=0.20, r_vendite=0.02, es_vendite=0.01)
+         e_ok = K.screening(m_ok, cas, ben, False, 0.05, es_stress=0.01)
+         self.assertEqual(e_ok["verdetto"], "promossa")
+         self.assertTrue(e_ok["promossa"])
+@@ -509,3 +509,54 @@ class TestIncertezzaETreVerdetti(Cartella):
+                                   {d[0]: -0.1, d[1]: -0.3, d[2]: -0.2})
+         for k in ("es_strategia", "ic95_strategia", "diff_compro", "es_diff_compro", "ic95_diff_compro"):
+             self.assertIsNotNone(b[k], k)
++
++    def test_stato_tre_valori_nel_registro(self):
++        S.sigilla(self.registro, "H-999", self.scheda, ["V-T", "V-S"], ORA)
++        with self.assertRaises(ValueError):
++            S.registra_esecuzione(self.registro, "H-999", {"ruolo": "sviluppo", "variante": "V-T", "verdetto": "forse"}, ORA)
++        with self.assertRaises(ValueError):
++            S.registra_esecuzione(self.registro, "H-999",
++                                  {"ruolo": "sviluppo", "variante": "V-T", "verdetto": "non decidibile", "promossa": True}, ORA)
++        S.registra_esecuzione(self.registro, "H-999",
++                              {"ruolo": "sviluppo", "variante": "V-T", "verdetto": "non decidibile"}, ORA)
++        S.registra_esecuzione(self.registro, "H-999",
++                              {"ruolo": "sviluppo", "variante": "V-S", "verdetto": "bocciata"}, ORA)
++        dati = S.leggi(self.registro)
++        es_vt = [e for e in dati["esecuzioni"] if e.get("variante") == "V-T"]
++        es_vs = [e for e in dati["esecuzioni"] if e.get("variante") == "V-S"]
++        self.assertEqual(es_vt[-1]["verdetto"], "non decidibile")
++        self.assertFalse(es_vt[-1]["promossa"])
++        self.assertEqual(S.stato_sviluppo(es_vt), "non decidibile")
++        self.assertEqual(S.stato_sviluppo(es_vs), "bocciata")
++        # Parcheggiata -> torna ammissibile; bocciata terminale -> resta bloccante
++        S.registra_esecuzione(self.registro, "H-999", {"ruolo": "sviluppo", "variante": "V-T", "verdetto": "promossa"}, ORA)
++        S.registra_esecuzione(self.registro, "H-999", {"ruolo": "sviluppo", "variante": "V-S", "verdetto": "promossa"}, ORA)
++        dati2 = S.leggi(self.registro)
++        self.assertEqual(S.stato_sviluppo([e for e in dati2["esecuzioni"] if e.get("variante") == "V-T"]), "promossa")
++        self.assertEqual(S.stato_sviluppo([e for e in dati2["esecuzioni"] if e.get("variante") == "V-S"]), "bocciata")
++        self.assertEqual(S.stato_sviluppo([{"promossa": False}, {"promossa": True}]), "bocciata")
++
++    def test_sharpe_campione_piccolo_e_casuale_non_decidibili(self):
++        m = metriche_buone(n=450, r_medio=0.06, errore_std=0.04, sharpe=0.05, r_vendite=0.02, es_vendite=0.02)
++        ben = {"batte_entrambi": True, "r_compro": 0.01, "r_vendo": -0.02,
++               "diff_compro": 0.05, "es_diff_compro": 0.01, "diff_vendo": 0.08, "es_diff_vendo": 0.01}
++        cas_nd = {"sopra": False, "percentile_95": 0.08, "z_casuale": 0.42}
++        e = K.screening(m, cas_nd, ben, False, 0.03, es_stress=0.01)
++        c2 = [c for c in e["criteri"] if c["nome"] == "Sharpe per trade"][0]
++        c4 = [c for c in e["criteri"] if "casuale" in c["nome"]][0]
++        self.assertEqual(c2["verdetto"], "non decidibile")
++        self.assertIsNotNone(c2["ic95"])
++        self.assertEqual(c4["verdetto"], "non decidibile")
++        self.assertEqual(e["verdetto"], "non decidibile")
++
++        cas_boc = {"sopra": False, "percentile_95": 0.08, "z_casuale": -2.5}
++        e_boc = K.screening(m, cas_boc, ben, False, 0.03, es_stress=0.01)
++        self.assertEqual([c for c in e_boc["criteri"] if "casuale" in c["nome"]][0]["verdetto"], "bocciata")
++        self.assertEqual(e_boc["verdetto"], "bocciata")
++
++        e_piccolo = K.screening(metriche_buone(n=150, r_medio=0.15, errore_std=0.02, sharpe=0.15,
++                                               r_vendite=0.02, es_vendite=0.01),
++                                {"sopra": True, "percentile_95": 0.08, "z_casuale": 2.1},
++                                ben, False, 0.05, es_stress=0.01)
++        self.assertEqual([c for c in e_piccolo["criteri"] if c["nome"] == "numero di trade"][0]["verdetto"],
++                         "non decidibile")
+diff --git a/brain/laboratorio/tests/test_esegui_h002.py b/brain/laboratorio/tests/test_esegui_h002.py
+index c9b6fb6..e9377e8 100644
+--- a/brain/laboratorio/tests/test_esegui_h002.py
++++ b/brain/laboratorio/tests/test_esegui_h002.py
+@@ -187,11 +187,16 @@ class BaseRiga(unittest.TestCase):
+         SN.scrivi_cache(ask, self.cache / "XAUUSD_ASK", inizio=da or inizio, fine=fine)
+ 
+     def sviluppo_finto(self, ipotesi="H-002", cache=None, **promosse):
+-        """Esiti dello screening scritti nel registro come li scriverebbe main (per provare la verifica)."""
++        """Esiti dello screening scritti nel registro come li scriverebbe main (bool o stato a 3 valori)."""
+         for v, esito in promosse.items():
+-            S.registra_esecuzione(self.registro, ipotesi, {"ruolo": "sviluppo", "variante": v.replace("_", "-"),
+-                                                          "promossa": esito,
+-                                                          "cache": str(Path(cache or self.cache).resolve())}, ORA)
++            voce = {"ruolo": "sviluppo", "variante": v.replace("_", "-"),
++                    "cache": str(Path(cache or self.cache).resolve())}
++            if isinstance(esito, str):
++                voce["verdetto"] = esito
++                voce["promossa"] = (esito == "promossa")
++            else:
++                voce["promossa"] = esito
++            S.registra_esecuzione(self.registro, ipotesi, voce, ORA)
+ 
+     def lancia(self, *argomenti):
+         base = ["--registro", str(self.registro), "--scheda", str(self.scheda), "--cache", str(self.cache),
+@@ -543,6 +548,23 @@ class TestRevisioneR11Gemini(BaseRiga):
+         self.assertEqual(self.lancia("--modalita", "sviluppo"), 2)
+         self.assertEqual(self.esecuzioni("sviluppo"), [])
+ 
++    def test_tre_verdetti_ammissione_parcheggiata_vs_bocciata_terminale(self):
++        """V-T parcheggiata (`non decidibile`) non entra in verifica ma torna ammissibile se poi è `promossa`;
++        V-S `bocciata` resta bloccante in modo terminale anche dopo una prova `promossa`."""
++        self.cache_di(date(2010, 1, 1), 59)
++        self.sigilla(["V-T", "V-S"])
++        self.sviluppo_finto(V_T="non decidibile", V_S="bocciata")
++        rc, err = self.lancia_errore("--modalita", "verifica", "--varianti", "V-T")
++        self.assertEqual(rc, 2)
++        self.assertIn("non decidibile", err)
++        self.sviluppo_finto(V_T="promossa", V_S="promossa")
++        rc_vs, _ = self.lancia_errore("--modalita", "verifica", "--varianti", "V-T,V-S")
++        self.assertEqual(rc_vs, 2)
++        self.assertEqual(self.lancia("--modalita", "verifica", "--varianti", "V-T"), 0)
++        esito = self.esecuzioni("esito")
++        self.assertIn("verdetto", esito[0])
++        self.assertIn(esito[0]["verdetto"], S.VERDETTI)
++
+ 
+ if __name__ == "__main__":
+     unittest.main()

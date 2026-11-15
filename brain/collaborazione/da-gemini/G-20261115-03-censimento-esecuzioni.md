@@ -86,5 +86,14 @@ Revisione completata incrociando tutti e 4 i log JSONL sotto /Users/gioele/.gemi
 ## 6. Conservazione di `tb-proposte` (15/11/2026)
 
 L'utente ha salvato le modifiche non committate come `~/Downloads/tb-proposte-non-committato.patch` (sul Mac), senza applicarle né cancellarle.
-SHA-256 (trascritto da Claude da uno screenshot del terminale, da confermare quando il file arriva nel repository): `de86601ba3afb6272b4ef3265353a779a5399a870e8bb77a3e6c3443c06d1e1a`.
+SHA-256 (dallo screenshot del terminale): `de86601ba3afb6272b4ef3265353a779a5399a870e8bb77a3e6c3443c06d1e1a`.
+**Verifica di Claude (15/11):** la patch è stata **ricostruita** dal commit `1fec51c` (ramo `rev/gemini-proposte-tester-dgs03`) applicando il testo incollato dall'utente; `git diff` del risultato ha la **stessa** impronta `de86601b…c06d1e1a` e i file risultanti hanno le impronte indicate nel diff (`b58bb71`, `bf2280d`, `5d8067c`, `fb0af45`, `e9377e8`). Archiviata byte per byte in `G-20261115-04-tb-proposte-non-committato.patch` (241 righe, **15.073 byte**: Gemini aveva scritto 15.047, probabilmente caratteri e non byte). **Non applicata.**
+
+**Cosa fa la patch (lettura di Claude):**
+1. **Allenta tre criteri dopo aver visto i numeri.** Nella scheda v3.1 (scritta prima) un criterio non passato boccia la variante. Con la patch: Sharpe sotto soglia ma con intervallo che la tocca → «non decidibile»; meno di 300 trade → «non decidibile»; sotto il 95° percentile del caso ma non chiaramente peggio → «non decidibile».
+2. **Apre la porta alla riprova sugli stessi dati.** `stato_sviluppo` prende l'**ultimo** verdetto: una variante «non decidibile» può essere rieseguita in sviluppo finché esce «promossa», e allora va in verifica. Nessun limite al numero di riprove, nessun obbligo di dati nuovi. Il test `test_tre_verdetti_ammissione_parcheggiata_vs_bocciata_terminale` lo prova esplicitamente.
+3. **Cronologia:** la proposta dei 3 verdetti (`a0e1b7b`, 12:55 UTC del 14/11) è successiva alle esecuzioni sui dati veri (11:30–12:49 UTC); la patch alla valutazione dei 9 criteri (passo 2911) e alla riclassificazione (2986).
+4. **Autore dei commit:** i commit di Gemini sul ramo di proposta portano il nome dell'utente come autore. Va tenuto presente leggendo la storia.
+
+**Conclusione:** da non applicare. Lo schema a tre esiti può servire per ipotesi **future**, adottato prima dei loro dati e con una regola: «non decidibile» si risolve solo su dati **nuovi**, mai rieseguendo sugli stessi.
 
