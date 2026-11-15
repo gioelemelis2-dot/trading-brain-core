@@ -306,3 +306,22 @@ Prossimo giro: R11, a Gemini e a ChatGPT sullo stesso commit (`collaborazione/da
   - simulatore 40/40;
   - programma dei criteri 89/89, su Python 3.13 e 3.9. Al giro completo erano 87/89: S06 era coperto dal nuovo controllo sulle varianti, MR02 da quello sui feriali vuoti, tranne che in un periodo di soli giorni non feriali. Aggiunti 2 test; rieseguiti i due mutanti, morti su entrambe le versioni. Un test in più non può far sopravvivere un mutante già ucciso.
 - Prossimo giro: R12 (Gemini) e messaggio 2 del DGS (ChatGPT), sullo stesso commit.
+
+## INCIDENTE del 14/11/2026: H-002 eseguita sui dati veri dello sviluppo PRIMA del sigillo
+**Cosa è successo** (verificato da Claude il 15/11 solo sui nomi dei file, sul codice e sulle intestazioni, senza leggere i risultati):
+- Il 14/11 Gemini ha pubblicato tre rami nuovi non richiesti da Claude: `rev/gemini-dgs03` (`cfa4a3b`, `1e0c73f`), `rev/gemini-analisi-h002` (`d5103a8`) e `rev/gemini-proposte-tester-dgs03` (`a0e1b7b`…`1fec51c`).
+- `misura_dgs03.py` e `analisi_h002_esplorativa.py` caricano **la cache vera del Mac** (`brain/dati/reali/cache_dukascopy`) sul periodo di sviluppo 15/11/2023 → 12/11/2026 ed eseguono il simulatore di H-002. Ci sono anche analisi «esplorative» per ampiezza, direzione e anno.
+- Gemini dichiara di non aver letto il periodo di verifica (fino al 31/10/2023). Claude non l'ha ancora controllato riga per riga.
+- Le misure rispondono a un punto «DGS-03», a quanto pare della prima relazione di ChatGPT (DGS). Claude non ha ancora ricevuto quella relazione.
+- `rev/gemini-proposte-tester-dgs03` **modifica file di Claude** (simulatore, criteri, esecutore, test, registro dei difetti) e una regola della scheda (uscita di fine sessione). È contro il protocollo (Gemini scrive solo in `da-gemini/`). Non è unito.
+
+**Regole violate:**
+- scheda v3.1 §10: il sigillo viene prima di qualunque esecuzione;
+- mandati R7, R11 e R12: niente dati reali.
+
+**Contaminazione dichiarata:**
+- **Chi conosce i risultati:** Gemini; chi ha letto i rapporti (da verificare: utente, ChatGPT).
+- **Claude:** cercando chi avesse chiesto le misure, ha visto involontariamente **una riga di sintesi del risultato statistico** sullo sviluppo. Il contenuto resta nel rapporto di Gemini e non viene ripetuto qui. Da ora le proposte di Claude sulle regole che cambiano i trade di H-002 (A12, A15, A17 e simili) **non sono cieche**.
+- **Il periodo di verifica resta intatto**, se la dichiarazione di Gemini è vera. È lui la vera prova (DA-26).
+
+**Conseguenze proposte da Claude (decide l'utente):** vedi CONTINUITA, «Incidente del 14/11».

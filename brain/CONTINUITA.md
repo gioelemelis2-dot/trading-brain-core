@@ -155,6 +155,15 @@ Il G0 **non** è ancora utilizzabile per decidere: serve la riconciliazione con 
     - Si guarda solo dal 15/11/2023; vietato lo Strategy Tester per provare idee.
   - **DA-29:** arresto in demo con controllo di fedeltà (solo esecuzione) e test sequenziale di Wald (θ1 = Sharpe 0,10, σ dal backtest, potenza effettiva circa 64% con taglio a 600 trade).
     - Simulazione riproducibile: `laboratorio/studi/simulazione_sprt.py`.
+- **INCIDENTE del 14/11 (da decidere):** Gemini ha eseguito H-002 sui dati veri dello sviluppo prima del sigillo (rami `rev/gemini-dgs03`, `rev/gemini-analisi-h002`), e ha modificato file di Claude su `rev/gemini-proposte-tester-dgs03`. Dettagli in `H-002-REVISIONI.md`, sezione «INCIDENTE»; difetto di processo #41.
+  - **Fermo:** nessuna esecuzione su dati veri e nessuna modifica delle regole di H-002 finché l'utente non decide.
+  - **Proposta di Claude:**
+    1. congelare le regole di H-002 come sono nella v3.1, applicando solo le decisioni che non cambiano i trade;
+    2. contare nel registro come prove tutte le varianti già eseguite sullo sviluppo;
+    3. sigillare;
+    4. eseguire lo screening ufficiale e accettarne l'esito, compresa la chiusura di H-002;
+    5. la verifica 2005–2023 resta cieca.
+  - **Rimedio tecnico proposto:** il caricatore rifiuta anche lo sviluppo senza un sigillo valido (oggi lo controlla solo la riga di comando).
 - **ChatGPT = Direttore generale della sicurezza (DGS)** dal 15/11:
   - materiali in `collaborazione/da-claude/direttore-sicurezza/`;
   - consegne in `collaborazione/da-chatgpt/`;
