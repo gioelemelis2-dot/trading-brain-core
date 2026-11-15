@@ -349,3 +349,9 @@ Prossimo giro: R11, a Gemini e a ChatGPT sullo stesso commit (`collaborazione/da
   - La protezione vera è di processo: il registro vero e il sigillo stanno nel repository, le impronte del codice sono nel sigillo, e gli agenti che fanno revisione lavorano senza accesso alla cache dei dati.
 - **Istruzioni per il controllo della cache:** la prima versione non indicava il periodo atteso, quindi un archivio finito prima del previsto non sarebbe risultato. Corretto nelle istruzioni per il Mac: lo sviluppo si controlla con il periodo esplicito, lo storico mostra l'ultima data per anno.
 - **Stato dopo il blocco:** 139 test di H-002; tutte le suite di dati e laboratorio 238 verdi; Guardian 77/77; su Python 3.13 e 3.9. **Riesecuzione completa dei mutanti: simulatore 40/40, programma dei criteri 89/89, controllo della cache 11/11, su Python 3.13 e 3.9.**
+
+### Chiarimento dell'utente sulla «soglia r = 0,15» (15/11)
+- **Non è una soglia operativa** né un sigillo: è un **impegno anticipato**. Il 14/11, prima di vedere il «banco di taratura del motore», l'utente ha scritto che il vantaggio minimo che sceglierebbe oggi è 0,15 R per trade. Va confrontato con il numero che sceglierà dopo il banco.
+- **Registrato** in `governance/IMPEGNI-ANTICIPATI.md`, voce IA-01.
+- **Il criterio della scheda v3.1 non cambia:** R medio netto ≥ +0,05 R.
+- **Da documentare:** il «banco di taratura del motore».

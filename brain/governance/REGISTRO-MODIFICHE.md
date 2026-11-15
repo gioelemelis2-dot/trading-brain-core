@@ -418,3 +418,8 @@ Formato: data · versione della base · cosa · perché · file.
   - temporanei rimasti dopo uno spegnimento.
 
   Mai prezzi. Test 8/8; mutanti 11/11 su Python 3.13 e 3.9 (al primo giro 9/11: aggiunto un test con un problema alla volta).
+
+## 2026-11-15 · v1.32 (registro degli impegni anticipati)
+
+- **Nuovo `governance/IMPEGNI-ANTICIPATI.md`:** impegni scritti prima di vedere un risultato, da confrontare dopo con la scelta effettiva. Non sono regole operative, non sono sigilli, non entrano in N.
+- **IA-01 (utente, 14/11):** vantaggio minimo che sceglierebbe oggi, 0,15 R per trade, fissato prima del «banco di taratura del motore». La soglia operativa resta quella della scheda H-002 v3.1.
