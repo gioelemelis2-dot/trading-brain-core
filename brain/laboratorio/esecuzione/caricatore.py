@@ -2,7 +2,7 @@
 nel formato dei simulatori: dizionari `datetime UTC → (open, high, low, close)` in float.
 
 Due modalità (DA-26):
-- «sviluppo»: rifiuta qualunque data prima del 15/11/2023;
+- «sviluppo»: rifiuta qualunque data prima del 15/11/2023 e, come la verifica, parte solo con la scheda sigillata;
 - «verifica»: parte solo se la scheda risulta sigillata nel registro delle prove e con la stessa impronta, e
   rifiuta qualunque data dal 15/11/2023 in poi.
 """
@@ -56,13 +56,15 @@ def carica(cartella_bid: Path, cartella_ask: Path, inizio: date, fine: date, mod
         raise ValueError(f"modalità {modalita!r} non in {MODALITA}")
     if fine < inizio:
         raise ValueError(f"periodo vuoto: {inizio} → {fine}")
+    # Il sigillo si controlla in ENTRAMBE le modalità (incidente del 14/11, difetto #41: script esterni avevano
+    # letto i dati veri dello sviluppo prima del sigillo, perché qui il controllo c'era solo per la verifica).
+    if registro is None or ipotesi is None or scheda is None:
+        raise S.NonSigillata(f"la modalità {modalita} richiede registro, ipotesi e scheda sigillata")
+    S.controlla_sigillo(registro, ipotesi, scheda)
     if modalita == "sviluppo":
         if inizio < INIZIO_SVILUPPO:
             raise ValueError(f"sviluppo dal {INIZIO_SVILUPPO} in poi: {inizio} è nel periodo sigillato (DA-26)")
     else:
-        if registro is None or ipotesi is None or scheda is None:
-            raise S.NonSigillata("la verifica richiede registro, ipotesi e scheda sigillata")
-        S.controlla_sigillo(registro, ipotesi, scheda)
         if fine > FINE_VERIFICA:
             raise ValueError(f"la verifica finisce il {FINE_VERIFICA} (poi embargo e sviluppo): {fine} è oltre")
     impronta = hashlib.sha256()

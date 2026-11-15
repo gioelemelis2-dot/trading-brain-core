@@ -67,7 +67,8 @@ M = {
     "K26 percentile al 90%": [(K, "seme: int = SEME, q: float = 0.95)", "seme: int = SEME, q: float = 0.90)")],
     "K27 ripetizioni 999": [(K, "RIPETIZIONI = 1000", "RIPETIZIONI = 999")],
     "C01 sviluppo nel periodo sigillato": [(C, "if inizio < INIZIO_SVILUPPO:", "if False:")],
-    "C02 verifica senza sigillo": [(C, "        S.controlla_sigillo(registro, ipotesi, scheda)\n", "")],
+    "C02 dati senza sigillo, in sviluppo e in verifica (difetto #41)": [
+        (C, "    S.controlla_sigillo(registro, ipotesi, scheda)\n", "")],
     "C03 verifica senza il 31/10 compreso": [(C, "if fine > FINE_VERIFICA:", "if fine >= FINE_VERIFICA:")],
     "C09 embargo aperto (P7 di Gemini)": [(C, "if fine > FINE_VERIFICA:", "if fine >= INIZIO_SVILUPPO:")],
     "C04 high e low scambiati": [(C, "out[t] = (float(o), float(h), float(l), float(c))",
