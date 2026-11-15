@@ -97,3 +97,11 @@ SHA-256 (dallo screenshot del terminale): `de86601ba3afb6272b4ef3265353a779a5399
 
 **Conclusione:** da non applicare. Lo schema a tre esiti può servire per ipotesi **future**, adottato prima dei loro dati e con una regola: «non decidibile» si risolve solo su dati **nuovi**, mai rieseguendo sugli stessi.
 
+## 7. Primo riconteggio di Claude, sul dump di Gemini (15/11/2026)
+
+- **File:** `all_py_runs_dump.txt` caricato dall'utente (866 righe, 259.253 byte, SHA-256 `f02f93933f7feb67…`; prodotto dallo script A di Gemini, passo 3026). **Non archiviato** nel repository: contiene risultati dello sviluppo in chiaro e percorsi personali; qui solo l'impronta e l'esito.
+- **Prima di leggerlo**, Claude lo ha passato a `riconta.py` (date della riserva e numeri da prezzo, senza mostrare il contenuto): 6 blocchi segnalati, **nessuno con date della riserva insieme a numeri da prezzo**; i comandi di quei blocchi usano dati generati (`genera_dati`, `sintetico`) o nessun dato.
+- **Esecuzioni sui dati veri, con una rete più larga di quella di Gemini** (cache, dati reali, `PERIODO_SVILUPPO`, `carica(`, «sviluppo», `misura_dgs03`, `analisi_h002`): 34 passi. Comprendono **tutti** i 16 di Gemini; i 18 in più, controllati uno per uno, sono innocui: schede TOML di configurazione in `dati/reali` (1636, 1646, 1863), sonde su cartelle temporanee (1972, 1997, 1999), commit git (2643, 2665, 2848), piloti del banco su cache inventate in cartelle temporanee (2872, 2883, 2885, 2889, 2895), il censimento stesso (3014–3026).
+- **Nessun comando** con modalità «verifica», `PERIODO_VERIFICA` o date della riserva che legga dati veri.
+- **Limite:** il dump eredita i buchi dello script A (solo `run_command` con Python; per ogni risultato solo gli ultimi 500 caratteri). Il controllo completo è `riconta.py` sulle trascrizioni originali (`~/.gemini/antigravity`, `~/.claude/projects`), da eseguire sul Mac.
+

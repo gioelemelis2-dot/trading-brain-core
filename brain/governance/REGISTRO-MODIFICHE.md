@@ -463,3 +463,9 @@ Formato: data · versione della base · cosa · perché · file.
   - Stampa solo conteggi, passi, ore, date ed estratti dei comandi con i prezzi mascherati; non conserva il testo delle uscite.
 - **Prove:** test 7/7 su Python 3.13 e 3.9; mutanti 12 uccisi su 12 non equivalenti (Z12 equivalente: il testo delle uscite non è mai conservato, ora garantito da un test e dal mutante Z13). Provato sulle trascrizioni di questa sessione: 2 segnalazioni, entrambe falsi allarmi (date di un mercato inventato, festività inglesi), come previsto per un controllo che segnala e lascia il giudizio a una persona.
 
+## 2026-11-15 · v1.36 (condizione d'uscita di H-002, primo riconteggio sul dump)
+
+- **H-002:** approvata dall'utente la condizione d'uscita dal parcheggio: solo su dati successivi al 12/11/2026, sigillata prima, contata in N; mai rieseguita sullo sviluppo.
+- **Censimento:** primo riconteggio indipendente sul dump di Gemini: confermate le 16 esecuzioni sui dati veri, tutte sullo sviluppo; 18 passi in più trovati con una rete più larga, tutti innocui. Il controllo completo sulle trascrizioni originali resta da fare sul Mac.
+- **`CONTINUITA.md`:** in testa, lo stato del 15/11 sera e le azioni in corso.
+
