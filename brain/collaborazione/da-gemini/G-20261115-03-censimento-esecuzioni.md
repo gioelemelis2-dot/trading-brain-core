@@ -82,3 +82,9 @@ Revisione completata incrociando tutti e 4 i log JSONL sotto /Users/gioele/.gemi
 4. **«Banco di taratura del motore»** (IA-01): con ogni probabilità sono i piloti di Gemini su mercati inventati (passi 2862–2997: quanto vantaggio, da 0 a 0,05 R, i 9 criteri riconoscono). L'esecuzione completa (2997) si è **interrotta** con log vuoto. Se è questo il banco, lo 0,15 R è stato scritto prima che il banco esistesse completo. Da confermare dall'utente, con l'ora della nota rispetto ai piloti.
 5. **Sguardi in più sullo sviluppo:** oltre a V-T e V-S con la loro robustezza, Gemini ha visto numeri per regimi senza slittamento e lordi, range 20'/30'/45', 10 decili di ampiezza del range, acquisti e vendite separati, anni 2024–2026. Registrati come esplorazione **E-003**. Ogni ipotesi futura che usi uno di questi tagli (ampiezza o durata del range, direzione, anno, apertura di Londra) li deve contare in N, e non può avere lo sviluppo come banco «pulito».
 6. **`tb-proposte`:** 5 file del nucleo modificati e non committati (bozza del verdetto a 3 stati, scritta dopo i numeri). Da **conservare come patch con impronta**, non applicare e non cancellare.
+
+## 6. Conservazione di `tb-proposte` (15/11/2026)
+
+L'utente ha salvato le modifiche non committate come `~/Downloads/tb-proposte-non-committato.patch` (sul Mac), senza applicarle né cancellarle.
+SHA-256 (trascritto da Claude da uno screenshot del terminale, da confermare quando il file arriva nel repository): `de86601ba3afb6272b4ef3265353a779a5399a870e8bb77a3e6c3443c06d1e1a`.
+
