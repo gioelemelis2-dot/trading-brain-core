@@ -451,3 +451,15 @@ Formato: data · versione della base · cosa · perché · file.
   - Senza l'opzione il comportamento è quello di prima.
 - **Difetto #45 (mio):** il test della riga di comando faceva una richiesta vera a Dukascopy, perché la funzione di richiesta era fissata alla definizione. Corretto, e il test verifica che la risposta finta sia stata usata.
 - **Prove:** test 33/33 per lo scaricamento (11 di `scarica_cache`, 22 di `dukascopy`); 250 test su `dati` e `laboratorio` e 77 su Guardian, verdi su Python 3.13 e 3.9 con la rete bloccata; mutanti 20/20 su entrambe le versioni (8 nuovi, W13–W20).
+
+## 2026-11-15 · v1.35 (censimento di Gemini, patch di tb-proposte, riconteggio indipendente)
+
+- **Censimento di Gemini archiviato** (`collaborazione/da-gemini/G-20261115-03-…`), con la lettura di Claude: riserva intatta secondo Gemini; «non decidibile» nato da una riclassificazione retroattiva (passo 2986); esplorazione **E-003** registrata e contata in N.
+- **Patch di `tb-proposte` verificata** (impronta ricostruita da `1fec51c`, uguale a quella sul Mac) e archiviata, **non applicata**: allenta tre criteri dopo i numeri e permette di riprovare sugli stessi dati.
+- **H-002:** decisione dell'utente «parcheggiata per ora»; condizione d'uscita proposta da Claude, in attesa della risposta.
+- **Nuovo `governance/censimento/riconta.py`** (`29fc8ff` rosso, poi verde): riconteggio indipendente dalle trascrizioni JSONL di Antigravity e di Claude Code e dai log dei task.
+  - Conta tutti gli strumenti, non solo `run_command`; riconosce le esecuzioni anche come `(cd x; python3 …)`, `/usr/bin/python3`, script di shell e input a processi aperti.
+  - Il controllo principale: uscite con **date della riserva** (anche negli URL di Dukascopy, con i mesi da 0) e **numeri con la forma di un prezzo**.
+  - Stampa solo conteggi, passi, ore, date ed estratti dei comandi con i prezzi mascherati; non conserva il testo delle uscite.
+- **Prove:** test 7/7 su Python 3.13 e 3.9; mutanti 12 uccisi su 12 non equivalenti (Z12 equivalente: il testo delle uscite non è mai conservato, ora garantito da un test e dal mutante Z13). Provato sulle trascrizioni di questa sessione: 2 segnalazioni, entrambe falsi allarmi (date di un mercato inventato, festività inglesi), come previsto per un controllo che segnala e lascia il giudizio a una persona.
+

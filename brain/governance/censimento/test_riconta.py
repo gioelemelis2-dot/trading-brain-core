@@ -21,7 +21,7 @@ def antigravity(cartella: Path) -> Path:
     righe = [
         {"step_index": 1, "type": "USER_INPUT", "content": "parliamo del periodo 2005-01-01 → 2023-10-31", "created_at": "t1"},
         {"step_index": 2, "type": "PLANNER_RESPONSE", "created_at": "t2",
-         "tool_calls": [{"name": "run_command", "args": {"CommandLine": "(cd /Users/u/tb-x; python3 -c 'import caricatore')"}},
+         "tool_calls": [{"name": "run_command", "args": {"CommandLine": "(cd /Users/u/tb-x; python3 -c 'import caricatore; x = 1234.56')"}},
                         {"name": "view_file", "args": {"AbsolutePath": "/Users/u/brain/dati/reali/XAUUSD_15m.csv"}}]},
         {"step_index": 3, "type": "GENERIC", "content": PREZZI, "created_at": "t3"},
         {"step_index": 4, "type": "PLANNER_RESPONSE", "created_at": "t4",
@@ -109,12 +109,18 @@ class TestRiconta(unittest.TestCase):
             rc = R.main([str(self.dir)])
         testo = buf.getvalue()
         self.assertEqual(rc, 0)
-        for vietato in ("427.35", "436.90", "R medio", "-0.051"):
+        for vietato in ("427.35", "436.90", "R medio", "-0.051", "1234.56"):        # 1234.56: nel comando, mascherato
             self.assertNotIn(vietato, testo)
         self.assertIn("DA GUARDARE", testo)
         self.assertIn("view_file", testo)
         self.assertIn("transcript_full.jsonl", testo)
         self.assertNotIn(str(Path.home()) + "/", testo.replace("~/", ""))  # cartella personale abbreviata
+
+    def test_il_risultato_non_conserva_il_testo_delle_uscite(self):
+        r = R.esamina_file(antigravity(self.dir))
+        for u in r["uscite_riserva"]:
+            self.assertEqual(set(u), {"passo", "ora", "date", "prima", "ultima", "numeri_prezzo", "da_guardare"})
+        self.assertNotIn("427.35", repr(r))
 
     def test_date_dukascopy_e_limiti_della_riserva(self):
         self.assertEqual(R.date_riserva("XAUUSD/2009/05/07/BID_candles_min_1.bi5 2023-10-31 2023-11-01 2004-12-31"),
