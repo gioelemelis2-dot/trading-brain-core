@@ -72,6 +72,16 @@ class TestControllaCache(unittest.TestCase):
         self.assertEqual(e["tmp_residui"], [".2010-03-17.tmp"])
         self.assertFalse(e["pulito"])
 
+    def test_un_solo_problema_basta(self):
+        """Ogni problema, da solo, rende la cache da sistemare (mutanti Q06, Q07)."""
+        self.mese_pulito()
+        (self.dir / ".2010-03-17.tmp").write_bytes(b"x")
+        self.assertFalse(CC.esamina(self.dir)["pulito"])
+        (self.dir / ".2010-03-17.tmp").unlink()
+        self.assertTrue(CC.esamina(self.dir)["pulito"])
+        self.scrivi(date(2010, 3, 11), b"")
+        self.assertFalse(CC.esamina(self.dir)["pulito"])
+
     def test_chiusure_note_non_sono_problemi(self):
         for g in (date(2010, 1, 1), date(2010, 4, 2), date(2010, 12, 24), date(2010, 12, 27)):   # ven, Ven. Santo...
             self.scrivi(g, b"")

@@ -408,3 +408,13 @@ Formato: data · versione della base · cosa · perché · file.
   - copertura minima 90% dei confronti (A23, in via prudenziale).
 - **Stato:** 229 test verdi più 77 del Guardian; mutanti 40/40 e 89/89 su Python 3.13 e 3.9.
 - **Registro dei difetti** #33–#40; proposta v3.2 con A22–A25 e le posizioni di Gemini su A12–A21.
+
+## 2026-11-15 · v1.31 (incidente del sigillo: blocco tecnico e controllo della cache)
+
+- **Incidente del 14/11** (difetto #41): H-002 eseguita sui dati veri dello sviluppo prima del sigillo. Registrato in `H-002-REVISIONI.md`. Revisione esterna del nucleo statistico archiviata in `collaborazione/da-revisori-esterni/` (contiene risultati sullo sviluppo).
+- **Blocco tecnico** (`0d4a4b9` rosso, `7d2fc71` verde): il caricatore controlla il sigillo anche nello sviluppo.
+- **Controllo d'integrità della cache** (`dati/pipeline/controlla_cache.py`, `ddc5f88` rosso, poi verde). Conta, anno per anno:
+  - giorni senza file, feriali vuoti, file illeggibili o troncati, giorni corti;
+  - temporanei rimasti dopo uno spegnimento.
+
+  Mai prezzi. Test 8/8; mutanti 11/11 su Python 3.13 e 3.9 (al primo giro 9/11: aggiunto un test con un problema alla volta).

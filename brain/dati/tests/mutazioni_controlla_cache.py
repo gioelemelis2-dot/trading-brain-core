@@ -1,0 +1,82 @@
+"""Mutation testing del controllo d'integrità della cache (dati/pipeline/controlla_cache.py).
+Ogni mutante è una copia di brain/ con UN difetto; la copia non mutata deve superare i test; ogni sostituzione deve
+comparire una sola volta. Uso (dalla radice del repository): python3 -s -B brain/dati/tests/mutazioni_controlla_cache.py <cartella> [processi] [prefissi]
+  prefissi: per esempio «S,C» per far girare solo i mutanti che iniziano con S o C (utile con poco tempo).
+"""
+import shutil
+import subprocess
+import sys
+from concurrent.futures import ThreadPoolExecutor
+from pathlib import Path
+
+if len(sys.argv) not in (2, 3, 4):
+    sys.exit(__doc__)
+BRAIN, OUT = Path(__file__).resolve().parents[2], Path(sys.argv[1]).resolve()
+PROCESSI = int(sys.argv[2]) if len(sys.argv) >= 3 else 2
+PREFISSI = tuple(sys.argv[3].split(",")) if len(sys.argv) == 4 else ("",)
+SUITE = ["brain.dati.tests.test_controlla_cache"]
+CC = "dati/pipeline/controlla_cache.py"
+M = {
+    "Q01 file mancanti non contati": [(CC, "            a[\"mancanti\"] += 1\n", "            pass\n")],
+    "Q02 illeggibili ignorati": [(CC, "                    a[\"illeggibili\"].append(g.isoformat())\n", "                    pass\n")],
+    "Q03 chiusure note anche il 24/12": [(CC, "return {date(anno, 1, 1), date(anno, 12, 25), pasqua(anno) - timedelta(days=2)}",
+                                          "return {date(anno, 1, 1), date(anno, 12, 24), date(anno, 12, 25), pasqua(anno) - timedelta(days=2)}")],
+    "Q04 Venerdì Santo dimenticato": [(CC, ", pasqua(anno) - timedelta(days=2)}", "}")],
+    "Q05 soglia dei corti al 25%": [(CC, "QUOTA_CORTI = 0.5", "QUOTA_CORTI = 0.25")],
+    "Q06 temporanei ignorati nel verdetto": [(CC, "pulito = bool(file) and not tmp and all(", "pulito = bool(file) and all(")],
+    "Q07 feriali vuoti ignorati nel verdetto": [(CC, "a[\"mancanti\"] == 0 and not a[\"feriali_vuoti\"] and not a[\"illeggibili\"]",
+                                                 "a[\"mancanti\"] == 0 and not a[\"illeggibili\"]")],
+    "Q08 minuti non sommati": [(CC, "                a[\"minuti\"] += n\n", "                pass\n")],
+    "Q09 periodo esplicito ignorato": [(CC, "    inizio = inizio or min(file)\n    fine = fine or max(file)\n",
+                                         "    inizio = min(file)\n    fine = max(file)\n")],
+    "Q10 fine settimana contati come feriali vuoti": [(CC, "            elif n == 0 and g.weekday() < 5:", "            elif n == 0:")],
+    "Q11 prezzi nell'esito": [(CC, "                    n = len(DK.decodifica(dati, g, DK.SCALA[simbolo]))         # solo il numero dei minuti\n",
+                                "                    _m = DK.decodifica(dati, g, DK.SCALA[simbolo]); n = len(_m); a.setdefault(\"p\", str(_m[0][1]) if _m else None)\n")],
+}
+
+
+def copia(dest):
+    if dest.exists():
+        shutil.rmtree(dest)
+    for parte in ("dati", "laboratorio", "guardian"):
+        shutil.copytree(BRAIN / parte, dest / "brain" / parte,
+                        ignore=shutil.ignore_patterns("__pycache__", "cache_dukascopy", "partizioni", "*.csv", "*.secret"))
+
+
+def suite(radice):
+    return subprocess.run([sys.executable, "-s", "-B", "-W", "error", "-m", "unittest", "-f", *SUITE], cwd=radice,
+                          capture_output=True, text=True, timeout=900).returncode == 0
+
+
+def mutante(i, nome, sost):
+    dest = OUT / f"M{i:02d}"
+    copia(dest)
+    for f, vecchio, nuovo in sost:
+        testo = (dest / "brain" / f).read_text(encoding="utf-8")
+        if testo.count(vecchio) != 1:
+            shutil.rmtree(dest)
+            return nome, f"ERRORE: la sostituzione compare {testo.count(vecchio)} volte in {f}"
+        (dest / "brain" / f).write_text(testo.replace(vecchio, nuovo), encoding="utf-8")
+    vivo = suite(dest)
+    shutil.rmtree(dest)
+    return nome, "VIVO" if vivo else "UCCISO"
+
+
+def main():
+    OUT.mkdir(parents=True, exist_ok=True)
+    copia(OUT / "M00")
+    if not suite(OUT / "M00"):
+        sys.exit("M00 NON supera la suite: fermo")
+    shutil.rmtree(OUT / "M00")
+    print("M00 copia non mutata: suite verde", flush=True)
+    with ThreadPoolExecutor(PROCESSI) as ex:
+        esiti = list(ex.map(lambda a: mutante(*a), [(i, n, s) for i, (n, s) in enumerate(M.items(), 1) if n.startswith(PREFISSI)]))
+    for nome, esito in esiti:
+        print(f"{esito:6} {nome}")
+    uccisi = sum(1 for _, e in esiti if e == "UCCISO")
+    print(f"\n{uccisi}/{len(esiti)} mutanti uccisi ({sys.version.split()[0]})")
+    return 0 if uccisi == len(esiti) else 1
+
+
+if __name__ == "__main__":
+    sys.exit(main())
