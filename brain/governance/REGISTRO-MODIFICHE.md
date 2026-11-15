@@ -450,4 +450,4 @@ Formato: data · versione della base · cosa · perché · file.
   - alla fine codice d'uscita 5 se ci sono stati giorni in errore.
   - Senza l'opzione il comportamento è quello di prima.
 - **Difetto #45 (mio):** il test della riga di comando faceva una richiesta vera a Dukascopy, perché la funzione di richiesta era fissata alla definizione. Corretto, e il test verifica che la risposta finta sia stata usata.
-- **Prove:** test 32/32 per lo scaricamento (11 del modulo); 250 test su `dati` e `laboratorio` e 77 su Guardian, verdi su Python 3.13 e 3.9 con la rete bloccata; mutanti 20/20 su entrambe le versioni (8 nuovi, W13–W20).
+- **Prove:** test 33/33 per lo scaricamento (11 di `scarica_cache`, 22 di `dukascopy`); 250 test su `dati` e `laboratorio` e 77 su Guardian, verdi su Python 3.13 e 3.9 con la rete bloccata; mutanti 20/20 su entrambe le versioni (8 nuovi, W13–W20).
