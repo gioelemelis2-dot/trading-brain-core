@@ -339,3 +339,13 @@ Prossimo giro: R11, a Gemini e a ChatGPT sullo stesso commit (`collaborazione/da
 - **Da chiarire con l'utente:**
   - la «soglia r = 0,15 R sigillata il 14/11», che non è nel repository;
   - il «documento autoportante sul nucleo statistico», consegnato al revisore il 14/11: chi l'ha prodotto, e su quali esecuzioni dei dati veri.
+
+### Revisione di Claude sul proprio lavoro (15/11, su richiesta dell'utente)
+- **Correzione di un'affermazione di Claude all'utente:** «dai numeri del rapporto il criterio 1 boccia H-002» era troppo forte.
+  - L'intervallo citato dal revisore (IC netto da −0,158 a +0,056) non dice a quale variante si riferisce: dai conteggi delle uscite è quasi certamente V-T.
+  - Per V-S il rapporto non dà la media.
+  - L'esito lo decide solo lo screening ufficiale.
+- **Limite del blocco tecnico `7d2fc71`, da non sopravvalutare:** ferma un uso **per errore** (gli script di Gemini sarebbero stati fermati). Non ferma un uso **voluto**: chiunque può creare un sigillo in un registro di prova, oppure leggere i file `.bi5` senza passare dal caricatore.
+  - La protezione vera è di processo: il registro vero e il sigillo stanno nel repository, le impronte del codice sono nel sigillo, e gli agenti che fanno revisione lavorano senza accesso alla cache dei dati.
+- **Istruzioni per il controllo della cache:** la prima versione non indicava il periodo atteso, quindi un archivio finito prima del previsto non sarebbe risultato. Corretto nelle istruzioni per il Mac: lo sviluppo si controlla con il periodo esplicito, lo storico mostra l'ultima data per anno.
+- **Stato dopo il blocco:** 139 test di H-002; tutte le suite di dati e laboratorio 238 verdi; Guardian 77/77; su Python 3.13 e 3.9. Mutanti in riesecuzione completa.
