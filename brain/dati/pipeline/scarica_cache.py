@@ -9,14 +9,18 @@ in chiaro, che per la verifica non serve (il caricatore legge la cache). Qui:
 - ogni richiesta va in un registro CSV (ora UTC, giorno, lato, URL, codice HTTP, esito, byte, SHA-256, tentativi),
   scritto e forzato su disco subito: dopo uno spegnimento il registro dice fin dove si era arrivati;
 - esiti distinti: «dati», «404», «vuoto-200»; si FERMA su errore HTTP sconosciuto, file danneggiato o rete assente,
-  senza scrivere quel giorno.
+  senza scrivere quel giorno;
+- con --continua-su-http un errore HTTP sconosciuto (es. 403) si registra («http-<codice>»), il giorno resta SENZA
+  file (quindi «mancante» per controlla_cache, mai scambiato per «nessun dato») e si va avanti; ci si ferma comunque
+  dopo 20 errori HTTP di fila, segno di un blocco vero e non di un giorno isolato.
 Non stampa mai prezzi.
 
 Uso (dalla radice del repository; --cache = cartella che contiene XAUUSD e XAUUSD_ASK):
   python3 -s -B -m brain.dati.pipeline.scarica_cache --lato BID --inizio 2009-06-08 --fine 2023-11-11 \\
       --cache brain/dati/reali/cache_dukascopy
 Codici d'uscita: 0 finito; 2 argomenti non validi; 3 rete o Dukascopy non rispondono (rilanciare più tardi lo stesso
-comando: riparte dal primo giorno mancante); 4 errore HTTP sconosciuto o file danneggiato (fermarsi e segnalarlo).
+comando: riparte dal primo giorno mancante); 4 errore HTTP sconosciuto o file danneggiato (fermarsi e segnalarlo);
+5 finito, ma con giorni in errore HTTP (solo con --continua-su-http: segnalare il registro; i giorni restano mancanti).
 """
 import argparse
 import csv
@@ -31,6 +35,7 @@ from typing import Callable
 
 from . import dukascopy as DK
 
+MAX_HTTP_DI_FILA = 20
 CAMPI = ("ora_utc", "giorno", "lato", "url", "http", "esito", "byte", "sha256", "tentativi")
 
 
@@ -60,11 +65,13 @@ def _registra(registro: Path, riga: dict) -> None:
 
 
 def scarica_periodo(simbolo: str, lato: str, inizio: date, fine: date, cache: Path, registro: Path,
-                    richiesta: Callable = DK.richiesta_http, pausa: Callable[[], None] = lambda: time.sleep(DK.PAUSA_S),
-                    stampa=print, ora=lambda: datetime.now(timezone.utc)) -> dict:
+                    richiesta: Callable = None, pausa: Callable[[], None] = lambda: time.sleep(DK.PAUSA_S),
+                    stampa=print, ora=lambda: datetime.now(timezone.utc), continua_su_http: bool = False) -> dict:
+    richiesta = richiesta or DK.richiesta_http       # risolta ora, non alla definizione: sostituibile nei test
     cache = Path(cache)
     cache.mkdir(parents=True, exist_ok=True)
-    conta = {"in_cache": 0, "dati": 0, "404": 0, "vuoto-200": 0}
+    conta = {"in_cache": 0, "dati": 0, "404": 0, "vuoto-200": 0, "http": 0}
+    di_fila = 0
     g = inizio
     while g <= fine:
         f = cache / f"{g.isoformat()}.bi5"
@@ -79,6 +86,15 @@ def scarica_periodo(simbolo: str, lato: str, inizio: date, fine: date, cache: Pa
             codice, dati, tentativi = richiesta(url)
         except urllib.error.HTTPError as e:
             _registra(registro, dict(riga, http=e.code, esito=f"http-{e.code}"))
+            if continua_su_http:
+                conta["http"] += 1
+                di_fila += 1
+                if di_fila >= MAX_HTTP_DI_FILA:
+                    raise Fermo(f"{MAX_HTTP_DI_FILA} errori HTTP di fila (ultimo {g.isoformat()} {lato}: {e.code}). "
+                                f"Blocco vero: fermarsi e segnalarlo") from None
+                pausa()
+                g += timedelta(days=1)
+                continue
             raise Fermo(f"{g.isoformat()} {lato}: risposta HTTP {e.code} da Dukascopy ({url}). Fermo: segnalarlo "
                         f"prima di rilanciare") from None
         except ConnectionError:
@@ -97,6 +113,7 @@ def scarica_periodo(simbolo: str, lato: str, inizio: date, fine: date, cache: Pa
         _scrivi_atomico(f, corpo)
         _registra(registro, riga)
         conta[esito] += 1
+        di_fila = 0
         if (g - inizio).days % 30 == 0:
             stampa(f"{g.isoformat()} {lato}: {conta}", flush=True)
         pausa()
@@ -114,6 +131,8 @@ def main(argv=None) -> int:
     a.add_argument("--cache", required=True, type=Path, help="cartella che contiene XAUUSD e XAUUSD_ASK")
     a.add_argument("--registro", type=Path, help="CSV del registro (predefinito: nella cartella --cache)")
     a.add_argument("--pausa", type=float, default=DK.PAUSA_S, help="secondi fra una richiesta e l'altra")
+    a.add_argument("--continua-su-http", action="store_true",
+                   help="su errore HTTP sconosciuto registra, lascia il giorno mancante e prosegue (codice 5 alla fine)")
     x = a.parse_args(argv)
     if x.fine < x.inizio:
         print(f"ERRORE: --fine {x.fine} prima di --inizio {x.inizio}", file=sys.stderr)
@@ -122,14 +141,18 @@ def main(argv=None) -> int:
     registro = x.registro or (x.cache / f"registro_scaricamento_{x.simbolo}_{x.lato}.csv")
     print(f"Scarico {x.simbolo} {x.lato} dal {x.inizio} al {x.fine} in {cartella}; registro {registro}", flush=True)
     try:
-        scarica_periodo(x.simbolo, x.lato, x.inizio, x.fine, cartella, registro,
-                        pausa=lambda: time.sleep(x.pausa))
+        conta = scarica_periodo(x.simbolo, x.lato, x.inizio, x.fine, cartella, registro,
+                                pausa=lambda: time.sleep(x.pausa), continua_su_http=x.continua_su_http)
     except ConnectionError as e:
         print(f"RETE O DUKASCOPY NON RISPONDONO: {e}. Rilanciare più tardi lo stesso comando.", file=sys.stderr, flush=True)
         return 3
     except Fermo as e:
         print(f"FERMO: {e}", file=sys.stderr, flush=True)
         return 4
+    if conta["http"]:
+        print(f"FINITO CON {conta['http']} GIORNI IN ERRORE HTTP: restano mancanti; vedere il registro {registro}",
+              file=sys.stderr, flush=True)
+        return 5
     return 0
 
 

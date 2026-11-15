@@ -117,7 +117,7 @@ class TestScaricaCache(unittest.TestCase):
         self.assertEqual(len(self.pause), 2)                                  # e non si aspetta
         self.assertEqual((self.cache / "2009-06-09.bi5").read_bytes(), dati)
         self.assertEqual((self.cache / "2009-06-10.bi5").read_bytes(), b"")
-        self.assertEqual(conta, {"in_cache": 1, "dati": 1, "404": 1, "vuoto-200": 0})
+        self.assertEqual(conta, {"in_cache": 1, "dati": 1, "404": 1, "vuoto-200": 0, "http": 0})
         r = self.righe()
         self.assertEqual([x["giorno"] for x in r], ["2009-06-09", "2009-06-10"])
         self.assertEqual([x["esito"] for x in r], ["dati", "404"])
@@ -166,11 +166,23 @@ class TestScaricaCache(unittest.TestCase):
         """Finito ma con giorni in errore: codice 5, così lo script non lo scambia per un successo pieno."""
         from unittest import mock
         errore = urllib.error.HTTPError("u", 403, "Forbidden", {}, None)
-        with mock.patch.object(SC.DK, "richiesta_http", Finta({date(2009, 6, 8): errore})), \
-                mock.patch.object(SC.time, "sleep", lambda s: None):
+        finta = Finta({date(2009, 6, 8): errore})
+        with mock.patch.object(SC.DK, "richiesta_http", finta), mock.patch.object(SC.time, "sleep", lambda s: None):
             rc = SC.main(["--lato", "ASK", "--inizio", "2009-06-08", "--fine", "2009-06-09", "--cache", str(self.radice),
                           "--continua-su-http"])
         self.assertEqual(rc, 5)
+        self.assertEqual(len(finta.chiamate), 2)          # la risposta finta è stata usata: nessuna richiesta vera in rete
+
+    def test_un_giorno_buono_azzera_gli_errori_di_fila(self):
+        """19 errori, un giorno buono, altri 19 errori: nessun blocco vero, si arriva in fondo."""
+        from datetime import timedelta
+        errore = urllib.error.HTTPError("u", 403, "Forbidden", {}, None)
+        d0 = date(2009, 7, 1)
+        risposte = {d0 + timedelta(days=k): (bi5() if k == 19 else errore) for k in range(39)}
+        conta = SC.scarica_periodo("XAUUSD", "ASK", d0, d0 + timedelta(days=38), self.cache, self.registro,
+                                   richiesta=Finta(risposte), pausa=lambda: None, stampa=lambda *a, **k: None,
+                                   continua_su_http=True)
+        self.assertEqual((conta["http"], conta["dati"]), (38, 1))
 
     def test_file_danneggiato_dal_server_non_entra_in_cache(self):
         with self.assertRaises(SC.Fermo):

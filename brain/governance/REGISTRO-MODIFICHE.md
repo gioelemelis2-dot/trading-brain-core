@@ -439,3 +439,15 @@ Formato: data · versione della base · cosa · perché · file.
   - controlla ogni file prima di salvarlo e lo forza su disco; si ferma su un errore HTTP sconosciuto.
 - **`dukascopy.richiesta_http`:** stessa politica di nuovi tentativi; `scarica_http` invariato.
 - **Prove:** test 30/30 su Python 3.13 e 3.9; mutanti 12/12. Al primo giro un mio test usava l'attesa vera e bloccava il mutante W12: corretto.
+
+## 2026-11-15 · v1.34 (scaricatore: errori HTTP isolati non bloccano più tutto)
+
+- **Perché:** l'ASK storico si è fermato il 01/01/2005 con un errore HTTP. Non è il difetto «404 confuso con la risposta vuota» della richiesta 1 di DGS-04: il 404 era già gestito. È un altro codice 4xx (lo dirà il registro), su cui lo scaricatore si fermava per progetto. Un solo giorno rifiutato avrebbe bloccato tutto (difetto #46).
+- **`scarica_cache.py --continua-su-http`** (`f35ad7b` rosso, poi verde):
+  - l'errore si registra come `http-<codice>`;
+  - il giorno resta **senza file**, quindi «mancante» per `controlla_cache`, mai «nessun dato»;
+  - si va avanti; fermo dopo 20 errori HTTP di fila (blocco vero);
+  - alla fine codice d'uscita 5 se ci sono stati giorni in errore.
+  - Senza l'opzione il comportamento è quello di prima.
+- **Difetto #45 (mio):** il test della riga di comando faceva una richiesta vera a Dukascopy, perché la funzione di richiesta era fissata alla definizione. Corretto, e il test verifica che la risposta finta sia stata usata.
+- **Prove:** test 32/32 per lo scaricamento (11 del modulo); 250 test su `dati` e `laboratorio` e 77 su Guardian, verdi su Python 3.13 e 3.9 con la rete bloccata; mutanti 20/20 su entrambe le versioni (8 nuovi, W13–W20).

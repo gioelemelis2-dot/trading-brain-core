@@ -30,6 +30,15 @@ M = {
     "W09 tentativi contati male": [(DK, "            return 200, dati, n + 1\n", "            return 200, dati, n\n")],
     "W10 404 trattato come 200": [(DK, "                return 404, None, n + 1\n", "                return 200, None, n + 1\n")],
     "W11 risposta vuota non più None nella vecchia interfaccia": [(DK, "    return dati or None\n", "    return dati\n")],
+    "W13 nessun blocco dopo troppi errori HTTP di fila": [(SC, "                if di_fila >= MAX_HTTP_DI_FILA:", "                if False:")],
+    "W14 soglia degli errori di fila spostata": [(SC, "                if di_fila >= MAX_HTTP_DI_FILA:", "                if di_fila > MAX_HTTP_DI_FILA:")],
+    "W15 errori di fila non azzerati da un giorno buono": [(SC, "        conta[esito] += 1\n        di_fila = 0\n", "        conta[esito] += 1\n")],
+    "W16 errori HTTP non contati": [(SC, "                conta[\"http\"] += 1\n", "")],
+    "W17 codice d'uscita 5 assente": [(SC, "    if conta[\"http\"]:\n", "    if False:\n")],
+    "W18 opzione attiva per difetto": [(SC, "continua_su_http: bool = False", "continua_su_http: bool = True")],
+    "W19 opzione della riga di comando ignorata": [(SC, "continua_su_http=x.continua_su_http", "continua_su_http=False")],
+    "W20 giorno in errore scritto vuoto in cache": [(SC, "                pausa()\n                g += timedelta(days=1)\n                continue\n",
+                                                      "                _scrivi_atomico(f, b\"\")\n                pausa()\n                g += timedelta(days=1)\n                continue\n")],
     "W12 4xx con nuovi tentativi": [(DK, "            if e.code != 429 and e.code < 500:\n                raise\n", "            if False:\n                raise\n")],
 }
 
