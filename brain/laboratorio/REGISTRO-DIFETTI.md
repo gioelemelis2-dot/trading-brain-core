@@ -60,6 +60,9 @@ Fonti: `laboratorio/ipotesi/H-002-REVISIONI.md` (R1–R8), `collaborazione/da-cl
 | 39 | 15/11 | `sigillo.py` | codice | minore | R11-S7: varianti fuori dal sigillo accettate nel registro | Gemini (R11) | sonde |
 | 40 | 15/11 | test del programma dei criteri | test | importante | 7 mutanti di Gemini (MR01–MR07) sopravvissuti | Gemini (R11) | mutanti nuovi |
 | 41 | 14/11 | processo di collaborazione | processo | **critica** | H-002 eseguita sui dati veri dello sviluppo prima del sigillo (analisi di Gemini, in risposta a un punto «DGS-03» la cui origine è da verificare); modifiche di Gemini ai file di Claude su un ramo di proposta. Nessun blocco tecnico l'ha impedito: gli script di Gemini usano il caricatore in modalità «sviluppo», che non richiede il sigillo | Claude, controllando i rami il 15/11 | lettura dei rami (non dei risultati) |
+| 42 | 14/11 | scheda H-002 v3.1 §4.4 e `orb_londra.py` | scheda + codice | **critica** | Uscita di fine sessione senza quotazioni in [16:30, 16:45): si usa la chiusura precedente alle 16:30, scelta in base all'assenza di quotazioni successive (sguardo al futuro nella regola) | DGS (DGS-03) | lettura della scheda, controesempio con due percorsi |
+| 43 | 13/11–15/11 | pacchetto per i revisori | processo | importante | «Nessun dato personale» dichiarato da Claude dopo aver controllato solo email e stipendio: nel pacchetto c'erano nome, utente GitHub e percorsi del Mac | DGS (DGS-10), conteggio dell'utente | ricerca nel pacchetto |
+| 44 | 14/11 | `H-002-REVISIONI.md` R2/R4 | documentazione | minore | SR₀ del DSR presentato come soglia dello Sharpe osservato | DGS (DGS-01 §4.1) | ricalcolo |
 
 ## Lettura (aggiornata al 15/11/2026, dopo R10)
 | Componente | Critici | Importanti | Minori | Ultimo giro |

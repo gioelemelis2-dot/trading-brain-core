@@ -355,3 +355,25 @@ Prossimo giro: R11, a Gemini e a ChatGPT sullo stesso commit (`collaborazione/da
 - **Registrato** in `governance/IMPEGNI-ANTICIPATI.md`, voce IA-01.
 - **Il criterio della scheda v3.1 non cambia:** R medio netto ≥ +0,05 R.
 - **Da documentare:** il «banco di taratura del motore».
+
+## Rapporti del DGS 01–04 (ChatGPT, 14/11; archiviati in `collaborazione/da-chatgpt/`), lettura di Claude del 15/11
+**Cronologia ricostruita dai rapporti (dichiarazioni dell'utente riportate dal DGS, non verificate da Claude):**
+1. **DGS-01:** insediamento su `83c8956`. Rilievi DGS-01…DGS-12. Il più rilevante per la scheda è **DGS-03**.
+2. **Misure di Gemini sui dati veri dello sviluppo:** riguardano DGS-03. Gemini ha comunicato all'utente gli R medi di V-T e V-S su 456 trade (T1 di DGS-03).
+3. **DGS-03:** con quei numeri, **H-002 «respinta»** sul criterio 1 dello screening.
+4. **Disposizione successiva dell'utente («Una correzione»):** **H-002 = «NON DECIDIBILE · PARCHEGGIATA»**, registrata dal DGS in DGS-04 §1.
+
+**Posizione di Claude (decide l'utente):**
+
+| Punto | Giudizio | Motivo |
+|---|---|---|
+| DGS-03: l'uscita di fine sessione senza quotazioni usa un prezzo **precedente** alle 16:30, scelto in base all'assenza di quotazioni **successive** | **accolto, critico (difetto della scheda, ripetuto fedelmente dal simulatore)** | È uno sguardo al futuro nella regola: alle 16:29 non si sa ancora se arriveranno quotazioni. Va corretto **prima** di qualunque sigillo, con una regola eseguibile solo in avanti. La misura sullo sviluppo (0 casi su 456) dice che lì non ha pesato. Nel periodo vecchio può pesare di più |
+| DGS-10: dati personali nel pacchetto per i revisori | **accolto: errore di Claude** | Claude aveva scritto «nessun dato personale» controllando solo email e stipendio. Nel pacchetto c'erano nome, utente GitHub e percorsi del Mac (20 file e 45 righe secondo il conteggio dell'utente). Il prossimo pacchetto per revisori va redatto con una scansione per classi, compresi gli archivi interni |
+| DGS-01 §4.1: SR₀ (soglia di riferimento del DSR) confuso con lo Sharpe osservato necessario | **accolto: errore di Claude** | In R2/R4 «circa 0,047» era SR₀, non lo Sharpe osservato da superare (circa 0,121 nell'esempio con N = 4 e T = 500) |
+| DGS-04 (N con la robustezza), poi ritirato con l'emendamento dell'utente | **d'accordo con l'emendamento** | La robustezza resta fuori da N solo come veto fisso; se orienta una scelta, l'esclusione decade |
+| **Riclassificazione di H-002 da «respinta» a «non decidibile · parcheggiata»** | **contraria alla regola scritta prima, segnalata come scelta da rivedere** | La scheda v3.1 §8, scritta prima dei risultati, dice: un criterio non passato boccia la variante; «se nessuna variante passa, H-002 è chiusa e non si ritocca». Le due stime puntuali stanno sotto la soglia di +0,05 R di circa 0,10 e 0,12 R. Cambiare la **categoria** del verdetto dopo aver visto i numeri è il tipo di scelta che il metodo vuole impedire, anche se lo screening non era ancora sigillato. È vero che statisticamente l'esito è inconclusivo (l'intervallo arriva poco sopra la soglia). **Proposta:** registrare entrambe le cose. Esito per la regola: BOCCIATA su questo campione. Nota statistica: incertezza alta. Se l'idea si vuole riprovare, è un'**ipotesi nuova** (H-002b), sigillata e contata in N, su dati **futuri**. Lo schema a tre esiti (promossa / bocciata / non decidibile) è sensato, ma solo per le ipotesi **future**, adottato prima dei loro dati |
+| Il DGS ha accolto la riclassificazione senza contestarla | **rilievo sul processo** | In DGS-03 aveva scritto «respinta». In DGS-04 ha registrato la disposizione dell'utente senza confrontarla con il §8 della scheda. È proprio il caso in cui il suo ruolo (la parte scomoda) dovrebbe opporsi o almeno nominare il conflitto |
+| Richieste del DGS a Gemini di lavorare ancora sui dati dello sviluppo (DGS-04 §8) | **sospese** | Sono il canale da cui è nato l'incidente del 14/11. Prima serve un registro delle esecuzioni sui dati veri e l'autorizzazione scritta dell'utente per ciascuna |
+| Richieste del DGS a Claude (Gate 4 e riserve, registro di consumo, 404 contro risposta vuota, tre esiti, scheda di stato, pacchetto redatto, emendamento nel mandato e in DA-19) | **da pianificare** | In ordine di priorità, dopo la decisione dell'utente su H-002 e il censimento delle esecuzioni (vedi CONTINUITA) |
+
+**Censimento di N:** le trascrizioni delle conversazioni di Gemini sono sul Mac, in formato JSONL (`~/.gemini/antigravity/brain/`, indicazione dell'utente del 15/11). Il censimento va fatto da lì, estraendo **solo** i comandi eseguiti sui dati veri, con data, senza gli output.
