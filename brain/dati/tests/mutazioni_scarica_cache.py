@@ -39,6 +39,10 @@ M = {
     "W19 opzione della riga di comando ignorata": [(SC, "continua_su_http=x.continua_su_http", "continua_su_http=False")],
     "W20 giorno in errore scritto vuoto in cache": [(SC, "                pausa()\n                g += timedelta(days=1)\n                continue\n",
                                                       "                _scrivi_atomico(f, b\"\")\n                pausa()\n                g += timedelta(days=1)\n                continue\n")],
+    "W21 niente F_FULLFSYNC": [(SC, "    if hasattr(fcntl, \"F_FULLFSYNC\"):", "    if False:")],
+    "W22 F_FULLFSYNC senza ripiego": [(SC, "        except OSError:\n            pass\n    os.fsync(fd)", "        except OSError:\n            return\n    os.fsync(fd)")],
+    "W23 cartella non forzata": [(SC, "        _forza(cartella)\n", "        pass\n")],
+    "W24 registro non forzato": [(SC, "        f.flush()\n        _forza(f.fileno())\n\n\ndef scarica_periodo", "        f.flush()\n\n\ndef scarica_periodo")],
     "W12 4xx con nuovi tentativi": [(DK, "            if e.code != 429 and e.code < 500:\n                raise\n", "            if False:\n                raise\n")],
 }
 

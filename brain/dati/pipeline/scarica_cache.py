@@ -24,6 +24,7 @@ comando: riparte dal primo giorno mancante); 4 errore HTTP sconosciuto o file da
 """
 import argparse
 import csv
+import fcntl
 import hashlib
 import os
 import sys
@@ -43,13 +44,30 @@ class Fermo(Exception):
     """Errore che richiede un controllo umano: HTTP sconosciuto o file danneggiato."""
 
 
+def _forza(fd: int) -> None:
+    """Forza su disco. Su macOS fsync lascia i dati nella cache del disco: serve F_FULLFSYNC (difetto #47, 20 giorni
+    persi allo spegnimento del 16/11). Dove manca o è rifiutato (Linux, alcune cartelle), fsync."""
+    if hasattr(fcntl, "F_FULLFSYNC"):
+        try:
+            fcntl.fcntl(fd, fcntl.F_FULLFSYNC)
+            return
+        except OSError:
+            pass
+    os.fsync(fd)
+
+
 def _scrivi_atomico(percorso: Path, dati: bytes) -> None:
     tmp = percorso.with_name(f".{percorso.stem}.tmp")
     with open(tmp, "wb") as f:
         f.write(dati)
         f.flush()
-        os.fsync(f.fileno())
+        _forza(f.fileno())
     os.replace(tmp, percorso)
+    cartella = os.open(percorso.parent, os.O_RDONLY)      # anche lo spostamento deve arrivare sul disco
+    try:
+        _forza(cartella)
+    finally:
+        os.close(cartella)
 
 
 def _registra(registro: Path, riga: dict) -> None:
@@ -61,7 +79,7 @@ def _registra(registro: Path, riga: dict) -> None:
             w.writeheader()
         w.writerow(riga)
         f.flush()
-        os.fsync(f.fileno())
+        _forza(f.fileno())
 
 
 def scarica_periodo(simbolo: str, lato: str, inizio: date, fine: date, cache: Path, registro: Path,
