@@ -3,6 +3,7 @@
 Ultimo aggiornamento: **2026-11-15**, dopo il mandato notturno su H-002 (programma dei criteri, strumento di sigillo, quaderno delle ipotesi; ramo `feat/esecutore-h002`, **non unito a main**). Leggere questo file per primo (vale anche per Gemini, insieme a `collaborazione/HANDOFF-GEMINI.md`).
 
 ## Stato al 15/11/2026 sera (leggere prima di tutto il resto)
+- **Scheda di stato aggiornata:** `governance/STATO-PROGETTO.md` (contatori, cosa manca per il sigillo, decisioni aperte).
 - **Ramo:** `feat/esecutore-h002`, non unito a main. **Congelamento** dopo l'incidente #41: nessuna esecuzione sui dati veri, nessuna modifica alle regole di H-002 senza decisione dell'utente.
 - **H-002:** «non decidibile · parcheggiata» (decisione dell'utente); esce dal parcheggio **solo** su dati successivi al 12/11/2026, sigillata prima, contata in N (`laboratorio/ipotesi/H-002-REVISIONI.md`). La patch di `tb-proposte` è archiviata e **non applicata**.
 - **Riserva di verifica (2005 → 31/10/2023):** intatta per tutte le trascrizioni presenti sul Mac (censimento di Gemini + riconteggio completo di Claude con `riconta.py`, 16/11: 19 segnalazioni, tutte falsi allarmi). CSV della vecchia pipeline: solo sviluppo (dal 12/11/2023). Limite: ciò che l'utente ha guardato a mano non è contabile.
