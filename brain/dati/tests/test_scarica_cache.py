@@ -294,9 +294,31 @@ class TestScaricaCache(unittest.TestCase):
         self.assertFalse((self.cache / "2009-06-09.bi5").exists())
 
     def test_pausa_negativa_codice_2(self):
-        self.assertEqual(SC.main(["--inizio", "2009-06-08", "--fine", "2009-06-08", "--cache", str(self.radice),
-                                  "--pausa", "-1"]), 2)
+        """Con risposte finte (#66, R13-D-01): senza, il mutante W35 andava in rete o aspettava 20 minuti."""
+        from unittest import mock
+        finta = Finta({})
+        with mock.patch.object(SC.DK, "richiesta_http", finta), mock.patch.object(SC.time, "sleep", lambda s: None):
+            self.assertEqual(SC.main(["--inizio", "2009-06-08", "--fine", "2009-06-08", "--cache", str(self.radice),
+                                      "--pausa", "-1"]), 2)
         self.assertFalse(self.registro.exists())
+        self.assertEqual(finta.chiamate, [])
+
+    def test_i_404_del_fine_settimana_non_azzerano_gli_errori_di_fila(self):
+        """#67 (R13-A-01, controprova di B-04): tutti i feriali rifiutati, fine settimana in 404 o vuoti: il fermo
+        dopo 20 errori di fila deve scattare. Solo un giorno con dati azzera il conteggio."""
+        from datetime import timedelta
+        errore = urllib.error.HTTPError("u", 403, "Forbidden", {}, None)
+        d0 = date(2009, 6, 1)                                                    # lunedì
+        risposte = {}
+        for k in range(60):
+            g = d0 + timedelta(days=k)
+            risposte[g] = errore if g.weekday() < 5 else (None if g.weekday() == 5 else (200, b"", 1))
+        finta = Finta(risposte)
+        with self.assertRaises(SC.Fermo) as e:
+            SC.scarica_periodo("XAUUSD", "BID", d0, d0 + timedelta(days=59), self.cache, self.registro,
+                               richiesta=finta, pausa=lambda: None, stampa=lambda *a, **k: None, continua_su_http=True)
+        self.assertIn("20 errori HTTP di fila", str(e.exception))
+        self.assertEqual(len(finta.chiamate), 26)                               # 4 settimane: 20 feriali + 6 fine settimana
 
     def test_riprova_i_giorni_feriali_vuoti_solo_se_richiesto(self):
         """#55: un 404 temporaneo lasciava il giorno vuoto per sempre."""

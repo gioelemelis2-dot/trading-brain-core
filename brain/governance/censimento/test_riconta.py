@@ -186,6 +186,9 @@ class TestR12bis(unittest.TestCase):
             "2005.01.03": ["2005-01-03"],
             "03.01.2005": ["2005-01-03"],
             "20150615": ["2015-06-15"],
+            "20150615..20160720": ["2015-06-15", "2016-07-20"],                 # vicine a un punto (#68)
+            "fino al 20150615.": ["2015-06-15"],
+            "valore 1.20150615 e 20150615.5": [],                             # dentro un numero decimale: no
             "ts=1434326400 ms=1434326400000": ["2015-06-15"],
             "cache_dukascopy/XAUUSD/2015/05/15/12h_ticks.bi5": ["2015-06-15"],
             "datafeed/2015/05/15/12h_ticks.bi5": ["2015-06-15"],          # senza simbolo: mesi da 0 lo stesso

@@ -4,6 +4,7 @@ comparire una sola volta. Il generatore di mercati inventati (sintetico.py) è s
 Uso (dalla radice del repository): python3 -s -B brain/laboratorio/tests/mutazioni_esecuzione.py <cartella> [processi] [prefissi]
   prefissi: per esempio «S,C» per far girare solo i mutanti che iniziano con S o C (utile con poco tempo).
 """
+import os
 import shutil
 import subprocess
 import sys
@@ -204,8 +205,16 @@ def copia(dest):
 
 
 def suite(radice):
-    return subprocess.run([sys.executable, "-s", "-B", "-W", "error", "-m", "unittest", "-f", *SUITE], cwd=radice,
-                          capture_output=True, text=True, timeout=900).returncode == 0
+    """Suite sul mutante, con la RETE BLOCCATA (#66: un mutante che esce in rete deve fallire subito, non scaricare né
+    aspettare 20 minuti). Tempo scaduto: contato come ucciso, ma segnalato da guardare."""
+    senza_rete = dict(os.environ, HTTPS_PROXY="http://127.0.0.1:9", HTTP_PROXY="http://127.0.0.1:9",
+                      https_proxy="http://127.0.0.1:9", http_proxy="http://127.0.0.1:9", NO_PROXY="", no_proxy="")
+    try:
+        return subprocess.run([sys.executable, "-s", "-B", "-W", "error", "-m", "unittest", "-f", *SUITE], cwd=radice,
+                              capture_output=True, text=True, timeout=900, env=senza_rete).returncode == 0
+    except subprocess.TimeoutExpired:
+        print(f"ATTENZIONE: tempo scaduto in {Path(radice).name}: contato come ucciso, da guardare", flush=True)
+        return False
 
 
 def mutante(i, nome, sost):

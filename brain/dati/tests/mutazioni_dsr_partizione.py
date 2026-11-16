@@ -10,6 +10,7 @@ Un mutante è ucciso se la suite (i 6 moduli di test di dati/ e laboratorio/) fa
 
 Uso (dalla radice del repository): python3 -s -B brain/dati/tests/mutazioni_dsr_partizione.py <cartella dei mutanti>
 """
+import os
 import shutil
 import subprocess
 import sys
@@ -103,9 +104,16 @@ def copia(dest: Path):
 
 
 def suite(radice: Path) -> bool:
-    r = subprocess.run([sys.executable, "-s", "-B", "-W", "error", "-m", "unittest", *SUITE], cwd=radice,
-                       capture_output=True, text=True, timeout=600)
-    return r.returncode == 0
+    """Suite sul mutante, con la RETE BLOCCATA (#66: un mutante che esce in rete deve fallire subito, non scaricare né
+    aspettare 20 minuti). Tempo scaduto: contato come ucciso, ma segnalato da guardare."""
+    senza_rete = dict(os.environ, HTTPS_PROXY="http://127.0.0.1:9", HTTP_PROXY="http://127.0.0.1:9",
+                      https_proxy="http://127.0.0.1:9", http_proxy="http://127.0.0.1:9", NO_PROXY="", no_proxy="")
+    try:
+        return subprocess.run([sys.executable, "-s", "-B", "-W", "error", "-m", "unittest", *SUITE], cwd=radice,
+                              capture_output=True, text=True, timeout=600, env=senza_rete).returncode == 0
+    except subprocess.TimeoutExpired:
+        print(f"ATTENZIONE: tempo scaduto in {Path(radice).name}: contato come ucciso, da guardare", flush=True)
+        return False
 
 
 def main():
