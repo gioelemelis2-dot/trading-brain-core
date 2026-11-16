@@ -95,7 +95,7 @@ def _ritardo(valore) -> float:
 
 
 def richiesta_http(url: str, tentativi: int = 10, attesa: Optional[Callable[[float], None]] = None,
-                   apri=None) -> Tuple[int, Optional[bytes], int]:
+                   apri=None, annota: Optional[Callable[[str], None]] = None) -> Tuple[int, Optional[bytes], int]:
     """(codice HTTP, contenuto, tentativi usati): (200, byte anche vuoti, n) oppure (404, None, n). Nuovi tentativi
     con attesa crescente su 429/5xx ed errori di rete (rispettando Retry-After): 5, 10, 20, … secondi fino a 5
     minuti, circa 20 minuti in tutto prima di arrendersi (ConnectionError). Altri codici 4xx: HTTPError, senza nuovi
@@ -103,7 +103,8 @@ def richiesta_http(url: str, tentativi: int = 10, attesa: Optional[Callable[[flo
     personale.
     `attesa` e `apri` si risolvono alla chiamata (time.sleep, urllib.request.urlopen): sostituirli nel modulo basta
     (#58: fissati alla definizione, un test di Gemini è andato in rete per errore). Il codice restituito è quello vero
-    della risposta (204 resta 204, #54)."""
+    della risposta (204 resta 204, #54). `annota`, se data, riceve una riga per ogni NUOVO tentativo (motivo e
+    attesa): prima i rallentamenti di Dukascopy erano invisibili nel log (16/11)."""
     attesa = attesa or time.sleep
     apri = apri or urllib.request.urlopen
     richiesta = urllib.request.Request(url, headers={"User-Agent": "trading-brain-dati/1.0"})
@@ -119,10 +120,15 @@ def richiesta_http(url: str, tentativi: int = 10, attesa: Optional[Callable[[flo
             if e.code != 429 and e.code < 500:
                 raise
             ritardo = _ritardo(e.headers.get("Retry-After")) if e.headers else 0.0
-        except (urllib.error.URLError, OSError, http.client.HTTPException):   # rete, timeout (anche socket.timeout
-            # di Python 3.9, che non è un TimeoutError), connessioni chiuse, risposte troncate
+            motivo = f"HTTP {e.code}"
+        except (urllib.error.URLError, OSError, http.client.HTTPException) as e:   # rete, timeout (anche
+            # socket.timeout di Python 3.9, che non è un TimeoutError), connessioni chiuse, risposte troncate
             ritardo = 0.0
-        attesa(max(ritardo, min(300.0, 5.0 * 2 ** n)))
+            motivo = f"rete: {type(e).__name__}"
+        pausa_s = max(ritardo, min(300.0, 5.0 * 2 ** n))
+        if annota is not None:
+            annota(f"tentativo {n + 1}: {motivo}, aspetto {pausa_s:.0f}s")
+        attesa(pausa_s)
     raise ConnectionError(f"{url}: nessuna risposta valida dopo {tentativi} tentativi")
 
 

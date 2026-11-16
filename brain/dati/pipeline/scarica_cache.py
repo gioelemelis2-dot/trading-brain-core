@@ -123,7 +123,11 @@ def scarica_periodo(simbolo: str, lato: str, inizio: date, fine: date, cache: Pa
 
 def _scarica_periodo(simbolo, lato, inizio, fine, cache, registro, richiesta, pausa, stampa, ora, continua_su_http,
                      riprova_vuoti) -> dict:
-    richiesta = richiesta or DK.richiesta_http       # risolta ora, non alla definizione: sostituibile nei test
+    contesto = {"giorno": "?"}
+    if richiesta is None:                            # risolta ora, non alla definizione: sostituibile nei test.
+        def _nota(testo):                            # Ogni nuovo tentativo finisce nel log con il SUO giorno
+            stampa(f"{contesto['giorno']} {lato}: {testo}", flush=True)
+        richiesta = lambda url: DK.richiesta_http(url, annota=_nota)                            # noqa: E731
     conta = {"in_cache": 0, "dati": 0, "404": 0, "vuoto-200": 0, "http": 0, "rovinati": 0, "registrati_dopo": 0}
     registrati = _gia_registrati(registro)
     di_fila = 0
@@ -155,6 +159,7 @@ def _scarica_periodo(simbolo, lato, inizio, fine, cache, registro, richiesta, pa
                 g += timedelta(days=1)
                 continue
         try:
+            contesto["giorno"] = g.isoformat()
             codice, dati, tentativi = richiesta(url)
             if codice not in (200, 204, 404):                            # 206 o altro: non si accetta (#54)
                 raise urllib.error.HTTPError(url, codice, "risposta inattesa", {}, None)

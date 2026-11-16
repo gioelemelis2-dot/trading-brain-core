@@ -60,6 +60,8 @@ M = {
     "W38 nessun blocco fra scaricamenti": [(SC, "            fcntl.flock(blocco, fcntl.LOCK_EX | fcntl.LOCK_NB)\n", "            pass\n")],
     "W40 già in corso non dà codice 2": [(SC, "        print(f\"GIÀ IN CORSO: {e}\", file=sys.stderr, flush=True)\n        return 2", "        print(f\"GIÀ IN CORSO: {e}\", file=sys.stderr, flush=True)\n        return 0")],
     "W41 anche i 404 azzerano gli errori di fila": [(SC, '        if esito == "dati":              # #67', '        if True:              # #67')],
+    "W42 nuovi tentativi non annotati": [(DK, "        if annota is not None:\n            annota(f\"tentativo {n + 1}: {motivo}, aspetto {pausa_s:.0f}s\")\n", "")],
+    "W43 giorno non aggiornato nel log dei tentativi": [(SC, "            contesto[\"giorno\"] = g.isoformat()\n", "")],
     "W12 4xx con nuovi tentativi": [(DK, "            if e.code != 429 and e.code < 500:\n                raise\n", "            if False:\n                raise\n")],
 }
 

@@ -532,3 +532,9 @@ Formato: data · versione della base · cosa · perché · file.
 - **Pacchetto `trading_brain_dgs05.zip`** dal commit `5b405f4`: 357 file, 26 redatti; SHA-256 `7319c67b990cdeb2…`. Ricontrollato in modo indipendente dallo strumento: nessun nome, utente, email, nome del computer o percorso personale; «stipendio» compare solo come voce che resta fuori dal repository, senza cifre.
 - **Messaggio 3 al DGS** (`collaborazione/da-claude/direttore-sicurezza/5-MESSAGGIO-3-PARERI.md`): aggiornamento da DGS-04 e tre pareri per il titolare (soglia IA-02, regole della riserva, modello di scheda) più il controllo del pacchetto.
 
+## 2026-11-16 · v1.44 (notte: chiusura della corsa R13 e log dei tentativi dello scaricatore)
+
+- **Corsa dei mutanti su 3.13 dopo le correzioni R13:** 289/295 al primo giro; i 6 vivi (#71) erano buchi dei test, chiusi in TDD (`46eea94` rosso): ora ogni controllo dell'ancora git scatta DA SOLO con il suo messaggio, i minuti fuori sessione non riempiono i terzi, la potenza fuori dominio dà il nostro errore.
+- **Log dei nuovi tentativi (richiesta dell'utente, pomeriggio del 16/11):** `dukascopy.richiesta_http` accetta `annota` e scrive una riga per ogni NUOVO tentativo (motivo: codice HTTP o tipo di errore di rete, attesa in secondi); lo scaricatore la collega al log con il giorno e il lato. Comportamento invariato; il registro CSV resta com'è (ha già il conteggio dei tentativi; cambiare le colonne romperebbe la continuità dei CSV in corso). Mutanti nuovi W42, W43.
+- Corsa completa di convalida (3.13: scaricatore, esecuzione, DSR; poi tutta la 3.9) lanciata in sottofondo; esiti nel prossimo aggiornamento.
+

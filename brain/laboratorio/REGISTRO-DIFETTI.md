@@ -89,6 +89,7 @@ Fonti: `laboratorio/ipotesi/H-002-REVISIONI.md` (R1–R8), `collaborazione/da-cl
 | 68 | 16/11 | `riconta.py` | codice | minore | R13-A-02: date compatte (20150615) non viste se vicine a un punto | Gemini (R13) | sonde |
 | 69 | 16/11 | `sigillo.py`, `esegui_h002.py` | codice | minore | R13-B-06: nomi delle prove di robustezza liberi nel registro | Gemini (R13) | sonde |
 | 70 | 16/11 | `potenza_soglia.py` | codice + test | minore | R13-C2-01: nessun controllo del dominio (mu, n = 1, sigma = 0, potenza = 1); mutante MPS04 (varianza con n invece di n − 1) vivo | Gemini (R13) | sonde e mutanti |
+| 71 | 16/11 | test dell'ancora, della completezza e della potenza | test | importante | 6 mutanti vivi nella prima corsa dopo le correzioni R13 (N06, N07, N15, N24, N26, P12): ogni scenario era «coperto» da un ALTRO controllo che scattava per caso nello stesso test (es. HEAD staccata presa dal controllo del ramo remoto, potenza fuori dominio presa da uno StatisticsError). I test ora pretendono il messaggio del controllo giusto e scenari in cui scatta da solo | Claude, corsa dei mutanti del 16/11 sera | mutanti 6/6 uccisi dopo |
 
 ## Lettura (aggiornata al 15/11/2026, dopo R10)
 | Componente | Critici | Importanti | Minori | Ultimo giro |
