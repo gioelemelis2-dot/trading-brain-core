@@ -232,3 +232,106 @@ class TestIntegrita(Base):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+# ---------------------------------------------------------------------------------------------------------------
+# R13 di Gemini (16/11/2026): #64 ancora a GitHub, #65 controlli dei valori
+# ---------------------------------------------------------------------------------------------------------------
+import subprocess as _sp                                         # noqa: E402
+
+
+class TestValoriR13(Base):
+    def test_valori_rifiutati(self):
+        self.prenota("A", D(2005, 1, 1), D(2005, 1, 31))
+        for m in (True, 0, -1, 1.0):
+            with self.assertRaises(ValueError, msg=repr(m)):
+                RV.autorizza(self.reg, "A", 12, "dati-A", ORA, m=m)
+        for n in (0, -5, True, 12.0):
+            with self.assertRaises(ValueError, msg=repr(n)):
+                RV.autorizza(self.reg, "A", n, "dati-A", ORA)
+        with self.assertRaises(ValueError):
+            RV.autorizza(self.reg, "A", 12, "", ORA)
+        RV.autorizza(self.reg, "A", 12, "dati-A", ORA)
+        self.prenota("B", D(2005, 2, 1), D(2005, 2, 5))
+        with self.assertRaises(ValueError):                                      # N globale non può scendere
+            RV.autorizza(self.reg, "B", 11, "dati-B", ORA)
+        RV.autorizza(self.reg, "B", 12, "dati-B", ORA)
+
+    def test_niente_ripetizione_tecnica_dopo_l_esito(self):
+        self.prenota("A", D(2005, 1, 1), D(2005, 1, 31))
+        RV.autorizza(self.reg, "A", 12, "dati-A", ORA)
+        RV.rendiconta(self.reg, "A", "bocciata", ORA)
+        with self.assertRaises(ValueError):
+            RV.autorizza(self.reg, "A", 12, "dati-A", ORA)
+
+    def test_quarantena_sulla_parte_protetta_solo_con_sblocco(self):
+        with self.assertRaises(ValueError):
+            RV.quarantena(self.reg, D(2005, 11, 10), D(2005, 11, 12), "buchi", ORA)
+        e = RV.quarantena(self.reg, D(2005, 11, 10), D(2005, 11, 12), "buchi", ORA, usa_protetta=True)
+        self.assertTrue(e["usa_protetta"])
+
+    def test_file_con_valori_falsi_rifiutato(self):
+        self.prenota("A", D(2005, 1, 1), D(2005, 1, 31))
+        RV.autorizza(self.reg, "A", 12, "dati-A", ORA)
+        for campo, valore in (("n_globale", 0), ("hash_dati", ""), ("m", True)):
+            dati = json.loads(self.reg.read_text())
+            originale = dati["eventi"][-1][campo]
+            dati["eventi"][-1][campo] = valore
+            if campo == "m":
+                dati["eventi"][-1]["alfa_j"] = 0.05 / 2                         # quota coerente con m = 1
+            self.reg.write_text(json.dumps(dati))
+            with self.assertRaises(ValueError, msg=campo):
+                RV.stato(self.reg)
+            dati["eventi"][-1][campo] = originale
+            self.reg.write_text(json.dumps(dati))
+        RV.stato(self.reg)
+
+
+class TestAncoraR13(unittest.TestCase):
+    """#64 (R13-C1-01): il file della riserva ancorato alla versione su GitHub, come il registro delle prove."""
+
+    def setUp(self):
+        self._t = tempfile.TemporaryDirectory()
+        self.dir = Path(self._t.name)
+        remoto, self.repo = self.dir / "remoto.git", self.dir / "repo"
+        _sp.run(["git", "init", "-q", "--bare", str(remoto)], check=True)
+        _sp.run(["git", "clone", "-q", str(remoto), str(self.repo)], check=True, capture_output=True)
+        self.g = ["git", "-C", str(self.repo), "-c", "user.name=t", "-c", "user.email=t@invalid"]
+        _sp.run(self.g + ["checkout", "-q", "-b", "principale"], check=True)
+        self.reg = self.repo / "riserva.json"
+        RV.crea(self.reg, D(2005, 1, 1), D(2005, 12, 31), 0.05, ORA, protetta=(D(2005, 11, 1), D(2005, 12, 31)))
+        RV.prenota(self.reg, "A", "H-900", D(2005, 1, 1), D(2005, 1, 31), "d", ORA)
+        RV.autorizza(self.reg, "A", 12, "dati-A", ORA)
+        self.commit_e_push("apertura")
+
+    def tearDown(self):
+        self._t.cleanup()
+
+    def commit_e_push(self, msg):
+        _sp.run(self.g + ["add", "riserva.json"], check=True)
+        _sp.run(self.g + ["commit", "-q", "-m", msg], check=True)
+        _sp.run(self.g + ["push", "-q", "-u", "origin", "principale"], check=True, capture_output=True)
+
+    def scrivi(self, f):
+        dati = json.loads(self.reg.read_text())
+        f(dati)
+        self.reg.write_text(json.dumps(dati))
+        _sp.run(self.g + ["commit", "-q", "-am", "manomesso"], check=True)
+
+    def test_continua_la_versione_su_github(self):
+        RV.controlla_ancora(self.reg, self.repo)
+        RV.rendiconta(self.reg, "A", "bocciata", ORA)
+        with self.assertRaises(ValueError):                                      # non committato
+            RV.controlla_ancora(self.reg, self.repo)
+        self.commit_e_push("esito")
+        RV.controlla_ancora(self.reg, self.repo)
+
+    def test_manomissioni_committate_rifiutate(self):
+        for f in (lambda d: d["riserva"].__setitem__("protetta", None),         # testa
+                  lambda d: d["riserva"].__setitem__("fine", "2006-12-31"),
+                  lambda d: d["eventi"][-1].__setitem__("hash_dati", "altro"),  # voce già su GitHub
+                  lambda d: d["eventi"].pop()):                                   # troncamento
+            _sp.run(self.g + ["reset", "-q", "--hard", "origin/principale"], check=True)
+            self.scrivi(f)
+            with self.assertRaises(ValueError):
+                RV.controlla_ancora(self.reg, self.repo)

@@ -46,3 +46,25 @@ class TestPotenza(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class TestDominioR13(unittest.TestCase):
+    """#70 (R13-C2-01)."""
+
+    def test_valori_fuori_dominio_rifiutati(self):
+        for mu in (-1.0, -1.5, 1.5, 2.0):
+            with self.assertRaises(ValueError, msg=mu):
+                P.sigma_esiti(mu, 1.5)
+        with self.assertRaises(ValueError):
+            P.prob_promozione(0.2, 0.0, 100, 0.15, "stima")
+        with self.assertRaises(ValueError):
+            P.prob_promozione(0.2, 1.2, 0, 0.15, "stima")
+        for potenza in (0.0, 1.0, 1.5):
+            with self.assertRaises(ValueError, msg=potenza):
+                P.n_per_potenza(0.3, 1.2, 0.15, potenza, "stima")
+        with self.assertRaises(ValueError):
+            P.simula(0.2, 1.5, 1, 0.15, "stima", prove=10)
+
+    def test_varianza_campionaria_con_n_meno_uno(self):
+        # 2 vinte (+1,5) e 2 perse (−1) su 4: media 0,25, scarti quadrati 4 × 1,5625 = 6,25, varianza 6,25 / 3
+        self.assertAlmostEqual(P._varianza_campionaria(2, 4, 1.5), 6.25 / 3, places=12)
