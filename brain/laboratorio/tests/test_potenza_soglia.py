@@ -60,8 +60,8 @@ class TestDominioR13(unittest.TestCase):
         with self.assertRaises(ValueError):
             P.prob_promozione(0.2, 1.2, 0, 0.15, "stima")
         for potenza in (0.0, 1.0, 1.5):
-            with self.assertRaises(ValueError, msg=potenza):
-                P.n_per_potenza(0.3, 1.2, 0.15, potenza, "stima")
+            with self.assertRaisesRegex(ValueError, "potenza", msg=potenza):     # mutante P12: il NOSTRO messaggio,
+                P.n_per_potenza(0.3, 1.2, 0.15, potenza, "stima")                 # non uno StatisticsError di passaggio
         with self.assertRaises(ValueError):
             P.simula(0.2, 1.5, 1, 0.15, "stima", prove=10)
 

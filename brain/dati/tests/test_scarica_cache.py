@@ -122,13 +122,42 @@ class TestRichiestaHttpR12bis(unittest.TestCase):
         self.assertEqual(chiamate, ["http://y", 5.0, "http://y"])
 
 
+class TestLogDeiTentativi(unittest.TestCase):
+    """Il pomeriggio del 16/11 Dukascopy rallentava e il log non diceva nulla: ogni nuovo tentativo va annotato
+    con il motivo (codice HTTP o errore di rete) e l'attesa. Nessun cambio di comportamento."""
+
+    def test_richiesta_http_annota_ogni_nuovo_tentativo(self):
+        note, n = [], []
+
+        def apri(r, timeout):
+            n.append(1)
+            if len(n) == 1:
+                raise urllib.error.HTTPError(r.full_url, 429, "Too Many", {"Retry-After": "7"}, None)
+            if len(n) == 2:
+                raise urllib.error.URLError("scaduto")
+            return _Risposta(b"ok")
+        self.assertEqual(DK.richiesta_http("http://x", attesa=lambda s: None, apri=apri, annota=note.append),
+                         (200, b"ok", 3))
+        self.assertEqual(len(note), 2)
+        self.assertIn("HTTP 429", note[0])
+        self.assertIn("aspetto 7s", note[0])                          # il Retry-After del server
+        self.assertIn("tentativo 1", note[0])
+        self.assertIn("URLError", note[1])
+        self.assertIn("aspetto 10s", note[1])                         # attesa crescente: 5, 10, ...
+
+    def test_senza_annota_nessun_obbligo(self):
+        def apri(r, timeout):
+            raise urllib.error.HTTPError(r.full_url, 404, "No", {}, None)
+        self.assertEqual(DK.richiesta_http("http://x", attesa=lambda s: None, apri=apri), (404, None, 1))
+
+
 class Finta:
     """Risposte per giorno: bytes (200), None (404), b"" (200 vuoto), oppure un'eccezione da sollevare."""
 
     def __init__(self, risposte):
         self.risposte, self.chiamate = risposte, []
 
-    def __call__(self, url):
+    def __call__(self, url, **extra):
         self.chiamate.append(url)
         for g, r in self.risposte.items():
             if url == DK.url_giorno("XAUUSD", g, "ASK") or url == DK.url_giorno("XAUUSD", g):
@@ -348,6 +377,20 @@ class TestScaricaCache(unittest.TestCase):
             fcntl.flock(occupato, fcntl.LOCK_UN)
         self.scarica(Finta({date(2009, 6, 8): bi5()}), fine=date(2009, 6, 8))   # libero: si lavora
         self.scarica(Finta({}), inizio=date(2009, 6, 9), fine=date(2009, 6, 9))  # e il blocco si libera alla fine
+
+    def test_lo_scaricatore_scrive_il_giorno_nel_log_dei_tentativi(self):
+        """Il collegamento vero (richiesta predefinita) passa l'annotazione, e la riga dice QUALE giorno riprova."""
+        from unittest import mock
+        righe = []
+
+        def finta_http(url, annota=None):
+            if "2009/05/08" in url and annota:                        # 2009-06-08 (nell'URL il mese parte da 0)
+                annota("tentativo 1: HTTP 503, aspetto 5s")
+            return (200, bi5(), 2)
+        with mock.patch.object(SC.DK, "richiesta_http", finta_http):
+            SC.scarica_periodo("XAUUSD", "BID", date(2009, 6, 8), date(2009, 6, 9), self.cache, self.registro,
+                               pausa=lambda: None, stampa=lambda *a, **k: righe.append(str(a[0])))
+        self.assertTrue(any("2009-06-08" in r and "HTTP 503" in r and "BID" in r for r in righe), righe)
 
     def test_file_danneggiato_dal_server_non_entra_in_cache(self):
         with self.assertRaises(SC.Fermo):

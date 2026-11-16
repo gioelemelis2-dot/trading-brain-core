@@ -556,6 +556,15 @@ class TestCompletezzaPerTerzi(TestCompletezzaDeiGiorni):
         _, _, info = self.carica(m, g, g)
         self.assertEqual(info["feriali_incompleti_bid"], ["2024-12-24"])
 
+    def test_minuti_fuori_sessione_non_contano(self):
+        """Mutante N15: i minuti dopo le 16:45 (o prima delle 08:00) non riempiono i terzi della sessione."""
+        g = date(2024, 1, 17)
+        m = _minuti(g, 132)                                                          # terzo 1 pieno
+        m.update(_minuti(g, 131, dalle=_ora(10, 55)))                                # terzo 2 pieno (totale 263)
+        m.update(_minuti(g, 60, dalle=_ora(17, 0)))                                  # dopo la sessione: non contano
+        _, _, info = self.carica(m, g, g)
+        self.assertEqual(info["feriali_incompleti_bid"], ["2024-01-17"])             # terzo 3 vuoto
+
     def test_un_terzo_quasi_vuoto_non_basta(self):
         g = date(2024, 1, 16)
         m = _minuti(g, 175)
@@ -636,6 +645,31 @@ class TestRegistroR12bis(Cartella):
         _sp.run(g + ["commit", "-q", "-m", "sigillo"], check=True)
         _sp.run(g + ["push", "-q", "-u", "origin", "principale"], check=True, capture_output=True)
         return repo, reg, g
+
+    def test_ancora_ogni_controllo_scatta_da_solo(self):
+        """Mutanti N06, N07, N24, N26: ogni controllo deve fermare da solo, con il SUO messaggio (un altro
+        controllo che scatta per caso nello stesso scenario non vale)."""
+        repo, reg, g = self._repo_con_remoto()
+        reg2 = repo / "secondo.json"                                                 # N07: file mai committato
+        S.sigilla(reg2, "H-998", self.scheda, ["V-T"], ORA)
+        with self.assertRaisesRegex(ValueError, "non è versionato"):
+            S.controlla_ancora(reg2, repo)
+        import os as _os                                                             # N26: storia riscritta,
+        _sp.run(g + ["commit", "-q", "--amend", "--no-edit"], check=True,             # registro IDENTICO (ora
+               env=dict(_os.environ, GIT_COMMITTER_DATE="2030-01-01T00:00:00 +0000"))  # diversa: hash diverso)
+        with self.assertRaisesRegex(ValueError, "non contiene"):
+            S.controlla_ancora(reg, repo)
+        _sp.run(g + ["reset", "-q", "--hard", "origin/principale"], check=True)
+        dati = json.loads(reg.read_text())                                           # N06: voce già su GitHub
+        dati["sigilli"][0]["scheda_sha256"] = "0" * 64                               # cambiata, con un commit
+        reg.write_text(json.dumps(dati))                                             # NORMALE (storia intatta)
+        _sp.run(g + ["commit", "-q", "-am", "voce cambiata"], check=True)
+        with self.assertRaisesRegex(ValueError, "voci cambiate o tolte"):
+            S.controlla_ancora(reg, repo)
+        _sp.run(g + ["reset", "-q", "--hard", "origin/principale"], check=True)
+        _sp.run(g + ["checkout", "-q", "--detach"], check=True)                      # N24: HEAD staccata,
+        with self.assertRaisesRegex(ValueError, "staccata"):                         # col suo messaggio
+            S.controlla_ancora(reg, repo)
 
     def test_registro_ancorato_alla_versione_su_github(self):
         """#62 (R13-B-02): registro identico alla HEAD, HEAD su un ramo che contiene la versione remota, registro
