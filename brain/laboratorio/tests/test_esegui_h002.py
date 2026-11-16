@@ -162,9 +162,10 @@ class BaseRiga(unittest.TestCase):
         self.uscita = self.dir / "rapporto.md"
         self.periodi(sviluppo=(date(2024, 1, 1), date(2024, 2, 29)), verifica=(date(2010, 1, 1), date(2010, 2, 28)))
         from unittest import mock
-        cerotto = mock.patch.object(E, "ANCORA_GIT", False)            # registri temporanei, fuori da git (#51)
-        cerotto.start()
-        self.addCleanup(cerotto.stop)
+        for nome in ("ANCORA_GIT", "CONTROLLO_AMBIENTE"):                # registri temporanei, fuori da git (#51);
+            cerotto = mock.patch.object(E, nome, False)                   # test nello stesso processo (#61)
+            cerotto.start()
+            self.addCleanup(cerotto.stop)
 
     def tearDown(self):
         self._tmp.cleanup()
@@ -180,7 +181,7 @@ class BaseRiga(unittest.TestCase):
 
     def sigilla(self, varianti=("V-T", "V-S"), codice=None, ipotesi="H-002", scheda=None):
         S.sigilla(self.registro, ipotesi, scheda or self.scheda, list(varianti), ORA,
-                  codice=E.impronte_codice() if codice is None else codice)
+                  codice=E.impronte_codice() if codice is None else codice, robustezza=E.nomi_robustezza())
 
     def cache_di(self, inizio, giorni, da=None, spinta=0.01):
         """Cache completa come quella vera: un file per ogni giorno di calendario, vuoto nei giorni senza dati.
@@ -645,3 +646,71 @@ class TestRigaDiComandoR12bis(BaseRiga):
             rc, err = self.lancia_errore("--modalita", "sviluppo")
         self.assertEqual(rc, 2)
         self.assertIn("repository", err)
+
+
+# ---------------------------------------------------------------------------------------------------------------
+# R13 di Gemini (16/11/2026): #61 ambiente, #69 prove di robustezza nel sigillo
+# ---------------------------------------------------------------------------------------------------------------
+class TestAmbiente(unittest.TestCase):
+    """#61 (R13-B-01): codice non sigillato dall'ambiente (PYTHONPATH che ombra la libreria standard, moduli brain
+    diversi da quelli sigillati). Prove in processi separati, come il programma vero."""
+
+    def lancia(self, opzioni, prog, env_extra=None):
+        import os
+        env = dict(os.environ, **(env_extra or {}))
+        return _sp.run([sys.executable, *opzioni, "-c", prog], cwd=str(E.RADICE), capture_output=True, text=True,
+                       env=env)
+
+    PROG = ("import sys; sys.path.insert(0, '.')\n"
+            "import brain.laboratorio.esecuzione.esegui_h002 as E\n"
+            "try:\n    E.controlla_ambiente(E.impronte_codice(){extra})\n    print('AMBIENTE OK')\n"
+            "except ValueError as e:\n    print('FERMO', e)\n")
+
+    def test_isolato_e_pulito_passa(self):
+        out = self.lancia(["-I", "-B"], self.PROG.format(extra=""))
+        self.assertIn("AMBIENTE OK", out.stdout, out.stderr)
+
+    def test_senza_modalita_isolata_si_ferma(self):
+        out = self.lancia(["-s", "-B"], self.PROG.format(extra=""))
+        self.assertIn("FERMO", out.stdout, out.stderr)
+        self.assertIn("-I", out.stdout)
+
+    def test_libreria_standard_ombrata_si_ferma(self):
+        with tempfile.TemporaryDirectory() as d:
+            (Path(d) / "statistics.py").write_text("from math import fsum\ndef mean(x):\n    x = list(x)\n"
+                                                   "    return fsum(x) / len(x)\n")
+            out = self.lancia(["-s", "-B"], self.PROG.format(extra=", isolato_richiesto=False"),
+                              {"PYTHONPATH": d})
+        self.assertIn("FERMO", out.stdout, out.stderr)
+        self.assertIn("statistics", out.stdout)
+
+    def test_modulo_brain_diverso_dal_sigillato_si_ferma(self):
+        prog = ("import sys; sys.path.insert(0, '.')\n"
+                "import brain.laboratorio.esecuzione.esegui_h002 as E\n"
+                "s = E.impronte_codice(); s['brain/laboratorio/esecuzione/criteri.py'] = '0' * 64\n"
+                "try:\n    E.controlla_ambiente(s)\n    print('AMBIENTE OK')\n"
+                "except ValueError as e:\n    print('FERMO', e)\n")
+        out = self.lancia(["-I", "-B"], prog)
+        self.assertIn("FERMO", out.stdout, out.stderr)
+        self.assertIn("criteri.py", out.stdout)
+
+
+class TestRigaDiComandoR13(BaseRiga):
+    def test_controllo_dell_ambiente_attivo_nello_stesso_processo_si_ferma(self):
+        from unittest import mock
+        self.cache_di(date(2024, 1, 1), 60)
+        self.sigilla()
+        with mock.patch.object(E, "CONTROLLO_AMBIENTE", True):
+            rc, err = self.lancia_errore("--modalita", "sviluppo")
+        self.assertEqual(rc, 2)
+        self.assertIn("-I", err)
+        self.assertEqual(self.esecuzioni("sviluppo"), [])
+
+    def test_sigillo_senza_le_prove_di_robustezza_dell_esecutore_si_ferma(self):
+        self.cache_di(date(2024, 1, 1), 60)
+        S.sigilla(self.registro, "H-002", self.scheda, ["V-T", "V-S"], ORA, codice=E.impronte_codice(),
+                  robustezza=["range 20'"])
+        rc, err = self.lancia_errore("--modalita", "sviluppo")
+        self.assertEqual(rc, 2)
+        self.assertIn("robustezza", err)
+

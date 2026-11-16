@@ -523,7 +523,9 @@ class TestCompletezzaDeiGiorni(Cartella):
 
     def test_meta_sessione_basta_e_i_giorni_corti_noti_sono_tollerati(self):
         g = date(2024, 1, 11)
-        m = _minuti(g, 263)
+        m = _minuti(g, 88)                                                           # metà sessione, su tutti i terzi
+        m.update(_minuti(g, 88, dalle=_ora(10, 55)))
+        m.update(_minuti(g, 87, dalle=_ora(13, 50)))
         m.update(_minuti(date(2024, 12, 24), 60))                                    # vigilia: giornata corta nota
         _, _, info = self.carica(m, g, g)
         self.assertEqual(info["feriali_incompleti_bid"], [])
@@ -537,6 +539,33 @@ class TestCompletezzaDeiGiorni(Cartella):
         _, _, info = self.carica(m, g1, g2)
         self.assertEqual(C.impronta_cache(self.dir / "XAUUSD", self.dir / "XAUUSD_ASK", g1, g2), info["dati_sha256"])
         self.assertNotEqual(C.impronta_cache(self.dir / "XAUUSD", self.dir / "XAUUSD_ASK", g1, g1), info["dati_sha256"])
+
+
+class TestCompletezzaPerTerzi(TestCompletezzaDeiGiorni):
+    """#63 (R13-B-03): il totale non basta; ogni terzo della sessione deve avere minuti; le vigilie il mattino."""
+
+    def test_tutto_nel_pomeriggio_non_basta(self):
+        g = date(2024, 1, 15)
+        m = _minuti(g, 263, dalle=_ora(12, 22))
+        _, _, info = self.carica(m, g, g)
+        self.assertEqual(info["feriali_incompleti_bid"], ["2024-01-15"])
+
+    def test_vigilia_con_un_solo_minuto_non_basta(self):
+        g = date(2024, 12, 24)
+        m = {datetime(2024, 12, 24, 0, 0, tzinfo=timezone.utc): (2000.0, 2000.0, 2000.0, 2000.0)}
+        _, _, info = self.carica(m, g, g)
+        self.assertEqual(info["feriali_incompleti_bid"], ["2024-12-24"])
+
+    def test_un_terzo_quasi_vuoto_non_basta(self):
+        g = date(2024, 1, 16)
+        m = _minuti(g, 175)
+        m.update(_minuti(g, 175, dalle=_ora(10, 55)))
+        m.update(_minuti(g, 43, dalle=_ora(13, 50)))                                 # 43 < 44 (25% di 175)
+        _, _, info = self.carica(m, g, g)
+        self.assertEqual(info["feriali_incompleti_bid"], ["2024-01-16"])
+        m.update(_minuti(g, 44, dalle=_ora(13, 50)))
+        _, _, info = self.carica(m, g, g)
+        self.assertEqual(info["feriali_incompleti_bid"], [])
 
 
 class TestFestivitaSpostate(unittest.TestCase):
@@ -570,6 +599,15 @@ class TestRegistroR12bis(Cartella):
         S.registra_esecuzione(self.registro, "H-999", {"ruolo": "robustezza", "variante": "V-T range 20'"}, ORA)
         S.registra_esecuzione(self.registro, "H-999", {"ruolo": "sviluppo", "variante": "V-S"}, ORA)
 
+    def test_prove_di_robustezza_dichiarate_al_sigillo(self):
+        """#69 (R13-B-06): con l'elenco al sigillo, una prova di robustezza non dichiarata è rifiutata."""
+        S.sigilla(self.registro, "H-999", self.scheda, ["V-T"], ORA, robustezza=["range 20'", "tetto 1,6"])
+        S.registra_esecuzione(self.registro, "H-999", {"ruolo": "robustezza", "variante": "V-T range 20'"}, ORA)
+        with self.assertRaises(ValueError):
+            S.registra_esecuzione(self.registro, "H-999", {"ruolo": "robustezza", "variante": "V-T range 45'"}, ORA)
+        self.assertEqual(S.controlla_sigillo(self.registro, "H-999", self.scheda)["robustezza"],
+                         ["range 20'", "tetto 1,6"])
+
     def test_codice_sigillato_controllato_anche_senza_passarlo(self):
         radice = self.dir / "radice"
         (radice / "pkg").mkdir(parents=True)
@@ -586,29 +624,48 @@ class TestRegistroR12bis(Cartella):
         with self.assertRaises(ValueError):
             S.controlla_sigillo(self.registro, "H-999", self.scheda, radice=radice)
 
-    def test_registro_ancorato_alla_versione_su_git(self):
-        repo = self.dir / "repo"
-        repo.mkdir()
+    def _repo_con_remoto(self):
+        remoto, repo = self.dir / "remoto.git", self.dir / "repo"
+        _sp.run(["git", "init", "-q", "--bare", str(remoto)], check=True)
+        _sp.run(["git", "clone", "-q", str(remoto), str(repo)], check=True, capture_output=True)
         g = ["git", "-C", str(repo), "-c", "user.name=t", "-c", "user.email=t@invalid"]
-        _sp.run(g + ["init", "-q"], check=True)
+        _sp.run(g + ["checkout", "-q", "-b", "principale"], check=True)
         reg = repo / "registro_prove.json"
-        with self.assertRaises(ValueError):                                       # non ancora versionato
-            S.sigilla(reg, "H-999", self.scheda, ["V-T"], ORA)
-            S.controlla_ancora(reg, repo)
+        S.sigilla(reg, "H-999", self.scheda, ["V-T"], ORA)
         _sp.run(g + ["add", "registro_prove.json"], check=True)
         _sp.run(g + ["commit", "-q", "-m", "sigillo"], check=True)
-        S.controlla_ancora(reg, repo)                                             # uguale alla versione su git
+        _sp.run(g + ["push", "-q", "-u", "origin", "principale"], check=True, capture_output=True)
+        return repo, reg, g
+
+    def test_registro_ancorato_alla_versione_su_github(self):
+        """#62 (R13-B-02): registro identico alla HEAD, HEAD su un ramo che contiene la versione remota, registro
+        della HEAD che continua quello remoto, nessun collegamento simbolico."""
+        repo, reg, g = self._repo_con_remoto()
+        S.controlla_ancora(reg, repo)                                             # pulito e uguale a GitHub
         S.registra_esecuzione(reg, "H-999", {"ruolo": "sviluppo", "variante": "V-T", "promossa": False}, ORA)
-        S.controlla_ancora(reg, repo)                                             # solo aggiunte in fondo: va bene
+        with self.assertRaises(ValueError):                                       # aggiunta non committata: no
+            S.controlla_ancora(reg, repo)
         _sp.run(g + ["commit", "-q", "-am", "sviluppo"], check=True)
+        S.controlla_ancora(reg, repo)                                             # committata, non ancora spinta: sì
+        _sp.run(g + ["push", "-q"], check=True, capture_output=True)
         dati = json.loads(reg.read_text())
-        dati["esecuzioni"][0]["promossa"] = True                                  # manomissione di una voce già su git
+        dati["esecuzioni"][0]["promossa"] = True                                  # manomissione di una voce spinta
         reg.write_text(json.dumps(dati))
-        with self.assertRaises(ValueError):
+        _sp.run(g + ["commit", "-q", "-a", "--amend", "-m", "riscritto"], check=True)
+        with self.assertRaises(ValueError):                                       # --amend: non discende da GitHub
             S.controlla_ancora(reg, repo)
-        dati["esecuzioni"] = []                                                   # cancellazione
-        reg.write_text(json.dumps(dati))
-        with self.assertRaises(ValueError):
+        _sp.run(g + ["reset", "-q", "--hard", "origin/principale"], check=True)
+        S.controlla_ancora(reg, repo)
+        _sp.run(g + ["checkout", "-q", "--detach", "HEAD~1"], check=True)
+        with self.assertRaises(ValueError):                                       # HEAD staccata
             S.controlla_ancora(reg, repo)
+        _sp.run(g + ["checkout", "-q", "-b", "senza_verifica"], check=True)
+        with self.assertRaises(ValueError):                                       # ramo senza versione remota
+            S.controlla_ancora(reg, repo)
+        _sp.run(g + ["checkout", "-q", "principale"], check=True)
+        collegamento = repo / "altro.json"
+        collegamento.symlink_to(reg)
+        with self.assertRaises(ValueError):                                       # collegamento simbolico
+            S.controlla_ancora(collegamento, repo)
         with self.assertRaises(ValueError):                                       # registro fuori dal repository
             S.controlla_ancora(self.registro, repo)
