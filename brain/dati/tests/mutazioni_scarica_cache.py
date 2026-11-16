@@ -56,6 +56,8 @@ M = {
     'W35 pausa negativa accettata': [(SC, '    if x.pausa < 0:', '    if False:')],
     'W36 riprova anche il fine settimana': [(SC, 'and g.weekday() < 5):', '):')],
     'W37 riprova vuoti ignorata': [(SC, '            elif not (riprova_vuoti and not corpo and g.weekday() < 5):', '            elif True:')],
+    "W38 nessun blocco fra scaricamenti": [(SC, "            fcntl.flock(blocco, fcntl.LOCK_EX | fcntl.LOCK_NB)\n", "            pass\n")],
+    "W40 già in corso non dà codice 2": [(SC, "        print(f\"GIÀ IN CORSO: {e}\", file=sys.stderr, flush=True)\n        return 2", "        print(f\"GIÀ IN CORSO: {e}\", file=sys.stderr, flush=True)\n        return 0")],
     "W12 4xx con nuovi tentativi": [(DK, "            if e.code != 429 and e.code < 500:\n                raise\n", "            if False:\n                raise\n")],
 }
 

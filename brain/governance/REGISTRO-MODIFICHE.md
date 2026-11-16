@@ -519,3 +519,10 @@ Formato: data · versione della base · cosa · perché · file.
 - **Prove:** 306 test (dati, laboratorio, censimento) e 77 di Guardian verdi su 3.13 e 3.9; mutanti tutti uccisi su entrambe le versioni: esecuzione 111/111 (22 nuovi), scaricatore 37/37, riconteggio 29/29, controllo della cache 11/11, simulatore 40/40, DSR e partizione 44/44.
 - **Regola d'uscita per il sigillo:** contatore dei giri puliti a zero (R12-bis ha trovato difetti importanti). Prossimo giro: R13.
 
+## 2026-11-16 · v1.42 (difetto #60: un solo scaricamento per cartella)
+
+- **Cosa è successo:** sul Mac giravano due scaricamenti insieme (il primo, creduto spento con il Mac, era vivo). Uno è uscito con codice 1 senza lasciare traccia nel log; l'altro (versione vecchia) era ancora attivo.
+- **Correzione** (`42bd2ec` rosso, poi verde): blocco esclusivo su `<cache>/.scarica.lock`; un secondo scaricamento sulla stessa cartella esce con codice 2 e non fa richieste.
+- **Correzione di una conclusione precedente:** la perdita di 20 giorni (v1.39, #47) è spiegata con più probabilità dai due processi in contemporanea. La correzione `F_FULLFSYNC` resta, come protezione.
+- **Prove:** test verdi su 3.13 e 3.9; mutanti 39/39 su entrambe (W38, W40 nuovi; W39 tolto perché equivalente: chiudere il file libera comunque il blocco).
+

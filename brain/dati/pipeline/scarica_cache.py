@@ -25,7 +25,7 @@ Non stampa mai prezzi.
 Uso (dalla radice del repository; --cache = cartella che contiene XAUUSD e XAUUSD_ASK):
   python3 -s -B -m brain.dati.pipeline.scarica_cache --lato BID --inizio 2009-06-08 --fine 2023-11-11 \\
       --cache brain/dati/reali/cache_dukascopy
-Codici d'uscita: 0 finito; 2 argomenti non validi; 3 rete o Dukascopy non rispondono (rilanciare più tardi lo stesso
+Codici d'uscita: 0 finito; 2 argomenti non validi o un altro scaricamento già in corso sulla stessa cartella; 3 rete o Dukascopy non rispondono (rilanciare più tardi lo stesso
 comando: riparte dal primo giorno mancante); 4 errore HTTP sconosciuto o file danneggiato (fermarsi e segnalarlo);
 5 finito, ma con giorni in errore HTTP (solo con --continua-su-http: segnalare il registro; i giorni restano mancanti).
 """
@@ -45,6 +45,10 @@ from . import dukascopy as DK
 
 MAX_HTTP_DI_FILA = 20
 CAMPI = ("ora_utc", "giorno", "lato", "url", "http", "esito", "byte", "sha256", "tentativi")
+
+
+class GiaInCorso(Exception):
+    """Un altro scaricamento lavora già sulla stessa cartella (#60: il 16/11 due copie hanno girato insieme)."""
 
 
 class Fermo(Exception):
@@ -101,9 +105,25 @@ def scarica_periodo(simbolo: str, lato: str, inizio: date, fine: date, cache: Pa
                     richiesta: Callable = None, pausa: Callable[[], None] = lambda: time.sleep(DK.PAUSA_S),
                     stampa=print, ora=lambda: datetime.now(timezone.utc), continua_su_http: bool = False,
                     riprova_vuoti: bool = False) -> dict:
-    richiesta = richiesta or DK.richiesta_http       # risolta ora, non alla definizione: sostituibile nei test
+    """Un solo scaricamento per cartella: blocco esclusivo su `<cache>/.scarica.lock`, rilasciato dal sistema anche
+    se il processo muore. Se è già preso: GiaInCorso, nessuna richiesta."""
     cache = Path(cache)
     cache.mkdir(parents=True, exist_ok=True)
+    with open(cache / ".scarica.lock", "a") as blocco:
+        try:
+            fcntl.flock(blocco, fcntl.LOCK_EX | fcntl.LOCK_NB)
+        except OSError:
+            raise GiaInCorso(f"un altro scaricamento lavora già su {cache}: aspettare che finisca o fermarlo") from None
+        try:
+            return _scarica_periodo(simbolo, lato, inizio, fine, cache, registro, richiesta, pausa, stampa, ora,
+                                    continua_su_http, riprova_vuoti)
+        finally:
+            fcntl.flock(blocco, fcntl.LOCK_UN)
+
+
+def _scarica_periodo(simbolo, lato, inizio, fine, cache, registro, richiesta, pausa, stampa, ora, continua_su_http,
+                     riprova_vuoti) -> dict:
+    richiesta = richiesta or DK.richiesta_http       # risolta ora, non alla definizione: sostituibile nei test
     conta = {"in_cache": 0, "dati": 0, "404": 0, "vuoto-200": 0, "http": 0, "rovinati": 0, "registrati_dopo": 0}
     registrati = _gia_registrati(registro)
     di_fila = 0
@@ -209,6 +229,9 @@ def main(argv=None) -> int:
     except Fermo as e:
         print(f"FERMO: {e}", file=sys.stderr, flush=True)
         return 4
+    except GiaInCorso as e:
+        print(f"GIÀ IN CORSO: {e}", file=sys.stderr, flush=True)
+        return 2
     if conta["http"]:
         print(f"FINITO CON {conta['http']} GIORNI IN ERRORE HTTP: restano mancanti; vedere il registro {registro}",
               file=sys.stderr, flush=True)
