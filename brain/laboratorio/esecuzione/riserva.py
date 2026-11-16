@@ -27,7 +27,7 @@ from datetime import date, timedelta
 from pathlib import Path
 from typing import Optional, Tuple
 
-from .sigillo import _bloccato, _scrivi
+from .sigillo import _bloccato, _scrivi, ancora_git
 
 SCHEMA = "riserva/1"
 ESITI = ("promossa", "bocciata", "non decidibile")
@@ -58,6 +58,7 @@ class _Stato:
         self.giorni = {}                       # data -> "prenotato" | "consumato" | "quarantena"
         self.prenotazioni = {}                 # id -> dict(evento, stato, autorizzazione, esito)
         self.j = 0
+        self.n_max = 0                         # N globale non scende fra un'autorizzazione e l'altra (#65)
 
     def _intervallo(self, e) -> Tuple[date, date]:
         a, b = _d(e["inizio"]), _d(e["fine"])
@@ -79,6 +80,8 @@ class _Stato:
             a, b = self._intervallo(e)
             if not e.get("motivo"):
                 raise ValueError("quarantena senza motivo")
+            if self.protetta and a <= self.protetta[1] and b >= self.protetta[0] and not e.get("usa_protetta"):
+                raise ValueError(f"quarantena {a} → {b} sulla parte protetta: serve uno sblocco esplicito (#65)")
             for g in _giorni(a, b):
                 self.giorni[g] = "quarantena"
             return
@@ -107,14 +110,19 @@ class _Stato:
         elif tipo == "autorizzazione":
             if p["stato"] != "prenotato":
                 raise ValueError(f"autorizzazione di {id_!r} impossibile: è {p['stato']}")
-            m = e.get("m")
-            if not isinstance(m, int) or m < 1:
+            m, n, h = e.get("m"), e.get("n_globale"), e.get("hash_dati")
+            if type(m) is not int or m < 1:                                    # #65: True non è un intero valido
                 raise ValueError(f"m = {m!r}: serve un intero ≥ 1")
+            if type(n) is not int or n < 1 or n < self.n_max:
+                raise ValueError(f"N globale = {n!r}: serve un intero ≥ 1 e non minore di {self.n_max}")
+            if not isinstance(h, str) or not h:
+                raise ValueError("impronta dei dati vuota")
             if e.get("j") != self.j + 1:
                 raise ValueError(f"contatore j = {e.get('j')!r}, atteso {self.j + 1}")
             if abs(float(e.get("alfa_j", -1)) - quota(self.alfa_tot, self.j + 1, m)) > 1e-15:
                 raise ValueError(f"quota alfa_j = {e.get('alfa_j')!r} diversa da α_tot/[j(j+1)]/m")
             self.j += 1
+            self.n_max = n
             for g in _giorni(a, b):
                 self.giorni[g] = "consumato"
             p["stato"], p["autorizzazione"] = "autorizzato", e
@@ -188,11 +196,13 @@ def autorizza(registro: Path, id_: str, n_globale: int, hash_dati: str, ora: str
         s = _ricostruisci(dati)
         p = s.prenotazioni.get(id_)
         if p is not None and p["stato"] == "autorizzato":
+            if p["esito"] is not None:                                         # #65: dopo l'esito non si ripete
+                raise ValueError(f"{id_!r} ha già l'esito {p['esito']!r}: nessuna ripetizione tecnica")
             a = p["autorizzazione"]
             if (a["hash_dati"], a["n_globale"], a["m"]) == (hash_dati, n_globale, m):
                 return a                                               # ripetizione tecnica: stessa autorizzazione
             raise ValueError(f"{id_!r} già autorizzata con dati, N o m diversi: non è una ripetizione tecnica")
-        if not isinstance(m, int) or m < 1:
+        if type(m) is not int or m < 1:
             raise ValueError(f"m = {m!r}: serve un intero ≥ 1")
         e = {"tipo": "autorizzazione", "id": id_, "j": s.j + 1, "n_globale": n_globale, "hash_dati": hash_dati,
              "m": m, "alfa_j": quota(s.alfa_tot, s.j + 1, m), "ora": ora}
@@ -206,9 +216,22 @@ def rendiconta(registro: Path, id_: str, esito: str, ora: str) -> dict:
     return _aggiungi(registro, {"tipo": "esito", "id": id_, "esito": esito, "ora": ora})
 
 
-def quarantena(registro: Path, inizio: date, fine: date, motivo: str, ora: str) -> dict:
+def quarantena(registro: Path, inizio: date, fine: date, motivo: str, ora: str, usa_protetta: bool = False) -> dict:
     return _aggiungi(registro, {"tipo": "quarantena", "inizio": inizio.isoformat(), "fine": fine.isoformat(),
-                                "motivo": motivo, "ora": ora})
+                                "motivo": motivo, "usa_protetta": bool(usa_protetta), "ora": ora})
+
+
+def controlla_ancora(registro: Path, radice: Path) -> None:
+    """#64 (R13-C1-01): il file della riserva ancorato alla versione su GitHub come il registro delle prove
+    (`sigillo.ancora_git`): testa identica, eventi già spinti invariati, solo eventi nuovi in fondo e committati.
+    Va chiamato prima di ogni autorizzazione; dopo ogni scrittura il file si committa e si spinge."""
+    def continua(remota: dict, head: dict) -> None:
+        if head.get("schema") != remota.get("schema") or head.get("riserva") != remota.get("riserva"):
+            raise ValueError("la testa della riserva (periodo, α totale, parte protetta) è cambiata rispetto a GitHub")
+        vecchi = remota.get("eventi") or []
+        if (head.get("eventi") or [])[:len(vecchi)] != vecchi:
+            raise ValueError("la riserva non continua la versione su GitHub (eventi cambiati o tolti)")
+    ancora_git(registro, radice, continua)
 
 
 def stato(registro: Path) -> dict:

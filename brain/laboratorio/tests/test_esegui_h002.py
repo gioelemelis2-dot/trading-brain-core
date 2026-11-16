@@ -720,6 +720,16 @@ class TestRigaDiComandoR13(BaseRiga):
         self.assertIn("-I", err)
         self.assertEqual(self.esecuzioni("sviluppo"), [])
 
+    def test_ambiente_controllato_all_avvio_e_alla_fine(self):
+        from unittest import mock
+        self.cache_di(date(2024, 1, 1), 60)
+        self.sigilla()
+        chiamate = []
+        with mock.patch.object(E, "CONTROLLO_AMBIENTE", True), \
+                mock.patch.object(E, "controlla_ambiente", lambda s: chiamate.append(sorted(s) == sorted(E.impronte_codice()))):
+            self.assertEqual(self.lancia("--modalita", "sviluppo"), 0)
+        self.assertEqual(chiamate, [True, True])
+
     def test_sigillo_senza_le_prove_di_robustezza_dell_esecutore_si_ferma(self):
         self.cache_di(date(2024, 1, 1), 60)
         S.sigilla(self.registro, "H-002", self.scheda, ["V-T", "V-S"], ORA, codice=E.impronte_codice(),

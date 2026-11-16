@@ -51,5 +51,7 @@ Per confronto, i trade disponibili per una strategia con al massimo un trade al 
 
 ## Limiti
 - Esiti a due valori (stop o target): le strategie vere hanno anche uscite intermedie. La deviazione standard per trade va presa come ordine di grandezza (1,0–1,5 R); le conclusioni non cambiano nella sostanza dentro questo intervallo.
-- Trade indipendenti: se i risultati di giorni vicini sono correlati, l'errore standard vero è più grande e servono più trade.
+- Trade indipendenti: se i risultati di giorni vicini sono correlati, l'errore standard vero è più grande e servono più trade. **Misurato da Gemini (R13, PS-P4)** con una correlazione AR(1) di 0,25: con la regola sulla stima e 450 trade, una strategia da 0,10 R passa il 27% delle volte invece del 20%; con la regola sul limite inferiore e 2.500 trade, una da 0,25 R passa il 94% invece del 98%. La correlazione va stimata nella scheda di H-003 e usata per l'errore standard (per esempio Newey-West).
+- **Esiti molto asimmetrici e pochi trade** (Gemini, PS-P2): con target 4 R e 30 trade la regola sul limite inferiore promuove per caso l'1,1% delle volte invece del 2,5% nominale (approssimazione normale prudente in quel caso); con i parametri di questo documento l'approssimazione regge (differenze sotto 0,2 punti).
+- **Verifica indipendente:** Gemini (R13, PS-P1) ha ricalcolato tutte le 42 voci delle tabelle: coincidono.
 - La riserva si usa una volta sola per ipotesi: un esame finale fallito non si ripete sugli stessi dati.
