@@ -216,6 +216,11 @@ DA-13 rulebook (Q-09) ──► DA-11 G0 minimo ──► DA-12 indicatori compo
 ### DA-19 · Conteggio delle prove di ricerca
 - **Proposta:** si contano **tutte le varianti eseguite e registrate**, da entrambi i modelli e in tutte le sessioni, in un registro unico. Non si contano pensieri non osservabili.
 - Il conteggio alimenta il DSR (DA-20).
+- **Emendamento del titolare (14/11/2026, registrato dal DGS in DGS-20261114-02; recepito qui il 17/11):** le prove di
+  robustezza restano fuori da N **solo come veti fissi**, cioè con parametri e soglie scritti nella scheda **prima** dei
+  dati. Se una prova di robustezza **orienta una scelta** (quale variante tenere, quale parametro usare, se riprovare),
+  l'esclusione **decade** e quella prova **entra in N**. Nel registro delle prove il ruolo «robustezza» vale solo per i
+  veti fissi; un uso diverso va registrato come prova selezionabile.
 
 ### DA-20 · Criterio di promozione da ricerca a «candidata forward»
 - **Proposta:** un criterio unico, definito prima dei test: DSR calcolato sul conteggio di DA-19, calcolo di potenza per l'ipotesi specifica, robustezza ai parametri, costi realistici, criteri di falsificazione.

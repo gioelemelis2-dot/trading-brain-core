@@ -70,3 +70,9 @@ COMPLETEZZA
 FORMA
 Italiano. Tabelle e liste numerate. Specifico: file, righe, numeri, comandi. Breve dove si può, completo dove serve.
 ```
+
+---
+AGGIORNAMENTO DEL 17/11/2026 (emendamento del titolare su N, recepito in DA-19): le prove di robustezza restano fuori
+dal conteggio N solo come veti fissi, dichiarati nella scheda prima dei dati. Se orientano una scelta, entrano in N.
+Stessa definizione in brain/governance/DECISIONI-APERTE.md (DA-19) e nel registro delle prove (ruolo «robustezza»).
+
