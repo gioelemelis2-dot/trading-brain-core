@@ -508,3 +508,14 @@ Formato: data · versione della base · cosa · perché · file.
   - dei campi con contenuti (file scritti, sostituzioni, prompt) si stampa solo il nome.
 - **Prove:** 14 test verdi su 3.13 e 3.9; nuovo script permanente `governance/censimento/mutazioni_riconta.py`, 29/29 su entrambe le versioni (4 sopravvissuti al primo giro: buchi nei test, chiusi). Sulle trascrizioni di Claude le segnalazioni passano da 2 a 13: è il prezzo di una rete più larga.
 
+## 2026-11-16 · v1.41 (R12-bis: programma dei criteri corretto, mutanti validi)
+
+- **Programma dei criteri** (`dce72ee` rosso, `774573d` verde):
+  - #48: le impronte coprono tutto il codice `brain` che l'esecutore può eseguire, ricavato dagli import (anche dentro le funzioni) e dagli `__init__.py`: 23 file invece dei 7 scritti a mano; il caricatore, chiamato senza impronte, ricontrolla dal disco i file registrati al sigillo;
+  - #49: un giorno feriale è completo solo con almeno metà dei minuti della sessione di Londra (08:00–16:45); vigilie tollerate. **Soglia provvisoria**, da confermare con i conteggi dei minuti della cache vera (solo conteggi);
+  - #50: un solo calendario (`dati/pipeline/calendario.py`) per il caricatore e `controlla_cache`, con 26/12, Lunedì dell'Angelo e i giorni spostati di 1/1 e 25/12;
+  - #51: il registro delle prove deve continuare la versione su git (`ANCORA_GIT`): **va committato dopo ogni esecuzione**; varianti con nomi esatti (suffisso solo per la robustezza); `--ora` nel formato del registro; alla verifica si ricalcola l'impronta dei dati dello sviluppo.
+- **Errori di Claude trovati facendo:** un test anti-frode del progetto ha fermato una scorciatoia sugli orari (`.replace(tzinfo=…)`) nel codice di `Retry-After`: corretto il codice. Mutanti non validi contati come uccisi (#59): corretti gli script.
+- **Prove:** 306 test (dati, laboratorio, censimento) e 77 di Guardian verdi su 3.13 e 3.9; mutanti tutti uccisi su entrambe le versioni: esecuzione 111/111 (22 nuovi), scaricatore 37/37, riconteggio 29/29, controllo della cache 11/11, simulatore 40/40, DSR e partizione 44/44.
+- **Regola d'uscita per il sigillo:** contatore dei giri puliti a zero (R12-bis ha trovato difetti importanti). Prossimo giro: R13.
+

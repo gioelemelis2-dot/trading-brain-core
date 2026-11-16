@@ -404,3 +404,5 @@ Rapporto: `collaborazione/da-gemini/G-20261116-R12bis.md` (commit `3ad6d77`, ide
 
 **Esito per la regola d'uscita (proposta v3.2 §C):** R12-bis ha trovato difetti importanti: il contatore dei giri puliti di fila resta a zero.
 
+**Correzioni (16/11):** #48–#58 corretti in TDD (eccetto A3-05, già noto, e B-04, respinto); trovato e corretto #59 (mutanti non validi). Commit `b0525a9`, `b8c211e`, `774573d`. Dettaglio in `governance/REGISTRO-MODIFICHE.md` v1.40–v1.41.
+
