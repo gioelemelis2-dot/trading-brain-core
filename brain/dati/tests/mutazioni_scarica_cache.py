@@ -33,7 +33,7 @@ M = {
     "W11 risposta vuota non più None nella vecchia interfaccia": [(DK, "    return dati or None\n", "    return dati\n")],
     "W13 nessun blocco dopo troppi errori HTTP di fila": [(SC, "                if di_fila >= MAX_HTTP_DI_FILA:", "                if False:")],
     "W14 soglia degli errori di fila spostata": [(SC, "                if di_fila >= MAX_HTTP_DI_FILA:", "                if di_fila > MAX_HTTP_DI_FILA:")],
-    "W15 errori di fila non azzerati da un giorno buono": [(SC, "        conta[esito] = conta.get(esito, 0) + 1\n        di_fila = 0\n", "        conta[esito] = conta.get(esito, 0) + 1\n")],
+    "W15 errori di fila non azzerati da un giorno buono": [(SC, "        if esito == \"dati\":              # #67: solo un giorno con dati azzera; 404 e vuoti (fine settimana) no\n            di_fila = 0\n", "")],
     "W16 errori HTTP non contati": [(SC, "                conta[\"http\"] += 1\n", "")],
     "W17 codice d'uscita 5 assente": [(SC, "    if conta[\"http\"]:\n", "    if False:\n")],
     "W18 opzione attiva per difetto": [(SC, "continua_su_http: bool = False", "continua_su_http: bool = True")],
@@ -59,6 +59,7 @@ M = {
     'W37 riprova vuoti ignorata': [(SC, '            elif not (riprova_vuoti and not corpo and g.weekday() < 5):', '            elif True:')],
     "W38 nessun blocco fra scaricamenti": [(SC, "            fcntl.flock(blocco, fcntl.LOCK_EX | fcntl.LOCK_NB)\n", "            pass\n")],
     "W40 già in corso non dà codice 2": [(SC, "        print(f\"GIÀ IN CORSO: {e}\", file=sys.stderr, flush=True)\n        return 2", "        print(f\"GIÀ IN CORSO: {e}\", file=sys.stderr, flush=True)\n        return 0")],
+    "W41 anche i 404 azzerano gli errori di fila": [(SC, '        if esito == "dati":              # #67', '        if True:              # #67')],
     "W12 4xx con nuovi tentativi": [(DK, "            if e.code != 429 and e.code < 500:\n                raise\n", "            if False:\n                raise\n")],
 }
 

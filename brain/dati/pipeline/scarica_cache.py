@@ -188,7 +188,8 @@ def _scarica_periodo(simbolo, lato, inizio, fine, cache, registro, richiesta, pa
         _registra(registro, riga)
         registrati.add(g.isoformat())
         conta[esito] = conta.get(esito, 0) + 1
-        di_fila = 0
+        if esito == "dati":              # #67: solo un giorno con dati azzera; 404 e vuoti (fine settimana) no
+            di_fila = 0
         if (g - inizio).days % 30 == 0:
             stampa(f"{g.isoformat()} {lato}: {conta}", flush=True)
         pausa()

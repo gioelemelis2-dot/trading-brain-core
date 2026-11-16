@@ -42,6 +42,8 @@ M = {
     "Z25 prezzi con virgola non visti": ('[1-9]\\d{2,3}[.,]\\d{1,4})', '[1-9]\\d{2,3}[.]\\d{1,4})'),
     "Z26 prezzi oltre 999 senza migliaia": ('[1-9]\\d{2,3}[.,]\\d{1,4})', '[1-9]\\d{2}[.,]\\d{1,4})'),
     "Z27 contenuti dei file stampati": ('            elif k in CAMPI_DA_MOSTRARE:', '            elif True:'),
+    "Z31 date compatte non lette vicino a un punto": ('(?<![\\w])(?<!\\d\\.)((?:19|20)\\d{2})(\\d{2})(\\d{2})(?![\\w])(?!\\.\\d)', '(?<![\\w.])((?:19|20)\\d{2})(\\d{2})(\\d{2})(?![\\w.])'),
+    "Z32 date compatte dentro un decimale": ('(?<![\\w])(?<!\\d\\.)((?:19|20)\\d{2})(\\d{2})(\\d{2})(?![\\w])(?!\\.\\d)', '(?<![\\w])((?:19|20)\\d{2})(\\d{2})(\\d{2})(?![\\w])'),
     "Z28 formato sconosciuto come testo": ('    return None, n, "", [], [_testo(riga)], []', '    return None, n, "", [], [], [_testo(riga)]'),
 }
 

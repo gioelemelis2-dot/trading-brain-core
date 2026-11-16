@@ -47,7 +47,7 @@ DATA_DUKA = re.compile(r"(?<!\d)((?:19|20)\d{2})/(\d{2})/(\d{2})(?=/(?:(?i:bid|a
 # AAAA.MM.GG e AAAA/MM/GG generici (anche dentro un percorso), esclusi i casi Dukascopy qui sopra
 DATA_AMG = re.compile(r"(?<![\d.])(?<![A-Z]{6}/)((?:19|20)\d{2})([./])(\d{2})\2(\d{2})(?!\d|[./]\d|/(?i:bid|ask))")
 DATA_GMA = re.compile(r"(?<![\d./-])(\d{2})([./-])(\d{2})\2((?:19|20)\d{2})(?![\d./-])")
-DATA_COMPATTA = re.compile(r"(?<![\w.])((?:19|20)\d{2})(\d{2})(\d{2})(?![\w.])")
+DATA_COMPATTA = re.compile(r"(?<![\w])(?<!\d\.)((?:19|20)\d{2})(\d{2})(\d{2})(?![\w])(?!\.\d)")   # #68
 TIMESTAMP = re.compile(r"(?<![\w.])(\d{13}|\d{10})(?![\w.])")
 PREZZO = re.compile(r"(?<!\d)(?<!\d[.,])(?:[1-9]\d{0,2}[.,]\d{3}[.,]\d{1,4}|[1-9]\d{2,3}[.,]\d{1,4})(?!\d|[.,]\d)")
 TESTO_ANTIGRAVITY = {"USER_INPUT", "PLANNER_RESPONSE"}          # tutto il resto è un'uscita
