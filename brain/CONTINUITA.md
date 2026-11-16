@@ -5,7 +5,7 @@ Ultimo aggiornamento: **2026-11-15**, dopo il mandato notturno su H-002 (program
 ## Stato al 15/11/2026 sera (leggere prima di tutto il resto)
 - **Ramo:** `feat/esecutore-h002`, non unito a main. **Congelamento** dopo l'incidente #41: nessuna esecuzione sui dati veri, nessuna modifica alle regole di H-002 senza decisione dell'utente.
 - **H-002:** «non decidibile · parcheggiata» (decisione dell'utente); esce dal parcheggio **solo** su dati successivi al 12/11/2026, sigillata prima, contata in N (`laboratorio/ipotesi/H-002-REVISIONI.md`). La patch di `tb-proposte` è archiviata e **non applicata**.
-- **Riserva di verifica (2005 → 31/10/2023):** intatta secondo il censimento di Gemini e il primo riconteggio di Claude sul dump. Controllo completo: `governance/censimento/riconta.py` sul Mac (da fare).
+- **Riserva di verifica (2005 → 31/10/2023):** intatta per tutte le trascrizioni presenti sul Mac (censimento di Gemini + riconteggio completo di Claude con `riconta.py`, 16/11: 19 segnalazioni, tutte falsi allarmi). Da controllare: i CSV con prezzi in chiaro della vecchia pipeline in `dati/reali`.
 - **Esplorazioni sullo sviluppo:** E-001, E-002 (Claude), E-003 (Gemini, 14/11, fuori protocollo): contano in N per le ipotesi che ne usano i tagli.
 - **Dati:** BID fino al 07/06/2009 e dal 12/11/2023; ASK solo dal 12/11/2023. Scaricamento con `dati/pipeline/scarica_cache.py --continua-su-http`, dal Mac (worktree `tb-scarica`).
 - **In corso dall'utente (sera del 15/11):** scaricamento storico; `riconta.py` sulle trascrizioni (worktree `tb-riconta`); ora della nota dello 0,15 R e conferma che il «banco» è la taratura di Gemini (IA-01).

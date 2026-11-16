@@ -118,3 +118,11 @@ SHA-256 (dallo screenshot del terminale): `de86601ba3afb6272b4ef3265353a779a5399
 - **Claude Code sul Mac (13/11):** ha usato la vecchia pipeline (`dukascopy --anni 3`, poi `--anni 21.9`), che scrive `dati/reali/XAUUSD_15m.csv` con **prezzi in chiaro**. Uscite con date della riserva: 4, con 1–2 date e nessun numero da prezzo. **Da controllare:** quali CSV esistono in `dati/reali` sul Mac e che periodo coprono (solo prima e ultima data). Un CSV che copre la riserva è il rischio di contaminazione più concreto rimasto, per chiunque lo apra.
 - **Limite:** sul Mac c'è una sola trascrizione di Claude Code. Altre sessioni, se ci sono state, non sono più su disco; anche ciò che l'utente ha fatto direttamente nel terminale non è in nessuna trascrizione.
 
+**Contesto dei passi 2257, 2641 e 3037 (16/11, numeri da prezzo mascherati con `<N>`, comando eseguito dall'utente):**
+- 2257: `seme=303`, varianti `_stress`: mercato **inventato**; data 2024-07-03 (etichetta, comunque nello sviluppo). Falso allarme.
+- 2641: documento DGS-03 di Gemini (esempio di uscita di fine sessione e «misura reale» sullo sviluppo); le date della riserva sono solo i limiti del periodo. Falso allarme.
+- 3037: righe «Gemini Decimal → … Claude float» della replica su dati **inventati**, citate nel censimento. Falso allarme.
+- **Difetto del comando di Claude:** il mascheramento era applicato dopo il ritaglio, quindi un numero tagliato sul bordo (`1713.…`, prezzo di un mercato inventato) è rimasto visibile. Nessun danno; se riusato, mascherare **prima** di ritagliare.
+
+**Esito del riconteggio:** nelle trascrizioni presenti sul Mac (Gemini e Claude Code) **nessuna esecuzione e nessuna lettura ha mostrato prezzi della riserva 2005 → 31/10/2023**. Restano fuori: sessioni non più su disco, ciò che l'utente ha fatto o aperto a mano, e i CSV della vecchia pipeline (da controllare).
+
