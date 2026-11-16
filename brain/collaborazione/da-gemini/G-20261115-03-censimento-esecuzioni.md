@@ -126,3 +126,7 @@ SHA-256 (dallo screenshot del terminale): `de86601ba3afb6272b4ef3265353a779a5399
 
 **Esito del riconteggio:** nelle trascrizioni presenti sul Mac (Gemini e Claude Code) **nessuna esecuzione e nessuna lettura ha mostrato prezzi della riserva 2005 → 31/10/2023**. Restano fuori: sessioni non più su disco, ciò che l'utente ha fatto o aperto a mano, e i CSV della vecchia pipeline (da controllare).
 
+**CSV della vecchia pipeline sul Mac (16/11, solo nomi, righe, prima e ultima data):** `dati/reali/XAUUSD_15m.csv` e `XAUUSD_ASK_15m.csv`, 71.009 righe ciascuno, dal 2023-11-12T23:00Z al 2026-11-12T23:45Z: **solo sviluppo** (più tre giorni di margine dopo la fine della riserva). Nessun altro CSV con XAUUSD in `~/Downloads` fuori dalla cache. Lo scaricamento storico della vecchia pipeline non è mai arrivato a scrivere un CSV.
+
+**Chiusura:** riserva 2005 → 31/10/2023 **intatta** per trascrizioni, letture di file e file su disco controllati. Limiti dichiarati: sessioni non più su disco e ciò che l'utente ha guardato a mano (grafici, piattaforme), che nessun registro può contare.
+

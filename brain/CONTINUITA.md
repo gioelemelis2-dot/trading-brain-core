@@ -5,10 +5,10 @@ Ultimo aggiornamento: **2026-11-15**, dopo il mandato notturno su H-002 (program
 ## Stato al 15/11/2026 sera (leggere prima di tutto il resto)
 - **Ramo:** `feat/esecutore-h002`, non unito a main. **Congelamento** dopo l'incidente #41: nessuna esecuzione sui dati veri, nessuna modifica alle regole di H-002 senza decisione dell'utente.
 - **H-002:** «non decidibile · parcheggiata» (decisione dell'utente); esce dal parcheggio **solo** su dati successivi al 12/11/2026, sigillata prima, contata in N (`laboratorio/ipotesi/H-002-REVISIONI.md`). La patch di `tb-proposte` è archiviata e **non applicata**.
-- **Riserva di verifica (2005 → 31/10/2023):** intatta per tutte le trascrizioni presenti sul Mac (censimento di Gemini + riconteggio completo di Claude con `riconta.py`, 16/11: 19 segnalazioni, tutte falsi allarmi). Da controllare: i CSV con prezzi in chiaro della vecchia pipeline in `dati/reali`.
+- **Riserva di verifica (2005 → 31/10/2023):** intatta per tutte le trascrizioni presenti sul Mac (censimento di Gemini + riconteggio completo di Claude con `riconta.py`, 16/11: 19 segnalazioni, tutte falsi allarmi). CSV della vecchia pipeline: solo sviluppo (dal 12/11/2023). Limite: ciò che l'utente ha guardato a mano non è contabile.
 - **Esplorazioni sullo sviluppo:** E-001, E-002 (Claude), E-003 (Gemini, 14/11, fuori protocollo): contano in N per le ipotesi che ne usano i tagli.
 - **Dati:** BID fino al 07/06/2009 e dal 12/11/2023; ASK solo dal 12/11/2023. Scaricamento con `dati/pipeline/scarica_cache.py --continua-su-http`, dal Mac (worktree `tb-scarica`).
-- **In corso dall'utente (sera del 15/11):** scaricamento storico; `riconta.py` sulle trascrizioni (worktree `tb-riconta`); ora della nota dello 0,15 R e conferma che il «banco» è la taratura di Gemini (IA-01).
+- **In corso:** scaricamento storico avviato la notte del 15–16/11 (`~/scarica_storico.log`, worktree `tb-scarica`; BID dal 2009-06-08, poi ASK dal 2005-01-01). **Da avere dall'utente:** ora della nota dello 0,15 R e conferma che il «banco» è la taratura di Gemini (IA-01).
 - **Dopo:** controllo della cache a scaricamento finito; righe «DA GUARDARE» di `riconta.py`; giro R12 (Gemini e DGS); regole generali chieste dal DGS; sigillo solo dopo due giri senza difetti gravi; poi una nuova ipotesi (H-003), con soglia minima decisa prima (IA-01: 0,15 R).
 - **Attenzione con TradingView:** guardare solo dal 15/11/2023 in avanti; ogni idea va scritta con data e periodo guardato prima di essere provata; ChatGPT è il DGS e non deve diventare autore delle idee che poi giudica.
 
