@@ -526,3 +526,9 @@ Formato: data · versione della base · cosa · perché · file.
 - **Correzione di una conclusione precedente:** la perdita di 20 giorni (v1.39, #47) è spiegata con più probabilità dai due processi in contemporanea. La correzione `F_FULLFSYNC` resta, come protezione.
 - **Prove:** test verdi su 3.13 e 3.9; mutanti 39/39 su entrambe (W38, W40 nuovi; W39 tolto perché equivalente: chiudere il file libera comunque il blocco).
 
+## 2026-11-16 · v1.43 (pacchetto redatto e messaggio 3 per il DGS)
+
+- **Nuovo `governance/esporta_redatto.py`** (`4760f10` rosso, `186352f` verde; richiesta DGS-10, difetto #43): esporta il contenuto esatto di un commit, sostituisce nei file di testo le stringhe date al lancio (non scritte nel repository) e i nomi utente nei percorsi del Mac, scrive `MANIFEST.tsv` con le impronte prima e dopo, e si ferma se un dato resta in un file o nel nome di un file. Test 6/6 su 3.13 e 3.9, mutanti 12/12 (X05 e X11 sopravvissuti al primo giro: buchi nei test, chiusi).
+- **Pacchetto `trading_brain_dgs05.zip`** dal commit `5b405f4`: 357 file, 26 redatti; SHA-256 `7319c67b990cdeb2…`. Ricontrollato in modo indipendente dallo strumento: nessun nome, utente, email, nome del computer o percorso personale; «stipendio» compare solo come voce che resta fuori dal repository, senza cifre.
+- **Messaggio 3 al DGS** (`collaborazione/da-claude/direttore-sicurezza/5-MESSAGGIO-3-PARERI.md`): aggiornamento da DGS-04 e tre pareri per il titolare (soglia IA-02, regole della riserva, modello di scheda) più il controllo del pacchetto.
+
