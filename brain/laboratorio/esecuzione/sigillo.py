@@ -12,12 +12,14 @@ import fcntl
 import hashlib
 import json
 import os
+import subprocess
 import threading
 from contextlib import contextmanager
 from pathlib import Path
 from typing import Dict, List, Optional
 
 SCHEMA = "registro-prove/1"
+RADICE = Path(__file__).resolve().parents[3]
 RUOLI_ESECUZIONE = ("sviluppo", "robustezza", "verifica", "esito")       # esito: risultato della verifica
 
 
@@ -105,9 +107,12 @@ def _sigilla(registro: Path, ipotesi: str, scheda: Path, varianti: List[str], or
     return s
 
 
-def controlla_sigillo(registro: Path, ipotesi: str, scheda: Path, codice: Optional[Dict[str, str]] = None) -> dict:
-    """Il sigillo dell'ipotesi, solo se la scheda sul disco è ancora quella sigillata e, se `codice` è dato, se
-    le impronte del codice che la esegue sono quelle registrate al sigillo."""
+def controlla_sigillo(registro: Path, ipotesi: str, scheda: Path, codice: Optional[Dict[str, str]] = None,
+                      radice: Optional[Path] = None) -> dict:
+    """Il sigillo dell'ipotesi, solo se la scheda sul disco è ancora quella sigillata e il codice è quello sigillato:
+    - con `codice`, le impronte date devono essere esattamente quelle registrate (stessi file, stesse impronte);
+    - senza `codice` (es. il caricatore chiamato da altri script, #48), si ricalcolano dal disco le impronte dei file
+      registrati al sigillo: un file cambiato o sparito ferma tutto."""
     s = _sigillo(leggi(registro), ipotesi)
     if s is None:
         raise NonSigillata(f"{ipotesi} non risulta sigillata nel registro {registro}")
@@ -116,7 +121,33 @@ def controlla_sigillo(registro: Path, ipotesi: str, scheda: Path, codice: Option
     if codice is not None and s.get("codice") != codice:
         diversi = sorted(k for k in set(codice) | set(s.get("codice") or {}) if codice.get(k) != (s.get("codice") or {}).get(k))
         raise ValueError(f"il codice che esegue {ipotesi} non è quello sigillato: {diversi}")
+    if codice is None and s.get("codice"):
+        r = Path(radice or RADICE)
+        diversi = sorted(f for f, h in s["codice"].items()
+                         if not (r / f).is_file() or hashlib.sha256((r / f).read_bytes()).hexdigest() != h)
+        if diversi:
+            raise ValueError(f"il codice che esegue {ipotesi} è cambiato dopo il sigillo: {diversi}")
     return s
+
+
+def controlla_ancora(registro: Path, radice: Path) -> None:
+    """Il registro deve essere versionato in git e CONTINUARE la versione dell'ultimo commit: le voci già su git non
+    si cambiano né si tolgono, si aggiungono solo voci nuove in fondo (#51, rilievo R12bis-A3-04). Il registro va
+    committato (e spinto su GitHub) dopo ogni esecuzione: così una manomissione si vede nella storia."""
+    registro, radice = Path(registro).resolve(), Path(radice).resolve()
+    try:
+        rel = registro.relative_to(radice).as_posix()
+    except ValueError:
+        raise ValueError(f"il registro {registro} è fuori dal repository {radice}: non è ancorato a git") from None
+    r = subprocess.run(["git", "-C", str(radice), "show", f"HEAD:{rel}"], capture_output=True, text=True)
+    if r.returncode != 0:
+        raise ValueError(f"il registro {rel} non è versionato in git: committarlo prima di eseguire")
+    su_git = json.loads(r.stdout)
+    ora = leggi(registro)
+    for chiave in ("prove", "sigilli", "esecuzioni"):
+        vecchie = su_git.get(chiave) or []
+        if ora[chiave][:len(vecchie)] != vecchie:
+            raise ValueError(f"il registro {rel} non continua la versione su git ({chiave}: voci cambiate o tolte)")
 
 
 def registra_esecuzione(registro: Path, ipotesi: str, voce: dict, ora: str) -> dict:
@@ -132,7 +163,14 @@ def _registra(registro: Path, ipotesi: str, voce: dict, ora: str) -> dict:
     ruolo = voce.get("ruolo")
     if ruolo not in RUOLI_ESECUZIONE:
         raise ValueError(f"ruolo {ruolo!r} non in {RUOLI_ESECUZIONE}")
-    if str(voce.get("variante") or "").split(" ")[0] not in _sigillo(dati, ipotesi)["varianti"]:   # R11-S7
+    variante = str(voce.get("variante") or "")
+    dichiarate = _sigillo(dati, ipotesi)["varianti"]
+    if ruolo == "robustezza":                          # «<variante> <prova>»: R11-S7, poi #51 (niente suffissi liberi)
+        base, _, prova = variante.partition(" ")
+        valida = base in dichiarate and bool(prova.strip())
+    else:
+        valida = variante in dichiarate
+    if not valida:
         raise ValueError(f"variante {voce.get('variante')!r} non dichiarata nel sigillo di {ipotesi}")
     if ruolo == "verifica" and any(e["ipotesi"] == ipotesi and e["ruolo"] == "verifica"
                                    and e.get("variante") == voce.get("variante") for e in dati["esecuzioni"]):

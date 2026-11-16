@@ -89,10 +89,8 @@ def _ritardo(valore) -> float:
         quando = email.utils.parsedate_to_datetime(valore)
     except (TypeError, ValueError, IndexError):
         return 0.0
-    if quando is None:
+    if quando is None or quando.tzinfo is None:            # data senza fuso: non si indovina (regola anti-frode)
         return 0.0
-    if quando.tzinfo is None:
-        quando = quando.replace(tzinfo=timezone.utc)
     return min(3600.0, max(0.0, (quando - datetime.now(timezone.utc)).total_seconds()))
 
 

@@ -205,6 +205,17 @@ class BaseRiga(unittest.TestCase):
         with contextlib.redirect_stdout(io.StringIO()), contextlib.redirect_stderr(io.StringIO()):
             return E.main(base + list(argomenti))
 
+    def lancia_errore(self, *argomenti):
+        base = ["--registro", str(self.registro), "--scheda", str(self.scheda), "--cache", str(self.cache),
+                "--rapporto", str(self.uscita), "--ora", ORA]
+        errore = io.StringIO()
+        with contextlib.redirect_stdout(io.StringIO()), contextlib.redirect_stderr(errore):
+            rc = E.main(base + list(argomenti))
+        return rc, errore.getvalue()
+
+    def esecuzioni(self, ruolo):
+        return [e for e in S.leggi(self.registro)["esecuzioni"] if e["ruolo"] == ruolo]
+
 
 class TestRigaDiComando(BaseRiga):
     def test_sviluppo_richiede_il_sigillo(self):
@@ -394,17 +405,6 @@ class TestRevisioneR11Gemini(BaseRiga):
     """Rilievi R11-S1…S7 e mutanti MR01–MR07 del secondo attacco di Gemini (G-20261115-R11, ramo rev/gemini-r11),
     scritti come test PRIMA delle correzioni. Principio: la riga di comando non lascia scelte libere."""
 
-    def lancia_errore(self, *argomenti):
-        base = ["--registro", str(self.registro), "--scheda", str(self.scheda), "--cache", str(self.cache),
-                "--rapporto", str(self.uscita), "--ora", ORA]
-        errore = io.StringIO()
-        with contextlib.redirect_stdout(io.StringIO()), contextlib.redirect_stderr(errore):
-            rc = E.main(base + list(argomenti))
-        return rc, errore.getvalue()
-
-    def esecuzioni(self, ruolo):
-        return [e for e in S.leggi(self.registro)["esecuzioni"] if e["ruolo"] == ruolo]
-
     def test_s1_s3_nessuna_scelta_libera_dalla_riga_di_comando(self):
         """Periodi, ripetizioni e seme non si scelgono: un'opzione in più è un errore di argparse."""
         for extra in (["--inizio", "2022-08-01"], ["--fine", "2023-10-31"], ["--ripetizioni", "1"], ["--seme", "1"]):
@@ -580,7 +580,8 @@ class TestCodiceSigillatoCompleto(unittest.TestCase):
         self.assertEqual(out.stdout.strip(), "[]")
         chiavi = E.impronte_codice()
         for f in ("brain/laboratorio/esecuzione/__init__.py", "brain/laboratorio/esecuzione/criteri.py",
-                  "brain/laboratorio/esecuzione/sintetico.py", "brain/laboratorio/backtester/__init__.py"):
+                  "brain/dati/pipeline/__init__.py", "brain/laboratorio/backtester/__init__.py",
+                  "brain/dati/pipeline/partizione_date.py"):                # importato solo dentro una funzione
             self.assertIn(f, chiavi, f)
 
     def test_un_init_cambiato_cambia_le_impronte(self):

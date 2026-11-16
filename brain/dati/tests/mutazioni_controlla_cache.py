@@ -16,12 +16,12 @@ PROCESSI = int(sys.argv[2]) if len(sys.argv) >= 3 else 2
 PREFISSI = tuple(sys.argv[3].split(",")) if len(sys.argv) == 4 else ("",)
 SUITE = ["brain.dati.tests.test_controlla_cache"]
 CC = "dati/pipeline/controlla_cache.py"
+CAL = "dati/pipeline/calendario.py"
 M = {
     "Q01 file mancanti non contati": [(CC, "            a[\"mancanti\"] += 1\n", "            pass\n")],
     "Q02 illeggibili ignorati": [(CC, "                    a[\"illeggibili\"].append(g.isoformat())\n", "                    pass\n")],
-    "Q03 chiusure note anche il 24/12": [(CC, "return {date(anno, 1, 1), date(anno, 12, 25), pasqua(anno) - timedelta(days=2)}",
-                                          "return {date(anno, 1, 1), date(anno, 12, 24), date(anno, 12, 25), pasqua(anno) - timedelta(days=2)}")],
-    "Q04 Venerdì Santo dimenticato": [(CC, ", pasqua(anno) - timedelta(days=2)}", "}")],
+    "Q03 chiusure note anche il 24/12": [(CAL, "        g |= {cap, nat, date(a, 12, 26), ", "        g |= {cap, nat, date(a, 12, 24), date(a, 12, 26), ")],
+    "Q04 Venerdì Santo dimenticato": [(CAL, "date(a, 12, 26), pasqua(a) - timedelta(days=2), ", "date(a, 12, 26), ")],
     "Q05 soglia dei corti al 25%": [(CC, "QUOTA_CORTI = 0.5", "QUOTA_CORTI = 0.25")],
     "Q06 temporanei ignorati nel verdetto": [(CC, "pulito = bool(file) and not tmp and all(", "pulito = bool(file) and all(")],
     "Q07 feriali vuoti ignorati nel verdetto": [(CC, "a[\"mancanti\"] == 0 and not a[\"feriali_vuoti\"] and not a[\"illeggibili\"]",
@@ -57,6 +57,11 @@ def mutante(i, nome, sost):
             shutil.rmtree(dest)
             return nome, f"ERRORE: la sostituzione compare {testo.count(vecchio)} volte in {f}"
         (dest / "brain" / f).write_text(testo.replace(vecchio, nuovo), encoding="utf-8")
+        try:                                               # #59: una sintassi rotta non è un mutante ucciso
+            compile((dest / "brain" / f).read_text(encoding="utf-8"), str(f), "exec")
+        except SyntaxError:
+            shutil.rmtree(dest)
+            return nome, "NON VALIDO: sintassi rotta"
     vivo = suite(dest)
     shutil.rmtree(dest)
     return nome, "VIVO" if vivo else "UCCISO"

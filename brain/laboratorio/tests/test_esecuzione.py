@@ -328,7 +328,7 @@ class TestRevisioneR7GeminiCriteri(Cartella):
         def scrivi(k):
             try:
                 for j in range(15):
-                    S.registra_esecuzione(self.registro, "H-999", {"ruolo": "sviluppo", "variante": f"V-T {k}-{j}"},
+                    S.registra_esecuzione(self.registro, "H-999", {"ruolo": "robustezza", "variante": f"V-T {k}-{j}"},
                                           ORA)
             except Exception as e:                                       # noqa: BLE001
                 errori.append(e)
@@ -514,10 +514,12 @@ class TestCompletezzaDeiGiorni(Cartella):
         m.update(_minuti(g1, 525))                                                   # sessione piena
         m[datetime(2024, 1, 9, 0, 0, tzinfo=timezone.utc)] = (2000.0, 2000.0, 2000.0, 2000.0)   # un minuto fittizio
         m.update(_minuti(g3, 262))                                                   # sotto la metà della sessione
-        _, _, info = self.carica(m, g1, g3)
+        g4 = date(2024, 1, 11)
+        m.update(_minuti(g4, 400, dalle=_ora(17, 0)))                                # tanti minuti, ma fuori sessione
+        _, _, info = self.carica(m, g1, g4)
         self.assertEqual(info["feriali_vuoti_bid"], [])
-        self.assertEqual(info["feriali_incompleti_bid"], ["2024-01-09", "2024-01-10"])
-        self.assertEqual(info["feriali_incompleti_ask"], ["2024-01-09", "2024-01-10"])
+        self.assertEqual(info["feriali_incompleti_bid"], ["2024-01-09", "2024-01-10", "2024-01-11"])
+        self.assertEqual(info["feriali_incompleti_ask"], ["2024-01-09", "2024-01-10", "2024-01-11"])
 
     def test_meta_sessione_basta_e_i_giorni_corti_noti_sono_tollerati(self):
         g = date(2024, 1, 11)
@@ -547,6 +549,8 @@ class TestFestivitaSpostate(unittest.TestCase):
         for g in attese:
             d = date.fromisoformat(g)
             self.assertIn(d, C.chiusure_note(d.year), g)
+        from brain.dati.pipeline import controlla_cache as CC
+        self.assertIs(CC.chiusure_note, C.chiusure_note)          # una sola fonte: niente copie che divergono
         for g in ("2005-03-15", "2010-12-29", "2023-01-03", "2016-12-28"):
             d = date.fromisoformat(g)
             self.assertNotIn(d, C.chiusure_note(d.year), g)

@@ -99,6 +99,10 @@ def main():
             if testo.count(vecchio) != 1:
                 sys.exit(f"{nome}: la sostituzione compare {testo.count(vecchio)} volte")
             (dest / "brain" / f).write_text(testo.replace(vecchio, nuovo), encoding="utf-8")
+            try:                                           # #59: una sintassi rotta non è un mutante ucciso
+                compile((dest / "brain" / f).read_text(encoding="utf-8"), str(f), "exec")
+            except SyntaxError as e:
+                sys.exit(f"{nome}: il mutante non è codice valido ({e})")
         vivo = suite(dest)
         uccisi += not vivo
         print(f"{'VIVO  ' if vivo else 'UCCISO'} {nome}")

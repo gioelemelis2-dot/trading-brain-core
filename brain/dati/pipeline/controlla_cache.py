@@ -27,25 +27,9 @@ from statistics import median
 from typing import Dict, Optional
 
 from . import dukascopy as DK
+from .calendario import chiusure_note, pasqua  # noqa: F401  (pasqua: interfaccia storica)
 
 QUOTA_CORTI = 0.5
-
-
-def pasqua(anno: int) -> date:
-    """Domenica di Pasqua (calendario gregoriano, algoritmo anonimo di Meeus/Jones/Butcher)."""
-    a, b, c = anno % 19, anno // 100, anno % 100
-    d, e = b // 4, b % 4
-    f = (b + 8) // 25
-    g = (b - f + 1) // 3
-    h = (19 * a + b - d - g + 15) % 30
-    i, k = c // 4, c % 4
-    l_ = (32 + 2 * e + 2 * i - h - k) % 7
-    m = (a + 11 * h + 22 * l_) // 451
-    return date(anno, (h + l_ - 7 * m + 114) // 31, (h + l_ - 7 * m + 114) % 31 + 1)
-
-
-def chiusure_note(anno: int) -> set:
-    return {date(anno, 1, 1), date(anno, 12, 25), pasqua(anno) - timedelta(days=2)}
 
 
 def _data(nome: str) -> Optional[date]:

@@ -15,8 +15,10 @@ Esempio (SOLO dopo il sigillo deciso dall'utente):
 Periodi, ripetizioni, seme e varianti sono costanti di questo file, che è sigillato con la scheda.
 """
 import argparse
+import ast
 import hashlib
 import os
+import re
 import sys
 from dataclasses import replace
 from datetime import date, datetime, timezone
@@ -38,10 +40,57 @@ SIMBOLO = "XAUUSD"
 # Periodi FISSI nel codice (DA-26; R11-S1 di Gemini). La fine della verifica è provvisoria finché DA-26 non la fissa.
 PERIODO_SVILUPPO = (date(2023, 11, 15), date(2026, 11, 12))
 PERIODO_VERIFICA = (date(2005, 1, 1), C.FINE_VERIFICA)
-FILE_CODICE = ("brain/laboratorio/simulatori/orb_londra.py", "brain/laboratorio/esecuzione/criteri.py",
-               "brain/laboratorio/esecuzione/caricatore.py", "brain/laboratorio/esecuzione/sigillo.py",
-               "brain/laboratorio/esecuzione/esegui_h002.py", "brain/laboratorio/backtester/dsr.py",
-               "brain/dati/pipeline/dukascopy.py")
+ANCORA_GIT = True              # il registro deve continuare la versione su git (#51); i test con registri temporanei
+                               # la spengono. Cambiarla nel codice vero cambia le impronte del codice sigillato.
+_ORA_ISO = re.compile(r"\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z")
+
+
+def _file_modulo(radice: Path, modulo: str) -> Optional[Path]:
+    p = Path(radice) / modulo.replace(".", "/")
+    if p.with_suffix(".py").is_file():
+        return p.with_suffix(".py")
+    if (p / "__init__.py").is_file():
+        return p / "__init__.py"
+    return None
+
+
+def moduli_brain(radice: Path = RADICE, partenza: str = "brain.laboratorio.esecuzione.esegui_h002") -> List[str]:
+    """Tutti i file `brain` che l'esecutore può eseguire: chiusura degli import (anche quelli dentro le funzioni),
+    più gli `__init__.py` di ogni pacchetto attraversato (R12bis-A3-01, #48: l'elenco scritto a mano ne lasciava
+    fuori 14, compreso `esecuzione/__init__.py`). Percorsi relativi alla radice, con «/»."""
+    visti, da_fare, file = set(), [partenza], set()
+    while da_fare:
+        modulo = da_fare.pop()
+        if modulo in visti:
+            continue
+        visti.add(modulo)
+        parti = modulo.split(".")
+        for k in range(1, len(parti)):                                    # pacchetti attraversati
+            init = Path(radice).joinpath(*parti[:k]) / "__init__.py"
+            if init.is_file():
+                file.add(init)
+                da_fare.append(".".join(parti[:k]))
+        f = _file_modulo(radice, modulo)
+        if f is None:
+            continue
+        file.add(f)
+        pacchetto = modulo if f.name == "__init__.py" else ".".join(parti[:-1])
+        for nodo in ast.walk(ast.parse(f.read_text(encoding="utf-8"))):
+            nomi = []
+            if isinstance(nodo, ast.Import):
+                nomi = [a.name for a in nodo.names]
+            elif isinstance(nodo, ast.ImportFrom):
+                if nodo.level:
+                    base = pacchetto.split(".")[:len(pacchetto.split(".")) - (nodo.level - 1)]
+                    obiettivo = ".".join(base + ([nodo.module] if nodo.module else []))
+                else:
+                    obiettivo = nodo.module or ""
+                nomi = [obiettivo] + [f"{obiettivo}.{a.name}" for a in nodo.names]
+            da_fare += [n for n in nomi if n == "brain" or n.startswith("brain.")]
+    return sorted(f.relative_to(radice).as_posix() for f in file)
+
+
+FILE_CODICE = tuple(moduli_brain())
 
 VARIANTI = {"V-T": O.V_T, "V-S": O.V_S}
 _RANGE_TETTO = {"range 20'": {"or_minuti": 20}, "range 45'": {"or_minuti": 45},
@@ -179,10 +228,12 @@ def rapporto(ris: dict, titolo: str, info: dict) -> str:
 # ---------------------------------------------------------------------------------------------------------------
 # Riga di comando
 # ---------------------------------------------------------------------------------------------------------------
-def impronte_codice() -> Dict[str, str]:
-    """Impronte SHA-256 dei file che eseguono la scheda: si registrano al sigillo e si controllano a ogni esecuzione
-    (dopo il sigillo il codice non cambia: un errore trovato dopo vuol dire un'ipotesi nuova)."""
-    return {f: hashlib.sha256((RADICE / f).read_bytes()).hexdigest() for f in FILE_CODICE}
+def impronte_codice(radice: Path = RADICE) -> Dict[str, str]:
+    """Impronte SHA-256 di tutti i file `brain` che l'esecutore può eseguire (`moduli_brain`): si registrano al
+    sigillo e si controllano a ogni esecuzione (dopo il sigillo il codice non cambia: un errore trovato dopo vuol
+    dire un'ipotesi nuova). L'elenco si ricalcola ogni volta: un file nuovo importato cambia le chiavi e ferma tutto."""
+    radice = Path(radice)
+    return {f: hashlib.sha256((radice / f).read_bytes()).hexdigest() for f in moduli_brain(radice)}
 
 
 def _esiti_sviluppo(dati: dict) -> Dict[str, list]:
@@ -208,6 +259,11 @@ def main(argv=None) -> int:
     ora = x.ora or datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
     cache = x.cache.resolve()
     try:
+        if not _ORA_ISO.fullmatch(ora):                                       # #51: orario nel formato del registro
+            raise ValueError(f"--ora {ora!r} non è nel formato AAAA-MM-GGThh:mm:ssZ")
+        datetime.strptime(ora, "%Y-%m-%dT%H:%M:%SZ")
+        if ANCORA_GIT:
+            S.controlla_ancora(x.registro, RADICE)
         sigillo = S.controlla_sigillo(x.registro, IPOTESI, x.scheda, codice=impronte_codice())   # §10 e codice
         if sorted(sigillo["varianti"]) != sorted(VARIANTI):                    # N giusto (P3 di Gemini)
             raise ValueError(f"il sigillo dichiara {sigillo['varianti']}, l'esecutore esegue {list(VARIANTI)}")
@@ -235,16 +291,24 @@ def main(argv=None) -> int:
             cache_sviluppo = {e.get("cache") for v in da_verificare for e in esiti_sviluppo[v]}
             if cache_sviluppo != {str(cache)}:                                    # R11-S6: stessi dati
                 raise ValueError(f"la verifica usa la cache {cache}, lo sviluppo {sorted(map(str, cache_sviluppo))}")
+            impronte_sviluppo = {e.get("dati_sha256") for v in da_verificare for e in esiti_sviluppo[v]}
+            adesso = C.impronta_cache(cache / SIMBOLO, cache / f"{SIMBOLO}_ASK", *PERIODO_SVILUPPO)
+            if impronte_sviluppo != {adesso}:                                     # #51: stessa cartella, stessi dati
+                raise ValueError(f"i dati dello sviluppo in {cache} non sono più quelli registrati: la cartella è la "
+                                 f"stessa ma il contenuto è cambiato")
         inizio, fine = PERIODO_SVILUPPO if x.modalita == "sviluppo" else PERIODO_VERIFICA     # R11-S1
         bid, ask, info = C.carica(cache / SIMBOLO, cache / f"{SIMBOLO}_ASK", inizio, fine, x.modalita,
                                   x.registro, IPOTESI, x.scheda)
         if info["giorni_bid_mancanti"] or info["giorni_ask_mancanti"] or not info["minuti_bid"] \
-                or not info["minuti_ask"] or info["feriali_vuoti_bid"] or info["feriali_vuoti_ask"]:  # P6, R11-S2
+                or not info["minuti_ask"] or info["feriali_vuoti_bid"] or info["feriali_vuoti_ask"] \
+                or info["feriali_incompleti_bid"] or info["feriali_incompleti_ask"]:  # P6, R11-S2, #49
             vuoti = sorted(set(info["feriali_vuoti_bid"]) | set(info["feriali_vuoti_ask"]))
+            incompleti = sorted(set(info["feriali_incompleti_bid"]) | set(info["feriali_incompleti_ask"]))
             raise ValueError(f"dati incompleti in {cache}: giorni senza file BID/ASK "
                              f"{info['giorni_bid_mancanti']}/{info['giorni_ask_mancanti']}, minuti "
                              f"{info['minuti_bid']}/{info['minuti_ask']}, giorni feriali vuoti {len(vuoti)} "
-                             f"(primi: {vuoti[:10]}): scaricarli o controllarli prima")
+                             f"(primi: {vuoti[:10]}), feriali incompleti {len(incompleti)} (primi: {incompleti[:10]}): "
+                             f"scaricarli o controllarli prima")
         periodo = [inizio.isoformat(), fine.isoformat()]
         traccia = {"periodo": periodo, "cache": str(cache), "dati_sha256": info["dati_sha256"]}
         intestazione = {"ipotesi": IPOTESI, "modalità": x.modalita, "periodo": f"{periodo[0]} → {periodo[1]}",

@@ -83,11 +83,15 @@ class TestControllaCache(unittest.TestCase):
         self.assertFalse(CC.esamina(self.dir)["pulito"])
 
     def test_chiusure_note_non_sono_problemi(self):
-        for g in (date(2010, 1, 1), date(2010, 4, 2), date(2010, 12, 24), date(2010, 12, 27)):   # ven, Ven. Santo...
+        for g in (date(2010, 1, 1), date(2010, 4, 2), date(2010, 12, 24), date(2010, 12, 27), date(2010, 12, 29),
+                  date(2010, 12, 30)):
             self.scrivi(g, b"")
         a = CC.esamina(self.dir)["anni"]["2010"]
-        self.assertEqual(a["feriali_vuoti"], ["2010-12-24", "2010-12-27"])   # 1/1 e Venerdì Santo tollerati
-        self.assertEqual(a["chiusure_note_vuote"], ["2010-01-01", "2010-04-02"])
+        # 25/12/2010 era sabato: 24 e 27 sono festività spostate (#50, R12bis-A3-03); 29 e 30 sono feriali normali
+        self.assertEqual(a["feriali_vuoti"], ["2010-12-29", "2010-12-30"])
+        self.assertEqual(a["chiusure_note_vuote"], ["2010-01-01", "2010-04-02", "2010-12-24", "2010-12-27"])
+        self.scrivi(date(2009, 12, 24), b"")                  # 25/12/2009 era venerdì: il 24 è un feriale normale
+        self.assertEqual(CC.esamina(self.dir)["anni"]["2009"]["feriali_vuoti"], ["2009-12-24"])
 
     def test_periodo_esplicito_conta_i_giorni_senza_file(self):
         self.mese_pulito()

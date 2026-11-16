@@ -20,7 +20,30 @@ SG = "laboratorio/esecuzione/sigillo.py"
 K = "laboratorio/esecuzione/criteri.py"
 C = "laboratorio/esecuzione/caricatore.py"
 E = "laboratorio/esecuzione/esegui_h002.py"
+CAL = "dati/pipeline/calendario.py"
 M = {
+    'N01 __init__ fuori dalle impronte': [(E, '    return {f: hashlib.sha256((radice / f).read_bytes()).hexdigest() for f in moduli_brain(radice)}', '    return {f: hashlib.sha256((radice / f).read_bytes()).hexdigest() for f in moduli_brain(radice) if not f.endswith("__init__.py")}')],
+    'N02 import dentro le funzioni ignorati': [(E, '        for nodo in ast.walk(ast.parse(f.read_text(encoding="utf-8"))):', '        for nodo in ast.parse(f.read_text(encoding="utf-8")).body:')],
+    'N03 pacchetti attraversati ignorati': [(E, '            if init.is_file():\n                file.add(init)\n                da_fare.append(".".join(parti[:k]))', '            if False:\n                file.add(init)\n                da_fare.append(".".join(parti[:k]))')],
+    'N04 import relativi risolti male': [(E, '(nodo.level - 1)', 'nodo.level')],
+    'N05 codice non ricalcolato senza impronte date': [(SG, '    if codice is None and s.get("codice"):', '    if False:')],
+    'N06 registro su git non confrontato': [(SG, '        if ora[chiave][:len(vecchie)] != vecchie:', '        if False:')],
+    'N07 registro non versionato accettato': [(SG, '    if r.returncode != 0:\n        raise ValueError(f"il registro {rel} non è versionato', '    if r.returncode != 0:\n        return\n        raise ValueError(f"il registro {rel} non è versionato')],
+    'N08 registro fuori dal repository accettato': [(SG, '    except ValueError:\n        raise ValueError(f"il registro {registro} è fuori', '    except ValueError:\n        return\n        raise ValueError(f"il registro {registro} è fuori')],
+    'N09 ancora git ignorata': [(E, '        if ANCORA_GIT:\n            S.controlla_ancora(x.registro, RADICE)', '        if False:\n            S.controlla_ancora(x.registro, RADICE)')],
+    'N10 --ora non controllata': [(E, '        if not _ORA_ISO.fullmatch(ora):                                       # #51: orario nel formato del registro\n            raise ValueError(f"--ora {ora!r} non è nel formato AAAA-MM-GGThh:mm:ssZ")\n        datetime.strptime(ora, "%Y-%m-%dT%H:%M:%SZ")\n', '')],
+    'N11 dati dello sviluppo non ricontrollati': [(E, '            if impronte_sviluppo != {adesso}:', '            if False:')],
+    'N12 robustezza senza nome della prova': [(SG, '        valida = base in dichiarate and bool(prova.strip())', '        valida = base in dichiarate')],
+    'N13 suffissi liberi nello sviluppo': [(SG, '        valida = variante in dichiarate', '        valida = variante.split(" ")[0] in dichiarate')],
+    'N14 completezza non controllata': [(C, '                    if sum(1 for t, *_ in minuti if a <= t < b) < minimo:', '                    if False:')],
+    'N15 minuti contati fuori sessione': [(C, 'sum(1 for t, *_ in minuti if a <= t < b)', 'len(minuti)')],
+    'N16 vigilie non tollerate': [(C, '                elif giorno not in giorni_corti(giorno.year):', '                else:')],
+    'N17 incompleti non bloccano': [(E, ' \\\n                or info["feriali_incompleti_bid"] or info["feriali_incompleti_ask"]:  # P6, R11-S2, #49', ':  # P6, R11-S2, #49')],
+    'N18 Natale di domenica senza martedì 27': [(CAL, '        elif nat.weekday() == 6:\n            g.add(nat + timedelta(days=2))', '        elif nat.weekday() == 6:\n            pass')],
+    "N19 Lunedì dell'Angelo mancante": [(CAL, 'pasqua(a) + timedelta(days=1)}', 'pasqua(a) - timedelta(days=2)}')],
+    'N20 Capodanno di sabato senza il 31': [(CAL, '            g |= {cap - timedelta(days=1), cap + timedelta(days=2)}', '            g |= {cap + timedelta(days=2)}')],
+    "N21 solo l'anno stesso": [(CAL, '    for a in (anno - 1, anno, anno + 1):', '    for a in (anno,):')],
+    'N22 impronta della cache diversa dal caricatore': [(C, '    for cartella in (cartella_bid, cartella_ask):', '    for cartella in (cartella_ask, cartella_bid):')],
     "S01 doppio sigillo ammesso": [(SG, "    if _sigillo(dati, ipotesi) is not None:\n", "    if False:\n")],
     "S02 impronta della scheda non controllata": [(SG, "if impronta(scheda) != s[\"scheda_sha256\"]:", "if False:")],
     "S03 verifica ripetibile": [(SG, "if ruolo == \"verifica\" and any(", "if False and any(")],
@@ -74,7 +97,7 @@ M = {
     "C04 high e low scambiati": [(C, "out[t] = (float(o), float(h), float(l), float(c))",
                                   "out[t] = (float(o), float(l), float(h), float(c))")],
     "C05 giorni mancanti non contati": [(C, "            mancanti += 1\n", "            pass\n")],
-    "C06 ASK letti dalla cartella BID": [(C, "ask, ma, va = _leggi_cache(cartella_ask,", "ask, ma, va = _leggi_cache(cartella_bid,")],
+    "C06 ASK letti dalla cartella BID": [(C, "ask, ma, va, ia = _leggi_cache(cartella_ask,", "ask, ma, va, ia = _leggi_cache(cartella_bid,")],
     "C07 modalità non controllata": [(C, "if modalita not in MODALITA:", "if False:")],
     "C08 periodo rovesciato ammesso": [(C, "if fine < inizio:", "if False:")],
     "E01 robustezza solo se la base è positiva": [(E, "for nome, cambi in robustezza.items():",
@@ -114,9 +137,8 @@ M = {
     "E17 casuale contro l'R di tutti i trade (P5 di Gemini)": [
         (E, "r_comuni = mean(strategia[d] for d in comuni)", "r_comuni = m[\"r_medio\"]")],
     "E18 dati incompleti ammessi (P6 di Gemini)": [
-        (E, "if info[\"giorni_bid_mancanti\"] or info[\"giorni_ask_mancanti\"] or not info[\"minuti_bid\"] \\\n"
-            "                or not info[\"minuti_ask\"] or info[\"feriali_vuoti_bid\"] or info[\"feriali_vuoti_ask\"]:",
-         "if not info[\"minuti_bid\"] and not info[\"minuti_ask\"]:")],
+        (E, "if info[\"giorni_bid_mancanti\"] or info[\"giorni_ask_mancanti\"] or not info[\"minuti_bid\"] \\\n",
+         "if not info[\"minuti_bid\"] \\\n")],
     "K28 ultimi 5 anni dall'ultimo trade (P4 di Gemini)": [
         (K, "ultimo = max(anni) if anni is not None else max(x[\"data\"].year for x in tr)",
          "ultimo = max(x[\"data\"].year for x in tr)")],
@@ -132,15 +154,17 @@ M = {
     "MG07 ultimi 5 anni con >= (Gemini)": [(K, "cumulato is not None and cumulato > 0),", "cumulato is not None and cumulato >= 0),")],
     "R01 DSR anche con 2 trade (R11-S1 di Gemini)": [(K, "T_MIN_DSR = 30", "T_MIN_DSR = 2")],
     "R02 giorni feriali vuoti ammessi (R11-S2)": [
-        (E, "or not info[\"minuti_ask\"] or info[\"feriali_vuoti_bid\"] or info[\"feriali_vuoti_ask\"]:",
-         "or not info[\"minuti_ask\"]:")],
+        (E, "or not info[\"minuti_ask\"] or info[\"feriali_vuoti_bid\"] or info[\"feriali_vuoti_ask\"] \\",
+         "or not info[\"minuti_ask\"] \\")],
     "R03 feriali vuoti non contati (R11-S2)": [
-        (C, "if not minuti and giorno.weekday() < 5 and giorno not in chiusure_note(giorno.year):", "if False:")],
+        (C, "                if not minuti:\n                    feriali_vuoti.append(giorno.isoformat())",
+         "                if False:\n                    feriali_vuoti.append(giorno.isoformat())")],
     "R04 chiusure note ignorate (R11-S2)": [
-        (C, "return {date(anno, 1, 1), date(anno, 12, 25), pasqua(anno) - timedelta(days=2)}", "return set()")],
+        (CAL, "    return {d for d in g if d.year == anno}", "    return set()")],
     "R05 rapporto non controllato prima di registrare (R11-S4)": [(E, "if x.rapporto.is_dir():", "if False:")],
     "R06 esito della verifica non registrato (R11-S4)": [
-        (E, "for v, r in ris[\"varianti\"].items():                                  # R11-S4", "for v, r in []:")],
+        (E, "for v, r in ris[\"varianti\"].items():                                  # R11-S4: esito nel registro",
+         "for v, r in []:                                  # R11-S4: esito nel registro")],
     "R07 copertura del casuale ignorata (R11-S5)": [
         (K, "casuale.get(\"sopra\", False) and cop_casuale >= copertura_min),", "casuale.get(\"sopra\", False)),")],
     "R08 copertura dei benchmark ignorata (R11-S5)": [
@@ -149,13 +173,12 @@ M = {
     "R09 cache della verifica diversa da quella dello sviluppo (R11-S6)": [
         (E, "if cache_sviluppo != {str(cache)}:", "if False:")],
     "R10 variante fuori dal sigillo (R11-S7)": [
-        (SG, "if str(voce.get(\"variante\") or \"\").split(\" \")[0] not in _sigillo(dati, ipotesi)[\"varianti\"]:",
-         "if False:")],
+        (SG, "    if not valida:\n        raise ValueError(f\"variante", "    if False:\n        raise ValueError(f\"variante")],
     "R11 codice non controllato": [(SG, "if codice is not None and s.get(\"codice\") != codice:", "if False:")],
     "R12 ripetizioni e seme non registrati (R11-S3)": [
         (E, "ripetizioni=K.RIPETIZIONI, seme=K.SEME,", "ripetizioni=1, seme=1,")],
     "R13 impronta dei dati vuota (R11-S6)": [
-        (C, "            impronta.update(f\"{Path(cartella).name}", "            (lambda *a: None)(f\"{Path(cartella).name}")],
+        (C, "    impronta.update(f\"{Path(cartella).name}", "    (lambda *a: None)(f\"{Path(cartella).name}")],
     "MR01 ASK mancanti non controllati (Gemini R11)": [
         (E, "info[\"giorni_bid_mancanti\"] or info[\"giorni_ask_mancanti\"] or not info[\"minuti_bid\"]",
          "info[\"giorni_bid_mancanti\"] or not info[\"minuti_bid\"]")],
@@ -194,6 +217,11 @@ def mutante(i, nome, sost):
             shutil.rmtree(dest)
             return nome, f"ERRORE: la sostituzione compare {testo.count(vecchio)} volte in {f}"
         (dest / "brain" / f).write_text(testo.replace(vecchio, nuovo), encoding="utf-8")
+        try:                                               # #59: una sintassi rotta non è un mutante ucciso
+            compile((dest / "brain" / f).read_text(encoding="utf-8"), str(f), "exec")
+        except SyntaxError:
+            shutil.rmtree(dest)
+            return nome, "NON VALIDO: sintassi rotta"
     vivo = suite(dest)
     shutil.rmtree(dest)
     return nome, "VIVO" if vivo else "UCCISO"

@@ -26,7 +26,7 @@ M = {
     "W05 errore HTTP non registrato": [(SC, "            _registra(registro, dict(riga, http=e.code, esito=f\"http-{e.code}\"))\n", "            pass\n")],
     "W06 impronta sbagliata nel registro": [(SC, "sha256=hashlib.sha256(corpo).hexdigest()", "sha256=hashlib.sha256(b\"\").hexdigest()")],
     "W07 rete assente non registrata": [(SC, "            _registra(registro, dict(riga, esito=\"nessuna-risposta\"))\n", "            pass\n")],
-    "W08 attesa anche sui giorni in cache": [(SC, "            conta[\"in_cache\"] += 1\n", "            conta[\"in_cache\"] += 1\n            pausa()\n")],
+    "W08 attesa anche sui giorni in cache": [(SC, "                conta[\"in_cache\"] += 1\n", "                conta[\"in_cache\"] += 1\n                pausa()\n")],
     "W09 tentativi contati male": [(DK, "            return codice, dati, n + 1\n", "            return codice, dati, n\n")],
     "W10 404 trattato come 200": [(DK, "                return 404, None, n + 1\n", "                return 200, None, n + 1\n")],
     "W11 risposta vuota non più None nella vecchia interfaccia": [(DK, "    return dati or None\n", "    return dati\n")],
@@ -82,6 +82,11 @@ def mutante(i, nome, sost):
             shutil.rmtree(dest)
             return nome, f"ERRORE: la sostituzione compare {testo.count(vecchio)} volte in {f}"
         (dest / "brain" / f).write_text(testo.replace(vecchio, nuovo), encoding="utf-8")
+        try:                                               # #59: una sintassi rotta non è un mutante ucciso
+            compile((dest / "brain" / f).read_text(encoding="utf-8"), str(f), "exec")
+        except SyntaxError:
+            shutil.rmtree(dest)
+            return nome, "NON VALIDO: sintassi rotta"
     vivo = suite(dest)
     shutil.rmtree(dest)
     return nome, "VIVO" if vivo else "UCCISO"

@@ -60,6 +60,11 @@ def mutante(i, nome, a, b):
         shutil.rmtree(dest)
         return nome, f"ERRORE: la sostituzione compare {testo.count(a)} volte"
     (dest / "riconta.py").write_text(testo.replace(a, b), encoding="utf-8")
+    try:                                                   # #59: una sintassi rotta non è un mutante ucciso
+        compile(testo.replace(a, b), "riconta.py", "exec")
+    except SyntaxError:
+        shutil.rmtree(dest)
+        return nome, "NON VALIDO: sintassi rotta"
     vivo = suite(dest)
     shutil.rmtree(dest)
     return nome, "VIVO" if vivo else "UCCISO"
