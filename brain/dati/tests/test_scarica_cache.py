@@ -312,6 +312,21 @@ class TestScaricaCache(unittest.TestCase):
         self.assertEqual(finta.chiamate, [DK.url_giorno("XAUUSD", date(2009, 6, 8))])   # il sabato no, il lunedì sì
         self.assertEqual((self.cache / "2009-06-08.bi5").read_bytes(), bi5())
 
+    def test_un_solo_scaricamento_per_cartella(self):
+        """#60: il 16/11 due scaricamenti hanno girato insieme sulla stessa cartella (richieste raddoppiate, conflitti)."""
+        import fcntl
+        self.cache.mkdir(parents=True)
+        with open(self.cache / ".scarica.lock", "a") as occupato:
+            fcntl.flock(occupato, fcntl.LOCK_EX | fcntl.LOCK_NB)
+            finta = Finta({date(2009, 6, 8): bi5()})
+            with self.assertRaises(SC.GiaInCorso):
+                self.scarica(finta, fine=date(2009, 6, 8))
+            self.assertEqual(finta.chiamate, [])                          # nessuna richiesta
+            self.assertEqual(SC.main(["--inizio", "2009-06-08", "--fine", "2009-06-08", "--cache", str(self.radice)]), 2)
+            fcntl.flock(occupato, fcntl.LOCK_UN)
+        self.scarica(Finta({date(2009, 6, 8): bi5()}), fine=date(2009, 6, 8))   # libero: si lavora
+        self.scarica(Finta({}), inizio=date(2009, 6, 9), fine=date(2009, 6, 9))  # e il blocco si libera alla fine
+
     def test_file_danneggiato_dal_server_non_entra_in_cache(self):
         with self.assertRaises(SC.Fermo):
             self.scarica(Finta({date(2009, 6, 8): b"non lzma"}), fine=date(2009, 6, 8))
