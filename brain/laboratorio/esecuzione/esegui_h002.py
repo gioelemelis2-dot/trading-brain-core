@@ -9,9 +9,12 @@ Riga di comando: si rifiuta di partire se la scheda non è sigillata con la stes
 prima di qualunque esecuzione); ogni esecuzione viene registrata nel registro delle prove.
 Il programma è riusabile: le varianti, le prove di robustezza e il simulatore sono parametri.
 
-Esempio (SOLO dopo il sigillo deciso dall'utente):
-  python3 -m brain.laboratorio.esecuzione.esegui_h002 --modalita sviluppo \\
-      --rapporto brain/laboratorio/ipotesi/H-002-RISULTATI-SVILUPPO.md
+Esempio (SOLO dopo il sigillo deciso dall'utente), dalla radice del repository, in modalità isolata (#61: niente
+PYTHONPATH, pacchetti dell'utente, .pth, sitecustomize; con -I la cartella corrente non è nel percorso, quindi la si
+aggiunge esplicitamente):
+  python3 -I -S -B -c "import sys; sys.path.insert(0, '.'); from brain.laboratorio.esecuzione.esegui_h002 import main; sys.exit(main())" \\
+      --modalita sviluppo --rapporto brain/laboratorio/ipotesi/H-002-RISULTATI-SVILUPPO.md
+Prima di ogni esecuzione il registro delle prove deve essere committato e spinto su GitHub (#51, #62).
 Periodi, ripetizioni, seme e varianti sono costanti di questo file, che è sigillato con la scheda.
 """
 import argparse
@@ -20,6 +23,7 @@ import hashlib
 import os
 import re
 import sys
+import sysconfig
 from dataclasses import replace
 from datetime import date, datetime, timezone
 from pathlib import Path
@@ -42,6 +46,8 @@ PERIODO_SVILUPPO = (date(2023, 11, 15), date(2026, 11, 12))
 PERIODO_VERIFICA = (date(2005, 1, 1), C.FINE_VERIFICA)
 ANCORA_GIT = True              # il registro deve continuare la versione su git (#51); i test con registri temporanei
                                # la spengono. Cambiarla nel codice vero cambia le impronte del codice sigillato.
+CONTROLLO_AMBIENTE = True      # #61: python3 -I -S e solo moduli della libreria standard o sigillati; i test che
+                               # chiamano main nello stesso processo lo spengono (le prove vere sono in processi a parte)
 _ORA_ISO = re.compile(r"\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z")
 
 
@@ -89,8 +95,6 @@ def moduli_brain(radice: Path = RADICE, partenza: str = "brain.laboratorio.esecu
             da_fare += [n for n in nomi if n == "brain" or n.startswith("brain.")]
     return sorted(f.relative_to(radice).as_posix() for f in file)
 
-
-FILE_CODICE = tuple(moduli_brain())
 
 VARIANTI = {"V-T": O.V_T, "V-S": O.V_S}
 _RANGE_TETTO = {"range 20'": {"or_minuti": 20}, "range 45'": {"or_minuti": 45},
@@ -228,6 +232,50 @@ def rapporto(ris: dict, titolo: str, info: dict) -> str:
 # ---------------------------------------------------------------------------------------------------------------
 # Riga di comando
 # ---------------------------------------------------------------------------------------------------------------
+def nomi_robustezza() -> List[str]:
+    """Le prove di robustezza che l'esecutore registra (#69: si dichiarano al sigillo)."""
+    return sorted({nome for prove in ROBUSTEZZA.values() for nome in prove})
+
+
+def _dentro(p: Path, cartella: Path) -> bool:
+    try:
+        p.relative_to(cartella)
+        return True
+    except ValueError:
+        return False
+
+
+def controlla_ambiente(sigillati: Dict[str, str], isolato_richiesto: bool = True) -> None:
+    """#61 (R13-B-01): l'ambiente non deve far eseguire codice non sigillato.
+    - modalità isolata (`python3 -I -S`): niente PYTHONPATH, pacchetti dell'utente, file .pth, sitecustomize;
+    - ogni modulo caricato viene dalla libreria standard (fuori da site-packages) oppure è un file `brain` sigillato,
+      con l'impronta del file DAVVERO caricato uguale a quella del sigillo.
+    Si chiama all'avvio e di nuovo prima di scrivere i risultati (moduli caricati durante l'esecuzione)."""
+    if isolato_richiesto and not (sys.flags.isolated and sys.flags.no_site):
+        raise ValueError("eseguire con python3 -I -S -B (modalità isolata, senza site): l'ambiente potrebbe "
+                         "far eseguire codice non sigillato")
+    percorsi = sysconfig.get_paths()
+    standard = {Path(percorsi[k]).resolve() for k in ("stdlib", "platstdlib")}
+    siti = {Path(percorsi[k]).resolve() for k in ("purelib", "platlib")}
+    radice = RADICE.resolve()
+    problemi = []
+    for nome, modulo in list(sys.modules.items()):
+        f = getattr(modulo, "__file__", None)
+        if not f:
+            continue
+        p = Path(f).resolve()
+        if _dentro(p, radice / "brain"):
+            rel = p.relative_to(radice).as_posix()
+            if rel not in sigillati:
+                problemi.append(f"{rel}: modulo brain non sigillato")
+            elif hashlib.sha256(p.read_bytes()).hexdigest() != sigillati[rel]:
+                problemi.append(f"{rel}: diverso da quello sigillato")
+        elif any(_dentro(p, s) for s in siti) or not any(_dentro(p, s) for s in standard):
+            problemi.append(f"{nome} da {p}: fuori dalla libreria standard")
+    if problemi:
+        raise ValueError(f"ambiente non pulito: {problemi[:10]}")
+
+
 def impronte_codice(radice: Path = RADICE) -> Dict[str, str]:
     """Impronte SHA-256 di tutti i file `brain` che l'esecutore può eseguire (`moduli_brain`): si registrano al
     sigillo e si controllano a ogni esecuzione (dopo il sigillo il codice non cambia: un errore trovato dopo vuol
@@ -267,6 +315,11 @@ def main(argv=None) -> int:
         sigillo = S.controlla_sigillo(x.registro, IPOTESI, x.scheda, codice=impronte_codice())   # §10 e codice
         if sorted(sigillo["varianti"]) != sorted(VARIANTI):                    # N giusto (P3 di Gemini)
             raise ValueError(f"il sigillo dichiara {sigillo['varianti']}, l'esecutore esegue {list(VARIANTI)}")
+        if sorted(sigillo.get("robustezza") or []) != nomi_robustezza():     # #69
+            raise ValueError(f"il sigillo dichiara le prove di robustezza {sigillo.get('robustezza')}, l'esecutore "
+                             f"esegue {nomi_robustezza()}")
+        if CONTROLLO_AMBIENTE:                                                 # #61: all'avvio
+            controlla_ambiente(sigillo["codice"])
         if x.rapporto.is_dir():                                                # R11-S4: prima di registrare
             raise ValueError(f"--rapporto {x.rapporto} è una cartella")
         x.rapporto.parent.mkdir(parents=True, exist_ok=True)
@@ -343,6 +396,8 @@ def main(argv=None) -> int:
                 for nome, rm in r["robustezza"].items():
                     S.registra_esecuzione(x.registro, IPOTESI, {"ruolo": "robustezza", "variante": f"{v} {nome}",
                                                                 "periodo": periodo, "r_medio": rm}, ora)
+        if CONTROLLO_AMBIENTE:                                                 # #61: anche dopo l'esecuzione
+            controlla_ambiente(sigillo["codice"])
         x.rapporto.write_text(testo, encoding="utf-8")
     except (S.NonSigillata, ValueError, OSError) as e:
         print(f"FERMO: {e}", file=sys.stderr)

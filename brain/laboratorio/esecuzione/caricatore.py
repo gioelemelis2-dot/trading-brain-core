@@ -26,6 +26,22 @@ Quota = Tuple[float, float, float, float]
 SESSIONE = (time(8, 0), time(16, 45))       # sessione di base, ora di Londra (scheda H-002 v3.1 §6)
 QUOTA_SESSIONE = 0.5                        # PROVVISORIA (#49): da confermare con i conteggi dei minuti della cache vera
 MINUTI_SESSIONE = 525
+QUOTA_TERZO = 0.25                          # PROVVISORIA (#63): minuti minimi in ciascun terzo della sessione
+
+
+def _completo(tempi, giorno: date, corto: bool) -> bool:
+    """Metà dei minuti della sessione e almeno un quarto in ciascun terzo (#63: 263 minuti tutti nel pomeriggio non
+    fanno un giorno completo); nelle vigilie (chiusura anticipata) basta il primo terzo, il mattino."""
+    a, b = _utc(giorno, SESSIONE[0]), _utc(giorno, SESSIONE[1])
+    durata = (b - a) / 3
+    terzi = [0, 0, 0]
+    for t in tempi:
+        if a <= t < b:
+            terzi[min(2, int((t - a) / durata))] += 1
+    minimo_terzo = math.ceil(QUOTA_TERZO * MINUTI_SESSIONE / 3)
+    if corto:
+        return terzi[0] >= minimo_terzo
+    return sum(terzi) >= math.ceil(QUOTA_SESSIONE * MINUTI_SESSIONE) and all(n >= minimo_terzo for n in terzi)
 
 
 def _aggiorna_impronta(impronta, cartella: Path, giorno: date, dati: bytes) -> None:
@@ -54,7 +70,6 @@ def _leggi_cache(cartella: Path, inizio: date, fine: date, simbolo: str, impront
     mancanti = 0
     feriali_vuoti = []
     incompleti = []
-    minimo = math.ceil(QUOTA_SESSIONE * MINUTI_SESSIONE)
     giorno = inizio
     while giorno <= fine:
         f = Path(cartella) / f"{giorno.isoformat()}.bi5"
@@ -69,10 +84,8 @@ def _leggi_cache(cartella: Path, inizio: date, fine: date, simbolo: str, impront
             if giorno.weekday() < 5 and giorno not in chiusure_note(giorno.year):
                 if not minuti:
                     feriali_vuoti.append(giorno.isoformat())
-                elif giorno not in giorni_corti(giorno.year):
-                    a, b = _utc(giorno, SESSIONE[0]), _utc(giorno, SESSIONE[1])
-                    if sum(1 for t, *_ in minuti if a <= t < b) < minimo:
-                        incompleti.append(giorno.isoformat())
+                elif not _completo([m[0] for m in minuti], giorno, giorno in giorni_corti(giorno.year)):
+                    incompleti.append(giorno.isoformat())
         giorno += timedelta(days=1)
     return out, mancanti, feriali_vuoti, incompleti
 

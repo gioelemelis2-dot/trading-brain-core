@@ -667,7 +667,7 @@ class TestAmbiente(unittest.TestCase):
             "except ValueError as e:\n    print('FERMO', e)\n")
 
     def test_isolato_e_pulito_passa(self):
-        out = self.lancia(["-I", "-B"], self.PROG.format(extra=""))
+        out = self.lancia(["-I", "-S", "-B"], self.PROG.format(extra=""))
         self.assertIn("AMBIENTE OK", out.stdout, out.stderr)
 
     def test_senza_modalita_isolata_si_ferma(self):
@@ -677,8 +677,11 @@ class TestAmbiente(unittest.TestCase):
 
     def test_libreria_standard_ombrata_si_ferma(self):
         with tempfile.TemporaryDirectory() as d:
-            (Path(d) / "statistics.py").write_text("from math import fsum\ndef mean(x):\n    x = list(x)\n"
-                                                   "    return fsum(x) / len(x)\n")
+            (Path(d) / "statistics.py").write_text(                       # copia funzionante della vera, ma altrove
+                "import importlib.util, os, sysconfig\n"
+                "_s = importlib.util.spec_from_file_location('_vera', os.path.join(sysconfig.get_paths()['stdlib'], "
+                "'statistics.py'))\n_m = importlib.util.module_from_spec(_s)\n_s.loader.exec_module(_m)\n"
+                "globals().update({k: getattr(_m, k) for k in dir(_m) if not k.startswith('__')})\n")
             out = self.lancia(["-s", "-B"], self.PROG.format(extra=", isolato_richiesto=False"),
                               {"PYTHONPATH": d})
         self.assertIn("FERMO", out.stdout, out.stderr)
@@ -690,9 +693,20 @@ class TestAmbiente(unittest.TestCase):
                 "s = E.impronte_codice(); s['brain/laboratorio/esecuzione/criteri.py'] = '0' * 64\n"
                 "try:\n    E.controlla_ambiente(s)\n    print('AMBIENTE OK')\n"
                 "except ValueError as e:\n    print('FERMO', e)\n")
-        out = self.lancia(["-I", "-B"], prog)
+        out = self.lancia(["-I", "-S", "-B"], prog)
         self.assertIn("FERMO", out.stdout, out.stderr)
         self.assertIn("criteri.py", out.stdout)
+
+
+class TestComandoIsolato(unittest.TestCase):
+    def test_la_forma_documentata_del_comando_funziona(self):
+        """Il comando del docstring (python3 -I -S -B -c ...) trova il pacchetto e arriva alla riga di comando."""
+        import re
+        riga = re.search(r'python3 -I -S -B -c "([^"]+)"', E.__doc__).group(1)
+        out = _sp.run([sys.executable, "-I", "-S", "-B", "-c", riga, "--help"], cwd=str(E.RADICE),
+                      capture_output=True, text=True)
+        self.assertEqual(out.returncode, 0, out.stderr)
+        self.assertIn("--modalita", out.stdout)
 
 
 class TestRigaDiComandoR13(BaseRiga):

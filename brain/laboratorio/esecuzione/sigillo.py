@@ -82,24 +82,25 @@ def n_prove(dati: dict) -> int:
 
 
 def sigilla(registro: Path, ipotesi: str, scheda: Path, varianti: List[str], ora: str,
-            codice: Optional[Dict[str, str]] = None) -> dict:
+            codice: Optional[Dict[str, str]] = None, robustezza: Optional[List[str]] = None) -> dict:
     """Registra l'impronta della scheda e le sue prove dichiarate. Rifiuta il doppio sigillo e un'ipotesi che ha
     già esecuzioni registrate (nessuna esecuzione prima del sigillo)."""
     if not varianti or len(set(varianti)) != len(varianti) or not all(isinstance(v, str) and v for v in varianti):
         raise ValueError(f"varianti non valide: {varianti!r} (servono nomi distinti, almeno uno)")
     with _bloccato(registro):
-        return _sigilla(registro, ipotesi, scheda, varianti, ora, codice)
+        return _sigilla(registro, ipotesi, scheda, varianti, ora, codice, robustezza)
 
 
 def _sigilla(registro: Path, ipotesi: str, scheda: Path, varianti: List[str], ora: str,
-             codice: Optional[Dict[str, str]]) -> dict:
+             codice: Optional[Dict[str, str]], robustezza: Optional[List[str]] = None) -> dict:
     dati = leggi(registro)
     if _sigillo(dati, ipotesi) is not None:
         raise ValueError(f"{ipotesi} è già sigillata: ogni cambiamento è un'ipotesi nuova")
     if any(e["ipotesi"] == ipotesi for e in dati["esecuzioni"]):
         raise ValueError(f"{ipotesi} ha già esecuzioni registrate prima del sigillo")
     s = {"ipotesi": ipotesi, "scheda": Path(scheda).name, "scheda_sha256": impronta(scheda),
-         "varianti": list(varianti), "ora": ora, "codice": dict(codice or {})}
+         "varianti": list(varianti), "ora": ora, "codice": dict(codice or {}),
+         "robustezza": sorted(robustezza or [])}                         # #69: prove di robustezza dichiarate
     dati["sigilli"].append(s)
     dati["prove"] += [{"id": f"{ipotesi}/{v}", "ipotesi": ipotesi, "ruolo": "selezionabile", "ora": ora}
                       for v in varianti]
@@ -130,24 +131,55 @@ def controlla_sigillo(registro: Path, ipotesi: str, scheda: Path, codice: Option
     return s
 
 
-def controlla_ancora(registro: Path, radice: Path) -> None:
-    """Il registro deve essere versionato in git e CONTINUARE la versione dell'ultimo commit: le voci già su git non
-    si cambiano né si tolgono, si aggiungono solo voci nuove in fondo (#51, rilievo R12bis-A3-04). Il registro va
-    committato (e spinto su GitHub) dopo ogni esecuzione: così una manomissione si vede nella storia."""
-    registro, radice = Path(registro).resolve(), Path(radice).resolve()
+def _git(radice: Path, *argomenti) -> subprocess.CompletedProcess:
+    return subprocess.run(["git", "-C", str(radice), *argomenti], capture_output=True, text=True)
+
+
+def ancora_git(file: Path, radice: Path, continua) -> None:
+    """Il file JSON deve essere ancorato alla versione su GitHub (#51, #62, R13-B-02):
+    - non un collegamento simbolico, dentro il repository;
+    - HEAD su un ramo (non staccata) con una versione remota (`@{u}`), e HEAD che la CONTIENE (niente storia
+      riscritta con --amend o rebase dopo il push);
+    - il file sul disco IDENTICO a quello della HEAD (nessuna modifica non committata);
+    - la versione della HEAD che CONTINUA quella remota secondo `continua(remota, head)`, che solleva ValueError.
+    Limite dichiarato: la versione remota è quella dell'ultimo `git fetch`; chi riscrive anche il riferimento locale
+    del ramo remoto va visto confrontando con GitHub stesso."""
+    file = Path(file)
+    if file.is_symlink():
+        raise ValueError(f"{file} è un collegamento simbolico: non è ancorato a git")
+    file, radice = file.resolve(), Path(radice).resolve()
     try:
-        rel = registro.relative_to(radice).as_posix()
+        rel = file.relative_to(radice).as_posix()
     except ValueError:
-        raise ValueError(f"il registro {registro} è fuori dal repository {radice}: non è ancorato a git") from None
-    r = subprocess.run(["git", "-C", str(radice), "show", f"HEAD:{rel}"], capture_output=True, text=True)
-    if r.returncode != 0:
-        raise ValueError(f"il registro {rel} non è versionato in git: committarlo prima di eseguire")
-    su_git = json.loads(r.stdout)
-    ora = leggi(registro)
-    for chiave in ("prove", "sigilli", "esecuzioni"):
-        vecchie = su_git.get(chiave) or []
-        if ora[chiave][:len(vecchie)] != vecchie:
-            raise ValueError(f"il registro {rel} non continua la versione su git ({chiave}: voci cambiate o tolte)")
+        raise ValueError(f"il file {file} è fuori dal repository {radice}: non è ancorato a git") from None
+    if _git(radice, "symbolic-ref", "-q", "HEAD").returncode != 0:
+        raise ValueError("HEAD staccata: eseguire da un ramo")
+    remoto = _git(radice, "rev-parse", "--abbrev-ref", "--symbolic-full-name", "@{u}")
+    if remoto.returncode != 0:
+        raise ValueError("il ramo non ha una versione remota (GitHub): spingerlo prima con git push -u")
+    remoto = remoto.stdout.strip()
+    if _git(radice, "merge-base", "--is-ancestor", remoto, "HEAD").returncode != 0:
+        raise ValueError(f"la HEAD non contiene {remoto}: storia riscritta o ramo indietro")
+    head = _git(radice, "show", f"HEAD:{rel}")
+    if head.returncode != 0:
+        raise ValueError(f"{rel} non è versionato in git: committarlo e spingerlo prima di eseguire")
+    if json.loads(head.stdout) != json.loads(file.read_text(encoding="utf-8")):
+        raise ValueError(f"{rel} ha modifiche non committate: committarlo e spingerlo prima di eseguire")
+    su_github = _git(radice, "show", f"{remoto}:{rel}")
+    if su_github.returncode != 0:
+        raise ValueError(f"{rel} non è ancora su {remoto}: spingerlo prima di eseguire")
+    continua(json.loads(su_github.stdout), json.loads(head.stdout))
+
+
+def controlla_ancora(registro: Path, radice: Path) -> None:
+    """Registro delle prove ancorato alla versione su GitHub (vedi `ancora_git`): le voci già spinte non si cambiano
+    né si tolgono; si aggiungono solo voci nuove in fondo, committate."""
+    def continua(remota: dict, head: dict) -> None:
+        for chiave in ("prove", "sigilli", "esecuzioni"):
+            vecchie = remota.get(chiave) or []
+            if (head.get(chiave) or [])[:len(vecchie)] != vecchie:
+                raise ValueError(f"il registro non continua la versione su GitHub ({chiave}: voci cambiate o tolte)")
+    ancora_git(registro, radice, continua)
 
 
 def registra_esecuzione(registro: Path, ipotesi: str, voce: dict, ora: str) -> dict:
@@ -165,9 +197,10 @@ def _registra(registro: Path, ipotesi: str, voce: dict, ora: str) -> dict:
         raise ValueError(f"ruolo {ruolo!r} non in {RUOLI_ESECUZIONE}")
     variante = str(voce.get("variante") or "")
     dichiarate = _sigillo(dati, ipotesi)["varianti"]
-    if ruolo == "robustezza":                          # «<variante> <prova>»: R11-S7, poi #51 (niente suffissi liberi)
+    if ruolo == "robustezza":                          # «<variante> <prova>»: R11-S7, #51, #69 (prove dichiarate)
         base, _, prova = variante.partition(" ")
-        valida = base in dichiarate and bool(prova.strip())
+        prove = _sigillo(dati, ipotesi).get("robustezza") or []
+        valida = base in dichiarate and bool(prova.strip()) and (not prove or prova in prove)
     else:
         valida = variante in dichiarate
     if not valida:
