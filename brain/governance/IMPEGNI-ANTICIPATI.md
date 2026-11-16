@@ -20,3 +20,6 @@
 - **La revisione esterna del 15/11** (`collaborazione/da-revisori-esterni/2026-11-15-nucleo-statistico-e-incidente.md`) la chiama «numero sigillato il 14/11». In questo registro è un **impegno anticipato**, non un sigillo: niente impronta e niente N.
 - **Il «banco di taratura del motore»** non è ancora documentato nel repository: va descritto (cos'è, chi l'ha fatto, quando) per poter fare il confronto.
 - **15/11, dal censimento di Gemini:** il «banco» è con ogni probabilità la taratura di Gemini su mercati inventati (passi 2862–2997 del 14/11), la cui esecuzione completa si è interrotta con log vuoto. Da confermare dall'utente, insieme all'ora della nota rispetto ai piloti.
+- **16/11, risposta dell'utente:** non sa quando ha scritto lo 0,15 R né a cosa si riferisse il «banco di taratura del motore». Quindi IA-01 resta una **dichiarazione senza prova di anteriorità**: vale come indicazione di preferenza, **non** come impegno preso prima di vedere un risultato. Il «banco» resta non identificato (l'ipotesi di Claude, la taratura di Gemini su dati inventati, non è confermata).
+- **Rimedio proposto da Claude:** fissare oggi, prima di qualsiasi idea per H-003, la soglia minima per le ipotesi future come nuova voce (IA-02). La data del commit nel repository sarà la prova di anteriorità che a IA-01 manca.
+
