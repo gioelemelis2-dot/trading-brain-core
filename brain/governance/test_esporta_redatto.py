@@ -87,6 +87,14 @@ class TestEsporta(unittest.TestCase):
         self.assertIn("d.bin", str(e.exception))
         self.assertFalse(zp.exists())
 
+    def test_rifiuta_un_nome_di_file_con_un_dato_personale(self):
+        (self.repo / "note_di_mario.md").write_text("pulito\n", encoding="utf-8")
+        subprocess.run(self.g + ["add", "note_di_mario.md"], check=True)
+        subprocess.run(self.g + ["commit", "-q", "-m", "nome"], check=True)
+        with self.assertRaises(ValueError) as e:
+            X.esporta(self.repo, "HEAD", self.dir / "fuori" / "p.zip", SOST)
+        self.assertIn("note_di_mario.md", str(e.exception))
+
     def test_destinazione_fuori_dal_repository(self):
         with self.assertRaises(ValueError):
             X.esporta(self.repo, "HEAD", self.repo / "p.zip", SOST)
@@ -102,6 +110,10 @@ class TestEsporta(unittest.TestCase):
         self.assertNotIn("Mario", buf.getvalue())
         self.assertNotIn("mario", buf.getvalue().lower().replace("<utente>", ""))
         self.assertEqual(X.main(["--repo", str(self.repo), "--uscita", str(self.dir / "q.zip"), "--sostituisci", "senza-uguale"]), 2)
+        self.assertEqual(X.main(["--repo", str(self.repo), "--uscita", str(self.dir / "q.zip"), "--sostituisci", "Mario Rossi=<titolare>",
+                                 "--sostituisci", "mrossi-dot=<utente-github>", "--sostituisci", "mario=<utente>",
+                                 "--sostituisci", "=<vuoto>"]), 2)
+        self.assertFalse((self.dir / "q.zip").exists())
 
 
 if __name__ == "__main__":
