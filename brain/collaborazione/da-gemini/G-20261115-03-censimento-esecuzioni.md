@@ -105,3 +105,16 @@ SHA-256 (dallo screenshot del terminale): `de86601ba3afb6272b4ef3265353a779a5399
 - **Nessun comando** con modalità «verifica», `PERIODO_VERIFICA` o date della riserva che legga dati veri.
 - **Limite:** il dump eredita i buchi dello script A (solo `run_command` con Python; per ogni risultato solo gli ultimi 500 caratteri). Il controllo completo è `riconta.py` sulle trascrizioni originali (`~/.gemini/antigravity`, `~/.claude/projects`), da eseguire sul Mac.
 
+## 8. Riconteggio completo di Claude con `riconta.py` sul Mac (15–16/11/2026)
+
+- **Esecuzione:** dall'utente, commit `3242caa`, su `~/.gemini/antigravity` e `~/.claude/projects`. Rapporto `riconta.txt` (2.295 righe) caricato in chat; **non archiviato** (contiene estratti di comandi con percorsi personali). Totale: 374 file, 22.324 righe, 144 uscite con date della riserva, 19 «DA GUARDARE».
+- **Copertura:** 4 conversazioni di Gemini (ogni trascrizione è salvata intera e a pezzi: i conteggi grezzi sono gonfiati dai doppioni) e **una sola** sessione di Claude Code sul Mac (`741b5573…`, 13/11, 538 righe).
+- **Strumenti di Gemini nella conversazione principale:** run_command 747, **read_file 445**, write_file 142, edit_file 132, manage_task 75, search_web 17, schedule 5, list_plugin_accounts 1. Le letture di file **non erano contate** nel censimento di Gemini. Quelle con parole sensibili leggono solo codice (`dukascopy.py`, `caricatore.py`, test), documenti e due schede TOML di configurazione in `dati/reali`: **nessun file di prezzi**.
+- **Le 19 «DA GUARDARE»** sono 3 casi ripetuti:
+  1. passi 2163–2251 e log dei task 2194, 2212, 2247: confronto della replica di Gemini con il simulatore su **dati inventati** (`confronto.py`, `genera_dati`), etichette 2022–2023, ed elenco delle festività inglesi: falso allarme;
+  2. passo 2257: test della replica, dati inventati (3 numeri da prezzo): falso allarme probabile, da confermare con il contesto;
+  3. passo 3037 (15/11, censimento di Gemini; 4 numeri da prezzo): **da chiarire** con il contesto, numeri mascherati.
+  Da chiarire anche il passo 2641 (date 2005-01-01..2023-10-31, cioè i limiti della riserva, e 2 numeri da prezzo).
+- **Claude Code sul Mac (13/11):** ha usato la vecchia pipeline (`dukascopy --anni 3`, poi `--anni 21.9`), che scrive `dati/reali/XAUUSD_15m.csv` con **prezzi in chiaro**. Uscite con date della riserva: 4, con 1–2 date e nessun numero da prezzo. **Da controllare:** quali CSV esistono in `dati/reali` sul Mac e che periodo coprono (solo prima e ultima data). Un CSV che copre la riserva è il rischio di contaminazione più concreto rimasto, per chiunque lo apra.
+- **Limite:** sul Mac c'è una sola trascrizione di Claude Code. Altre sessioni, se ci sono state, non sono più su disco; anche ciò che l'utente ha fatto direttamente nel terminale non è in nessuna trascrizione.
+
