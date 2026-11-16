@@ -184,6 +184,38 @@ class TestScaricaCache(unittest.TestCase):
                                    continua_su_http=True)
         self.assertEqual((conta["http"], conta["dati"]), (38, 1))
 
+    def test_scrittura_forzata_su_disco_anche_della_cartella(self):
+        """Difetto #47: su macOS fsync non basta (serve F_FULLFSYNC) e senza forzare la cartella lo spostamento può
+        sparire a uno spegnimento improvviso: il 16/11 sono andati persi 20 giorni già scaricati."""
+        from unittest import mock
+        forzati = []
+        with mock.patch.object(SC, "_forza", lambda fd: forzati.append(SC.os.fstat(fd).st_mode)):
+            self.cache.mkdir(parents=True)
+            SC._scrivi_atomico(self.cache / "2009-06-08.bi5", b"x")
+            SC._registra(self.registro, {k: "" for k in SC.CAMPI})
+        import stat
+        self.assertEqual([stat.S_ISDIR(m) for m in forzati], [False, True, False])   # file, cartella, registro
+
+    def test_forza_usa_fullfsync_se_c_e_altrimenti_fsync(self):
+        from unittest import mock
+        chiamate = []
+        finto = type("F", (), {"F_FULLFSYNC": 51, "fcntl": staticmethod(lambda fd, op: chiamate.append(("full", op)))})
+        with mock.patch.object(SC, "fcntl", finto), mock.patch.object(SC.os, "fsync", lambda fd: chiamate.append(("fsync",))):
+            SC._forza(3)
+        self.assertEqual(chiamate, [("full", 51)])
+        chiamate.clear()
+
+        def rifiuta(fd, op):
+            raise OSError("non supportato")
+        finto2 = type("F", (), {"F_FULLFSYNC": 51, "fcntl": staticmethod(rifiuta)})
+        with mock.patch.object(SC, "fcntl", finto2), mock.patch.object(SC.os, "fsync", lambda fd: chiamate.append(("fsync",))):
+            SC._forza(3)
+        self.assertEqual(chiamate, [("fsync",)])
+        chiamate.clear()
+        with mock.patch.object(SC, "fcntl", type("F", (), {})), mock.patch.object(SC.os, "fsync", lambda fd: chiamate.append(("fsync",))):
+            SC._forza(3)                                                  # Linux: niente F_FULLFSYNC
+        self.assertEqual(chiamate, [("fsync",)])
+
     def test_file_danneggiato_dal_server_non_entra_in_cache(self):
         with self.assertRaises(SC.Fermo):
             self.scarica(Finta({date(2009, 6, 8): b"non lzma"}), fine=date(2009, 6, 8))
