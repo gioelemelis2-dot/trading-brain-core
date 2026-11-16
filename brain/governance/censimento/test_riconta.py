@@ -127,5 +127,87 @@ class TestRiconta(unittest.TestCase):
                          ["2009-06-07", "2023-10-31"])     # mesi da 0 negli URL di Dukascopy; 2023-11-01 e 2004 fuori
 
 
+class TestR12bis(unittest.TestCase):
+    """Rilievi R12bis-C-01, C-02, C-03 di Gemini (#56, #57)."""
+
+    def setUp(self):
+        self._t = tempfile.TemporaryDirectory()
+        self.dir = Path(self._t.name)
+
+    def tearDown(self):
+        self._t.cleanup()
+
+    def scrivi(self, nome, righe):
+        f = self.dir / nome
+        f.write_text("\n".join(json.dumps(r) for r in righe) + "\n")
+        return f
+
+    def test_argomenti_in_campi_diversi_e_uscite_di_altri_tipi(self):
+        f = self.scrivi("a.jsonl", [
+            {"step_index": 1, "type": "PLANNER_RESPONSE", "tool_calls": [
+                {"name": "run_command", "arguments": {"CommandLine": "python3 run.py --cache cache_dukascopy"}},
+                {"name": "read_file", "params": {"Path": "/r/brain/dati/reali/x.csv"}}]},
+            {"step_index": 2, "type": "TOOL_OUTPUT", "content": "2012-05-01 1650.25 1651.10 1652.30 1649.90"},
+        ])
+        r = R.esamina_file(f)
+        self.assertEqual(len(r["esecuzioni"]), 1)
+        self.assertEqual(len(r["chiamate_sensibili"]), 2)
+        self.assertEqual([u["passo"] for u in r["uscite_riserva"]], [2])
+        g = self.scrivi("c.jsonl", [{"type": "assistant", "message": {"content": [
+            {"type": "tool_use", "name": "Bash", "args": {"command": "python3 x.py cache_dukascopy"}}]}},
+            {"type": "user", "message": {"content": [{"type": "tool_result", "content": [
+                {"type": "json", "data": {"msg": "2014-08-15 1300.50 1301.25 1299.75"}}]}]}}])
+        r = R.esamina_file(g)
+        self.assertEqual((len(r["esecuzioni"]), len(r["chiamate_sensibili"])), (1, 1))
+        self.assertEqual(r["uscite_riserva"][0]["numeri_prezzo"], 3)
+
+    def test_esecuzioni_in_altre_forme(self):
+        f = self.scrivi("e.jsonl", [{"step_index": k, "tool_calls": [c]} for k, c in enumerate([
+            {"name": "run_command", "args": {"CommandLine": "bash /tmp/lancia.sh"}},
+            {"name": "run_command", "args": {"CommandLine": "source /tmp/run.sh && ./eseguibile_compilato"}},
+            {"name": "run_command", "args": {"CommandLine": "awk '{print}' dati.txt"}},
+            {"name": "invoke_subagent", "args": {"Prompt": "fai qualcosa"}},
+            {"name": "run_command", "args": {"CommandLine": "ls -la && cat note.md"}},
+        ], 1)])
+        self.assertEqual(sorted(e["passo"] for e in R.esamina_file(f)["esecuzioni"]), [1, 2, 3, 4])
+
+    def test_date_in_altri_formati(self):
+        casi = {
+            "03/01/2005": ["2005-01-03", "2005-03-01"],          # giorno/mese o mese/giorno: tutte e due
+            "25/12/2010": ["2010-12-25"],
+            "2005.01.03": ["2005-01-03"],
+            "03.01.2005": ["2005-01-03"],
+            "20150615": ["2015-06-15"],
+            "ts=1434326400 ms=1434326400000": ["2015-06-15"],
+            "cache_dukascopy/XAUUSD/2015/05/15/12h_ticks.bi5": ["2015-06-15"],
+            "2015/06/15": ["2015-06-15"],
+            "20250615 1734326400 2026/01/02": [],                # fuori dalla riserva
+            "versione 3.13.18, hash a3944ac0": [],
+        }
+        for testo, atteso in casi.items():
+            self.assertEqual(R.date_riserva(testo), atteso, testo)
+
+    def test_prezzi_in_altre_forme_contati_e_mascherati(self):
+        forme = ["1850,75", "1,850.75", "1.850,75", "2650.45", "1850.1234", "395.50"]
+        for x in forme:
+            self.assertEqual(len(R.numeri_prezzo(f"prezzo={x} fine")), 1, x)
+            self.assertNotIn(x, R._breve(f"prezzo={x} fine", "/casa"), x)
+        self.assertEqual(R.numeri_prezzo("versione 3.13 e 2 trade, R -0.05"), [])
+
+    def test_contenuti_dei_file_mai_stampati(self):
+        self.scrivi("w.jsonl", [{"step_index": 1, "tool_calls": [{"name": "write_file", "args": {
+            "Path": "/repo/brain/note.md", "Content": "cache_dukascopy 2012-05-04 SEGRETO_IN_CHIARO"}}]},
+            {"step_index": 2, "tool_calls": [{"name": "edit_file", "args": {
+                "Path": "/repo/x.py", "Replacement": "cache_dukascopy ALTRO_SEGRETO", "TargetContent": "y"}}]}])
+        buf = io.StringIO()
+        with redirect_stdout(buf):
+            R.main([str(self.dir)])
+        testo = buf.getvalue()
+        for vietato in ("SEGRETO_IN_CHIARO", "ALTRO_SEGRETO", "2012-05-04"):
+            self.assertNotIn(vietato, testo)
+        self.assertIn("/repo/brain/note.md", testo)
+        self.assertIn("Content", testo)                       # si dice QUALI campi c'erano, non cosa contenevano
+
+
 if __name__ == "__main__":
     unittest.main()
