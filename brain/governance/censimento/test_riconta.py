@@ -168,8 +168,16 @@ class TestR12bis(unittest.TestCase):
             {"name": "run_command", "args": {"CommandLine": "awk '{print}' dati.txt"}},
             {"name": "invoke_subagent", "args": {"Prompt": "fai qualcosa"}},
             {"name": "run_command", "args": {"CommandLine": "ls -la && cat note.md"}},
+            {"name": "run_command", "args": {"CommandLine": "cd x && ./eseguibile_compilato --veloce"}},
         ], 1)])
-        self.assertEqual(sorted(e["passo"] for e in R.esamina_file(f)["esecuzioni"]), [1, 2, 3, 4])
+        self.assertEqual(sorted(e["passo"] for e in R.esamina_file(f)["esecuzioni"]), [1, 2, 3, 4, 6])
+
+    def test_formato_sconosciuto_trattato_come_uscita(self):
+        f = self.scrivi("x.jsonl", [{"evento": "risultato", "dati": "2010-03-01 1110.25 1111.50 1109.75"}])
+        r = R.esamina_file(f)
+        self.assertEqual(len(r["uscite_riserva"]), 1)
+        self.assertTrue(r["uscite_riserva"][0]["da_guardare"])
+        self.assertEqual(r["testo_con_date_riserva"], 0)
 
     def test_date_in_altri_formati(self):
         casi = {
@@ -180,6 +188,11 @@ class TestR12bis(unittest.TestCase):
             "20150615": ["2015-06-15"],
             "ts=1434326400 ms=1434326400000": ["2015-06-15"],
             "cache_dukascopy/XAUUSD/2015/05/15/12h_ticks.bi5": ["2015-06-15"],
+            "datafeed/2015/05/15/12h_ticks.bi5": ["2015-06-15"],          # senza simbolo: mesi da 0 lo stesso
+            "2015/05/03/BID_candles_min_1.bi5": ["2015-06-03"],
+            "backup/2015/06/15": ["2015-06-15"],                          # percorso qualsiasi: data normale
+            "ms=1434326400000": ["2015-06-15"],
+            "s=1434326400": ["2015-06-15"],
             "2015/06/15": ["2015-06-15"],
             "20250615 1734326400 2026/01/02": [],                # fuori dalla riserva
             "versione 3.13.18, hash a3944ac0": [],

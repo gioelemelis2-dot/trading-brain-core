@@ -500,4 +500,11 @@ Formato: data · versione della base · cosa · perché · file.
   - #55: `--riprova-vuoti` richiede di nuovo i giorni feriali salvati vuoti.
 - **Prove:** 43 test (scaricatore e Dukascopy) verdi su 3.13 e 3.9, con la rete bloccata; mutanti 37/37 su entrambe le versioni (W25–W37 nuovi; W01, W02, W09, W15, W24 riallineati al codice nuovo).
 - Lo scaricamento in corso sul Mac usa ancora la versione di prima: la nuova vale dal prossimo avvio.
+- **Riconteggio corretto** (`123d227` rosso, poi verde; #56, #57):
+  - argomenti letti da qualunque campo della chiamata; ogni record che non è testo dell'utente o del pianificatore conta come uscita, e così un formato sconosciuto;
+  - esecuzioni anche come `bash x.sh` (anche dentro il JSON), `source`, `./binario`, awk, perl, node e sottoagenti;
+  - date anche come 03/01/2005 (due letture), 03.01.2005, 2005.01.03, 20150615, timestamp in secondi o millisecondi, percorsi Dukascopy senza BID/ASK; trovato e corretto anche un difetto di Claude nella regola dei percorsi (non distingueva le maiuscole: `backup/2015/05/15` letto con i mesi da 0);
+  - prezzi con virgola, separatore delle migliaia, fino a 4 decimali, da 100 a 9.999;
+  - dei campi con contenuti (file scritti, sostituzioni, prompt) si stampa solo il nome.
+- **Prove:** 14 test verdi su 3.13 e 3.9; nuovo script permanente `governance/censimento/mutazioni_riconta.py`, 29/29 su entrambe le versioni (4 sopravvissuti al primo giro: buchi nei test, chiusi). Sulle trascrizioni di Claude le segnalazioni passano da 2 a 13: è il prezzo di una rete più larga.
 

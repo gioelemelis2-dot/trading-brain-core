@@ -11,8 +11,15 @@ Questo strumento, scritto da un'altra parte, legge le trascrizioni originali e c
   e quanti numeri hanno la forma di un prezzo dell'oro di quegli anni: è il controllo che conta per la riserva.
 Il testo libero (messaggi, ragionamenti) è contato a parte: citare il periodo non è vederne i dati.
 
-Stampa SOLO conteggi, numeri di passo, ore, date e un estratto dei COMANDI (con i numeri da prezzo mascherati e la
-cartella personale abbreviata in ~). Non stampa mai il contenuto delle uscite.
+Stampa SOLO conteggi, numeri di passo, ore, date e un estratto dei campi «comando o percorso» delle chiamate (con i
+numeri da prezzo mascherati e la cartella personale abbreviata in ~). Non stampa mai il contenuto delle uscite né
+quello dei file scritti o modificati: di quei campi dice solo il nome (rilievo R12bis-C-03, #57).
+
+Dopo R12-bis (#56): argomenti letti da qualunque campo della chiamata; ogni record che non è testo dell'utente o del
+pianificatore conta come uscita; esecuzioni anche come `bash x.sh`, `source`, `./binario`, awk, perl, node e
+sottoagenti; date anche come 03/01/2005 (entrambe le letture), 03.01.2005, 2005.01.03, 20150615, timestamp Unix in
+secondi o millisecondi, percorsi Dukascopy senza BID/ASK; prezzi anche con virgola decimale, separatore delle
+migliaia, fino a 4 decimali, da 100 a 9.999.
 
 Uso (sul Mac, da una copia del repository; legge soltanto):
   python3 -I -s -B brain/governance/censimento/riconta.py ~/.gemini/antigravity ~/.claude/projects > ~/Downloads/riconta.txt
@@ -22,33 +29,67 @@ import json
 import re
 import sys
 from collections import Counter
-from datetime import date
+from datetime import date, datetime, timezone
 from pathlib import Path
 
 INIZIO_RISERVA, FINE_RISERVA = date(2005, 1, 1), date(2023, 10, 31)
 SENSIBILE = re.compile(r"cache_dukascopy|dati/reali|partizioni|\.bi5|xauusd|dukascopy|periodo_verifica|verifica|"
                        r"caricatore|carica\(", re.I)
-ESECUZIONE = re.compile(r"(?<![\w-])(?:[\w./~-]*/)?(?:python[\d.]*|pytest|ipython)(?![\w-])"
-                        r"|(?:^|[\s;&|(])\./[\w./-]+\.py\b"
-                        r"|(?:^|[\s;&|(])(?:sh|bash|zsh)\s+[\w./~$-]+", re.I)
-SEMPRE_ESECUZIONE = {"send_command_input"}          # input a un processo già aperto: può essere codice
+ESECUZIONE = re.compile(r"(?<![\w-])(?:[\w./~-]*/)?(?:python[\d.]*|pytest|ipython|node|perl|ruby|Rscript|g?awk)(?![\w-])"
+                        r"|(?<![\w./-])\./[\w./-]+"
+                        r"|(?<![\w-])(?:sh|bash|zsh|source)\s+[\w./~$-]+", re.I)
+# input a un processo già aperto (può essere codice) e sottoagenti (eseguono a loro volta)
+SEMPRE_ESECUZIONE = {"send_command_input", "invoke_subagent", "Agent", "Task"}
 DATA_ISO = re.compile(r"(?<!\d)((?:19|20)\d{2})-(\d{2})-(\d{2})(?!\d)")
-DATA_DUKA = re.compile(r"(?<!\d)((?:19|20)\d{2})/(\d{2})/(\d{2})/(?:BID|ASK)", re.I)
-PREZZO = re.compile(r"(?<![\d.])(?:[4-9]\d{2}|1\d{3}|20\d{2})\.\d{1,3}(?![\d.])")
-USCITE_ANTIGRAVITY = {"GENERIC", "SYSTEM_MESSAGE"}
+# Dukascopy: /AAAA/MM/GG/ seguito da BID, ASK o NNh_ticks, oppure preceduto dal simbolo in maiuscolo (es. XAUUSD/)
+DATA_DUKA = re.compile(r"(?<!\d)((?:19|20)\d{2})/(\d{2})/(\d{2})(?=/(?:(?i:bid|ask)|\d{2}h_ticks))"
+                       r"|(?<=[A-Z]{6}/)((?:19|20)\d{2})/(\d{2})/(\d{2})(?!\d)")
+# AAAA.MM.GG e AAAA/MM/GG generici (anche dentro un percorso), esclusi i casi Dukascopy qui sopra
+DATA_AMG = re.compile(r"(?<![\d.])(?<![A-Z]{6}/)((?:19|20)\d{2})([./])(\d{2})\2(\d{2})(?!\d|[./]\d|/(?i:bid|ask))")
+DATA_GMA = re.compile(r"(?<![\d./-])(\d{2})([./-])(\d{2})\2((?:19|20)\d{2})(?![\d./-])")
+DATA_COMPATTA = re.compile(r"(?<![\w.])((?:19|20)\d{2})(\d{2})(\d{2})(?![\w.])")
+TIMESTAMP = re.compile(r"(?<![\w.])(\d{13}|\d{10})(?![\w.])")
+PREZZO = re.compile(r"(?<!\d)(?<!\d[.,])(?:[1-9]\d{0,2}[.,]\d{3}[.,]\d{1,4}|[1-9]\d{2,3}[.,]\d{1,4})(?!\d|[.,]\d)")
+TESTO_ANTIGRAVITY = {"USER_INPUT", "PLANNER_RESPONSE"}          # tutto il resto è un'uscita
+CAMPI_DA_MOSTRARE = {"CommandLine", "command", "cmd", "Path", "AbsolutePath", "path", "file_path", "TargetFile",
+                     "Input", "query", "url", "Url", "pattern", "description", "toolSummary"}
 
 
 def date_riserva(testo: str) -> list:
     trovate = set()
-    for rx, scarto in ((DATA_ISO, 0), (DATA_DUKA, 1)):            # negli URL di Dukascopy i mesi partono da 0
-        for a, m, g in rx.findall(testo):
-            try:
-                d = date(int(a), int(m) + scarto, int(g))
-            except ValueError:
-                continue
-            if INIZIO_RISERVA <= d <= FINE_RISERVA:
-                trovate.add(d.isoformat())
+
+    def aggiungi(a, m, g):
+        try:
+            d = date(int(a), int(m), int(g))
+        except ValueError:
+            return
+        if INIZIO_RISERVA <= d <= FINE_RISERVA:
+            trovate.add(d.isoformat())
+    for a, m, g in DATA_ISO.findall(testo):
+        aggiungi(a, m, g)
+    for t in DATA_DUKA.findall(testo):                             # negli URL di Dukascopy i mesi partono da 0
+        a, m, g = t[:3] if t[0] else t[3:]
+        aggiungi(a, int(m) + 1, g)
+    for a, _sep, m, g in DATA_AMG.findall(testo):
+        aggiungi(a, m, g)
+    for x, sep, y, a in DATA_GMA.findall(testo):                   # 03/01/2005: giorno/mese e mese/giorno
+        aggiungi(a, y, x)
+        if sep == "/":
+            aggiungi(a, x, y)
+    for a, m, g in DATA_COMPATTA.findall(testo):
+        aggiungi(a, m, g)
+    for t in TIMESTAMP.findall(testo):
+        try:
+            d = datetime.fromtimestamp(int(t) / (1000 if len(t) == 13 else 1), timezone.utc).date()
+        except (OverflowError, OSError, ValueError):
+            continue
+        if INIZIO_RISERVA <= d <= FINE_RISERVA:
+            trovate.add(d.isoformat())
     return sorted(trovate)
+
+
+def numeri_prezzo(testo: str) -> list:
+    return PREZZO.findall(testo)
 
 
 def _testo(x) -> str:
@@ -62,30 +103,31 @@ def _testo(x) -> str:
 def _voci(riga: dict, n: int):
     """(formato, passo, ora, chiamate [(nome, argomenti)], uscite [testo], testi [testo]) di una riga di trascrizione."""
     if "step_index" in riga or "tool_calls" in riga:
-        chiamate = [(c.get("name", "?"), c.get("args") or {}) for c in (riga.get("tool_calls") or [])]
+        chiamate = [(c.get("name", "?"), {k: v for k, v in c.items() if k != "name"})
+                    for c in (riga.get("tool_calls") or []) if isinstance(c, dict)]
         contenuto = _testo(riga.get("content", ""))
-        uscite = [contenuto] if riga.get("type") in USCITE_ANTIGRAVITY else []
-        testi = [] if uscite else [contenuto]
+        testi = [contenuto] if riga.get("type") in TESTO_ANTIGRAVITY else []
+        uscite = [] if testi else [contenuto]
         return "antigravity", riga.get("step_index", n), riga.get("created_at", ""), chiamate, uscite, testi
     if "message" in riga:
         c = (riga.get("message") or {}).get("content")
         chiamate, uscite, testi = [], [], []
         for x in (c if isinstance(c, list) else [c]):
             if isinstance(x, dict) and x.get("type") == "tool_use":
-                chiamate.append((x.get("name", "?"), x.get("input") or {}))
+                chiamate.append((x.get("name", "?"), {k: v for k, v in x.items() if k not in ("type", "id", "name")}))
             elif isinstance(x, dict) and x.get("type") == "tool_result":
                 uscite.append(_testo(x.get("content", "")))
             elif x is not None:
                 testi.append(_testo(x.get("text", "") if isinstance(x, dict) else x))
         return "claude", n, riga.get("timestamp", ""), chiamate, uscite, testi
-    return None, n, "", [], [], [_testo(riga)]
+    return None, n, "", [], [_testo(riga)], []                     # formato sconosciuto: per prudenza, un'uscita
 
 
 def _uscita(passo, ora, testo):
     d = date_riserva(testo)
     if not d:
         return None
-    p = len(PREZZO.findall(testo))
+    p = len(numeri_prezzo(testo))
     return {"passo": passo, "ora": ora, "date": len(d), "prima": d[0], "ultima": d[-1], "numeri_prezzo": p,
             "da_guardare": p >= 3 or len(d) >= 10}
 
@@ -117,7 +159,7 @@ def esamina_file(percorso: Path) -> dict:
             for nome, arg in chiamate:
                 strumenti[nome] += 1
                 t = arg if isinstance(arg, str) else json.dumps(arg, ensure_ascii=False)
-                voce = {"passo": passo, "ora": ora, "strumento": nome, "estratto": t}
+                voce = {"passo": passo, "ora": ora, "strumento": nome, "estratto": _mostrabile(arg)}
                 parole = sorted({m.lower() for m in SENSIBILE.findall(t)})
                 if parole:
                     r["chiamate_sensibili"].append(dict(voce, parole=parole))
@@ -130,6 +172,24 @@ def esamina_file(percorso: Path) -> dict:
             r["testo_con_date_riserva"] += sum(1 for t in testi if date_riserva(t))
     r["strumenti"] = dict(strumenti)
     return r
+
+
+def _mostrabile(arg) -> str:
+    """Solo i campi «comando o percorso»; degli altri (contenuti di file, sostituzioni, prompt) solo il nome."""
+    if not isinstance(arg, dict):
+        return "[argomento non leggibile]"
+    mostrati, altri = [], []
+
+    def visita(d):
+        for k, v in d.items():
+            if isinstance(v, dict):
+                visita(v)
+            elif k in CAMPI_DA_MOSTRARE:
+                mostrati.append(f"{k}={v}")
+            else:
+                altri.append(k)
+    visita(arg)
+    return " ; ".join(mostrati) + (f" [altri campi: {', '.join(sorted(set(altri)))}]" if altri else "")
 
 
 def _breve(t: str, casa: str, n: int = 140) -> str:
