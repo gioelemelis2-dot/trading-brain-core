@@ -489,3 +489,15 @@ Formato: data · versione della base · cosa · perché · file.
 - **Prove:** test verdi su 3.13 e 3.9 (con la rete bloccata); mutanti 24/24 su entrambe le versioni (W21–W24 nuovi).
 - **Effetto sullo scaricamento in corso:** nessuno; usa ancora la versione di prima (worktree `tb-scarica`). La correzione vale dal prossimo avvio. A fine scaricamento `controlla_cache` deve risultare pulito: un file vuoto o rovinato lasciato dallo spegnimento si vedrebbe lì.
 
+## 2026-11-16 · v1.40 (R12-bis: giudizio e correzioni dello scaricatore)
+
+- **R12-bis di Gemini integrato** (`3ad6d77`): tutte le sonde riprodotte da Claude con la rete bloccata; difetti #48–#58 nel registro; B-04 respinto con motivo (`H-002-REVISIONI.md`, sezione R12-bis). La regola d'uscita per il sigillo resta a zero giri puliti.
+- **Scaricatore corretto** (`3b0c744` rosso, poi verde):
+  - #52: `Retry-After` letto anche come data; illeggibile o passato: attesa crescente normale;
+  - #58: `attesa` e `apri` di `richiesta_http` risolte alla chiamata (la causa della richiesta in rete accidentale di Gemini);
+  - #54: codice vero della risposta (204 resta «vuoto-204»); codici diversi da 200, 204 e 404 trattati come errori; `--pausa` negativa: codice 2;
+  - #53: alla ripresa ogni file in cache è decodificato; uno rovinato si mette da parte (`.<giorno>.rovinato`) e si riscarica; uno buono senza riga si registra («in-cache-non-registrato»);
+  - #55: `--riprova-vuoti` richiede di nuovo i giorni feriali salvati vuoti.
+- **Prove:** 43 test (scaricatore e Dukascopy) verdi su 3.13 e 3.9, con la rete bloccata; mutanti 37/37 su entrambe le versioni (W25–W37 nuovi; W01, W02, W09, W15, W24 riallineati al codice nuovo).
+- Lo scaricamento in corso sul Mac usa ancora la versione di prima: la nuova vale dal prossimo avvio.
+

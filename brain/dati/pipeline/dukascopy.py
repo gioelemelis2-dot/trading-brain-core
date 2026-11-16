@@ -28,6 +28,7 @@ prezzo × SCALA), volume (float32). Per XAUUSD la SCALA è 1000 (0,001 USD).
 from __future__ import annotations
 
 import argparse
+import email.utils
 import hashlib
 import http.client
 import json
@@ -75,25 +76,51 @@ def url_giorno(simbolo: str, giorno: date, lato: str = "BID") -> str:
     return URL.format(simbolo=simbolo, anno=giorno.year, mese0=giorno.month - 1, giorno=giorno.day, lato=lato)
 
 
-def richiesta_http(url: str, tentativi: int = 10, attesa: Callable[[float], None] = time.sleep,
-                   apri=urllib.request.urlopen) -> Tuple[int, Optional[bytes], int]:
+def _ritardo(valore) -> float:
+    """Secondi chiesti da Retry-After: numero o data HTTP (RFC 9110). Illeggibile o nel passato: 0 (rilievo R12bis-B-01,
+    #52: una data faceva cadere il programma)."""
+    if not valore:
+        return 0.0
+    try:
+        return min(3600.0, max(0.0, float(valore)))
+    except ValueError:
+        pass
+    try:
+        quando = email.utils.parsedate_to_datetime(valore)
+    except (TypeError, ValueError, IndexError):
+        return 0.0
+    if quando is None:
+        return 0.0
+    if quando.tzinfo is None:
+        quando = quando.replace(tzinfo=timezone.utc)
+    return min(3600.0, max(0.0, (quando - datetime.now(timezone.utc)).total_seconds()))
+
+
+def richiesta_http(url: str, tentativi: int = 10, attesa: Optional[Callable[[float], None]] = None,
+                   apri=None) -> Tuple[int, Optional[bytes], int]:
     """(codice HTTP, contenuto, tentativi usati): (200, byte anche vuoti, n) oppure (404, None, n). Nuovi tentativi
     con attesa crescente su 429/5xx ed errori di rete (rispettando Retry-After): 5, 10, 20, … secondi fino a 5
     minuti, circa 20 minuti in tutto prima di arrendersi (ConnectionError). Altri codici 4xx: HTTPError, senza nuovi
     tentativi. Distinguere 404, risposta vuota e guasto è la richiesta 1 di DGS-04. User-Agent generico: nessun dato
-    personale."""
+    personale.
+    `attesa` e `apri` si risolvono alla chiamata (time.sleep, urllib.request.urlopen): sostituirli nel modulo basta
+    (#58: fissati alla definizione, un test di Gemini è andato in rete per errore). Il codice restituito è quello vero
+    della risposta (204 resta 204, #54)."""
+    attesa = attesa or time.sleep
+    apri = apri or urllib.request.urlopen
     richiesta = urllib.request.Request(url, headers={"User-Agent": "trading-brain-dati/1.0"})
     for n in range(tentativi):
         try:
             with apri(richiesta, timeout=60) as r:
                 dati = r.read()
-            return 200, dati, n + 1
+                codice = getattr(r, "status", None) or 200
+            return codice, dati, n + 1
         except urllib.error.HTTPError as e:
             if e.code == 404:
                 return 404, None, n + 1
             if e.code != 429 and e.code < 500:
                 raise
-            ritardo = float(e.headers.get("Retry-After") or 0) if e.headers else 0.0
+            ritardo = _ritardo(e.headers.get("Retry-After")) if e.headers else 0.0
         except (urllib.error.URLError, OSError, http.client.HTTPException):   # rete, timeout (anche socket.timeout
             # di Python 3.9, che non è un TimeoutError), connessioni chiuse, risposte troncate
             ritardo = 0.0
@@ -101,8 +128,8 @@ def richiesta_http(url: str, tentativi: int = 10, attesa: Callable[[float], None
     raise ConnectionError(f"{url}: nessuna risposta valida dopo {tentativi} tentativi")
 
 
-def scarica_http(url: str, tentativi: int = 10, attesa: Callable[[float], None] = time.sleep,
-                 apri=urllib.request.urlopen) -> Optional[bytes]:
+def scarica_http(url: str, tentativi: int = 10, attesa: Optional[Callable[[float], None]] = None,
+                 apri=None) -> Optional[bytes]:
     """Contenuto dell'URL; None se il giorno non esiste (404) o è vuoto (interfaccia storica della pipeline)."""
     _codice, dati, _n = richiesta_http(url, tentativi, attesa, apri)
     return dati or None
