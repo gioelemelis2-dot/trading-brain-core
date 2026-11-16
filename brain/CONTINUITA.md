@@ -9,7 +9,7 @@ Ultimo aggiornamento: **2026-11-15**, dopo il mandato notturno su H-002 (program
 - **Esplorazioni sullo sviluppo:** E-001, E-002 (Claude), E-003 (Gemini, 14/11, fuori protocollo): contano in N per le ipotesi che ne usano i tagli.
 - **Dati:** BID fino al 07/06/2009 e dal 12/11/2023; ASK solo dal 12/11/2023. Scaricamento con `dati/pipeline/scarica_cache.py --continua-su-http`, dal Mac (worktree `tb-scarica`).
 - **In corso:** scaricamento storico avviato la notte del 15–16/11 (`~/scarica_storico.log`, worktree `tb-scarica`; BID dal 2009-06-08, poi ASK dal 2005-01-01). **Da avere dall'utente:** ora della nota dello 0,15 R e conferma che il «banco» è la taratura di Gemini (IA-01).
-- **Dopo:** controllo della cache a scaricamento finito; righe «DA GUARDARE» di `riconta.py`; giro R12 (Gemini e DGS); regole generali chieste dal DGS; sigillo solo dopo due giri senza difetti gravi; poi una nuova ipotesi (H-003), con soglia minima decisa prima (IA-01: 0,15 R).
+- **Dopo:** controllo della cache a scaricamento finito; righe «DA GUARDARE» di `riconta.py`; giro R12 (Gemini e DGS); regole generali chieste dal DGS; sigillo solo dopo due giri senza difetti gravi; poi una nuova ipotesi (H-003), con la soglia minima già fissata: **IA-02, R medio netto ≥ +0,15 R** (decidere nella scheda se sulla stima o sul limite inferiore, prima dei dati).
 - **Attenzione con TradingView:** guardare solo dal 15/11/2023 in avanti; ogni idea va scritta con data e periodo guardato prima di essere provata; ChatGPT è il DGS e non deve diventare autore delle idee che poi giudica.
 
 ## Stato

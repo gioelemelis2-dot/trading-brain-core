@@ -469,3 +469,9 @@ Formato: data · versione della base · cosa · perché · file.
 - **Censimento:** primo riconteggio indipendente sul dump di Gemini: confermate le 16 esecuzioni sui dati veri, tutte sullo sviluppo; 18 passi in più trovati con una rete più larga, tutti innocui. Il controllo completo sulle trascrizioni originali resta da fare sul Mac.
 - **`CONTINUITA.md`:** in testa, lo stato del 15/11 sera e le azioni in corso.
 
+## 2026-11-16 · v1.37 (riconteggio chiuso, IA-02)
+
+- **Censimento delle esecuzioni chiuso:** riserva 2005 → 31/10/2023 intatta per trascrizioni (Gemini e Claude Code sul Mac), letture di file e CSV su disco; 19 segnalazioni di `riconta.py`, tutte falsi allarmi. Limite: ciò che l'utente ha guardato a mano.
+- **IA-01:** l'utente non ricorda data e riferimento: resta una dichiarazione senza prova di anteriorità.
+- **IA-02 (nuovo, vincolante per H-003 e successive):** R medio netto ≥ +0,15 R per trade, deciso prima di qualsiasi idea di H-003. Da decidere nella scheda di H-003, prima dei dati: soglia sulla stima o sul limite inferiore dell'intervallo.
+

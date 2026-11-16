@@ -13,6 +13,7 @@
 
 | # | Dichiarato da | Data dichiarata | Prima di | Impegno | Stato operativo | Registrato | Confronto con la scelta effettiva |
 |---|---|---|---|---|---|---|---|
+| IA-02 | Utente | 16/11/2026 (data del commit che registra questa riga) | qualsiasi idea, scheda o dato di H-003 | Vantaggio minimo per considerare una strategia degna di soldi veri: **R medio netto ≥ +0,15 R per trade** («da 0,15 in su») | **Vincolante per H-003 e le ipotesi successive:** ogni nuova scheda deve usare questa soglia (al posto di +0,05 R di H-002 v3.1), finché l'utente non la cambia con una decisione scritta presa prima di vedere i dati dell'ipotesi interessata. Non tocca H-002 (parcheggiata, scheda v3.1 invariata) | da Claude il 16/11/2026, su risposta scritta dell'utente in chat | da fare alla prima scheda che la usa |
 | IA-01 | Utente | 14/11/2026 | aver visto il «banco di taratura del motore» | Il vantaggio minimo che sceglierebbe oggi è **0,15 R per trade** | **Nessuno.** La soglia nel codice resta quella della scheda H-002 v3.1 (criterio 1 dello screening: R medio netto ≥ +0,05 R) | da Claude il 15/11/2026, su dichiarazione scritta dell'utente in chat | da fare quando l'utente sceglierà il numero dopo il banco |
 
 **Note su IA-01:**
@@ -22,4 +23,9 @@
 - **15/11, dal censimento di Gemini:** il «banco» è con ogni probabilità la taratura di Gemini su mercati inventati (passi 2862–2997 del 14/11), la cui esecuzione completa si è interrotta con log vuoto. Da confermare dall'utente, insieme all'ora della nota rispetto ai piloti.
 - **16/11, risposta dell'utente:** non sa quando ha scritto lo 0,15 R né a cosa si riferisse il «banco di taratura del motore». Quindi IA-01 resta una **dichiarazione senza prova di anteriorità**: vale come indicazione di preferenza, **non** come impegno preso prima di vedere un risultato. Il «banco» resta non identificato (l'ipotesi di Claude, la taratura di Gemini su dati inventati, non è confermata).
 - **Rimedio proposto da Claude:** fissare oggi, prima di qualsiasi idea per H-003, la soglia minima per le ipotesi future come nuova voce (IA-02). La data del commit nel repository sarà la prova di anteriorità che a IA-01 manca.
+
+**Note su IA-02:**
+- **Prova di anteriorità:** la data e l'impronta del commit che aggiunge la riga. Nessuna idea, scheda o esecuzione di H-003 esiste a questa data.
+- **Da decidere nella scheda di H-003, prima dei dati:** se la soglia si applica alla **stima** dell'R medio (una strategia con vantaggio vero di esattamente 0,15 R passerebbe circa una volta su due) o al **limite inferiore** dell'intervallo di confidenza (molto più severa: servono molti più trade). È la scelta che decide quanti dati servono.
+- IA-02 **sostituisce** IA-01 come riferimento operativo; IA-01 resta nel registro così com'è.
 
