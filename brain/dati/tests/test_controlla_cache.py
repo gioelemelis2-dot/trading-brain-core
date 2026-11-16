@@ -120,3 +120,48 @@ class TestControllaCache(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class TestConfrontoBidAsk(unittest.TestCase):
+    """Confronto BID/ASK insieme (per la fine dello scaricamento): giorni presenti da un lato e non dall'altro."""
+
+    def setUp(self):
+        import tempfile
+        self._t = tempfile.TemporaryDirectory()
+        self.bid = Path(self._t.name) / "XAUUSD"
+        self.ask = Path(self._t.name) / "XAUUSD_ASK"
+        self.bid.mkdir(); self.ask.mkdir()
+        from datetime import date as d
+        dati = bi5(1)
+        for g, b, a in ((d(2010, 3, 8), dati, dati),      # entrambi
+                        (d(2010, 3, 9), dati, None),      # ASK senza file
+                        (d(2010, 3, 10), dati, b""),      # ASK vuoto, BID pieno
+                        (d(2010, 3, 11), b"", b""),       # entrambi vuoti (ok)
+                        (d(2010, 3, 12), None, dati)):    # BID senza file
+            if b is not None:
+                (self.bid / f"{g.isoformat()}.bi5").write_bytes(b)
+            if a is not None:
+                (self.ask / f"{g.isoformat()}.bi5").write_bytes(a)
+
+    def tearDown(self):
+        self._t.cleanup()
+
+    def test_confronto(self):
+        from datetime import date as d
+        r = CC.confronta(self.bid, self.ask, d(2010, 3, 8), d(2010, 3, 12))
+        self.assertEqual(r["senza_file_ask"], ["2010-03-09"])
+        self.assertEqual(r["senza_file_bid"], ["2010-03-12"])
+        self.assertEqual(r["vuoto_da_un_lato"], ["2010-03-10"])
+        self.assertEqual(r["giorni"], 5)
+        self.assertFalse(r["allineati"])
+        r2 = CC.confronta(self.bid, self.ask, d(2010, 3, 8), d(2010, 3, 8))
+        self.assertTrue(r2["allineati"])
+
+    def test_riga_di_comando_con_ask(self):
+        import contextlib, io
+        buf = io.StringIO()
+        with contextlib.redirect_stdout(buf):
+            rc = CC.main([str(self.bid), "--ask", str(self.ask), "--inizio", "2010-03-08", "--fine", "2010-03-12"])
+        self.assertEqual(rc, 1)                                        # non allineati: codice diverso da 0
+        self.assertIn("2010-03-09", buf.getvalue())
+        self.assertNotIn("2222", buf.getvalue())
