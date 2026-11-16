@@ -475,3 +475,9 @@ Formato: data · versione della base · cosa · perché · file.
 - **IA-01:** l'utente non ricorda data e riferimento: resta una dichiarazione senza prova di anteriorità.
 - **IA-02 (nuovo, vincolante per H-003 e successive):** R medio netto ≥ +0,15 R per trade, deciso prima di qualsiasi idea di H-003. Da decidere nella scheda di H-003, prima dei dati: soglia sulla stima o sul limite inferiore dell'intervallo.
 
+## 2026-11-16 · v1.38 (lavoro notturno: mandato R12-bis, potenza di IA-02, registro della riserva)
+
+- **Mandato R12-bis per Gemini** (`collaborazione/da-claude/PROMPT-R12-BIS-GEMINI.md`): regole dopo l'incidente (nessun dato vero, cache e scaricamento intoccabili, commit con identità propria, elenco completo dei comandi); bersagli: programma dei criteri, `scarica_cache.py`, `riconta.py`.
+- **Calcolo di potenza per IA-02** (`laboratorio/studi/potenza_soglia.py`, documento `studi/risultati/potenza_IA-02.md`): regola sulla stima o sul limite inferiore; con circa 450 trade il limite inferiore ucciderebbe quasi ogni idea, con circa 2.500 diventa sensato. Proposta: stima nello sviluppo, limite inferiore nella riserva. Test 5/5 su 3.13 e 3.9, mutanti 8/8.
+- **Registro della riserva di verifica** (`laboratorio/esecuzione/riserva.py`, richiesta 3 di DGS-04), **presentato per ratifica**: prenotazione, autorizzazione atomica prima della lettura dei dati (contatore j, N globale, quota α_j = α_tot/[j(j+1)]/m), rilascio, quarantena, parte protetta con sblocco esplicito, esito; lo stato si ricostruisce rigiocando gli eventi e un file manomesso è rifiutato. Test 15/15 su 3.13 e 3.9 (`68a2146` rosso), mutanti 24/24 dopo 4 test aggiunti (V02, V16, V19, V24 sopravvissuti al primo giro: buchi nei test, non nel codice). Le regole di spesa (α totale, scelta delle finestre, parte protetta) restano decisioni dell'utente.
+

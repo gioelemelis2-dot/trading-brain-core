@@ -55,8 +55,10 @@ class TestPrenotazione(Base):
         self.prenota("A", D(2005, 1, 1), D(2005, 3, 31))
         with self.assertRaises(ValueError):                            # sovrapposta (anche un «alias» con altro nome)
             RV.prenota(self.reg, "B", "H-901-alias", D(2005, 3, 31), D(2005, 4, 30), "x", ORA)
-        with self.assertRaises(ValueError):                            # fuori dalla riserva
+        with self.assertRaises(ValueError):                            # fuori dalla riserva, prima
             self.prenota("C", D(2004, 12, 31), D(2005, 1, 5))
+        with self.assertRaises(ValueError):                            # fuori dalla riserva, dopo
+            self.prenota("C2", D(2005, 10, 30), D(2006, 1, 2), usa_protetta=True)
         with self.assertRaises(ValueError):                            # identità già usata
             self.prenota("A", D(2005, 5, 1), D(2005, 5, 2))
         with self.assertRaises(ValueError):                            # intervallo rovesciato
@@ -107,8 +109,9 @@ class TestAutorizzazione(Base):
         self.assertAlmostEqual(s["alfa_speso"], 0.05 / 2 + 0.05 / 6, places=15)   # quota della famiglia, non /m
         with self.assertRaises(ValueError):
             RV.autorizza(self.reg, "ignota", 1, "x", ORA)
+        self.prenota("C", D(2005, 3, 1), D(2005, 3, 5))
         with self.assertRaises(ValueError):
-            RV.autorizza(self.reg, "A", 12, "dati-A", ORA, m=0)
+            RV.autorizza(self.reg, "C", 12, "dati-C", ORA, m=0)
 
     def test_ripetizione_tecnica_stessa_identita_stessi_byte(self):
         self.prenota("A", D(2005, 1, 1), D(2005, 1, 31))
@@ -171,10 +174,35 @@ class TestConcorrenza(Base):
         self.assertEqual(len(RV.stato(self.reg)["aperture"]), 1)
 
 
+class TestNessunaScritturaPersa(Base):
+    def test_prenotazioni_simultanee_su_date_diverse_tutte_registrate(self):
+        barriera = threading.Barrier(16)
+
+        def prova(k):
+            barriera.wait()
+            RV.prenota(self.reg, f"T{k}", "H-900", D(2005, 1, 1) + (D(2005, 1, 11) - D(2005, 1, 1)) * k,
+                       D(2005, 1, 5) + (D(2005, 1, 11) - D(2005, 1, 1)) * k, "d", ORA)
+        fili = [threading.Thread(target=prova, args=(k,)) for k in range(16)]
+        for f in fili:
+            f.start()
+        for f in fili:
+            f.join()
+        self.assertEqual(len(RV.stato(self.reg)["prenotazioni_attive"]), 16)
+
+
 class TestIntegrita(Base):
     def test_registro_manomesso_rifiutato(self):
         dati = json.loads(self.reg.read_text())
         dati["eventi"].append({"tipo": "regalo", "id": "X", "ora": ORA})
+        self.reg.write_text(json.dumps(dati))
+        with self.assertRaises(ValueError):
+            RV.stato(self.reg)
+
+    def test_evento_sconosciuto_anche_se_ha_l_aspetto_di_un_esito(self):
+        self.prenota("A", D(2005, 1, 1), D(2005, 1, 31))
+        RV.autorizza(self.reg, "A", 12, "dati-A", ORA)
+        dati = json.loads(self.reg.read_text())
+        dati["eventi"].append({"tipo": "regalo", "id": "A", "esito": "promossa", "ora": ORA})
         self.reg.write_text(json.dumps(dati))
         with self.assertRaises(ValueError):
             RV.stato(self.reg)
