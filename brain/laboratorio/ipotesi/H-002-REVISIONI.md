@@ -406,3 +406,26 @@ Rapporto: `collaborazione/da-gemini/G-20261116-R12bis.md` (commit `3ad6d77`, ide
 
 **Correzioni (16/11):** #48–#58 corretti in TDD (eccetto A3-05, già noto, e B-04, respinto); trovato e corretto #59 (mutanti non validi). Commit `b0525a9`, `b8c211e`, `774573d`. Dettaglio in `governance/REGISTRO-MODIFICHE.md` v1.40–v1.41.
 
+## R13 · Quarto attacco di Gemini (16/11/2026)
+
+Rapporto: `collaborazione/da-gemini/G-20261116-R13.md` (commit `6e17782`, identità di Gemini, base `fd879ed`, solo file in `da-gemini/`, rete bloccata in tutte le prove). Sonde A, B e C1 rieseguite da Claude con la rete bloccata: risultati coincidenti.
+
+**Verifica delle correzioni R12-bis (compito A):** chiusi #50, #52, #53, #54, #55, #57, #58; chiusi in parte #48, #49, #51, #56, #59; A3-05 (#42) noto.
+
+| Rilievo | Giudizio di Claude | Motivo |
+|---|---|---|
+| R13-A-01 controprova di B-04 | **accolto: Claude aveva torto** (#67) | Con un blocco su tutti i feriali, i 404 del fine settimana azzerano il conteggio ogni 5 giorni: il fermo non scatta mai. Il conteggio va azzerato solo da un giorno con dati |
+| R13-B-01 ambiente | **accolto, importante** (#61) | Si controllerà l'origine di ogni modulo caricato (libreria standard o file sigillati, con impronta del file davvero caricato) all'avvio e prima di scrivere i risultati |
+| R13-B-02 ancora git | **accolto, importante** (#62) | Registro identico alla HEAD prima di ogni esecuzione, HEAD su un ramo, discendente della versione su GitHub (ramo remoto), niente collegamenti simbolici |
+| R13-B-03 completezza | **accolto, importante** (#63) | Ogni terzo della sessione deve avere minuti; nelle vigilie almeno il mattino |
+| R13-B-04 vol = 0 e mezze giornate | **respinto in parte** | Un giorno con soli minuti a volume 0 è un giorno senza scambi: vuoto è corretto. Il 3 luglio la sessione di Londra è piena (chiude prima solo New York): l'esempio non corrisponde a una giornata vera |
+| R13-B-05 38 festività tollerate | **respinto, rischio annotato** | La tolleranza vale solo se il giorno è VUOTO: se Dukascopy ha dati non cambia nulla. Il rischio residuo (un buco del feed proprio in un festivo britannico passa inosservato) è basso e dichiarato |
+| R13-B-06 robustezza | accolto, minore (#69) | I nomi delle prove di robustezza si registrano al sigillo |
+| R13-C1-01, C1-02 riserva | **accolti, importanti** (#64, #65) | Ancora a git come per il registro delle prove, più controlli dei valori |
+| R13-C2-01 potenza | accolto, minore (#70) | Controlli del dominio; varianza campionaria isolata e provata |
+| R13-D-01 test in rete | **accolto, importante** (#66) | Test con risposte finte; gli script di mutanti bloccano la rete da soli e segnalano il tempo scaduto |
+| R13-A-02 date compatte | accolto, minore (#68) | |
+| R13-A-03 DGS-03 | già noto (#42) | |
+
+**Per la regola d'uscita:** R13 ha trovato difetti importanti: contatore dei giri puliti a zero.
+
