@@ -483,3 +483,128 @@ class TestCasiAlLimite(Cartella):
                      self.scheda)
         with self.assertRaises(ValueError):
             C.carica(self.dir, self.dir, date(2024, 2, 1), date(2024, 1, 1), "sviluppo", *self.sigillo())
+
+
+# ---------------------------------------------------------------------------------------------------------------
+# R12-bis di Gemini (16/11/2026): #49 completezza dei giorni, #50 festività spostate, #51 registro
+# ---------------------------------------------------------------------------------------------------------------
+from datetime import time as _ora, timedelta as _td          # noqa: E402
+import subprocess as _sp                                    # noqa: E402
+from brain.laboratorio.esecuzione import sintetico as _SN   # noqa: E402
+
+
+def _minuti(giorno, quanti, dalle=_ora(8, 0)):
+    """`quanti` minuti di fila dall'ora di Londra `dalle`, prezzi piatti."""
+    from brain.laboratorio.simulatori.orb_londra import _utc
+    t0 = _utc(giorno, dalle)
+    return {t0 + _td(minutes=k): (2000.0, 2000.5, 1999.5, 2000.0) for k in range(quanti)}
+
+
+class TestCompletezzaDeiGiorni(Cartella):
+    """#49 (R12bis-A3-02): un giorno feriale con un solo minuto non è un giorno con i dati."""
+
+    def carica(self, minuti, inizio, fine):
+        for lato in ("XAUUSD", "XAUUSD_ASK"):
+            _SN.scrivi_cache(minuti, self.dir / lato, inizio=inizio, fine=fine)
+        return C.carica(self.dir / "XAUUSD", self.dir / "XAUUSD_ASK", inizio, fine, "sviluppo", *self.sigillo())
+
+    def test_un_minuto_a_mezzanotte_non_basta(self):
+        g1, g2, g3 = date(2024, 1, 8), date(2024, 1, 9), date(2024, 1, 10)            # lunedì, martedì, mercoledì
+        m = {}
+        m.update(_minuti(g1, 525))                                                   # sessione piena
+        m[datetime(2024, 1, 9, 0, 0, tzinfo=timezone.utc)] = (2000.0, 2000.0, 2000.0, 2000.0)   # un minuto fittizio
+        m.update(_minuti(g3, 262))                                                   # sotto la metà della sessione
+        _, _, info = self.carica(m, g1, g3)
+        self.assertEqual(info["feriali_vuoti_bid"], [])
+        self.assertEqual(info["feriali_incompleti_bid"], ["2024-01-09", "2024-01-10"])
+        self.assertEqual(info["feriali_incompleti_ask"], ["2024-01-09", "2024-01-10"])
+
+    def test_meta_sessione_basta_e_i_giorni_corti_noti_sono_tollerati(self):
+        g = date(2024, 1, 11)
+        m = _minuti(g, 263)
+        m.update(_minuti(date(2024, 12, 24), 60))                                    # vigilia: giornata corta nota
+        _, _, info = self.carica(m, g, g)
+        self.assertEqual(info["feriali_incompleti_bid"], [])
+        _, _, info = self.carica(m, date(2024, 12, 24), date(2024, 12, 24))
+        self.assertEqual(info["feriali_incompleti_bid"], [])
+
+    def test_impronta_della_cache_uguale_a_quella_del_caricatore(self):
+        g1, g2 = date(2024, 1, 8), date(2024, 1, 9)
+        m = _minuti(g1, 525)
+        m.update(_minuti(g2, 525))
+        _, _, info = self.carica(m, g1, g2)
+        self.assertEqual(C.impronta_cache(self.dir / "XAUUSD", self.dir / "XAUUSD_ASK", g1, g2), info["dati_sha256"])
+        self.assertNotEqual(C.impronta_cache(self.dir / "XAUUSD", self.dir / "XAUUSD_ASK", g1, g1), info["dati_sha256"])
+
+
+class TestFestivitaSpostate(unittest.TestCase):
+    """#50 (R12bis-A3-03): 26/12, i giorni spostati di 1/1 e 25/12, il Lunedì dell'Angelo."""
+
+    def test_chiusure_note_comprese_le_spostate(self):
+        attese = ["2005-12-26", "2005-12-27", "2006-01-02", "2010-12-24", "2010-12-27", "2010-12-28", "2010-12-31",
+                  "2011-12-26", "2011-12-27", "2012-01-02", "2016-12-26", "2016-12-27", "2017-01-02", "2021-12-24",
+                  "2021-12-27", "2021-12-28", "2022-12-26", "2022-12-27", "2023-01-02", "2010-04-05"]
+        for g in attese:
+            d = date.fromisoformat(g)
+            self.assertIn(d, C.chiusure_note(d.year), g)
+        for g in ("2005-03-15", "2010-12-29", "2023-01-03", "2016-12-28"):
+            d = date.fromisoformat(g)
+            self.assertNotIn(d, C.chiusure_note(d.year), g)
+
+
+class TestRegistroR12bis(Cartella):
+    """#51 (R12bis-A3-04)."""
+
+    def test_varianti_con_nomi_esatti_e_robustezza_ben_formata(self):
+        S.sigilla(self.registro, "H-999", self.scheda, ["V-T", "V-S"], ORA)
+        with self.assertRaises(ValueError):
+            S.registra_esecuzione(self.registro, "H-999", {"ruolo": "sviluppo", "variante": "V-T taroccata_extra"}, ORA)
+        with self.assertRaises(ValueError):
+            S.registra_esecuzione(self.registro, "H-999", {"ruolo": "robustezza", "variante": "V-T"}, ORA)
+        with self.assertRaises(ValueError):
+            S.registra_esecuzione(self.registro, "H-999", {"ruolo": "robustezza", "variante": "V-X range 20'"}, ORA)
+        S.registra_esecuzione(self.registro, "H-999", {"ruolo": "robustezza", "variante": "V-T range 20'"}, ORA)
+        S.registra_esecuzione(self.registro, "H-999", {"ruolo": "sviluppo", "variante": "V-S"}, ORA)
+
+    def test_codice_sigillato_controllato_anche_senza_passarlo(self):
+        radice = self.dir / "radice"
+        (radice / "pkg").mkdir(parents=True)
+        f = radice / "pkg" / "a.py"
+        f.write_text("x = 1\n")
+        import hashlib
+        S.sigilla(self.registro, "H-999", self.scheda, ["V-T"], ORA,
+                  codice={"pkg/a.py": hashlib.sha256(f.read_bytes()).hexdigest()})
+        S.controlla_sigillo(self.registro, "H-999", self.scheda, radice=radice)
+        f.write_text("x = 2\n")
+        with self.assertRaises(ValueError):
+            S.controlla_sigillo(self.registro, "H-999", self.scheda, radice=radice)
+        f.unlink()
+        with self.assertRaises(ValueError):
+            S.controlla_sigillo(self.registro, "H-999", self.scheda, radice=radice)
+
+    def test_registro_ancorato_alla_versione_su_git(self):
+        repo = self.dir / "repo"
+        repo.mkdir()
+        g = ["git", "-C", str(repo), "-c", "user.name=t", "-c", "user.email=t@invalid"]
+        _sp.run(g + ["init", "-q"], check=True)
+        reg = repo / "registro_prove.json"
+        with self.assertRaises(ValueError):                                       # non ancora versionato
+            S.sigilla(reg, "H-999", self.scheda, ["V-T"], ORA)
+            S.controlla_ancora(reg, repo)
+        _sp.run(g + ["add", "registro_prove.json"], check=True)
+        _sp.run(g + ["commit", "-q", "-m", "sigillo"], check=True)
+        S.controlla_ancora(reg, repo)                                             # uguale alla versione su git
+        S.registra_esecuzione(reg, "H-999", {"ruolo": "sviluppo", "variante": "V-T", "promossa": False}, ORA)
+        S.controlla_ancora(reg, repo)                                             # solo aggiunte in fondo: va bene
+        _sp.run(g + ["commit", "-q", "-am", "sviluppo"], check=True)
+        dati = json.loads(reg.read_text())
+        dati["esecuzioni"][0]["promossa"] = True                                  # manomissione di una voce già su git
+        reg.write_text(json.dumps(dati))
+        with self.assertRaises(ValueError):
+            S.controlla_ancora(reg, repo)
+        dati["esecuzioni"] = []                                                   # cancellazione
+        reg.write_text(json.dumps(dati))
+        with self.assertRaises(ValueError):
+            S.controlla_ancora(reg, repo)
+        with self.assertRaises(ValueError):                                       # registro fuori dal repository
+            S.controlla_ancora(self.registro, repo)

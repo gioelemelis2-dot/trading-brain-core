@@ -21,6 +21,7 @@ from brain.laboratorio.esecuzione import criteri as K               # noqa: E402
 from brain.laboratorio.esecuzione import esegui_h002 as E           # noqa: E402
 from brain.laboratorio.esecuzione import sigillo as S               # noqa: E402
 from brain.laboratorio.esecuzione import sintetico as SN            # noqa: E402
+from brain.laboratorio.esecuzione import caricatore as _C           # noqa: E402
 
 INIZIO = date(2024, 1, 1)
 GIORNI = 800                                                        # circa 430 trade per variante
@@ -160,6 +161,10 @@ class BaseRiga(unittest.TestCase):
         self.registro = self.dir / "registro.json"
         self.uscita = self.dir / "rapporto.md"
         self.periodi(sviluppo=(date(2024, 1, 1), date(2024, 2, 29)), verifica=(date(2010, 1, 1), date(2010, 2, 28)))
+        from unittest import mock
+        cerotto = mock.patch.object(E, "ANCORA_GIT", False)            # registri temporanei, fuori da git (#51)
+        cerotto.start()
+        self.addCleanup(cerotto.stop)
 
     def tearDown(self):
         self._tmp.cleanup()
@@ -187,10 +192,12 @@ class BaseRiga(unittest.TestCase):
 
     def sviluppo_finto(self, ipotesi="H-002", cache=None, **promosse):
         """Esiti dello screening scritti nel registro come li scriverebbe main (per provare la verifica)."""
+        c = Path(cache or self.cache).resolve()
+        impronta = _C.impronta_cache(c / "XAUUSD", c / "XAUUSD_ASK", *E.PERIODO_SVILUPPO)    # come la scrive main
         for v, esito in promosse.items():
             S.registra_esecuzione(self.registro, ipotesi, {"ruolo": "sviluppo", "variante": v.replace("_", "-"),
-                                                          "promossa": esito,
-                                                          "cache": str(Path(cache or self.cache).resolve())}, ORA)
+                                                          "promossa": esito, "cache": str(c),
+                                                          "dati_sha256": impronta}, ORA)
 
     def lancia(self, *argomenti):
         base = ["--registro", str(self.registro), "--scheda", str(self.scheda), "--cache", str(self.cache),
@@ -545,3 +552,95 @@ class TestRevisioneR11Gemini(BaseRiga):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+# ---------------------------------------------------------------------------------------------------------------
+# R12-bis di Gemini (16/11/2026): #48 codice sigillato completo, #49 completezza, #51 registro e --ora
+# ---------------------------------------------------------------------------------------------------------------
+import subprocess as _sp                                                    # noqa: E402
+import shutil as _sh                                                        # noqa: E402
+from brain.laboratorio.esecuzione import caricatore as _C                   # noqa: E402
+
+
+class TestCodiceSigillatoCompleto(unittest.TestCase):
+    """#48 (R12bis-A3-01, mutante MC05): le impronte coprono TUTTO il codice brain che l'esecutore può eseguire."""
+
+    def test_ogni_modulo_brain_caricato_e_nelle_impronte(self):
+        prog = ("import sys, json\n"
+                "from pathlib import Path\n"
+                "import brain.laboratorio.esecuzione.esegui_h002 as E\n"
+                "r = E.RADICE.resolve()\n"
+                "caricati = sorted(str(Path(m.__file__).resolve().relative_to(r)) for m in list(sys.modules.values())\n"
+                "                  if getattr(m, '__file__', None) and Path(m.__file__).resolve().is_relative_to(r / 'brain'))\n"
+                "print(json.dumps([c for c in caricati if c not in E.impronte_codice()]))\n")
+        if sys.version_info < (3, 9):
+            self.skipTest("is_relative_to richiede Python 3.9")
+        out = _sp.run([sys.executable, "-s", "-B", "-c", prog], cwd=str(E.RADICE), capture_output=True, text=True)
+        self.assertEqual(out.returncode, 0, out.stderr)
+        self.assertEqual(out.stdout.strip(), "[]")
+        chiavi = E.impronte_codice()
+        for f in ("brain/laboratorio/esecuzione/__init__.py", "brain/laboratorio/esecuzione/criteri.py",
+                  "brain/laboratorio/esecuzione/sintetico.py", "brain/laboratorio/backtester/__init__.py"):
+            self.assertIn(f, chiavi, f)
+
+    def test_un_init_cambiato_cambia_le_impronte(self):
+        with tempfile.TemporaryDirectory() as d:
+            copia = Path(d)
+            _sh.copytree(E.RADICE / "brain", copia / "brain",
+                         ignore=_sh.ignore_patterns("__pycache__", "cache_dukascopy", "*.csv", "partizioni"))
+            prima = E.impronte_codice(copia)
+            self.assertEqual(prima, {k: v for k, v in E.impronte_codice().items()})
+            f = copia / "brain" / "laboratorio" / "esecuzione" / "__init__.py"
+            f.write_text(f.read_text() + "\nimport os  # codice nuovo\n")
+            dopo = E.impronte_codice(copia)
+            self.assertNotEqual(prima["brain/laboratorio/esecuzione/__init__.py"],
+                                dopo["brain/laboratorio/esecuzione/__init__.py"])
+
+
+class TestRigaDiComandoR12bis(BaseRiga):
+    def test_un_minuto_per_giorno_non_basta(self):
+        """#49: un tick a mezzanotte in ogni giorno non deve far passare lo sviluppo con 0 trade."""
+        from datetime import datetime as _dt, timezone as _tz
+        minuti = {}
+        g = date(2024, 1, 1)
+        while g <= date(2024, 2, 29):
+            if g.weekday() < 5:
+                minuti[_dt(g.year, g.month, g.day, 0, 0, tzinfo=_tz.utc)] = (2000.0, 2000.0, 2000.0, 2000.0)
+            g += timedelta(days=1)
+        for lato in ("XAUUSD", "XAUUSD_ASK"):
+            SN.scrivi_cache(minuti, self.cache / lato, inizio=date(2024, 1, 1), fine=date(2024, 2, 29))
+        self.sigilla()
+        rc, err = self.lancia_errore("--modalita", "sviluppo")
+        self.assertEqual(rc, 2)
+        self.assertIn("incomplet", err)
+        self.assertEqual(self.esecuzioni("sviluppo"), [])
+
+    def test_ora_non_iso_rifiutata(self):
+        self.cache_di(date(2024, 1, 1), 60)
+        self.sigilla()
+        with contextlib.redirect_stdout(io.StringIO()), contextlib.redirect_stderr(io.StringIO()):
+            rc = E.main(["--registro", str(self.registro), "--scheda", str(self.scheda), "--cache", str(self.cache),
+                         "--rapporto", str(self.uscita), "--ora", "ieri sera", "--modalita", "sviluppo"])
+        self.assertEqual(rc, 2)
+        self.assertEqual(self.esecuzioni("sviluppo"), [])
+
+    def test_verifica_rifiutata_se_i_dati_dello_sviluppo_sono_cambiati(self):
+        self.cache_di(date(2010, 1, 1), 59)
+        self.cache_di(date(2024, 1, 1), 60)
+        self.sigilla()
+        self.sviluppo_finto(V_T=True, V_S=True)
+        f = self.cache / "XAUUSD" / "2024-01-10.bi5"
+        f.write_bytes(f.read_bytes()[:-1] + bytes([f.read_bytes()[-1] ^ 1]))      # un byte cambiato nello sviluppo
+        rc, err = self.lancia_errore("--modalita", "verifica", "--varianti", "V-T,V-S")
+        self.assertEqual(rc, 2)
+        self.assertIn("sviluppo", err)
+        self.assertEqual(self.esecuzioni("verifica"), [])
+
+    def test_ancora_git_attiva_rifiuta_un_registro_fuori_dal_repository(self):
+        from unittest import mock
+        self.cache_di(date(2024, 1, 1), 60)
+        self.sigilla()
+        with mock.patch.object(E, "ANCORA_GIT", True):
+            rc, err = self.lancia_errore("--modalita", "sviluppo")
+        self.assertEqual(rc, 2)
+        self.assertIn("repository", err)
