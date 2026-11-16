@@ -381,3 +381,26 @@ Prossimo giro: R11, a Gemini e a ChatGPT sullo stesso commit (`collaborazione/da
 **Condizione d'uscita dal parcheggio (approvata dall'utente il 15/11/2026):** H-002 esce dal parcheggio **solo** con una prova su dati **successivi al 12/11/2026**, con scheda sigillata **prima** di vederli e contata in N. **Mai** rieseguita sui dati dello sviluppo (15/11/2023 → 12/11/2026). La patch di `tb-proposte` (riprova sugli stessi dati finché esce «promossa») è quindi esclusa anche per regola.
 
 **Censimento di N:** le trascrizioni delle conversazioni di Gemini sono sul Mac, in formato JSONL (`~/.gemini/antigravity/brain/`, indicazione dell'utente del 15/11). Il censimento va fatto da lì, estraendo **solo** i comandi eseguiti sui dati veri, con data, senza gli output.
+
+## R12-bis · Terzo attacco di Gemini (16/11/2026)
+
+Rapporto: `collaborazione/da-gemini/G-20261116-R12bis.md` (commit `3ad6d77`, identità di Gemini, base `ccdac1f`, solo file in `da-gemini/`). **Regole del mandato rispettate**, con una violazione accidentale dichiarata da Gemini: al passo 13 una richiesta vera a Dukascopy (2/1/2024, sviluppo) per un mock che non arrivava, causa un difetto di Claude (#58).
+
+**Riproduzione di Claude:** tutte le sonde A3, B e C rieseguite sul ramo di Gemini con la rete bloccata: risultati identici. A1 (14/14 difetti storici bloccati), A2 (replica uguale, differenza ≤ 3,3e-16) e i mutatori ufficiali (40/40, 89/89, 20/20) confermano lo stato precedente.
+
+| Rilievo | Giudizio di Claude | Motivo |
+|---|---|---|
+| A3-01 codice fuori da `FILE_CODICE` | **accolto, importante** (#48) | Le impronte devono coprire tutto il codice `brain` eseguito, non un elenco scritto a mano |
+| A3-02 un tick basta | **accolto, importante** (#49) | Dati quasi vuoti brucerebbero la verifica unica |
+| A3-03 festività spostate | accolto, minore (#50) | Sbaglia dalla parte sicura (blocca senza bruciare) |
+| A3-04 registro manomissibile | **accolto, importante** (#51) | Serve un'impronta a catena confrontabile con la versione su GitHub |
+| A3-05 uscita all'indietro | già noto (#42) | H-002 parcheggiata; regola obbligatoria nel modello H-003 |
+| B-01 Retry-After data | accolto, importante (#52) | |
+| B-02 cache e registro dopo un'interruzione | **accolto, importante** (#53) | È il caso dello spegnimento del 16/11 |
+| B-03, B-05 | accolti, minori (#54, #55) | |
+| B-04 un 404 azzera gli errori di fila | **respinto** | Un 404 è una risposta valida del server: non è un blocco. Il fermo dopo 20 errori di fila serve a riconoscere un blocco vero, non a contare gli errori sparsi; questi restano nel registro e danno codice 5 |
+| C-01/C-02 punti ciechi del riconteggio | accolti, importanti (#56) | |
+| C-03 stampa di contenuti | **accolto, importante** (#57) | |
+
+**Esito per la regola d'uscita (proposta v3.2 §C):** R12-bis ha trovato difetti importanti: il contatore dei giri puliti di fila resta a zero.
+
