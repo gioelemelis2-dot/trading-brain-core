@@ -863,6 +863,9 @@ class TestEsitoDopoIlControlloFinale(BaseRiga):
             cerotto = mock.patch.object(E, nome, valore)
             cerotto.start()
             self.addCleanup(cerotto.stop)
+        cerotto = mock.patch.object(sys, "_tb_avvio_controllato", True, create=True)       # #95: come dal lanciatore
+        cerotto.start()
+        self.addCleanup(cerotto.stop)
 
     def test_verifica_senza_esito(self):
         self.cache_di(date(2024, 1, 1), 60)

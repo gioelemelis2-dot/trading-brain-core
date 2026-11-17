@@ -25,6 +25,7 @@ C = "laboratorio/esecuzione/caricatore.py"
 E = "laboratorio/esecuzione/esegui_h002.py"
 CAL = "dati/pipeline/calendario.py"
 RV = "laboratorio/esecuzione/riserva.py"
+AV = "laboratorio/esecuzione/avvio.py"
 PS = "laboratorio/studi/potenza_soglia.py"
 TA = "laboratorio/studi/taratura_completezza.py"
 M = {
@@ -56,6 +57,13 @@ M = {
     'N52 verifiche registrate una per volta (#94)': [(SG, '        nuove = [_controlla_e_aggiungi(dati, ipotesi, v, ora) for v in voci]\n        _scrivi(registro, dati)\n', '        nuove = []\n        for v in voci:\n            nuove.append(_controlla_e_aggiungi(dati, ipotesi, v, ora))\n            _scrivi(registro, dati)\n')],
     'N53 fuso orario non controllato (#94)': [(E, '        controlla_fuso()                                                       # #94 (d)\n', '')],
     'N54 ultimo giorno d\'estate sbagliato (#94)': [(E, 'if estate[0] <= g < estate[1] else', 'if estate[0] <= g <= estate[1] else')],
+    'N55 avvio diretto accettato (#95)': [(E, '            if not getattr(sys, "_tb_avvio_controllato", False):', '            if False:')],
+    'N56 lanciatore non sigillato (#95)': [(E, '    file = list(moduli_brain(radice)) + [AVVIO]', '    file = list(moduli_brain(radice))')],
+    'N57 lanciatore: bytecode in brain accettato (#95)': [(AV, '        if "__pycache__" in sotto:', '        if False:')],
+    'N58 lanciatore: cartella di lancio non controllata (#95)': [(AV, '        elif nome.endswith(IMPORTABILI):', '        elif False:')],
+    'N59 lanciatore: impronte non controllate (#95)': [(AV, '        if adesso != impronta:', '        if False:')],
+    'N60 lanciatore: senza sigillo prosegue (#95)': [(AV, '        return problemi + [f"{REGISTRO}: nessun sigillo di {IPOTESI} con il codice: non si importa nulla"]', '        return problemi')],
+    'N61 lanciatore: modalità non isolata accettata (#95)': [(AV, '    if not (sys.flags.isolated and sys.flags.no_site):', '    if False:')],
     'N35 ambiente non ricontrollato prima dell\'esito (#91)': [(E, '            ris = esegui_verifica(bid, ask, promosse, n, range(inizio.year, fine.year + 1))\n            if CONTROLLO_AMBIENTE:', '            ris = esegui_verifica(bid, ask, promosse, n, range(inizio.year, fine.year + 1))\n            if False:')],
     'N37 registro non canonico accettato (#86)': [(E, '            if x.registro.resolve() != (RADICE / REL_REGISTRO).resolve():', '            if False:')],
     'N38 storia git ignorata (#86)': [(E, '            storia = S.versioni_nella_storia(RADICE, REL_REGISTRO)', '            storia = []')],

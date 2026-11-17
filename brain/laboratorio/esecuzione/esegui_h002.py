@@ -9,10 +9,9 @@ Riga di comando: si rifiuta di partire se la scheda non è sigillata con la stes
 prima di qualunque esecuzione); ogni esecuzione viene registrata nel registro delle prove.
 Il programma è riusabile: le varianti, le prove di robustezza e il simulatore sono parametri.
 
-Esempio (SOLO dopo il sigillo deciso dall'utente), dalla radice del repository, in modalità isolata (#61: niente
-PYTHONPATH, pacchetti dell'utente, .pth, sitecustomize; con -I la cartella corrente non è nel percorso, quindi la si
-aggiunge esplicitamente):
-  python3 -I -S -B -c "import sys; sys.path.insert(0, '.'); from brain.laboratorio.esecuzione.esegui_h002 import main; sys.exit(main())" \\
+Esempio (SOLO dopo il sigillo deciso dall'utente), dalla radice del repository, in modalità isolata e attraverso il
+lanciatore, che controlla bytecode, cartella di lancio e impronte PRIMA di importare il progetto (#61, #95):
+  python3 -I -S -B brain/laboratorio/esecuzione/avvio.py \\
       --modalita sviluppo --rapporto brain/laboratorio/ipotesi/H-002-RISULTATI-SVILUPPO.md
 Prima di ogni esecuzione il registro delle prove deve essere committato e spinto su GitHub (#51, #62).
 Periodi, ripetizioni, seme e varianti sono costanti di questo file, che è sigillato con la scheda.
@@ -38,6 +37,7 @@ from . import sigillo as S
 RADICE = Path(__file__).resolve().parents[3]
 IPOTESI = "H-002"
 SCHEDA = RADICE / "brain" / "laboratorio" / "ipotesi" / "H-002-ORB-v3.md"
+AVVIO = "brain/laboratorio/esecuzione/avvio.py"                          # #95: il lanciatore
 REL_REGISTRO = "brain/laboratorio/registro_prove.json"                    # #86: il solo registro valido
 REGISTRO = RADICE / REL_REGISTRO
 CACHE = RADICE / "brain" / "dati" / "reali" / "cache_dukascopy"
@@ -318,7 +318,8 @@ def impronte_codice(radice: Path = RADICE) -> Dict[str, str]:
     sigillo e si controllano a ogni esecuzione (dopo il sigillo il codice non cambia: un errore trovato dopo vuol
     dire un'ipotesi nuova). L'elenco si ricalcola ogni volta: un file nuovo importato cambia le chiavi e ferma tutto."""
     radice = Path(radice)
-    return {f: hashlib.sha256((radice / f).read_bytes()).hexdigest() for f in moduli_brain(radice)}
+    file = list(moduli_brain(radice)) + [AVVIO]                                # #95: anche il lanciatore
+    return {f: hashlib.sha256((radice / f).read_bytes()).hexdigest() for f in file}
 
 
 def _esiti_sviluppo(dati: dict) -> Dict[str, list]:
@@ -363,6 +364,9 @@ def main(argv=None) -> int:
                              f"esegue {nomi_robustezza()}")
         if CONTROLLO_AMBIENTE:                                                 # #61: all'avvio
             controlla_ambiente(sigillo["codice"])
+            if not getattr(sys, "_tb_avvio_controllato", False):              # #95: controlli prima degli import
+                raise ValueError("lanciare con python3 -I -S -B brain/laboratorio/esecuzione/avvio.py: i controlli "
+                                 "vanno fatti prima di importare il codice")
         if x.rapporto.is_dir():                                                # R11-S4: prima di registrare
             raise ValueError(f"--rapporto {x.rapporto} è una cartella")
         x.rapporto.parent.mkdir(parents=True, exist_ok=True)
