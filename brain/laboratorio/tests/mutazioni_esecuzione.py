@@ -19,7 +19,7 @@ PREFISSI = tuple(sys.argv[3].split(",")) if len(sys.argv) == 4 else ("",)
 SUITE = ["brain.laboratorio.tests.test_esecuzione", "brain.laboratorio.tests.test_esegui_h002",
          "brain.laboratorio.tests.test_riserva", "brain.laboratorio.tests.test_potenza_soglia",
          "brain.laboratorio.tests.test_taratura_completezza", "brain.laboratorio.tests.test_intersezione_bid_ask",
-         "brain.laboratorio.tests.test_collaudo_ia02"]
+         "brain.laboratorio.tests.test_collaudo_ia02", "brain.laboratorio.tests.test_pilota_ia02"]
 SG = "laboratorio/esecuzione/sigillo.py"
 K = "laboratorio/esecuzione/criteri.py"
 C = "laboratorio/esecuzione/caricatore.py"
@@ -31,7 +31,28 @@ PS = "laboratorio/studi/potenza_soglia.py"
 TA = "laboratorio/studi/taratura_completezza.py"
 IX = "laboratorio/studi/intersezione_bid_ask.py"
 CO = "laboratorio/studi/collaudo_ia02.py"
+PI = "laboratorio/studi/pilota_ia02.py"
 M = {
+    "PI01 pilota: componente fuori dal seme": [(PI, 'chiave = f"{master}:{fase}:{cella}:{replica}:{componente}".encode()', 'chiave = f"{master}:{fase}:{cella}:{replica}".encode()')],
+    "PI02 pilota: AR(1) che parte da zero": [(PI, '    z = [rnd.gauss(0.0, 1.0)]  ', '    z = [0.0]  ')],
+    "PI03 pilota: innovazioni AR(1) non scalate": [(PI, '    s = math.sqrt(1 - RHO * RHO)', '    s = 1.0')],
+    "PI04 pilota: probabilità di K = 0 sbagliata": [(PI, '        k = 0 if u < 0.25 else', '        k = 0 if u < 0.30 else')],
+    "PI05 pilota: conteggi senza componente comune": [(PI, 'math.sqrt(0.5) * zc[d] + math.sqrt(0.5) * ri.gauss(0.0, 1.0)', 'ri.gauss(0.0, 1.0)')],
+    "PI06 pilota: perdite rare col segno invertito": [(PI, '(Q_RARE - (1 if r0.random() < Q_RARE else 0))', '((1 if r0.random() < Q_RARE else 0) - Q_RARE)')],
+    "PI07 pilota: HAC senza pesi di Bartlett": [(PI, '        v += 2 * (1 - h / (L + 1)) * sum(', '        v += 2 * sum(')],
+    "PI08 pilota: HAC con un ritardo in meno": [(PI, '    for h in range(1, L + 1):', '    for h in range(1, L):')],
+    "PI09 pilota: HAC con K medio non al quadrato": [(PI, '    se = math.sqrt(v / (n * kbar * kbar))', '    se = math.sqrt(v / (n * kbar))')],
+    "PI10 pilota: varianza non positiva accettata": [(PI, '    if not v > 0 or not math.isfinite(v):', '    if not v >= 0 or not math.isfinite(v):')],
+    "PI11 pilota: ritardi predefiniti sbagliati": [(PI, '    return math.floor(4 * (d / 100) ** (2 / 9))', '    return math.floor(3 * (d / 100) ** (2 / 9))')],
+    "PI12 pilota: bootstrap non circolare": [(PI, '    estese = coppie + coppie[:blocco - 1]', '    estese = coppie + [(0.0, 0)] * (blocco - 1)')],
+    "PI13 pilota: ricampionamento con ΣK = 0 saltato": [(PI, '        if tk == 0:\n            return None\n        medie.append', '        if tk == 0:\n            continue\n        medie.append')],
+    "PI14 pilota: rango del quantile spostato": [(PI, '    q = lambda p: o[math.ceil(p * ricampionamenti) - 1]', '    q = lambda p: o[min(len(o) - 1, math.ceil(p * ricampionamenti))]')],
+    "PI15 pilota: intervallo percentile al posto del basic": [(PI, '    return 2 * mu - q(1 - A), 2 * mu - q(A)', '    return q(A), q(1 - A)')],
+    "PI16 pilota: promozione con limite vicino alla soglia": [(PI, '            c["promosse" if lo > SOGLIA else', '            c["promosse" if lo >= SOGLIA - 0.05 else')],
+    "PI17 pilota: copertura solo dal basso": [(PI, '            c["coperture"] += lo <= mu <= hi', '            c["coperture"] += lo <= mu')],
+    "PI18 pilota: bootstrap sul flusso dei dati": [(PI, 'intervallo_bootstrap(coppie, flusso(fase, cella, r, 3), ricampionamenti)', 'intervallo_bootstrap(coppie, flusso(fase, cella, r, 0), ricampionamenti)')],
+    "PI19 pilota: avviso del pilota ridotto tolto": [(PI, '    if x.fase != 1 or x.repliche < 3000:', '    if False:')],
+    "PI20 pilota: z del 95% unilaterale": [(PI, 'Z = NormalDist().inv_cdf(1 - A)', 'Z = NormalDist().inv_cdf(1 - 2 * A)')],
     "CO01 collaudo: F senza il peso (1 - k/n)": [(CO, "    return 1 + 2 * sum((1 - k / n) * rho ** k for k in range(1, n))", "    return 1 + 2 * sum(rho ** k for k in range(1, n))")],
     "CO02 collaudo: AR(1) non stazionario": [(CO, "    e = rnd.gauss(0.0, sigma)\n", "    e = 0.0\n")],
     "CO03 collaudo: innovazioni non scalate": [(CO, "    scala = sigma * math.sqrt(1 - rho * rho)", "    scala = sigma")],

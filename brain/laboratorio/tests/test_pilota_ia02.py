@@ -78,6 +78,13 @@ class TestGeneratori(unittest.TestCase):
         self.assertAlmostEqual(conte[3] / tot, 0.25, delta=0.02)
         self.assertAlmostEqual(S / K, 0.15, delta=0.03)
 
+    def test_conteggi_con_componente_comune(self):
+        """Aggiunto dopo i mutanti (PI05 sopravvissuto, dichiarato). Nei giorni con K = 3,
+        Var(S) = 1,25² · (9 · 0,5 + 3 · 0,5) = 9,375; senza la componente comune sarebbe 4,6875."""
+        tre = [s for r in range(1, 41) for s, k in P.genera(9, 1, r) if k == 3]
+        m = sum(tre) / len(tre)
+        self.assertAlmostEqual(sum((v - m) ** 2 for v in tre) / (len(tre) - 1), 9.375, delta=0.8)
+
     def test_perdite_rare(self):
         q = 0.01
         alto = 0.15 + 1.25 * q / math.sqrt(q * (1 - q))
@@ -102,6 +109,21 @@ class TestMetodi(unittest.TestCase):
         self.assertAlmostEqual(lo, mu - z * se, places=12)
         self.assertAlmostEqual(hi, mu + z * se, places=12)
         self.assertEqual(P.ritardi_predefiniti(1000), 6)
+
+    def test_hac_con_k_medio_diverso_da_uno(self):
+        """Aggiunto dopo i mutanti (PI09 e PI20 sopravvissuti, dichiarato): nel caso a mano K medio vale 1, quindi
+        K̄² = K̄ non veniva provato; e Z era confrontato con sé stesso."""
+        self.assertAlmostEqual(P.Z, 1.959963984540054, places=12)
+        coppie = [(1.0, 1), (0.0, 0), (2.0, 2), (-1.0, 1), (0.5, 1), (4.0, 3)]
+        D, sk = len(coppie), 8
+        mu = 6.5 / sk
+        e = [s - mu * k for s, k in coppie]
+        g = [sum(e[d] * e[d - h] for d in range(h, D)) / D for h in range(2)]
+        V = g[0] + 2 * (1 - 1 / 2) * g[1]
+        se = math.sqrt(V / (D * (sk / D) ** 2))
+        lo, hi = P.intervallo_hac(coppie, ritardi=1)
+        self.assertAlmostEqual(lo, mu - 1.959963984540054 * se, places=12)
+        self.assertAlmostEqual(hi, mu + 1.959963984540054 * se, places=12)
 
     def test_hac_non_stimabile(self):
         self.assertIsNone(P.intervallo_hac([(0.0, 0)] * 10))
@@ -162,6 +184,36 @@ class TestCellaERigaDiComando(unittest.TestCase):
             self.assertEqual(m["promosse"] + m["bocciate"] + m["attraversamenti"] + m["errori"], 6)
             self.assertTrue(0 <= m["coperture"] <= 6)
         self.assertEqual(r["cella"], 1)
+
+    def test_cella_uguale_al_calcolo_a_mano(self):
+        """Aggiunto dopo il codice (dichiarato): i conteggi della cella devono coincidere con il calcolo a mano sulle
+        stesse repliche e sugli stessi flussi (bootstrap sul componente 3). I casi scelti contengono promozioni,
+        bocciature, attraversamenti e limiti tra 0,10 e 0,15, e intervalli che mancano μ da sopra e da sotto."""
+        visti = {"pro": 0, "boc": 0, "fra": 0, "sopra": 0, "sotto": 0}
+        for cella in (1, 7):
+            mu = P.CELLE[cella][1]
+            r = P.esegui_cella(cella, fase=0, repliche=40, ricampionamenti=99)
+            for metodo in ("hac", "bootstrap"):
+                atteso = {"promosse": 0, "bocciate": 0, "attraversamenti": 0, "errori": 0, "coperture": 0}
+                for k in range(1, 41):
+                    g = P.genera(cella, 0, k)
+                    iv = P.intervallo_hac(g) if metodo == "hac" else \
+                        P.intervallo_bootstrap(g, P.flusso(0, cella, k, 3), 99)
+                    lo, hi = iv
+                    if lo > 0.15:
+                        atteso["promosse"] += 1
+                    elif hi < 0.15:
+                        atteso["bocciate"] += 1
+                    else:
+                        atteso["attraversamenti"] += 1
+                    atteso["coperture"] += lo <= mu <= hi
+                    visti["pro"] += lo > 0.15
+                    visti["boc"] += hi < 0.15
+                    visti["fra"] += 0.10 <= lo <= 0.15
+                    visti["sopra"] += lo > mu
+                    visti["sotto"] += hi < mu
+                self.assertEqual({c: r[metodo][c] for c in atteso}, atteso, msg=(cella, metodo))
+        self.assertTrue(all(v > 0 for v in visti.values()), visti)
 
     def test_riga_di_comando_ridotta(self):
         buf = io.StringIO()

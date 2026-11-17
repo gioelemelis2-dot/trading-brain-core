@@ -622,3 +622,22 @@ Nulla di questo tocca il candidato `8e51ce9` su cui lavora R15.
 - **Contatore:** 0 su 2. R15 diventa il **primo giro pulito** se il titolare esclude i due casi «dubbio» (#106 è un difetto di un test, #108 una scelta di metodo).
 - **DGS-06 ricevuto (sera):** controllo riga per riga della risposta 7, ricalcoli indipendenti e quattro bozze (DA-31 completa, testi P3, pilota a 12 celle, procedura per l'ordine delle finestre). **Errata di Claude** registrata in fondo alla risposta 7: arrotondamenti per difetto, conclusione «da +0,25 R» troppo forte, «non passa mai» sbagliato, stima dei tempi insufficiente. Le bozze del DGS sono proposte: nessuna applicata.
 
+
+## 2026-11-17 · v1.52 (sera, su delega del titolare: minori di R15 e pilota nel disegno del DGS)
+
+- **Delega:** il titolare ha scritto «per le domande che mi hai fatto fai quello che ritieni più utile». Scelte di Claude, tutte reversibili dal titolare:
+  - **minori #107, #110, #111 corretti prima di R16** (TDD: test rossi `6f8fd86`, codice `303890b`; mutanti K15a–K15d, W52). Nuovo candidato per R16: `303890b`. #109 resta registrato (scelta di metodo, non un errore del codice).
+  - Nei test, **due chiamate allo screening ora passano la copertura in modo esplicito**: prima si appoggiavano al valore predefinito sbagliato (1,0) di #107. La pipeline vera la imposta sempre (`esegui_h002`). Dichiarato.
+  - **R15 NON conta come primo giro pulito: lettura stretta di D-24.** #106 era un errore in un mio test; dichiararlo innocuo andrebbe a mio vantaggio (conflitto d'interessi). Il titolare può ribaltare la scelta. **Contatore: 0 su 2.**
+  - **Ordine delle finestre, DA-31, modello H-003: NON toccati.** Restano al titolare.
+- **Pilota del collaudo IA-02 nel disegno del DGS (DGS-06 §2c)** (`laboratorio/studi/pilota_ia02.py`; test rossi `616c428`, poi codice).
+  - 12 celle: gaussiane iid, AR(1) ρ = 0,25, conteggi casuali con componente comune, perdite rare. D = 1.000; HAC di Bartlett con L = 6; bootstrap circolare a blocchi ℓ = 10 con intervallo basic, B = 3.999; M = 3.000.
+  - **Differenza dichiarata dal disegno:** niente PCG64 di NumPy (il progetto usa solo la libreria standard). I flussi vengono da un SHA-256 della stessa tupla (master, fase, cella, replica, componente).
+  - **È SVILUPPO del metodo, non certificazione:** la scelta di metodo, margine e soglia va poi validata su repliche nuove (fase diversa).
+  - **Costo misurato** in tempo di CPU: circa 0,13 s per replica, quasi tutto bootstrap. Totale circa 4.700 s, circa 20 minuti su 4 processi.
+  - **Errori miei nei test:**
+    1. Il test rosso del quantile bootstrap usava dati con blocchi tutti uguali (periodo 5, blocco 10): tutte le medie coincidevano e i ranghi non venivano provati davvero. Ho aggiunto, dopo il codice, un caso con medie diverse (dichiarato).
+    2. In quel caso aggiunto avevo scritto l'indice 97 per il rango 97 (giusto: 96). L'ha fermato il test stesso; ho corretto il test, non il codice.
+    3. Nessun test controllava come si classificano promozioni, bocciature e coperture di una cella. Ho aggiunto, dopo il codice, un confronto col calcolo a mano su casi scelti perché contengano ogni esito (dichiarato).
+  - Mutanti PI01–PI20 in `mutazioni_esecuzione.py`, modulo di test nella SUITE.
+    4. Prova rapida dei mutanti PI sul solo modulo del pilota: **PI05, PI09 e PI20 sopravvissuti, tutti per test deboli miei.** Il test dei conteggi non guardava la componente comune; nel test HAC a mano K medio valeva 1, quindi K̄² = K̄; Z era confrontato con sé stesso. Aggiunti tre controlli dopo i mutanti (dichiarato): varianza di S nei giorni con K = 3, caso HAC con K̄ ≠ 1, valore di Z. Ora la prova rapida li uccide tutti e 20; la corsa ufficiale con la SUITE completa segue.

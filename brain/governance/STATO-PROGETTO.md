@@ -5,6 +5,8 @@
 ## Dove siamo, in tre frasi
 Il banco di prova (simulatore, criteri, sigillo, registri, scaricatore) è **costruito e sotto attacco incrociato**; ogni giro di revisione trova ancora difetti importanti, quindi **non è sigillabile**. **Nessuna strategia è operativa né promossa**: H-002 è parcheggiata con una condizione d'uscita scritta. I dati storici si stanno scaricando; la **riserva di verifica non è mai stata letta dal sistema**, e il censimento («nessuno l'ha vista») è stato **riconfermato il 17/11** con lo strumento di riconteggio corretto.
 
+> **17/11, sera:** R15 di Gemini integrato (#106–#111). I minori #107, #110 e #111 sono corretti in `303890b`, che è il **nuovo candidato per R16**. **R15 non conta come primo giro pulito:** è una lettura stretta di D-24, scelta da Claude su delega e ribaltabile dal titolare. **Contatore: 0 su 2.** Il pilota del collaudo IA-02 nel disegno a 12 celle del DGS è pronto e gira su dati inventati: è sviluppo del metodo, non certificazione. Il mandato R16 è pronto (`collaborazione/da-claude/PROMPT-R16-GEMINI.md`) e si consegna quando lo dice il titolare.
+
 > **17/11, pomeriggio:** i 3 difetti critici trovati la mattina (#86 verifica ripetibile, #87 e #88 codice non sigillato eseguibile) sono **corretti in TDD**, insieme a #89, #91, #93 e a parte di #90 e #94. Gli script di Gemini (BANCO-02) li hanno confermati e poi, rilanciati, respinti; dai loro output è uscito **#95 (critico, errore mio: i controlli giravano dopo gli import)**, corretto con il lanciatore `avvio.py`. Corretto anche #94 d (fuso orario controllato). Restano: #92 (dichiarato: caricatore e riserva proteggono dagli errori, non da chi ha i file) e #94 b (verdetto a due o tre stati: opzioni in DA-31, decide il titolare). Corsa completa dei mutanti in corso. **Il contatore dei giri puliti resta a 0**: ogni giro, anche questo, ha trovato difetti critici.
 
 ## Contatori
@@ -21,7 +23,7 @@ Il banco di prova (simulatore, criteri, sigillo, registri, scaricatore) è **cos
 | Impegni anticipati | IA-01 (0,15 R, senza prova di anteriorità) · **IA-02: R medio netto ≥ +0,15 R**, fissato prima di ogni idea H-003 (commit `032250b`) |
 
 ## Cosa manca per il primo sigillo, in ordine
-1. **Due giri di revisione di fila senza difetti critici o importanti che contano per D-24** (contatore a 0; R14 integrato il 17/11; R15 sul candidato `8e51ce9`, con commit, ambiente e perimetro dichiarati).
+1. **Due giri di revisione di fila senza difetti critici o importanti che contano per D-24** (contatore a 0; R14 integrato il 17/11; R15 sul candidato `8e51ce9` non conta (lettura stretta); R16 sul candidato `303890b`).
 2. **Dati storici completi**, poi il consuntivo: controllo della cache, confronto BID/ASK, **rendiconto dell'intersezione al minuto e dei buchi** (`laboratorio/studi/intersezione_bid_ask.py`, pronto dal 17/11) e taratura. Le soglie di idoneità restano da decidere: le proposte del DGS sono state ritirate.
 3. **Ratifica del registro della riserva** (α totale, scelta delle finestre, parte protetta) — titolare, con il parere del DGS (P2).
 4. **Scelta della regola per IA-02** («sulla stima» o «sul limite inferiore», per sviluppo e verifica) — titolare, con il parere del DGS (P1).
