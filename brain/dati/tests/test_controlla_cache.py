@@ -219,5 +219,6 @@ class TestRevisioneNotturna(unittest.TestCase):
             rec = DK.RECORD.pack(600, PREZZO, PREZZO + 1, PREZZO - 1, PREZZO + 2, 1.0)
             (c / "2010-03-08.bi5").write_bytes(lzma.compress(rec * 500, format=lzma.FORMAT_ALONE))
             e = CC.esamina(c, date(2010, 3, 8), date(2010, 3, 8))
-            self.assertEqual(e["anni"]["2010"]["minuti"], 1)
+            self.assertEqual(e["anni"]["2010"]["minuti"], 0)                 # #89: ora è un file non valido
+            self.assertEqual(e["anni"]["2010"]["illeggibili"], ["2010-03-08"])
 

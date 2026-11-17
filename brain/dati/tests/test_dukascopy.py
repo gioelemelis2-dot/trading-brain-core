@@ -86,6 +86,19 @@ class TestDecodificaEAggregazione(unittest.TestCase):
         with self.assertRaises(DK.ErroreDati):
             DK.decodifica(bomba, g, 3)
 
+    def test_minuti_non_allineati_o_ripetuti_fermano(self):
+        """#89 (revisore del laboratorio): i file al minuto hanno secondi multipli di 60, uno per minuto. Secondi
+        qualsiasi o istanti ripetuti gonfiavano la completezza e, con prezzi diversi, il caricatore teneva l'ultimo
+        in silenzio."""
+        g = date(2026, 1, 5)
+        p = 2650000
+        for secondi, parola in (((600, 601), "allineat"), ((600, 630), "allineat"), ((600, 600), "ripetut"),
+                                ((600, 660, 600), "ripetut")):
+            with self.assertRaises(DK.ErroreDati, msg=repr(secondi)) as e:
+                DK.decodifica(bi5([(x, p, p, p - 3, p + 5, 1.0) for x in secondi]), g, 3)
+            self.assertIn(parola, str(e.exception))
+        self.assertEqual(len(DK.decodifica(bi5([(x, p, p, p - 3, p + 5, 1.0) for x in (0, 60, 86340)]), g, 3)), 3)
+
     def test_decompressione_come_prima_su_coda_e_flussi(self):
         """#83: stessa semantica di lzma.decompress (coda non LZMA ignorata, flussi concatenati uniti, troncato rotto)."""
         g = date(2026, 1, 5)
