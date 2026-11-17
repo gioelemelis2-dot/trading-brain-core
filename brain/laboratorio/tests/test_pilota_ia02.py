@@ -127,6 +127,28 @@ class TestMetodi(unittest.TestCase):
         atteso = (2 * mu - ordinate[math.ceil(0.975 * 99) - 1], 2 * mu - ordinate[math.ceil(0.025 * 99) - 1])
         self.assertEqual(P.intervallo_bootstrap(coppie, P.flusso(9, 0, 2, 3), 99, 10), atteso)
 
+    def test_bootstrap_ranghi_su_medie_diverse(self):
+        """Aggiunto dopo il primo codice (dichiarato): il caso sopra ha blocchi tutti uguali (periodo 5, blocco 10),
+        quindi tutte le medie bootstrap coincidono e i ranghi non vengono provati davvero. Errore mio nel test."""
+        coppie = [(float((i * i) % 7) - 2.0, 1 + (i % 3 == 0)) for i in range(53)]
+        medie = P.medie_bootstrap(coppie, P.flusso(9, 0, 4, 3), 99, 10)
+        self.assertGreater(len(set(medie)), 50)
+        o = sorted(medie)
+        mu = sum(s for s, _ in coppie) / sum(k for _, k in coppie)
+        atteso = (2 * mu - o[96], 2 * mu - o[2])        # rango ⌈0,975·99⌉ = 97 → indice 96; ⌈0,025·99⌉ = 3 → indice 2
+        self.assertEqual(P.intervallo_bootstrap(coppie, P.flusso(9, 0, 4, 3), 99, 10), atteso)
+        self.assertEqual(len(medie), 99)
+        # medie a mano: blocchi circolari di 10 su 53, 5 blocchi
+        r = P.flusso(9, 0, 4, 3)
+        estese = coppie + coppie[:9]
+        for m in medie[:3]:
+            ss = kk = 0
+            for _ in range(5):
+                i = r.randrange(53)
+                ss += sum(s for s, _ in estese[i:i + 10])
+                kk += sum(k for _, k in estese[i:i + 10])
+            self.assertAlmostEqual(m, ss / kk, places=12)
+
     def test_bootstrap_con_denominatore_nullo_fallisce(self):
         coppie = [(0.0, 0)] * 95 + [(1.0, 1)] * 5
         self.assertIsNone(P.intervallo_bootstrap(coppie, P.flusso(9, 0, 3, 3), 199, 10))
