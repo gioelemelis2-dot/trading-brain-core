@@ -212,3 +212,12 @@ class TestRevisioneNotturna(unittest.TestCase):
             self.assertEqual(e["file_estranei"], ["20100310.bi5"])
             self.assertIn(".2010-03-09.rovinato", CC.testo(e))
 
+    def test_minuti_ripetuti_contati_una_volta(self):
+        """#85: i minuti di un giorno sono quelli distinti (un record ripetuto non allunga il giorno)."""
+        with tempfile.TemporaryDirectory() as d:
+            c = Path(d)
+            rec = DK.RECORD.pack(600, PREZZO, PREZZO + 1, PREZZO - 1, PREZZO + 2, 1.0)
+            (c / "2010-03-08.bi5").write_bytes(lzma.compress(rec * 500, format=lzma.FORMAT_ALONE))
+            e = CC.esamina(c, date(2010, 3, 8), date(2010, 3, 8))
+            self.assertEqual(e["anni"]["2010"]["minuti"], 1)
+

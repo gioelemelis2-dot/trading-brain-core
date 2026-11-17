@@ -577,6 +577,16 @@ class TestCompletezzaPerTerzi(TestCompletezzaDeiGiorni):
         self.assertEqual(info["feriali_incompleti_bid"], [])
 
 
+class TestMinutiDistinti(unittest.TestCase):
+    def test_record_ripetuti_non_fanno_completezza(self):
+        """#85 (revisore del laboratorio, notte del 17/11): la completezza contava i record, non i minuti distinti; un
+        file con lo stesso minuto ripetuto 600 volte passava per un giorno completo."""
+        g = date(2024, 1, 15)
+        t = [datetime(2024, 1, 15, h, m, tzinfo=timezone.utc) for h, m in ((8, 30), (11, 0), (14, 0))]
+        self.assertFalse(C._completo([x for x in t for _ in range(200)], g, False))
+        self.assertTrue(C._completo(list(_minuti(g, 525)), g, False))
+
+
 class TestFestivitaSpostate(unittest.TestCase):
     """#50 (R12bis-A3-03): 26/12, i giorni spostati di 1/1 e 25/12, il Lunedì dell'Angelo."""
 

@@ -104,3 +104,13 @@ class TestTaratura(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class TestMinutiDistinti(unittest.TestCase):
+    def test_record_ripetuti_contati_una_volta(self):
+        """#85: stessi conteggi del caricatore, per minuti distinti."""
+        from datetime import datetime, timezone
+        g = date(2024, 1, 15)
+        t = datetime(2024, 1, 15, 8, 30, tzinfo=timezone.utc)
+        self.assertEqual(T._terzi([t] * 100, g), [1, 0, 0])
+
