@@ -68,3 +68,15 @@ class TestDominioR13(unittest.TestCase):
     def test_varianza_campionaria_con_n_meno_uno(self):
         # 2 vinte (+1,5) e 2 perse (−1) su 4: media 0,25, scarti quadrati 4 × 1,5625 = 6,25, varianza 6,25 / 3
         self.assertAlmostEqual(P._varianza_campionaria(2, 4, 1.5), 6.25 / 3, places=12)
+
+
+class TestDominioR17(unittest.TestCase):
+    def test_simula_e_regola_controllate(self):
+        """#94 (e): simula accettava mu fuori da (−1, target); n_per_potenza non controllava la regola se mu ≤ soglia."""
+        with self.assertRaises(ValueError):
+            P.simula(2.0, 1.5, 100, 0.15, "stima")
+        with self.assertRaises(ValueError):
+            P.simula(-1.0, 1.5, 100, 0.15, "stima")
+        with self.assertRaises(ValueError):
+            P.n_per_potenza(0.1, 1.0, 0.15, 0.8, "inesistente")
+

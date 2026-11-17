@@ -899,6 +899,18 @@ class TestEsitiUnici(BaseRiga):
         self.assertEqual([x["promossa"] for x in self.esecuzioni("esito")], [False])
 
 
+class TestVerificheInsieme(BaseRiga):
+    def test_tutte_o_nessuna(self):
+        """#94 (c): due lanci con le varianti in ordine diverso registravano una verifica ciascuno e poi si fermavano:
+        verifica bruciata senza esito. Ora le verifiche si registrano tutte insieme o nessuna."""
+        self.sigilla()
+        S.registra_esecuzione(self.registro, "H-002", {"ruolo": "verifica", "variante": "V-S"}, ORA)
+        with self.assertRaises(ValueError):
+            S.registra_esecuzioni(self.registro, "H-002", [{"ruolo": "verifica", "variante": "V-T"},
+                                                           {"ruolo": "verifica", "variante": "V-S"}], ORA)
+        self.assertEqual([e["variante"] for e in self.esecuzioni("verifica")], ["V-S"])     # V-T non scritta
+
+
 class TestComandoIsolato(unittest.TestCase):
     def test_la_forma_documentata_del_comando_funziona(self):
         """Il comando del docstring (python3 -I -S -B -c ...) trova il pacchetto e arriva alla riga di comando."""
