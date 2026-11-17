@@ -81,7 +81,7 @@ def esamina(cartella: Path, inizio: Optional[date] = None, fine: Optional[date] 
             n = 0
             if dati:
                 try:
-                    n = len(DK.decodifica(dati, g, DK.SCALA[simbolo]))         # solo il numero dei minuti
+                    n = len({m[0] for m in DK.decodifica(dati, g, DK.SCALA[simbolo])})   # minuti distinti (#85)
                 except DK.ErroreDati:
                     a["illeggibili"].append(g.isoformat())
                     n = None

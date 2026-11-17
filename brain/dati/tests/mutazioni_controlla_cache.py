@@ -27,6 +27,7 @@ M = {
     "Q18 nomi non AAAA-MM-GG.bi5 come giorni (#82)": [(CC, "    if not NOME_GIORNO.fullmatch(nome):\n        return None\n", "")],
     "Q19 file messi da parte non stampati (#82)": [(CC, "        if e.get(chiave):\n            righe.append(f\"{nome}: {len(e[chiave])}", "        if False:\n            righe.append(f\"{nome}: {len(e[chiave])}")],
     "Q20 .bi5 validi fra gli estranei (#82)": [(CC, "if p.name.endswith(\".bi5\") and _data(p.name) is None", "if p.name.endswith(\".bi5\")")],
+    "Q21 minuti contati per record (#85)": [(CC, "n = len({m[0] for m in DK.decodifica(dati, g, DK.SCALA[simbolo])})", "n = len(DK.decodifica(dati, g, DK.SCALA[simbolo]))")],
     "Q16 confronto: esito ignorato nel codice d'uscita": [(CC, "    return 0 if all(e.get(\"pulito\", True) for e in esiti) and allineati else 1", "    return 0 if all(e.get(\"pulito\", True) for e in esiti) else 1")],
     "Q01 file mancanti non contati": [(CC, "            a[\"mancanti\"] += 1\n", "            pass\n")],
     "Q02 illeggibili ignorati": [(CC, "                    a[\"illeggibili\"].append(g.isoformat())\n", "                    pass\n")],

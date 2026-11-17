@@ -26,7 +26,7 @@ def _terzi(tempi, giorno: date):
     a, b = _utc(giorno, SESSIONE[0]), _utc(giorno, SESSIONE[1])
     durata = (b - a) / 3
     t3 = [0, 0, 0]
-    for t in tempi:
+    for t in set(tempi):                                            # #85: minuti distinti
         if a <= t < b:
             t3[min(2, int((t - a) / durata))] += 1
     return t3

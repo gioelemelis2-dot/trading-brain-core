@@ -35,7 +35,7 @@ def _completo(tempi, giorno: date, corto: bool) -> bool:
     a, b = _utc(giorno, SESSIONE[0]), _utc(giorno, SESSIONE[1])
     durata = (b - a) / 3
     terzi = [0, 0, 0]
-    for t in tempi:
+    for t in set(tempi):                                            # #85: minuti distinti
         if a <= t < b:
             terzi[min(2, int((t - a) / durata))] += 1
     minimo_terzo = math.ceil(QUOTA_TERZO * MINUTI_SESSIONE / 3)
