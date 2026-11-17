@@ -1,6 +1,6 @@
 # Mandato R14 per Gemini (Antigravity)
 
-Preparato la notte del 16–17/11/2026. **Da consegnare solo quando Claude lo conferma** (dopo l'integrazione della revisione notturna): R14 deve girare su codice fermo. Da incollare in Antigravity così com'è.
+Preparato la notte del 16–17/11/2026, aggiornato il 17/11 mattina (#72–#85). **Da consegnare solo quando Claude lo conferma** (dopo l'integrazione della revisione del laboratorio, ancora in corso): R14 deve girare su codice fermo. Da incollare in Antigravity così com'è.
 
 ```
 MANDATO R14 PER GEMINI — verifica delle correzioni R13 e quinto attacco
@@ -9,7 +9,9 @@ CONTESTO
 - Ho integrato il tuo R13 (sezione R13 di brain/laboratorio/ipotesi/H-002-REVISIONI.md; difetti #61–#71 nel
   REGISTRO-DIFETTI). Nota: sulla tua controprova di B-04 avevi RAGIONE tu e il mio rigetto era sbagliato (#67):
   ora solo un giorno con dati azzera il conteggio degli errori di fila.
-- Correzioni in TDD più una revisione interna notturna; i commit sono nel REGISTRO-MODIFICHE (v1.40–v1.45).
+- Correzioni in TDD più una revisione notturna con revisori separati (#72–#85); i commit sono nel
+  REGISTRO-MODIFICHE (v1.40–v1.46). #72 è un errore di Claude: il pacchetto per il DGS conteneva il nome
+  dell'utente dentro uno ZIP annidato.
 - Commit di partenza: l'ultimo di origin/feat/esecutore-h002 al momento della consegna. Dichiaralo.
 
 REGOLE (le stesse di R13; una violazione invalida il giro)
@@ -39,10 +41,17 @@ A. Verifica delle correzioni R13, rilievo per rilievo (chiuso / chiuso in parte 
    - #67: 404 e vuoti non azzerano più il conteggio; riprova la tua controprova dei fine settimana.
    - #69: prove di robustezza dichiarate al sigillo.
    - #71: i 6 mutanti che erano vivi (N06, N07, N15, N24, N26, P12) ora muoiono? Rilanciali.
+   - #72–#85 (revisione notturna): per ognuno, la correzione chiude davvero lo scenario del registro? In
+     particolare #75/#78/#80/#81 (riconteggio: comandi su più righe, date compatte attaccate a lettere,
+     uscite con soli prezzi sotto 1.900 — euristica con un limite dichiarato —, toolUseResult), #83
+     (decompressione limitata: stessa semantica di lzma.decompress?) e #85 (minuti distinti).
 B. Quinto attacco, su ciò che NON hai ancora attaccato:
-   - brain/governance/esporta_redatto.py (pacchetto per i revisori): riesci a far passare un dato personale
-     (codifiche strane, nomi di file, contenuti binari con testo, maiuscole/minuscole, sostituzioni che si
-     sovrappongono)? Usa SOLO dati personali INVENTATI (es. «Mario Rossi»), mai quelli veri.
+   - brain/governance/esporta_redatto.py (pacchetto per i revisori), dopo #72 e #84: riesci ancora a far
+     passare un dato personale (codifiche non coperte, archivi senza firma nota, testo dentro PDF o immagini,
+     nomi di file, sostituzioni che si sovrappongono)? Usa SOLO dati personali INVENTATI (es. «Mario
+     Rossi»), mai quelli veri.
+   - riconta.py: un'uscita con dati della riserva che passa ancora senza segnalazione (timestamp attaccati a
+     lettere: noto e non corretto; altri formati?).
    - il log dei nuovi tentativi dello scaricatore (dukascopy.richiesta_http con annota): può mentire o
      perdere tentativi?
    - moduli_brain / impronte_codice: chiusura degli import ancora aggirabile (import dentro stringhe eseguite,
