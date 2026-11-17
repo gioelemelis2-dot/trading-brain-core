@@ -698,6 +698,74 @@ class TestAmbiente(unittest.TestCase):
         self.assertIn("criteri.py", out.stdout)
 
 
+class TestAmbienteInUnaCopia(unittest.TestCase):
+    """#87, #88 (revisore del laboratorio, 17/11): attacchi che richiedono file nella cartella del progetto. Si fanno
+    in una COPIA di `brain` in una cartella temporanea, mai nel repository vero."""
+
+    PROG = ("import sys; sys.path.insert(0, '.')\n"
+            "import brain.laboratorio.esecuzione.esegui_h002 as E\n"
+            "import brain.laboratorio.esecuzione.criteri as C\n"
+            "try:\n    E.controlla_ambiente(E.impronte_codice())\n    print('AMBIENTE OK', getattr(C, 'ATTACCO', 0))\n"
+            "except ValueError as e:\n    print('FERMO', e)\n")
+
+    def setUp(self):
+        import shutil
+        self._t = tempfile.TemporaryDirectory()
+        self.dir = Path(self._t.name)
+        shutil.copytree(E.RADICE / "brain", self.dir / "brain", ignore=shutil.ignore_patterns("__pycache__"))
+
+    def tearDown(self):
+        self._t.cleanup()
+
+    def lancia(self):
+        return _sp.run([sys.executable, "-I", "-S", "-B", "-c", self.PROG], cwd=str(self.dir), capture_output=True,
+                       text=True)
+
+    def sysconfig_falso(self):
+        """Copia funzionante del sysconfig vero, con get_paths che dice «la libreria standard è /»."""
+        import sysconfig
+        (self.dir / "sysconfig.py").write_text(
+            Path(sysconfig.__file__).read_text(encoding="utf-8") + "\n\ndef get_paths(*a, **k):\n"
+            "    return {'stdlib': '/', 'platstdlib': '/', 'purelib': '/nessuno', 'platlib': '/nessuno'}\n",
+            encoding="utf-8")
+
+    def test_copia_pulita_passa(self):
+        out = self.lancia()
+        self.assertIn("AMBIENTE OK 0", out.stdout, out.stderr)
+
+    def test_bytecode_preparato_si_ferma(self):
+        """#87: -B non impedisce di LEGGERE i .pyc; un .pyc con data e dimensione del sorgente vero viene eseguito."""
+        import importlib.util, marshal, struct
+        src = self.dir / "brain/laboratorio/esecuzione/criteri.py"
+        codice = compile(src.read_text(encoding="utf-8") + "\nATTACCO = 1\n", str(src), "exec")
+        st = src.stat()
+        pyc = Path(importlib.util.cache_from_source(str(src)))
+        pyc.parent.mkdir(parents=True, exist_ok=True)
+        pyc.write_bytes(importlib.util.MAGIC_NUMBER + struct.pack("<III", 0, int(st.st_mtime) & 0xFFFFFFFF,
+                                                                  st.st_size & 0xFFFFFFFF) + marshal.dumps(codice))
+        out = self.lancia()
+        self.assertNotIn("AMBIENTE OK", out.stdout, out.stdout + out.stderr)
+        self.assertIn("FERMO", out.stdout, out.stderr)
+        self.assertIn("criteri", out.stdout)
+
+    def test_sysconfig_falso_non_definisce_la_libreria_standard(self):
+        """#88: un sysconfig.py nella cartella di lancio diceva che la libreria standard è «/», e un statistics.py
+        avvelenato passava."""
+        self.sysconfig_falso()
+        import statistics                                                       # copia funzionante, avvelenata
+        (self.dir / "statistics.py").write_text(Path(statistics.__file__).read_text(encoding="utf-8")
+                                                + "\nAVVELENATO = 1\n", encoding="utf-8")
+        out = self.lancia()
+        self.assertNotIn("AMBIENTE OK", out.stdout, out.stdout + out.stderr)
+        self.assertIn("FERMO", out.stdout, out.stderr)
+
+    def test_sysconfig_falso_da_solo_si_ferma(self):
+        """#88: anche se nessun altro modulo è ombrato, un sysconfig fuori dalla libreria standard è un problema."""
+        self.sysconfig_falso()
+        out = self.lancia()
+        self.assertIn("FERMO", out.stdout, out.stdout + out.stderr)
+
+
 class TestComandoIsolato(unittest.TestCase):
     def test_la_forma_documentata_del_comando_funziona(self):
         """Il comando del docstring (python3 -I -S -B -c ...) trova il pacchetto e arriva alla riga di comando."""
