@@ -554,3 +554,11 @@ Formato: data · versione della base · cosa · perché · file.
 - Mutanti: riconteggio 46/46, controllo della cache 20/20 (Q19 scartato prima come NON VALIDO dal controllo di validità: sintassi rotta, riscritto), scaricatore 48/48, su 3.13 e 3.9; X21 manuale sull'esportazione. Corsa completa su 3.9 di tutti gli script: in corso.
 - **Revisione del nucleo del laboratorio (ripresa dopo l'interruzione), 14 rilievi:** registrati come #86–#94, **APERTI**. Riprodotti da Claude: #86 (verifica ripetuta con un secondo registro o un ramo nuovo) e #89 (la mia correzione #85 era incompleta). Gli altri sono riprodotti dal revisore su una copia e vanno riprodotti da Claude prima di correggerli. Non corretti stanotte: è finito il tempo concesso (fino alle 9). R14 bloccato.
 
+## 2026-11-17 · v1.47 (pomeriggio: correzione dei difetti del laboratorio)
+
+- **Riprodotti da Claude prima di correggere:** #87 (bytecode preparato: «AMBIENTE OK» con il codice dell'attaccante eseguito) e #88 (sysconfig falso), su 3.13 e 3.9, in una copia di `brain` (`1e6240f`). Un mio primo test di #88 era sbagliato (il modulo avvelenato si fermava da solo, il test passava per il motivo sbagliato): riscritto con copie funzionanti, come l'attacco del revisore.
+- **Correzioni in TDD:** #86 (`69a82b5` rosso; registro canonico, verifica cercata in tutta la storia git, N massimo della storia), #87 e #88 (`7940914`), #89 (decodifica: minuti allineati e non ripetuti; la mia #85 era incompleta), #90 in parte (un solo esito, dopo la verifica), #91 (controllo dell'ambiente prima degli esiti), #93 (testa della riserva ricontrollata), #94 a, c, e.
+- **Conseguenza pratica:** con #87 il programma si ferma se in `brain` ci sono cartelle `__pycache__` (create da esecuzioni senza `-B`). Prima di ogni esecuzione vera: cancellarle. Nel container ne ho cancellate di vecchie (file generati, ignorati da git).
+- **Test modificati, dichiarati:** S7 in `test_esecuzione` ora registra la verifica prima dell'esito (#90); il test #85 della cache ora si aspetta un file non valido (#89).
+- **Mutanti nuovi:** N35 (riscritto), N37–N52, P14, P15, W50, W51. Corsa completa su 3.13 e 3.9 in corso.
+

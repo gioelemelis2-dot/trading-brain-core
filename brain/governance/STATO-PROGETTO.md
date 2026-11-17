@@ -5,12 +5,12 @@
 ## Dove siamo, in tre frasi
 Il banco di prova (simulatore, criteri, sigillo, registri, scaricatore) è **costruito e sotto attacco incrociato**; ogni giro di revisione trova ancora difetti importanti, quindi **non è sigillabile**. **Nessuna strategia è operativa né promossa**: H-002 è parcheggiata con una condizione d'uscita scritta. I dati storici si stanno scaricando; la **riserva di verifica non è mai stata letta dal sistema**, ma la conclusione del censimento («nessuno l'ha vista») **va riconfermata**: lo strumento di riconteggio aveva quattro buchi (#75, #78, #80, #81), ora chiusi.
 
-> **17/11, 9:30: la revisione del laboratorio ha trovato 3 difetti CRITICI APERTI (#86 verifica ripetibile, #87 e #88 codice non sigillato eseguibile) e 6 importanti (#89–#93).** Il banco di prova oggi NON garantisce che la verifica sia fatta una volta sola né con il codice sigillato. R14 non va consegnato finché non sono corretti.
+> **17/11, pomeriggio:** i 3 difetti critici trovati la mattina (#86 verifica ripetibile, #87 e #88 codice non sigillato eseguibile) sono **corretti in TDD**, insieme a #89, #91, #93 e a parte di #90 e #94. Restano aperti: #92 (dichiarazione: caricatore e riserva proteggono dagli errori, non da chi ha i file), #94 b (verdetto a due stati: decisione da proporre) e d (dati del fuso orario non sigillati). Corsa completa dei mutanti in corso. **Il contatore dei giri puliti resta a 0**: ogni giro, anche questo, ha trovato difetti critici.
 
 ## Contatori
 | Cosa | Stato |
 |---|---|
-| Difetti registrati | **94** (22 critici, 51 importanti, 21 minori; conteggio del 17/11), **#86–#94 APERTI**, trovati da Gemini, DGS, revisori esterni, utente e Claude. Tutti corretti e provati, tranne **#42** (difetto della scheda H-002: parcheggiato con lei; regola obbligatoria nel modello H-003) |
+| Difetti registrati | **94** (22 critici, 51 importanti, 21 minori; conteggio del 17/11), #92 e #94 b/d aperti, gli altri corretti il 17/11, trovati da Gemini, DGS, revisori esterni, utente e Claude. Tutti corretti e provati, tranne **#42** (difetto della scheda H-002: parcheggiato con lei; regola obbligatoria nel modello H-003) |
 | Giri di revisione | Gemini: R7, R8, R11, R12-bis, R13 (+ repliche); DGS: 01–04; revisori separati di Claude (16 e 17/11: dati e governance, 13 rilievi; laboratorio, in corso); **ogni giro ha trovato difetti importanti** |
 | Giri puliti di fila (regola del sigillo) | **0 su 2 richiesti**. Prossimo: R14 (mandato pronto) |
 | Test automatici | ~370 (dati, laboratorio, governance) + 77 Guardian, verdi su Python 3.13 **e** 3.9, rete bloccata |
@@ -44,6 +44,7 @@ Il banco di prova (simulatore, criteri, sigillo, registri, scaricatore) è **cos
 - Già decise: H-002 parcheggiata con condizione d'uscita scritta; IA-02 = 0,15 R; congelamento post-incidente.
 
 ## Rischi aperti, dichiarati
+- **Il banco protegge dagli errori, non da chi ha i file (#90, #92):** il registro delle prove e quello della riserva sono file locali; chi ha accesso al Mac può scriverli a mano o leggere la cache con un altro script. La difesa vera è la storia su GitHub (voci spinte prima di ogni passo) letta dai revisori, più la protezione del ramo su GitHub, che spetta al titolare.
 - **La memoria umana non si censisce:** chi ha guardato grafici 2005–2023 in passato resta non cieco; il sistema sì.
 - **ASK storico forse inesistente:** senza, la verifica non misura gli stessi costi dello sviluppo; decidere prima come trattarla.
 - **Sviluppo contaminato** (incidente del 14/11, #41): per le idee che usano i tagli E-003 lo sviluppo non è un banco pulito.
