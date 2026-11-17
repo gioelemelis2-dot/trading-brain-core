@@ -1,0 +1,3356 @@
+{
+  "tempo_s": 410.615872125,
+  "semi": [
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    16,
+    17,
+    18,
+    19,
+    20
+  ],
+  "griglia": [
+    0.0,
+    0.005,
+    0.01,
+    0.02
+  ],
+  "righe": [
+    {
+      "spinta": 0.0,
+      "seme": 1,
+      "varianti": {
+        "V-T": {
+          "n": 300,
+          "r_medio": -0.006935939282403375,
+          "errore_std": 0.06297851703266162,
+          "sharpe": -0.00635846412468193,
+          "dd_max": 33.3771071505588,
+          "r_vendite": 0.0510567466277891,
+          "r_stress": -0.06832209804261573,
+          "veto": true,
+          "motivi_veto": [
+            "base non positiva (-0.006935939282403375)",
+            "range 20': R medio -0.0007605565171404481 ≤ 0",
+            "range 45': R medio -0.06631831873887133 ≤ 0",
+            "tetto 2,5: R medio -0.004473742831052078 ≤ 0",
+            "target 1,2: R medio -0.020313192399824303 ≤ 0",
+            "target 2,0: R medio -0.06874363438194123 ≤ 0"
+          ],
+          "promossa": false,
+          "falliti": [
+            "R medio netto",
+            "Sharpe per trade",
+            "sopra il 95° percentile del confronto casuale",
+            "drawdown massimo (R)",
+            "nessun veto di robustezza",
+            "R medio nello scenario di stress"
+          ]
+        },
+        "V-S": {
+          "n": 300,
+          "r_medio": -0.005635370700790974,
+          "errore_std": 0.07787997858284865,
+          "sharpe": -0.004177688348519305,
+          "dd_max": 30.510785193230095,
+          "r_vendite": 0.0529500295145014,
+          "r_stress": -0.06235175458606765,
+          "veto": true,
+          "motivi_veto": [
+            "base non positiva (-0.005635370700790974)",
+            "range 45': R medio -0.07440104448048741 ≤ 0",
+            "tetto 2,5: R medio -0.00043780248739922135 ≤ 0"
+          ],
+          "promossa": false,
+          "falliti": [
+            "R medio netto",
+            "Sharpe per trade",
+            "sopra il 95° percentile del confronto casuale",
+            "drawdown massimo (R)",
+            "nessun veto di robustezza",
+            "R medio nello scenario di stress"
+          ]
+        }
+      }
+    },
+    {
+      "spinta": 0.0,
+      "seme": 2,
+      "varianti": {
+        "V-T": {
+          "n": 299,
+          "r_medio": -0.14702528924142075,
+          "errore_std": 0.059818041870780866,
+          "sharpe": -0.14214260026873576,
+          "dd_max": 47.17763646670665,
+          "r_vendite": -0.23239562709778283,
+          "r_stress": -0.1893819003356807,
+          "veto": true,
+          "motivi_veto": [
+            "base non positiva (-0.14702528924142075)",
+            "range 20': R medio -0.10249890495661065 ≤ 0",
+            "range 45': R medio -0.16374780908350617 ≤ 0",
+            "tetto 1,6: R medio -0.16388597645349925 ≤ 0",
+            "tetto 2,5: R medio -0.1369538956338548 ≤ 0",
+            "target 1,2: R medio -0.1108442651066333 ≤ 0",
+            "target 2,0: R medio -0.15890784718439946 ≤ 0"
+          ],
+          "promossa": false,
+          "falliti": [
+            "R medio netto",
+            "Sharpe per trade",
+            "numero di trade",
+            "sopra il 95° percentile del confronto casuale",
+            "batte «compro sempre» e «vendo sempre»",
+            "R medio delle vendite",
+            "drawdown massimo (R)",
+            "nessun veto di robustezza",
+            "R medio nello scenario di stress"
+          ]
+        },
+        "V-S": {
+          "n": 299,
+          "r_medio": -0.15291587838662257,
+          "errore_std": 0.06976481916509719,
+          "sharpe": -0.12675949979378737,
+          "dd_max": 47.39384033197393,
+          "r_vendite": -0.22974254118497076,
+          "r_stress": -0.20089045400869882,
+          "veto": true,
+          "motivi_veto": [
+            "base non positiva (-0.15291587838662257)",
+            "range 20': R medio -0.10219190528283577 ≤ 0",
+            "range 45': R medio -0.15817412836459702 ≤ 0",
+            "tetto 1,6: R medio -0.18237120332420179 ≤ 0",
+            "tetto 2,5: R medio -0.14428451576009255 ≤ 0"
+          ],
+          "promossa": false,
+          "falliti": [
+            "R medio netto",
+            "Sharpe per trade",
+            "numero di trade",
+            "sopra il 95° percentile del confronto casuale",
+            "batte «compro sempre» e «vendo sempre»",
+            "R medio delle vendite",
+            "drawdown massimo (R)",
+            "nessun veto di robustezza",
+            "R medio nello scenario di stress"
+          ]
+        }
+      }
+    },
+    {
+      "spinta": 0.0,
+      "seme": 3,
+      "varianti": {
+        "V-T": {
+          "n": 319,
+          "r_medio": -0.09169305988640596,
+          "errore_std": 0.05903889871519264,
+          "sharpe": -0.08695666527366022,
+          "dd_max": 31.511255149905114,
+          "r_vendite": -0.046134753972647005,
+          "r_stress": -0.1269299760608707,
+          "veto": true,
+          "motivi_veto": [
+            "base non positiva (-0.09169305988640596)",
+            "range 20': R medio -0.15623284879447577 ≤ 0",
+            "range 45': R medio -0.04709019861063206 ≤ 0",
+            "tetto 1,6: R medio -0.08833728785638496 ≤ 0",
+            "tetto 2,5: R medio -0.09844431040212424 ≤ 0",
+            "target 1,2: R medio -0.10696705023947245 ≤ 0",
+            "target 2,0: R medio -0.07692011006885376 ≤ 0"
+          ],
+          "promossa": false,
+          "falliti": [
+            "R medio netto",
+            "Sharpe per trade",
+            "sopra il 95° percentile del confronto casuale",
+            "batte «compro sempre» e «vendo sempre»",
+            "drawdown massimo (R)",
+            "nessun veto di robustezza",
+            "R medio nello scenario di stress"
+          ]
+        },
+        "V-S": {
+          "n": 319,
+          "r_medio": -0.0692522440871101,
+          "errore_std": 0.06996274350436035,
+          "sharpe": -0.055420658037578605,
+          "dd_max": 28.700278533167246,
+          "r_vendite": -0.017046062415379436,
+          "r_stress": -0.12240511743590055,
+          "veto": true,
+          "motivi_veto": [
+            "base non positiva (-0.0692522440871101)",
+            "range 20': R medio -0.17725558308418382 ≤ 0",
+            "range 45': R medio -0.04914754547610038 ≤ 0",
+            "tetto 1,6: R medio -0.0792824188099854 ≤ 0",
+            "tetto 2,5: R medio -0.0769469523241201 ≤ 0"
+          ],
+          "promossa": false,
+          "falliti": [
+            "R medio netto",
+            "Sharpe per trade",
+            "sopra il 95° percentile del confronto casuale",
+            "drawdown massimo (R)",
+            "nessun veto di robustezza",
+            "R medio nello scenario di stress"
+          ]
+        }
+      }
+    },
+    {
+      "spinta": 0.0,
+      "seme": 4,
+      "varianti": {
+        "V-T": {
+          "n": 295,
+          "r_medio": -0.016396372960879948,
+          "errore_std": 0.06349572091633483,
+          "sharpe": -0.015034615369575031,
+          "dd_max": 22.118721800969798,
+          "r_vendite": 0.05367573756639469,
+          "r_stress": -0.04341628376083114,
+          "veto": true,
+          "motivi_veto": [
+            "base non positiva (-0.016396372960879948)",
+            "range 20': R medio -0.014225429327694388 ≤ 0",
+            "range 45': R medio -0.02976468700486492 ≤ 0",
+            "tetto 2,5: R medio -0.01469269569401196 ≤ 0",
+            "target 1,2: R medio -0.053254866149694366 ≤ 0"
+          ],
+          "promossa": false,
+          "falliti": [
+            "R medio netto",
+            "Sharpe per trade",
+            "numero di trade",
+            "sopra il 95° percentile del confronto casuale",
+            "batte «compro sempre» e «vendo sempre»",
+            "drawdown massimo (R)",
+            "nessun veto di robustezza",
+            "R medio nello scenario di stress"
+          ]
+        },
+        "V-S": {
+          "n": 295,
+          "r_medio": 0.03004445036341118,
+          "errore_std": 0.07624886592298703,
+          "sharpe": 0.022941397334354328,
+          "dd_max": 20.419192420875234,
+          "r_vendite": 0.14605372714166784,
+          "r_stress": -0.029387519346385355,
+          "veto": true,
+          "motivi_veto": [
+            "range 45': R medio 0.0068 sotto il 50% della base 0.0300"
+          ],
+          "promossa": false,
+          "falliti": [
+            "R medio netto",
+            "Sharpe per trade",
+            "numero di trade",
+            "sopra il 95° percentile del confronto casuale",
+            "batte «compro sempre» e «vendo sempre»",
+            "drawdown massimo (R)",
+            "nessun veto di robustezza",
+            "R medio nello scenario di stress"
+          ]
+        }
+      }
+    },
+    {
+      "spinta": 0.0,
+      "seme": 5,
+      "varianti": {
+        "V-T": {
+          "n": 319,
+          "r_medio": -0.003990826221212143,
+          "errore_std": 0.060524880526381004,
+          "sharpe": -0.0036917606352134917,
+          "dd_max": 35.32460839950842,
+          "r_vendite": -0.09537500781905878,
+          "r_stress": -0.04597889470011588,
+          "veto": true,
+          "motivi_veto": [
+            "base non positiva (-0.003990826221212143)",
+            "range 45': R medio -0.010741846950346873 ≤ 0",
+            "tetto 1,6: R medio -0.028101457130161732 ≤ 0",
+            "tetto 2,5: R medio -0.0035642242898619183 ≤ 0",
+            "target 1,2: R medio -0.0055552002404012915 ≤ 0",
+            "target 2,0: R medio -0.01936487957945007 ≤ 0"
+          ],
+          "promossa": false,
+          "falliti": [
+            "R medio netto",
+            "Sharpe per trade",
+            "sopra il 95° percentile del confronto casuale",
+            "batte «compro sempre» e «vendo sempre»",
+            "R medio delle vendite",
+            "drawdown massimo (R)",
+            "nessun veto di robustezza",
+            "R medio nello scenario di stress"
+          ]
+        },
+        "V-S": {
+          "n": 319,
+          "r_medio": -0.021673333876231275,
+          "errore_std": 0.07097661531498838,
+          "sharpe": -0.017096810366195602,
+          "dd_max": 41.7173496570736,
+          "r_vendite": -0.12731244673609246,
+          "r_stress": -0.0761820621682716,
+          "veto": true,
+          "motivi_veto": [
+            "base non positiva (-0.021673333876231275)",
+            "range 45': R medio -0.014936599845476314 ≤ 0",
+            "tetto 1,6: R medio -0.05203859727436592 ≤ 0",
+            "tetto 2,5: R medio -0.01986635332226488 ≤ 0"
+          ],
+          "promossa": false,
+          "falliti": [
+            "R medio netto",
+            "Sharpe per trade",
+            "sopra il 95° percentile del confronto casuale",
+            "batte «compro sempre» e «vendo sempre»",
+            "R medio delle vendite",
+            "drawdown massimo (R)",
+            "nessun veto di robustezza",
+            "R medio nello scenario di stress"
+          ]
+        }
+      }
+    },
+    {
+      "spinta": 0.0,
+      "seme": 6,
+      "varianti": {
+        "V-T": {
+          "n": 309,
+          "r_medio": -0.12708035745263793,
+          "errore_std": 0.059848114219039905,
+          "sharpe": -0.12079493305266042,
+          "dd_max": 48.867760328418534,
+          "r_vendite": -0.04764700957278025,
+          "r_stress": -0.16700456606419123,
+          "veto": true,
+          "motivi_veto": [
+            "base non positiva (-0.12708035745263793)",
+            "range 45': R medio -0.147351506043154 ≤ 0",
+            "tetto 1,6: R medio -0.11115451272411025 ≤ 0",
+            "tetto 2,5: R medio -0.1288170262700407 ≤ 0",
+            "target 1,2: R medio -0.12155483375046897 ≤ 0",
+            "target 2,0: R medio -0.10785507551426406 ≤ 0"
+          ],
+          "promossa": false,
+          "falliti": [
+            "R medio netto",
+            "Sharpe per trade",
+            "sopra il 95° percentile del confronto casuale",
+            "batte «compro sempre» e «vendo sempre»",
+            "drawdown massimo (R)",
+            "nessun veto di robustezza",
+            "R medio nello scenario di stress"
+          ]
+        },
+        "V-S": {
+          "n": 309,
+          "r_medio": -0.08672911140215701,
+          "errore_std": 0.07158198859395362,
+          "sharpe": -0.0689258130669556,
+          "dd_max": 43.54355555465051,
+          "r_vendite": -0.020613103315738273,
+          "r_stress": -0.13906967337977416,
+          "veto": true,
+          "motivi_veto": [
+            "base non positiva (-0.08672911140215701)",
+            "range 45': R medio -0.13515688133012457 ≤ 0",
+            "tetto 1,6: R medio -0.040425346810964914 ≤ 0",
+            "tetto 2,5: R medio -0.08698322614345817 ≤ 0"
+          ],
+          "promossa": false,
+          "falliti": [
+            "R medio netto",
+            "Sharpe per trade",
+            "sopra il 95° percentile del confronto casuale",
+            "batte «compro sempre» e «vendo sempre»",
+            "drawdown massimo (R)",
+            "nessun veto di robustezza",
+            "R medio nello scenario di stress"
+          ]
+        }
+      }
+    },
+    {
+      "spinta": 0.0,
+      "seme": 7,
+      "varianti": {
+        "V-T": {
+          "n": 313,
+          "r_medio": -0.13169224436783122,
+          "errore_std": 0.06048470580725502,
+          "sharpe": -0.12306723912929834,
+          "dd_max": 51.60161706835037,
+          "r_vendite": -0.18916335224199804,
+          "r_stress": -0.16178340908903868,
+          "veto": true,
+          "motivi_veto": [
+            "base non positiva (-0.13169224436783122)",
+            "range 20': R medio -0.18465277121061463 ≤ 0",
+            "range 45': R medio -0.10062422496539576 ≤ 0",
+            "tetto 1,6: R medio -0.14407155664594878 ≤ 0",
+            "tetto 2,5: R medio -0.13626155929725056 ≤ 0",
+            "target 1,2: R medio -0.14482802372527936 ≤ 0",
+            "target 2,0: R medio -0.12612292226112015 ≤ 0"
+          ],
+          "promossa": false,
+          "falliti": [
+            "R medio netto",
+            "Sharpe per trade",
+            "sopra il 95° percentile del confronto casuale",
+            "batte «compro sempre» e «vendo sempre»",
+            "R medio delle vendite",
+            "drawdown massimo (R)",
+            "nessun veto di robustezza",
+            "R medio nello scenario di stress"
+          ]
+        },
+        "V-S": {
+          "n": 313,
+          "r_medio": -0.13263060358022552,
+          "errore_std": 0.06635839137649918,
+          "sharpe": -0.11297327732515863,
+          "dd_max": 54.575711938847306,
+          "r_vendite": -0.24104185664304098,
+          "r_stress": -0.1809437292120813,
+          "veto": true,
+          "motivi_veto": [
+            "base non positiva (-0.13263060358022552)",
+            "range 20': R medio -0.22461744092442668 ≤ 0",
+            "range 45': R medio -0.107408685530739 ≤ 0",
+            "tetto 1,6: R medio -0.1427187430235729 ≤ 0",
+            "tetto 2,5: R medio -0.1328264486881575 ≤ 0"
+          ],
+          "promossa": false,
+          "falliti": [
+            "R medio netto",
+            "Sharpe per trade",
+            "sopra il 95° percentile del confronto casuale",
+            "batte «compro sempre» e «vendo sempre»",
+            "R medio delle vendite",
+            "drawdown massimo (R)",
+            "nessun veto di robustezza",
+            "R medio nello scenario di stress"
+          ]
+        }
+      }
+    },
+    {
+      "spinta": 0.0,
+      "seme": 8,
+      "varianti": {
+        "V-T": {
+          "n": 325,
+          "r_medio": -0.12524462220245028,
+          "errore_std": 0.05762305646214472,
+          "sharpe": -0.12056496266818832,
+          "dd_max": 53.73482900039405,
+          "r_vendite": -0.2027365609165792,
+          "r_stress": -0.17251417143449527,
+          "veto": true,
+          "motivi_veto": [
+            "base non positiva (-0.12524462220245028)",
+            "range 20': R medio -0.0988894597935839 ≤ 0",
+            "range 45': R medio -0.11166395705561298 ≤ 0",
+            "tetto 1,6: R medio -0.11666098045496909 ≤ 0",
+            "tetto 2,5: R medio -0.11159308802262441 ≤ 0",
+            "target 1,2: R medio -0.11200408276286394 ≤ 0",
+            "target 2,0: R medio -0.15410214528894894 ≤ 0"
+          ],
+          "promossa": false,
+          "falliti": [
+            "R medio netto",
+            "Sharpe per trade",
+            "sopra il 95° percentile del confronto casuale",
+            "batte «compro sempre» e «vendo sempre»",
+            "R medio delle vendite",
+            "drawdown massimo (R)",
+            "nessun veto di robustezza",
+            "R medio nello scenario di stress"
+          ]
+        },
+        "V-S": {
+          "n": 325,
+          "r_medio": -0.13553767863828076,
+          "errore_std": 0.06662610669349811,
+          "sharpe": -0.11284281893047082,
+          "dd_max": 50.00022014441948,
+          "r_vendite": -0.21869727608382375,
+          "r_stress": -0.1840448099429287,
+          "veto": true,
+          "motivi_veto": [
+            "base non positiva (-0.13553767863828076)",
+            "range 20': R medio -0.14672586066564713 ≤ 0",
+            "range 45': R medio -0.11649967337247291 ≤ 0",
+            "tetto 1,6: R medio -0.12635530185088475 ≤ 0",
+            "tetto 2,5: R medio -0.11988039653083205 ≤ 0"
+          ],
+          "promossa": false,
+          "falliti": [
+            "R medio netto",
+            "Sharpe per trade",
+            "sopra il 95° percentile del confronto casuale",
+            "batte «compro sempre» e «vendo sempre»",
+            "R medio delle vendite",
+            "drawdown massimo (R)",
+            "nessun veto di robustezza",
+            "R medio nello scenario di stress"
+          ]
+        }
+      }
+    },
+    {
+      "spinta": 0.0,
+      "seme": 9,
+      "varianti": {
+        "V-T": {
+          "n": 304,
+          "r_medio": 0.015018208963222649,
+          "errore_std": 0.06186142709051617,
+          "sharpe": 0.013923916698841323,
+          "dd_max": 18.3026275280438,
+          "r_vendite": -0.0031349255609845793,
+          "r_stress": -0.01947834737069127,
+          "veto": true,
+          "motivi_veto": [
+            "range 45': R medio 0.0029 sotto il 50% della base 0.0150"
+          ],
+          "promossa": false,
+          "falliti": [
+            "R medio netto",
+            "Sharpe per trade",
+            "drawdown massimo (R)",
+            "nessun veto di robustezza",
+            "R medio nello scenario di stress"
+          ]
+        },
+        "V-S": {
+          "n": 304,
+          "r_medio": 0.06474235975770234,
+          "errore_std": 0.07783182736022737,
+          "sharpe": 0.047708361990467525,
+          "dd_max": 18.006447475497406,
+          "r_vendite": 0.02493291509078366,
+          "r_stress": 0.002766102401845092,
+          "veto": false,
+          "motivi_veto": [],
+          "promossa": false,
+          "falliti": [
+            "Sharpe per trade",
+            "drawdown massimo (R)"
+          ]
+        }
+      }
+    },
+    {
+      "spinta": 0.0,
+      "seme": 10,
+      "varianti": {
+        "V-T": {
+          "n": 295,
+          "r_medio": -0.009684278954128834,
+          "errore_std": 0.06338131740175985,
+          "sharpe": -0.008896005051378985,
+          "dd_max": 16.68999669286883,
+          "r_vendite": 0.07809323678314548,
+          "r_stress": -0.06247601747622892,
+          "veto": true,
+          "motivi_veto": [
+            "base non positiva (-0.009684278954128834)",
+            "range 20': R medio -0.05247827895615652 ≤ 0",
+            "range 45': R medio -0.032761330084410775 ≤ 0",
+            "tetto 2,5: R medio -0.022799088277628547 ≤ 0",
+            "target 1,2: R medio -0.012842722106968444 ≤ 0",
+            "target 2,0: R medio -0.007464404548480235 ≤ 0"
+          ],
+          "promossa": false,
+          "falliti": [
+            "R medio netto",
+            "Sharpe per trade",
+            "numero di trade",
+            "sopra il 95° percentile del confronto casuale",
+            "batte «compro sempre» e «vendo sempre»",
+            "drawdown massimo (R)",
+            "nessun veto di robustezza",
+            "R medio nello scenario di stress"
+          ]
+        },
+        "V-S": {
+          "n": 295,
+          "r_medio": -0.009796173015264798,
+          "errore_std": 0.07745392871886195,
+          "sharpe": -0.007363800046209514,
+          "dd_max": 17.98651546475388,
+          "r_vendite": 0.012522219196770691,
+          "r_stress": -0.06652705956564117,
+          "veto": true,
+          "motivi_veto": [
+            "base non positiva (-0.009796173015264798)",
+            "range 20': R medio -0.05278322028050129 ≤ 0",
+            "range 45': R medio -0.014932667325179453 ≤ 0",
+            "tetto 1,6: R medio -0.022669180419045514 ≤ 0",
+            "tetto 2,5: R medio -0.02065994822845263 ≤ 0"
+          ],
+          "promossa": false,
+          "falliti": [
+            "R medio netto",
+            "Sharpe per trade",
+            "numero di trade",
+            "sopra il 95° percentile del confronto casuale",
+            "drawdown massimo (R)",
+            "nessun veto di robustezza",
+            "R medio nello scenario di stress"
+          ]
+        }
+      }
+    },
+    {
+      "spinta": 0.0,
+      "seme": 11,
+      "varianti": {
+        "V-T": {
+          "n": 307,
+          "r_medio": -0.014875866732474378,
+          "errore_std": 0.06167832653851602,
+          "sharpe": -0.01376513608858662,
+          "dd_max": 38.635270135504854,
+          "r_vendite": -0.06136321865602911,
+          "r_stress": -0.06818264664136832,
+          "veto": true,
+          "motivi_veto": [
+            "base non positiva (-0.014875866732474378)",
+            "range 20': R medio -0.04242056783854481 ≤ 0",
+            "range 45': R medio -0.042708918770273586 ≤ 0",
+            "tetto 2,5: R medio -0.0014777967988264262 ≤ 0"
+          ],
+          "promossa": false,
+          "falliti": [
+            "R medio netto",
+            "Sharpe per trade",
+            "sopra il 95° percentile del confronto casuale",
+            "batte «compro sempre» e «vendo sempre»",
+            "R medio delle vendite",
+            "drawdown massimo (R)",
+            "nessun veto di robustezza",
+            "R medio nello scenario di stress"
+          ]
+        },
+        "V-S": {
+          "n": 307,
+          "r_medio": 0.004609987887367173,
+          "errore_std": 0.07392947624837048,
+          "sharpe": 0.0035588769072758828,
+          "dd_max": 49.75581720095986,
+          "r_vendite": -0.05639739415040804,
+          "r_stress": -0.05306659470766775,
+          "veto": true,
+          "motivi_veto": [
+            "range 20': R medio -0.06713866528828027 ≤ 0",
+            "range 45': R medio -0.046163229194901935 ≤ 0"
+          ],
+          "promossa": false,
+          "falliti": [
+            "R medio netto",
+            "Sharpe per trade",
+            "sopra il 95° percentile del confronto casuale",
+            "batte «compro sempre» e «vendo sempre»",
+            "R medio delle vendite",
+            "drawdown massimo (R)",
+            "nessun veto di robustezza",
+            "R medio nello scenario di stress"
+          ]
+        }
+      }
+    },
+    {
+      "spinta": 0.0,
+      "seme": 12,
+      "varianti": {
+        "V-T": {
+          "n": 331,
+          "r_medio": 0.03620254455167267,
+          "errore_std": 0.060188967466345195,
+          "sharpe": 0.033060407827491506,
+          "dd_max": 15.04571343182558,
+          "r_vendite": 0.02590133349202127,
+          "r_stress": -0.006218484725113908,
+          "veto": true,
+          "motivi_veto": [
+            "range 45': R medio -0.03805093192887032 ≤ 0"
+          ],
+          "promossa": false,
+          "falliti": [
+            "R medio netto",
+            "Sharpe per trade",
+            "drawdown massimo (R)",
+            "nessun veto di robustezza",
+            "R medio nello scenario di stress"
+          ]
+        },
+        "V-S": {
+          "n": 331,
+          "r_medio": 0.012023157818603967,
+          "errore_std": 0.06725334911091313,
+          "sharpe": 0.009826313923090055,
+          "dd_max": 15.946978850058558,
+          "r_vendite": -0.010829363945131601,
+          "r_stress": -0.04578305773971873,
+          "veto": true,
+          "motivi_veto": [
+            "range 45': R medio -0.044893382182926746 ≤ 0",
+            "tetto 2,5: R medio 0.0040 sotto il 50% della base 0.0120"
+          ],
+          "promossa": false,
+          "falliti": [
+            "R medio netto",
+            "Sharpe per trade",
+            "sopra il 95° percentile del confronto casuale",
+            "batte «compro sempre» e «vendo sempre»",
+            "drawdown massimo (R)",
+            "nessun veto di robustezza",
+            "R medio nello scenario di stress"
+          ]
+        }
+      }
+    },
+    {
+      "spinta": 0.0,
+      "seme": 13,
+      "varianti": {
+        "V-T": {
+          "n": 320,
+          "r_medio": -0.04401418920150115,
+          "errore_std": 0.06072461023732726,
+          "sharpe": -0.04051846469020069,
+          "dd_max": 32.90598559559955,
+          "r_vendite": -0.044494730702072695,
+          "r_stress": -0.07058423531150615,
+          "veto": true,
+          "motivi_veto": [
+            "base non positiva (-0.04401418920150115)",
+            "range 20': R medio -0.1571346951010241 ≤ 0",
+            "range 45': R medio -0.02374385973352389 ≤ 0",
+            "tetto 1,6: R medio -0.027703590803430933 ≤ 0",
+            "tetto 2,5: R medio -0.049084888880177945 ≤ 0",
+            "target 1,2: R medio -0.05703333110527045 ≤ 0",
+            "target 2,0: R medio -0.05258697800662616 ≤ 0"
+          ],
+          "promossa": false,
+          "falliti": [
+            "R medio netto",
+            "Sharpe per trade",
+            "sopra il 95° percentile del confronto casuale",
+            "drawdown massimo (R)",
+            "nessun veto di robustezza",
+            "R medio nello scenario di stress"
+          ]
+        },
+        "V-S": {
+          "n": 320,
+          "r_medio": -0.03199823673023809,
+          "errore_std": 0.07211056530093848,
+          "sharpe": -0.024805738309754927,
+          "dd_max": 33.88971466482594,
+          "r_vendite": -0.008410985340969459,
+          "r_stress": -0.08752627163864751,
+          "veto": true,
+          "motivi_veto": [
+            "base non positiva (-0.03199823673023809)",
+            "range 20': R medio -0.17219292905181505 ≤ 0",
+            "range 45': R medio -0.04640049033507203 ≤ 0",
+            "tetto 1,6: R medio -0.014625037979209717 ≤ 0",
+            "tetto 2,5: R medio -0.03724845695770172 ≤ 0"
+          ],
+          "promossa": false,
+          "falliti": [
+            "R medio netto",
+            "Sharpe per trade",
+            "sopra il 95° percentile del confronto casuale",
+            "drawdown massimo (R)",
+            "nessun veto di robustezza",
+            "R medio nello scenario di stress"
+          ]
+        }
+      }
+    },
+    {
+      "spinta": 0.0,
+      "seme": 14,
+      "varianti": {
+        "V-T": {
+          "n": 304,
+          "r_medio": -0.1466564213667226,
+          "errore_std": 0.05957927829035445,
+          "sharpe": -0.14117865934322663,
+          "dd_max": 49.63831286747385,
+          "r_vendite": -0.15738243876518032,
+          "r_stress": -0.1853330929896522,
+          "veto": true,
+          "motivi_veto": [
+            "base non positiva (-0.1466564213667226)",
+            "range 20': R medio -0.13400371887528958 ≤ 0",
+            "range 45': R medio -0.07348004664447297 ≤ 0",
+            "tetto 1,6: R medio -0.12420182136930494 ≤ 0",
+            "tetto 2,5: R medio -0.13924944986248727 ≤ 0",
+            "target 1,2: R medio -0.11252544712357694 ≤ 0",
+            "target 2,0: R medio -0.1579722474060009 ≤ 0"
+          ],
+          "promossa": false,
+          "falliti": [
+            "R medio netto",
+            "Sharpe per trade",
+            "sopra il 95° percentile del confronto casuale",
+            "batte «compro sempre» e «vendo sempre»",
+            "R medio delle vendite",
+            "drawdown massimo (R)",
+            "nessun veto di robustezza",
+            "R medio nello scenario di stress"
+          ]
+        },
+        "V-S": {
+          "n": 304,
+          "r_medio": -0.11490882195990014,
+          "errore_std": 0.07341371293539198,
+          "sharpe": -0.08977168795880171,
+          "dd_max": 48.50800895098847,
+          "r_vendite": -0.15749388387166435,
+          "r_stress": -0.16538675412878723,
+          "veto": true,
+          "motivi_veto": [
+            "base non positiva (-0.11490882195990014)",
+            "range 20': R medio -0.1283248683757846 ≤ 0",
+            "range 45': R medio -0.05757300733473911 ≤ 0",
+            "tetto 1,6: R medio -0.09437173450901518 ≤ 0",
+            "tetto 2,5: R medio -0.10775843797492832 ≤ 0"
+          ],
+          "promossa": false,
+          "falliti": [
+            "R medio netto",
+            "Sharpe per trade",
+            "sopra il 95° percentile del confronto casuale",
+            "batte «compro sempre» e «vendo sempre»",
+            "R medio delle vendite",
+            "drawdown massimo (R)",
+            "nessun veto di robustezza",
+            "R medio nello scenario di stress"
+          ]
+        }
+      }
+    },
+    {
+      "spinta": 0.0,
+      "seme": 15,
+      "varianti": {
+        "V-T": {
+          "n": 301,
+          "r_medio": 0.005583153577492256,
+          "errore_std": 0.06141908339521716,
+          "sharpe": 0.005239538014480128,
+          "dd_max": 16.850701380060947,
+          "r_vendite": 0.011499654887708972,
+          "r_stress": -0.03919231158309288,
+          "veto": true,
+          "motivi_veto": [
+            "range 45': R medio -0.06650752648711504 ≤ 0",
+            "tetto 2,5: R medio -4.2306794444993987e-05 ≤ 0"
+          ],
+          "promossa": false,
+          "falliti": [
+            "R medio netto",
+            "Sharpe per trade",
+            "sopra il 95° percentile del confronto casuale",
+            "drawdown massimo (R)",
+            "nessun veto di robustezza",
+            "R medio nello scenario di stress"
+          ]
+        },
+        "V-S": {
+          "n": 301,
+          "r_medio": 0.018091442909088293,
+          "errore_std": 0.07383208090580735,
+          "sharpe": 0.01412358179169445,
+          "dd_max": 16.098827212668745,
+          "r_vendite": 0.08307619477380085,
+          "r_stress": -0.03983681588381615,
+          "veto": true,
+          "motivi_veto": [
+            "range 45': R medio -0.0759476699492425 ≤ 0",
+            "tetto 2,5: R medio 0.0056 sotto il 50% della base 0.0181"
+          ],
+          "promossa": false,
+          "falliti": [
+            "R medio netto",
+            "Sharpe per trade",
+            "sopra il 95° percentile del confronto casuale",
+            "drawdown massimo (R)",
+            "nessun veto di robustezza",
+            "R medio nello scenario di stress"
+          ]
+        }
+      }
+    },
+    {
+      "spinta": 0.0,
+      "seme": 16,
+      "varianti": {
+        "V-T": {
+          "n": 302,
+          "r_medio": -0.08051135220640247,
+          "errore_std": 0.06193027692534507,
+          "sharpe": -0.07480844498284991,
+          "dd_max": 32.0965574732901,
+          "r_vendite": -0.07998653861659526,
+          "r_stress": -0.1239828487218597,
+          "veto": true,
+          "motivi_veto": [
+            "base non positiva (-0.08051135220640247)",
+            "range 45': R medio -0.04606661119104662 ≤ 0",
+            "tetto 1,6: R medio -0.08360608187219792 ≤ 0",
+            "tetto 2,5: R medio -0.07869066966166702 ≤ 0",
+            "target 1,2: R medio -0.058219744272103115 ≤ 0",
+            "target 2,0: R medio -0.06651525044000191 ≤ 0"
+          ],
+          "promossa": false,
+          "falliti": [
+            "R medio netto",
+            "Sharpe per trade",
+            "sopra il 95° percentile del confronto casuale",
+            "batte «compro sempre» e «vendo sempre»",
+            "R medio delle vendite",
+            "drawdown massimo (R)",
+            "nessun veto di robustezza",
+            "R medio nello scenario di stress"
+          ]
+        },
+        "V-S": {
+          "n": 302,
+          "r_medio": -0.06745735767402256,
+          "errore_std": 0.07557911263617584,
+          "sharpe": -0.05135988772041049,
+          "dd_max": 34.480697440580634,
+          "r_vendite": -0.0799967314161052,
+          "r_stress": -0.12150968272149212,
+          "veto": true,
+          "motivi_veto": [
+            "base non positiva (-0.06745735767402256)",
+            "range 45': R medio -0.04359357346187453 ≤ 0",
+            "tetto 1,6: R medio -0.05913796630037399 ≤ 0",
+            "tetto 2,5: R medio -0.0586680819553744 ≤ 0"
+          ],
+          "promossa": false,
+          "falliti": [
+            "R medio netto",
+            "Sharpe per trade",
+            "sopra il 95° percentile del confronto casuale",
+            "batte «compro sempre» e «vendo sempre»",
+            "R medio delle vendite",
+            "drawdown massimo (R)",
+            "nessun veto di robustezza",
+            "R medio nello scenario di stress"
+          ]
+        }
+      }
+    },
+    {
+      "spinta": 0.0,
+      "seme": 17,
+      "varianti": {
+        "V-T": {
+          "n": 320,
+          "r_medio": -0.06821095809331675,
+          "errore_std": 0.05988225150413405,
+          "sharpe": -0.06367677203007135,
+          "dd_max": 35.154547514621754,
+          "r_vendite": -0.07361851114236301,
+          "r_stress": -0.11072164850998306,
+          "veto": true,
+          "motivi_veto": [
+            "base non positiva (-0.06821095809331675)",
+            "range 45': R medio -0.055298423531438455 ≤ 0",
+            "tetto 1,6: R medio -0.05446349826528527 ≤ 0",
+            "tetto 2,5: R medio -0.06531857559524812 ≤ 0",
+            "target 1,2: R medio -0.06556228720642007 ≤ 0",
+            "target 2,0: R medio -0.0673975476770773 ≤ 0"
+          ],
+          "promossa": false,
+          "falliti": [
+            "R medio netto",
+            "Sharpe per trade",
+            "sopra il 95° percentile del confronto casuale",
+            "R medio delle vendite",
+            "drawdown massimo (R)",
+            "nessun veto di robustezza",
+            "R medio nello scenario di stress"
+          ]
+        },
+        "V-S": {
+          "n": 320,
+          "r_medio": -0.07633951770961647,
+          "errore_std": 0.06871769452365802,
+          "sharpe": -0.062102036510219005,
+          "dd_max": 45.51260377228012,
+          "r_vendite": -0.051633611522313765,
+          "r_stress": -0.12879789935458097,
+          "veto": true,
+          "motivi_veto": [
+            "base non positiva (-0.07633951770961647)",
+            "range 45': R medio -0.045501632032861686 ≤ 0",
+            "tetto 1,6: R medio -0.06524678041824275 ≤ 0",
+            "tetto 2,5: R medio -0.07655472695684828 ≤ 0"
+          ],
+          "promossa": false,
+          "falliti": [
+            "R medio netto",
+            "Sharpe per trade",
+            "sopra il 95° percentile del confronto casuale",
+            "batte «compro sempre» e «vendo sempre»",
+            "R medio delle vendite",
+            "drawdown massimo (R)",
+            "nessun veto di robustezza",
+            "R medio nello scenario di stress"
+          ]
+        }
+      }
+    },
+    {
+      "spinta": 0.0,
+      "seme": 18,
+      "varianti": {
+        "V-T": {
+          "n": 320,
+          "r_medio": -0.1062145498489079,
+          "errore_std": 0.059599497601737446,
+          "sharpe": -0.09962456195888066,
+          "dd_max": 45.508033889667075,
+          "r_vendite": -0.05726653201400699,
+          "r_stress": -0.15439210104960716,
+          "veto": true,
+          "motivi_veto": [
+            "base non positiva (-0.1062145498489079)",
+            "range 45': R medio -0.1493951102597522 ≤ 0",
+            "tetto 1,6: R medio -0.11834245841826509 ≤ 0",
+            "tetto 2,5: R medio -0.09487458137212158 ≤ 0",
+            "target 1,2: R medio -0.12107313978780178 ≤ 0",
+            "target 2,0: R medio -0.13425293012638906 ≤ 0"
+          ],
+          "promossa": false,
+          "falliti": [
+            "R medio netto",
+            "Sharpe per trade",
+            "sopra il 95° percentile del confronto casuale",
+            "batte «compro sempre» e «vendo sempre»",
+            "R medio delle vendite",
+            "drawdown massimo (R)",
+            "nessun veto di robustezza",
+            "R medio nello scenario di stress"
+          ]
+        },
+        "V-S": {
+          "n": 320,
+          "r_medio": -0.0903731641053644,
+          "errore_std": 0.07303014245633649,
+          "sharpe": -0.06917709985372114,
+          "dd_max": 50.36200102482853,
+          "r_vendite": -0.06841386617844245,
+          "r_stress": -0.14210584886355357,
+          "veto": true,
+          "motivi_veto": [
+            "base non positiva (-0.0903731641053644)",
+            "range 20': R medio -0.027694205750088168 ≤ 0",
+            "range 45': R medio -0.14145291360354792 ≤ 0",
+            "tetto 1,6: R medio -0.10581119119357299 ≤ 0",
+            "tetto 2,5: R medio -0.08078255943589648 ≤ 0"
+          ],
+          "promossa": false,
+          "falliti": [
+            "R medio netto",
+            "Sharpe per trade",
+            "sopra il 95° percentile del confronto casuale",
+            "batte «compro sempre» e «vendo sempre»",
+            "R medio delle vendite",
+            "drawdown massimo (R)",
+            "nessun veto di robustezza",
+            "R medio nello scenario di stress"
+          ]
+        }
+      }
+    },
+    {
+      "spinta": 0.0,
+      "seme": 19,
+      "varianti": {
+        "V-T": {
+          "n": 316,
+          "r_medio": -0.07315805362269351,
+          "errore_std": 0.06068664152948462,
+          "sharpe": -0.0678149580465742,
+          "dd_max": 39.78974349110496,
+          "r_vendite": -0.1044135144520325,
+          "r_stress": -0.11454238038428584,
+          "veto": true,
+          "motivi_veto": [
+            "base non positiva (-0.07315805362269351)",
+            "range 20': R medio -0.23246333264512203 ≤ 0",
+            "range 45': R medio -0.050840573352904324 ≤ 0",
+            "tetto 1,6: R medio -0.09920616119717489 ≤ 0",
+            "tetto 2,5: R medio -0.07715089169351597 ≤ 0",
+            "target 1,2: R medio -0.07162844308561368 ≤ 0",
+            "target 2,0: R medio -0.04105344948251207 ≤ 0"
+          ],
+          "promossa": false,
+          "falliti": [
+            "R medio netto",
+            "Sharpe per trade",
+            "sopra il 95° percentile del confronto casuale",
+            "batte «compro sempre» e «vendo sempre»",
+            "R medio delle vendite",
+            "drawdown massimo (R)",
+            "nessun veto di robustezza",
+            "R medio nello scenario di stress"
+          ]
+        },
+        "V-S": {
+          "n": 316,
+          "r_medio": -0.05102345119652813,
+          "errore_std": 0.07189467005574382,
+          "sharpe": -0.03992359069190622,
+          "dd_max": 39.97393624959674,
+          "r_vendite": -0.10037241637363252,
+          "r_stress": -0.10426635615314764,
+          "veto": true,
+          "motivi_veto": [
+            "base non positiva (-0.05102345119652813)",
+            "range 20': R medio -0.18692085766113742 ≤ 0",
+            "range 45': R medio -0.06615897461944256 ≤ 0",
+            "tetto 1,6: R medio -0.09180913295719434 ≤ 0",
+            "tetto 2,5: R medio -0.0557608783397904 ≤ 0"
+          ],
+          "promossa": false,
+          "falliti": [
+            "R medio netto",
+            "Sharpe per trade",
+            "sopra il 95° percentile del confronto casuale",
+            "batte «compro sempre» e «vendo sempre»",
+            "R medio delle vendite",
+            "drawdown massimo (R)",
+            "nessun veto di robustezza",
+            "R medio nello scenario di stress"
+          ]
+        }
+      }
+    },
+    {
+      "spinta": 0.0,
+      "seme": 20,
+      "varianti": {
+        "V-T": {
+          "n": 307,
+          "r_medio": -0.1305199125083827,
+          "errore_std": 0.06035570191170002,
+          "sharpe": -0.12342106263655277,
+          "dd_max": 42.514824642057725,
+          "r_vendite": -0.16860897753310053,
+          "r_stress": -0.1593946821435362,
+          "veto": true,
+          "motivi_veto": [
+            "base non positiva (-0.1305199125083827)",
+            "range 20': R medio -0.053166484826957384 ≤ 0",
+            "range 45': R medio -0.14514799110196178 ≤ 0",
+            "tetto 1,6: R medio -0.1573608230948725 ≤ 0",
+            "tetto 2,5: R medio -0.12888522704098263 ≤ 0",
+            "target 1,2: R medio -0.12254297618869307 ≤ 0",
+            "target 2,0: R medio -0.11243744406625475 ≤ 0"
+          ],
+          "promossa": false,
+          "falliti": [
+            "R medio netto",
+            "Sharpe per trade",
+            "sopra il 95° percentile del confronto casuale",
+            "batte «compro sempre» e «vendo sempre»",
+            "R medio delle vendite",
+            "drawdown massimo (R)",
+            "nessun veto di robustezza",
+            "R medio nello scenario di stress"
+          ]
+        },
+        "V-S": {
+          "n": 307,
+          "r_medio": -0.06803871929963987,
+          "errore_std": 0.07493030580272876,
+          "sharpe": -0.05182382181937941,
+          "dd_max": 26.688484843875575,
+          "r_vendite": -0.1361662229241033,
+          "r_stress": -0.12041953631261859,
+          "veto": true,
+          "motivi_veto": [
+            "base non positiva (-0.06803871929963987)",
+            "range 20': R medio -0.019215129797173124 ≤ 0",
+            "range 45': R medio -0.11522054254624034 ≤ 0",
+            "tetto 1,6: R medio -0.09043109546832573 ≤ 0",
+            "tetto 2,5: R medio -0.06760175638576199 ≤ 0"
+          ],
+          "promossa": false,
+          "falliti": [
+            "R medio netto",
+            "Sharpe per trade",
+            "sopra il 95° percentile del confronto casuale",
+            "batte «compro sempre» e «vendo sempre»",
+            "R medio delle vendite",
+            "drawdown massimo (R)",
+            "nessun veto di robustezza",
+            "R medio nello scenario di stress"
+          ]
+        }
+      }
+    },
+    {
+      "spinta": 0.005,
+      "seme": 1,
+      "varianti": {
+        "V-T": {
+          "n": 300,
+          "r_medio": 0.1524904425747246,
+          "errore_std": 0.06391350973961811,
+          "sharpe": 0.1377492777787303,
+          "dd_max": 17.968205517160577,
+          "r_vendite": 0.21203633327881552,
+          "r_stress": 0.08891883848863973,
+          "veto": true,
+          "motivi_veto": [
+            "range 45': R medio 0.0754 sotto il 50% della base 0.1525"
+          ],
+          "promossa": false,
+          "falliti": [
+            "drawdown massimo (R)",
+            "nessun veto di robustezza"
+          ]
+        },
+        "V-S": {
+          "n": 300,
+          "r_medio": 0.21668138984124496,
+          "errore_std": 0.08461643415051866,
+          "sharpe": 0.1478448719910495,
+          "dd_max": 15.284834392745339,
+          "r_vendite": 0.3034591670408867,
+          "r_stress": 0.14696067593789272,
+          "veto": true,
+          "motivi_veto": [
+            "range 45': R medio 0.1031 sotto il 50% della base 0.2167"
+          ],
+          "promossa": false,
+          "falliti": [
+            "drawdown massimo (R)",
+            "nessun veto di robustezza"
+          ]
+        }
+      }
+    },
+    {
+      "spinta": 0.005,
+      "seme": 2,
+      "varianti": {
+        "V-T": {
+          "n": 299,
+          "r_medio": 0.024054078900859175,
+          "errore_std": 0.06261709510737157,
+          "sharpe": 0.022215711187508126,
+          "dd_max": 11.793135172253294,
+          "r_vendite": -0.0834474007106735,
+          "r_stress": -0.032024873563161735,
+          "veto": true,
+          "motivi_veto": [
+            "range 45': R medio -0.019326232615703678 ≤ 0",
+            "target 1,2: R medio 0.0079 sotto il 50% della base 0.0241"
+          ],
+          "promossa": false,
+          "falliti": [
+            "R medio netto",
+            "Sharpe per trade",
+            "numero di trade",
+            "R medio delle vendite",
+            "nessun veto di robustezza",
+            "R medio nello scenario di stress"
+          ]
+        },
+        "V-S": {
+          "n": 299,
+          "r_medio": 0.0660348797528536,
+          "errore_std": 0.07770170414316593,
+          "sharpe": 0.04914815886316594,
+          "dd_max": 10.546278229007148,
+          "r_vendite": -0.021060582742200403,
+          "r_stress": 0.005185184287291496,
+          "veto": true,
+          "motivi_veto": [
+            "range 45': R medio 0.0022 sotto il 50% della base 0.0660"
+          ],
+          "promossa": false,
+          "falliti": [
+            "Sharpe per trade",
+            "numero di trade",
+            "nessun veto di robustezza"
+          ]
+        }
+      }
+    },
+    {
+      "spinta": 0.005,
+      "seme": 3,
+      "varianti": {
+        "V-T": {
+          "n": 319,
+          "r_medio": 0.08065911831356241,
+          "errore_std": 0.06059977195935154,
+          "sharpe": 0.07452245251740885,
+          "dd_max": 11.024778684356697,
+          "r_vendite": 0.08960658004702186,
+          "r_stress": 0.04748864770862828,
+          "veto": true,
+          "motivi_veto": [
+            "range 20': R medio 0.0360 sotto il 50% della base 0.0807"
+          ],
+          "promossa": false,
+          "falliti": [
+            "nessun veto di robustezza"
+          ]
+        },
+        "V-S": {
+          "n": 319,
+          "r_medio": 0.1758389673145335,
+          "errore_std": 0.07766041130913064,
+          "sharpe": 0.12677105268182318,
+          "dd_max": 8.173210922266378,
+          "r_vendite": 0.19146709835561151,
+          "r_stress": 0.10839533440856952,
+          "veto": true,
+          "motivi_veto": [
+            "range 20': R medio 0.0671 sotto il 50% della base 0.1758"
+          ],
+          "promossa": false,
+          "falliti": [
+            "nessun veto di robustezza"
+          ]
+        }
+      }
+    },
+    {
+      "spinta": 0.005,
+      "seme": 4,
+      "varianti": {
+        "V-T": {
+          "n": 295,
+          "r_medio": 0.15519568223285493,
+          "errore_std": 0.06422316509466354,
+          "sharpe": 0.14069443553143657,
+          "dd_max": 9.293550338553294,
+          "r_vendite": 0.22970873798922595,
+          "r_stress": 0.1199839021717376,
+          "veto": true,
+          "motivi_veto": [
+            "range 20': R medio 0.0637 sotto il 50% della base 0.1552"
+          ],
+          "promossa": false,
+          "falliti": [
+            "numero di trade",
+            "nessun veto di robustezza"
+          ]
+        },
+        "V-S": {
+          "n": 295,
+          "r_medio": 0.2792165678541283,
+          "errore_std": 0.08395112651311379,
+          "sharpe": 0.19364382307783426,
+          "dd_max": 11.740272513924124,
+          "r_vendite": 0.42312918134884825,
+          "r_stress": 0.20496375061275898,
+          "veto": false,
+          "motivi_veto": [],
+          "promossa": false,
+          "falliti": [
+            "numero di trade"
+          ]
+        }
+      }
+    },
+    {
+      "spinta": 0.005,
+      "seme": 5,
+      "varianti": {
+        "V-T": {
+          "n": 319,
+          "r_medio": 0.17466434149371096,
+          "errore_std": 0.061884843988523036,
+          "sharpe": 0.15802456697071268,
+          "dd_max": 16.978008558151373,
+          "r_vendite": 0.10947896337370723,
+          "r_stress": 0.12700078837197834,
+          "veto": false,
+          "motivi_veto": [],
+          "promossa": false,
+          "falliti": [
+            "drawdown massimo (R)"
+          ]
+        },
+        "V-S": {
+          "n": 319,
+          "r_medio": 0.22665660648976993,
+          "errore_std": 0.0775621662661364,
+          "sharpe": 0.16361499767406082,
+          "dd_max": 23.72315925520109,
+          "r_vendite": 0.14317577967864614,
+          "r_stress": 0.15785269577533684,
+          "veto": false,
+          "motivi_veto": [],
+          "promossa": false,
+          "falliti": [
+            "drawdown massimo (R)"
+          ]
+        }
+      }
+    },
+    {
+      "spinta": 0.005,
+      "seme": 6,
+      "varianti": {
+        "V-T": {
+          "n": 309,
+          "r_medio": 0.09102059977609343,
+          "errore_std": 0.06299683032274458,
+          "sharpe": 0.08219431012776475,
+          "dd_max": 13.923714661462387,
+          "r_vendite": 0.1896590542868121,
+          "r_stress": 0.042507939068260746,
+          "veto": true,
+          "motivi_veto": [
+            "range 45': R medio 0.0140 sotto il 50% della base 0.0910",
+            "target 1,2: R medio 0.0375 sotto il 50% della base 0.0910"
+          ],
+          "promossa": false,
+          "falliti": [
+            "drawdown massimo (R)",
+            "nessun veto di robustezza"
+          ]
+        },
+        "V-S": {
+          "n": 309,
+          "r_medio": 0.15520619661351912,
+          "errore_std": 0.07854758061118244,
+          "sharpe": 0.11240794393191511,
+          "dd_max": 13.923714661462409,
+          "r_vendite": 0.2124535945614303,
+          "r_stress": 0.08880828812762721,
+          "veto": true,
+          "motivi_veto": [
+            "range 45': R medio 0.0277 sotto il 50% della base 0.1552"
+          ],
+          "promossa": false,
+          "falliti": [
+            "drawdown massimo (R)",
+            "nessun veto di robustezza"
+          ]
+        }
+      }
+    },
+    {
+      "spinta": 0.005,
+      "seme": 7,
+      "varianti": {
+        "V-T": {
+          "n": 313,
+          "r_medio": 0.034105059462601284,
+          "errore_std": 0.06272906551658111,
+          "sharpe": 0.030731080089574335,
+          "dd_max": 22.012392011058274,
+          "r_vendite": -0.029318261626122163,
+          "r_stress": -0.004133028417689386,
+          "veto": true,
+          "motivi_veto": [
+            "range 20': R medio 0.0089 sotto il 50% della base 0.0341",
+            "tetto 1,6: R medio 0.0142 sotto il 50% della base 0.0341",
+            "target 1,2: R medio 0.0119 sotto il 50% della base 0.0341"
+          ],
+          "promossa": false,
+          "falliti": [
+            "R medio netto",
+            "Sharpe per trade",
+            "drawdown massimo (R)",
+            "nessun veto di robustezza",
+            "R medio nello scenario di stress"
+          ]
+        },
+        "V-S": {
+          "n": 313,
+          "r_medio": 0.1038917830683249,
+          "errore_std": 0.07455804597961224,
+          "sharpe": 0.07876159705148174,
+          "dd_max": 21.597602589186472,
+          "r_vendite": -0.0200335266005877,
+          "r_stress": 0.041557053486286195,
+          "veto": true,
+          "motivi_veto": [
+            "range 20': R medio 0.0374 sotto il 50% della base 0.1039"
+          ],
+          "promossa": false,
+          "falliti": [
+            "drawdown massimo (R)",
+            "nessun veto di robustezza"
+          ]
+        }
+      }
+    },
+    {
+      "spinta": 0.005,
+      "seme": 8,
+      "varianti": {
+        "V-T": {
+          "n": 325,
+          "r_medio": 0.05915805008488547,
+          "errore_std": 0.05980093745454228,
+          "sharpe": 0.05487369159610957,
+          "dd_max": 16.778439347584367,
+          "r_vendite": -0.07414846182993094,
+          "r_stress": 0.010244268718433097,
+          "veto": true,
+          "motivi_veto": [
+            "range 45': R medio 0.0119 sotto il 50% della base 0.0592"
+          ],
+          "promossa": false,
+          "falliti": [
+            "Sharpe per trade",
+            "R medio delle vendite",
+            "drawdown massimo (R)",
+            "nessun veto di robustezza"
+          ]
+        },
+        "V-S": {
+          "n": 325,
+          "r_medio": 0.11572021364368376,
+          "errore_std": 0.07553307178425764,
+          "sharpe": 0.0849826754017372,
+          "dd_max": 12.137385393377002,
+          "r_vendite": -0.030917435175179652,
+          "r_stress": 0.05270425485378924,
+          "veto": true,
+          "motivi_veto": [
+            "range 45': R medio 0.0567 sotto il 50% della base 0.1157"
+          ],
+          "promossa": false,
+          "falliti": [
+            "drawdown massimo (R)",
+            "nessun veto di robustezza"
+          ]
+        }
+      }
+    },
+    {
+      "spinta": 0.005,
+      "seme": 9,
+      "varianti": {
+        "V-T": {
+          "n": 304,
+          "r_medio": 0.1591163752375908,
+          "errore_std": 0.06328824025498947,
+          "sharpe": 0.14419661476160936,
+          "dd_max": 12.734909449617396,
+          "r_vendite": 0.15435103799505673,
+          "r_stress": 0.1116274698748824,
+          "veto": false,
+          "motivi_veto": [],
+          "promossa": false,
+          "falliti": [
+            "drawdown massimo (R)"
+          ]
+        },
+        "V-S": {
+          "n": 304,
+          "r_medio": 0.25915464157543383,
+          "errore_std": 0.08462644285398888,
+          "sharpe": 0.17563704167966265,
+          "dd_max": 12.421570912475659,
+          "r_vendite": 0.2148821808009919,
+          "r_stress": 0.18581795397473086,
+          "veto": false,
+          "motivi_veto": [],
+          "promossa": false,
+          "falliti": [
+            "drawdown massimo (R)"
+          ]
+        }
+      }
+    },
+    {
+      "spinta": 0.005,
+      "seme": 10,
+      "varianti": {
+        "V-T": {
+          "n": 295,
+          "r_medio": 0.15211758144150908,
+          "errore_std": 0.0644414117398356,
+          "sharpe": 0.1374369022205047,
+          "dd_max": 6.208244524458053,
+          "r_vendite": 0.2501321554813559,
+          "r_stress": 0.10939588206790586,
+          "veto": false,
+          "motivi_veto": [],
+          "promossa": false,
+          "falliti": [
+            "numero di trade"
+          ]
+        },
+        "V-S": {
+          "n": 295,
+          "r_medio": 0.22564906684314728,
+          "errore_std": 0.08423276989330038,
+          "sharpe": 0.1559701363070827,
+          "dd_max": 9.20257684989118,
+          "r_vendite": 0.2774248323974375,
+          "r_stress": 0.15517950524993251,
+          "veto": false,
+          "motivi_veto": [],
+          "promossa": false,
+          "falliti": [
+            "numero di trade"
+          ]
+        }
+      }
+    },
+    {
+      "spinta": 0.005,
+      "seme": 11,
+      "varianti": {
+        "V-T": {
+          "n": 307,
+          "r_medio": 0.13524858221789002,
+          "errore_std": 0.0631013079014749,
+          "sharpe": 0.12232780203730428,
+          "dd_max": 17.840474194174107,
+          "r_vendite": 0.1077294116427059,
+          "r_stress": 0.06917104748619281,
+          "veto": true,
+          "motivi_veto": [
+            "range 20': R medio 0.0499 sotto il 50% della base 0.1352"
+          ],
+          "promossa": false,
+          "falliti": [
+            "drawdown massimo (R)",
+            "nessun veto di robustezza"
+          ]
+        },
+        "V-S": {
+          "n": 307,
+          "r_medio": 0.2058427606327102,
+          "errore_std": 0.08076573154679426,
+          "sharpe": 0.14545855833081706,
+          "dd_max": 27.183595770029385,
+          "r_vendite": 0.1520800440741745,
+          "r_stress": 0.13648339037337395,
+          "veto": true,
+          "motivi_veto": [
+            "range 20': R medio 0.1029 sotto il 50% della base 0.2058",
+            "range 45': R medio 0.0996 sotto il 50% della base 0.2058"
+          ],
+          "promossa": false,
+          "falliti": [
+            "drawdown massimo (R)",
+            "nessun veto di robustezza"
+          ]
+        }
+      }
+    },
+    {
+      "spinta": 0.005,
+      "seme": 12,
+      "varianti": {
+        "V-T": {
+          "n": 331,
+          "r_medio": 0.20539188842438116,
+          "errore_std": 0.06058381921540382,
+          "sharpe": 0.18634281125939806,
+          "dd_max": 8.101632802719969,
+          "r_vendite": 0.1898143798839334,
+          "r_stress": 0.1571292463433881,
+          "veto": false,
+          "motivi_veto": [],
+          "promossa": true,
+          "falliti": []
+        },
+        "V-S": {
+          "n": 331,
+          "r_medio": 0.24973680711594906,
+          "errore_std": 0.0733344696539266,
+          "sharpe": 0.18718041357322923,
+          "dd_max": 8.479468437381907,
+          "r_vendite": 0.24053397645747507,
+          "r_stress": 0.17834193523282213,
+          "veto": false,
+          "motivi_veto": [],
+          "promossa": true,
+          "falliti": []
+        }
+      }
+    },
+    {
+      "spinta": 0.005,
+      "seme": 13,
+      "varianti": {
+        "V-T": {
+          "n": 320,
+          "r_medio": 0.14534778101238102,
+          "errore_std": 0.06265175138031949,
+          "sharpe": 0.1296881218649102,
+          "dd_max": 12.112147047588877,
+          "r_vendite": 0.12331218697074345,
+          "r_stress": 0.09141984112581054,
+          "veto": true,
+          "motivi_veto": [
+            "range 20': R medio 0.0578 sotto il 50% della base 0.1453"
+          ],
+          "promossa": false,
+          "falliti": [
+            "drawdown massimo (R)",
+            "nessun veto di robustezza"
+          ]
+        },
+        "V-S": {
+          "n": 320,
+          "r_medio": 0.26921507497883396,
+          "errore_std": 0.08317269418309137,
+          "sharpe": 0.18094376229270806,
+          "dd_max": 14.522331302793315,
+          "r_vendite": 0.3019033645124598,
+          "r_stress": 0.19546900288952257,
+          "veto": true,
+          "motivi_veto": [
+            "range 20': R medio 0.1205 sotto il 50% della base 0.2692"
+          ],
+          "promossa": false,
+          "falliti": [
+            "drawdown massimo (R)",
+            "nessun veto di robustezza"
+          ]
+        }
+      }
+    },
+    {
+      "spinta": 0.005,
+      "seme": 14,
+      "varianti": {
+        "V-T": {
+          "n": 304,
+          "r_medio": 0.0530050929213688,
+          "errore_std": 0.06289713369240482,
+          "sharpe": 0.048333690176177106,
+          "dd_max": 20.735258320302094,
+          "r_vendite": 0.06213009465989494,
+          "r_stress": -0.003464769509977889,
+          "veto": true,
+          "motivi_veto": [
+            "target 1,2: R medio 0.0231 sotto il 50% della base 0.0530"
+          ],
+          "promossa": false,
+          "falliti": [
+            "Sharpe per trade",
+            "drawdown massimo (R)",
+            "nessun veto di robustezza",
+            "R medio nello scenario di stress"
+          ]
+        },
+        "V-S": {
+          "n": 304,
+          "r_medio": 0.12105913035915586,
+          "errore_std": 0.08081996894053968,
+          "sharpe": 0.08590967553300662,
+          "dd_max": 23.214126673137542,
+          "r_vendite": 0.06930348113511531,
+          "r_stress": 0.05674236424113875,
+          "veto": false,
+          "motivi_veto": [],
+          "promossa": false,
+          "falliti": [
+            "drawdown massimo (R)"
+          ]
+        }
+      }
+    },
+    {
+      "spinta": 0.005,
+      "seme": 15,
+      "varianti": {
+        "V-T": {
+          "n": 301,
+          "r_medio": 0.21036704392391606,
+          "errore_std": 0.06335191415252087,
+          "sharpe": 0.19139681877108092,
+          "dd_max": 10.830869968560563,
+          "r_vendite": 0.20404956515238826,
+          "r_stress": 0.15462429840682335,
+          "veto": true,
+          "motivi_veto": [
+            "range 45': R medio 0.0640 sotto il 50% della base 0.2104"
+          ],
+          "promossa": false,
+          "falliti": [
+            "nessun veto di robustezza"
+          ]
+        },
+        "V-S": {
+          "n": 301,
+          "r_medio": 0.2548468095211416,
+          "errore_std": 0.08048104207672051,
+          "sharpe": 0.18251659670417134,
+          "dd_max": 10.859832048525533,
+          "r_vendite": 0.3126146069090842,
+          "r_stress": 0.18338804705993778,
+          "veto": true,
+          "motivi_veto": [
+            "range 45': R medio 0.0970 sotto il 50% della base 0.2548"
+          ],
+          "promossa": false,
+          "falliti": [
+            "nessun veto di robustezza"
+          ]
+        }
+      }
+    },
+    {
+      "spinta": 0.005,
+      "seme": 16,
+      "varianti": {
+        "V-T": {
+          "n": 302,
+          "r_medio": 0.06877710508207974,
+          "errore_std": 0.06359856883077464,
+          "sharpe": 0.0622290366166821,
+          "dd_max": 12.55110394471717,
+          "r_vendite": 0.08082135686446076,
+          "r_stress": 0.01358968383950321,
+          "veto": false,
+          "motivi_veto": [],
+          "promossa": false,
+          "falliti": [
+            "drawdown massimo (R)"
+          ]
+        },
+        "V-S": {
+          "n": 302,
+          "r_medio": 0.14189730827085456,
+          "errore_std": 0.08287781766083031,
+          "sharpe": 0.0985218093343137,
+          "dd_max": 17.259654559560413,
+          "r_vendite": 0.11734424297753013,
+          "r_stress": 0.0755598043112637,
+          "veto": false,
+          "motivi_veto": [],
+          "promossa": false,
+          "falliti": [
+            "drawdown massimo (R)"
+          ]
+        }
+      }
+    },
+    {
+      "spinta": 0.005,
+      "seme": 17,
+      "varianti": {
+        "V-T": {
+          "n": 320,
+          "r_medio": 0.11657092160108681,
+          "errore_std": 0.0610935099490798,
+          "sharpe": 0.10666456433632801,
+          "dd_max": 8.514895407847227,
+          "r_vendite": 0.13018253489215043,
+          "r_stress": 0.07005500444092293,
+          "veto": false,
+          "motivi_veto": [],
+          "promossa": true,
+          "falliti": []
+        },
+        "V-S": {
+          "n": 320,
+          "r_medio": 0.17708418046724855,
+          "errore_std": 0.07595026431697391,
+          "sharpe": 0.13033933088502547,
+          "dd_max": 15.14134736537536,
+          "r_vendite": 0.23775120480950593,
+          "r_stress": 0.10954109390730528,
+          "veto": false,
+          "motivi_veto": [],
+          "promossa": false,
+          "falliti": [
+            "drawdown massimo (R)"
+          ]
+        }
+      }
+    },
+    {
+      "spinta": 0.005,
+      "seme": 18,
+      "varianti": {
+        "V-T": {
+          "n": 320,
+          "r_medio": 0.07285482945737995,
+          "errore_std": 0.0618546041315458,
+          "sharpe": 0.06584325994933195,
+          "dd_max": 11.309761177806536,
+          "r_vendite": 0.13972754319917338,
+          "r_stress": 0.019224550896502334,
+          "veto": true,
+          "motivi_veto": [
+            "range 45': R medio -0.008210539016566942 ≤ 0",
+            "target 1,2: R medio 0.0319 sotto il 50% della base 0.0729"
+          ],
+          "promossa": false,
+          "falliti": [
+            "nessun veto di robustezza"
+          ]
+        },
+        "V-S": {
+          "n": 320,
+          "r_medio": 0.15552820421761604,
+          "errore_std": 0.08105004602460043,
+          "sharpe": 0.10727064761428476,
+          "dd_max": 11.673969230998695,
+          "r_vendite": 0.2357977968722783,
+          "r_stress": 0.08923706629972838,
+          "veto": true,
+          "motivi_veto": [
+            "range 45': R medio 0.0362 sotto il 50% della base 0.1555"
+          ],
+          "promossa": false,
+          "falliti": [
+            "nessun veto di robustezza"
+          ]
+        }
+      }
+    },
+    {
+      "spinta": 0.005,
+      "seme": 19,
+      "varianti": {
+        "V-T": {
+          "n": 316,
+          "r_medio": 0.07205029301572329,
+          "errore_std": 0.062225737881377016,
+          "sharpe": 0.06513616044593797,
+          "dd_max": 12.772880814354506,
+          "r_vendite": 0.045896139157176795,
+          "r_stress": 0.04122214598511393,
+          "veto": true,
+          "motivi_veto": [
+            "range 20': R medio -0.0925843542054685 ≤ 0"
+          ],
+          "promossa": false,
+          "falliti": [
+            "drawdown massimo (R)",
+            "nessun veto di robustezza"
+          ]
+        },
+        "V-S": {
+          "n": 316,
+          "r_medio": 0.17705015013765402,
+          "errore_std": 0.07942829580435909,
+          "sharpe": 0.1253942186218217,
+          "dd_max": 14.415917652126225,
+          "r_vendite": 0.13092333952631177,
+          "r_stress": 0.11042528374100441,
+          "veto": true,
+          "motivi_veto": [
+            "range 20': R medio 0.0337 sotto il 50% della base 0.1771"
+          ],
+          "promossa": false,
+          "falliti": [
+            "drawdown massimo (R)",
+            "nessun veto di robustezza"
+          ]
+        }
+      }
+    },
+    {
+      "spinta": 0.005,
+      "seme": 20,
+      "varianti": {
+        "V-T": {
+          "n": 307,
+          "r_medio": 0.02129695712951591,
+          "errore_std": 0.062704762789533,
+          "sharpe": 0.019384198107544166,
+          "dd_max": 14.165972353575155,
+          "r_vendite": -0.011205703635246592,
+          "r_stress": -0.024451050099223656,
+          "veto": true,
+          "motivi_veto": [
+            "range 45': R medio -0.019940867331740754 ≤ 0",
+            "tetto 1,6: R medio -0.0017432468471215935 ≤ 0"
+          ],
+          "promossa": false,
+          "falliti": [
+            "R medio netto",
+            "Sharpe per trade",
+            "sopra il 95° percentile del confronto casuale",
+            "drawdown massimo (R)",
+            "nessun veto di robustezza",
+            "R medio nello scenario di stress"
+          ]
+        },
+        "V-S": {
+          "n": 307,
+          "r_medio": 0.1339080000721762,
+          "errore_std": 0.08184071953525603,
+          "sharpe": 0.09338301618501482,
+          "dd_max": 14.094084731232378,
+          "r_vendite": 0.04921562334611599,
+          "r_stress": 0.0703596308651832,
+          "veto": true,
+          "motivi_veto": [
+            "range 45': R medio 0.0380 sotto il 50% della base 0.1339"
+          ],
+          "promossa": false,
+          "falliti": [
+            "drawdown massimo (R)",
+            "nessun veto di robustezza"
+          ]
+        }
+      }
+    },
+    {
+      "spinta": 0.01,
+      "seme": 1,
+      "varianti": {
+        "V-T": {
+          "n": 300,
+          "r_medio": 0.3173695214202913,
+          "errore_std": 0.06277573961208628,
+          "sharpe": 0.29188565480367473,
+          "dd_max": 7.90739058184289,
+          "r_vendite": 0.3540504382112667,
+          "r_stress": 0.27877439181828007,
+          "veto": false,
+          "motivi_veto": [],
+          "promossa": true,
+          "falliti": []
+        },
+        "V-S": {
+          "n": 300,
+          "r_medio": 0.500511238142711,
+          "errore_std": 0.08981881308342689,
+          "sharpe": 0.3217258034858702,
+          "dd_max": 9.20720755178911,
+          "r_vendite": 0.5800328219138062,
+          "r_stress": 0.41489204906423355,
+          "veto": false,
+          "motivi_veto": [],
+          "promossa": true,
+          "falliti": []
+        }
+      }
+    },
+    {
+      "spinta": 0.01,
+      "seme": 2,
+      "varianti": {
+        "V-T": {
+          "n": 299,
+          "r_medio": 0.18560598493016198,
+          "errore_std": 0.0636900697519294,
+          "sharpe": 0.16853288584153572,
+          "dd_max": 7.385805393017527,
+          "r_vendite": 0.10511722289606643,
+          "r_stress": 0.14543452927314654,
+          "veto": false,
+          "motivi_veto": [],
+          "promossa": false,
+          "falliti": [
+            "numero di trade"
+          ]
+        },
+        "V-S": {
+          "n": 299,
+          "r_medio": 0.29965035314191574,
+          "errore_std": 0.08507926089925902,
+          "sharpe": 0.20368333217670925,
+          "dd_max": 7.302728731949557,
+          "r_vendite": 0.20880603933408298,
+          "r_stress": 0.22506706632863915,
+          "veto": false,
+          "motivi_veto": [],
+          "promossa": false,
+          "falliti": [
+            "numero di trade"
+          ]
+        }
+      }
+    },
+    {
+      "spinta": 0.01,
+      "seme": 3,
+      "varianti": {
+        "V-T": {
+          "n": 319,
+          "r_medio": 0.27756443793920016,
+          "errore_std": 0.0612199925695276,
+          "sharpe": 0.25384885490362347,
+          "dd_max": 7.64646532113872,
+          "r_vendite": 0.318912254459757,
+          "r_stress": 0.2138695927317605,
+          "veto": false,
+          "motivi_veto": [],
+          "promossa": true,
+          "falliti": []
+        },
+        "V-S": {
+          "n": 319,
+          "r_medio": 0.43953337158275796,
+          "errore_std": 0.08361278737720294,
+          "sharpe": 0.2943227355334644,
+          "dd_max": 6.558651832030106,
+          "r_vendite": 0.5005332442476004,
+          "r_stress": 0.3561024748174869,
+          "veto": false,
+          "motivi_veto": [],
+          "promossa": true,
+          "falliti": []
+        }
+      }
+    },
+    {
+      "spinta": 0.01,
+      "seme": 4,
+      "varianti": {
+        "V-T": {
+          "n": 295,
+          "r_medio": 0.31662114385574897,
+          "errore_std": 0.06410380052241964,
+          "sharpe": 0.2875710262261892,
+          "dd_max": 7.687682422665297,
+          "r_vendite": 0.39011855957322655,
+          "r_stress": 0.2731925417499979,
+          "veto": false,
+          "motivi_veto": [],
+          "promossa": false,
+          "falliti": [
+            "numero di trade"
+          ]
+        },
+        "V-S": {
+          "n": 295,
+          "r_medio": 0.5540281871143116,
+          "errore_std": 0.09106485949339249,
+          "sharpe": 0.3542175141571159,
+          "dd_max": 8.241377556039264,
+          "r_vendite": 0.7148803862956913,
+          "r_stress": 0.4638653685974184,
+          "veto": false,
+          "motivi_veto": [],
+          "promossa": false,
+          "falliti": [
+            "numero di trade"
+          ]
+        }
+      }
+    },
+    {
+      "spinta": 0.01,
+      "seme": 5,
+      "varianti": {
+        "V-T": {
+          "n": 319,
+          "r_medio": 0.29592455828884934,
+          "errore_std": 0.062263843333652556,
+          "sharpe": 0.26610298228136436,
+          "dd_max": 11.177657946933877,
+          "r_vendite": 0.23205680207054485,
+          "r_stress": 0.2534865655390155,
+          "veto": false,
+          "motivi_veto": [],
+          "promossa": true,
+          "falliti": []
+        },
+        "V-S": {
+          "n": 319,
+          "r_medio": 0.4434212815304909,
+          "errore_std": 0.0846752899015999,
+          "sharpe": 0.29320035988761156,
+          "dd_max": 14.335353248664404,
+          "r_vendite": 0.3490445233658966,
+          "r_stress": 0.3621767476294581,
+          "veto": false,
+          "motivi_veto": [],
+          "promossa": false,
+          "falliti": [
+            "drawdown massimo (R)"
+          ]
+        }
+      }
+    },
+    {
+      "spinta": 0.01,
+      "seme": 6,
+      "varianti": {
+        "V-T": {
+          "n": 309,
+          "r_medio": 0.26326937806407996,
+          "errore_std": 0.06229497085789478,
+          "sharpe": 0.24041863150901227,
+          "dd_max": 10.156625862540828,
+          "r_vendite": 0.34401914479922485,
+          "r_stress": 0.21565133912345102,
+          "veto": false,
+          "motivi_veto": [],
+          "promossa": true,
+          "falliti": []
+        },
+        "V-S": {
+          "n": 309,
+          "r_medio": 0.4415500849298454,
+          "errore_std": 0.08463025149037252,
+          "sharpe": 0.29680765759112865,
+          "dd_max": 12.547268118043903,
+          "r_vendite": 0.5215846150782893,
+          "r_stress": 0.3589135700363637,
+          "veto": false,
+          "motivi_veto": [],
+          "promossa": false,
+          "falliti": [
+            "drawdown massimo (R)"
+          ]
+        }
+      }
+    },
+    {
+      "spinta": 0.01,
+      "seme": 7,
+      "varianti": {
+        "V-T": {
+          "n": 313,
+          "r_medio": 0.1987157351986273,
+          "errore_std": 0.06299566685073403,
+          "sharpe": 0.17829920694462167,
+          "dd_max": 10.831313744024149,
+          "r_vendite": 0.17113340224500892,
+          "r_stress": 0.162358887820338,
+          "veto": false,
+          "motivi_veto": [],
+          "promossa": true,
+          "falliti": []
+        },
+        "V-S": {
+          "n": 313,
+          "r_medio": 0.3626866803135766,
+          "errore_std": 0.08162048527142088,
+          "sharpe": 0.25116566219553427,
+          "dd_max": 12.144535214988124,
+          "r_vendite": 0.2478501416647022,
+          "r_stress": 0.2852089286768749,
+          "veto": false,
+          "motivi_veto": [],
+          "promossa": false,
+          "falliti": [
+            "drawdown massimo (R)"
+          ]
+        }
+      }
+    },
+    {
+      "spinta": 0.01,
+      "seme": 8,
+      "varianti": {
+        "V-T": {
+          "n": 325,
+          "r_medio": 0.22566534681360353,
+          "errore_std": 0.06049558292800836,
+          "sharpe": 0.20691859818543176,
+          "dd_max": 9.867964475766748,
+          "r_vendite": 0.09592284172011542,
+          "r_stress": 0.17112254542548044,
+          "veto": false,
+          "motivi_veto": [],
+          "promossa": true,
+          "falliti": []
+        },
+        "V-S": {
+          "n": 325,
+          "r_medio": 0.3559092531847724,
+          "errore_std": 0.08203008085023171,
+          "sharpe": 0.24067138607411276,
+          "dd_max": 10.293583653936636,
+          "r_vendite": 0.22633526795875167,
+          "r_stress": 0.27859641672095053,
+          "veto": false,
+          "motivi_veto": [],
+          "promossa": true,
+          "falliti": []
+        }
+      }
+    },
+    {
+      "spinta": 0.01,
+      "seme": 9,
+      "varianti": {
+        "V-T": {
+          "n": 304,
+          "r_medio": 0.36272215203139,
+          "errore_std": 0.062466757723259166,
+          "sharpe": 0.3330338076295196,
+          "dd_max": 6.263468421321605,
+          "r_vendite": 0.320497883156714,
+          "r_stress": 0.30566029747971485,
+          "veto": false,
+          "motivi_veto": [],
+          "promossa": true,
+          "falliti": []
+        },
+        "V-S": {
+          "n": 304,
+          "r_medio": 0.5743393892768704,
+          "errore_std": 0.09071835241601077,
+          "sharpe": 0.36310870119613436,
+          "dd_max": 6.571410529727643,
+          "r_vendite": 0.49298142457815747,
+          "r_stress": 0.48206104269385786,
+          "veto": false,
+          "motivi_veto": [],
+          "promossa": true,
+          "falliti": []
+        }
+      }
+    },
+    {
+      "spinta": 0.01,
+      "seme": 10,
+      "varianti": {
+        "V-T": {
+          "n": 295,
+          "r_medio": 0.30758395657556764,
+          "errore_std": 0.06369208433148968,
+          "sharpe": 0.28116885329268215,
+          "dd_max": 4.351594856095318,
+          "r_vendite": 0.38115561052924907,
+          "r_stress": 0.26671310394973685,
+          "veto": false,
+          "motivi_veto": [],
+          "promossa": false,
+          "falliti": [
+            "numero di trade"
+          ]
+        },
+        "V-S": {
+          "n": 295,
+          "r_medio": 0.487787379731021,
+          "errore_std": 0.09069847590395161,
+          "sharpe": 0.3131263117883506,
+          "dd_max": 7.738117187595549,
+          "r_vendite": 0.5156317228668368,
+          "r_stress": 0.4022378850900107,
+          "veto": false,
+          "motivi_veto": [],
+          "promossa": false,
+          "falliti": [
+            "numero di trade"
+          ]
+        }
+      }
+    },
+    {
+      "spinta": 0.01,
+      "seme": 11,
+      "varianti": {
+        "V-T": {
+          "n": 307,
+          "r_medio": 0.31843411014440437,
+          "errore_std": 0.06307532994601425,
+          "sharpe": 0.28813158200152966,
+          "dd_max": 7.678816008103588,
+          "r_vendite": 0.28348994209752965,
+          "r_stress": 0.2567539857643112,
+          "veto": false,
+          "motivi_veto": [],
+          "promossa": true,
+          "falliti": []
+        },
+        "V-S": {
+          "n": 307,
+          "r_medio": 0.4752211947475885,
+          "errore_std": 0.08660785997598326,
+          "sharpe": 0.3131621791774849,
+          "dd_max": 7.670455570207835,
+          "r_vendite": 0.41755061538434457,
+          "r_stress": 0.3897253244459115,
+          "veto": false,
+          "motivi_veto": [],
+          "promossa": true,
+          "falliti": []
+        }
+      }
+    },
+    {
+      "spinta": 0.01,
+      "seme": 12,
+      "varianti": {
+        "V-T": {
+          "n": 331,
+          "r_medio": 0.3442663825268255,
+          "errore_std": 0.05969495129142023,
+          "sharpe": 0.3169881425491343,
+          "dd_max": 5.511018161197653,
+          "r_vendite": 0.2991717219200683,
+          "r_stress": 0.30154700029127673,
+          "veto": false,
+          "motivi_veto": [],
+          "promossa": true,
+          "falliti": []
+        },
+        "V-S": {
+          "n": 331,
+          "r_medio": 0.5246759664316007,
+          "errore_std": 0.08040596136411246,
+          "sharpe": 0.3586649395933063,
+          "dd_max": 7.964218437416886,
+          "r_vendite": 0.5022707225913667,
+          "r_stress": 0.4371283036338965,
+          "veto": false,
+          "motivi_veto": [],
+          "promossa": true,
+          "falliti": []
+        }
+      }
+    },
+    {
+      "spinta": 0.01,
+      "seme": 13,
+      "varianti": {
+        "V-T": {
+          "n": 320,
+          "r_medio": 0.32921297199945326,
+          "errore_std": 0.06256689809647703,
+          "sharpe": 0.2941421929413832,
+          "dd_max": 7.9395017446863605,
+          "r_vendite": 0.3158450458248702,
+          "r_stress": 0.2746780645347616,
+          "veto": false,
+          "motivi_veto": [],
+          "promossa": true,
+          "falliti": []
+        },
+        "V-S": {
+          "n": 320,
+          "r_medio": 0.5466550726276052,
+          "errore_std": 0.08912241884790294,
+          "sharpe": 0.34288732241617453,
+          "dd_max": 11.502574449753515,
+          "r_vendite": 0.5913030091296592,
+          "r_stress": 0.4566301552092345,
+          "veto": false,
+          "motivi_veto": [],
+          "promossa": true,
+          "falliti": []
+        }
+      }
+    },
+    {
+      "spinta": 0.01,
+      "seme": 14,
+      "varianti": {
+        "V-T": {
+          "n": 304,
+          "r_medio": 0.18333969007950282,
+          "errore_std": 0.06397740093183724,
+          "sharpe": 0.16435885537145803,
+          "dd_max": 17.646940904054492,
+          "r_vendite": 0.17792446020774433,
+          "r_stress": 0.14385048361438743,
+          "veto": false,
+          "motivi_veto": [],
+          "promossa": false,
+          "falliti": [
+            "drawdown massimo (R)"
+          ]
+        },
+        "V-S": {
+          "n": 304,
+          "r_medio": 0.33870704038723687,
+          "errore_std": 0.08771835345750374,
+          "sharpe": 0.22146084933983906,
+          "dd_max": 17.440961700576224,
+          "r_vendite": 0.2793860121331067,
+          "r_stress": 0.2622011994187022,
+          "veto": false,
+          "motivi_veto": [],
+          "promossa": false,
+          "falliti": [
+            "drawdown massimo (R)"
+          ]
+        }
+      }
+    },
+    {
+      "spinta": 0.01,
+      "seme": 15,
+      "varianti": {
+        "V-T": {
+          "n": 301,
+          "r_medio": 0.3568188129771794,
+          "errore_std": 0.06339660010627347,
+          "sharpe": 0.32441320877125984,
+          "dd_max": 6.702747324071005,
+          "r_vendite": 0.3449851261208541,
+          "r_stress": 0.3115203332075468,
+          "veto": false,
+          "motivi_veto": [],
+          "promossa": true,
+          "falliti": []
+        },
+        "V-S": {
+          "n": 301,
+          "r_medio": 0.5023602967351471,
+          "errore_std": 0.08694532315854782,
+          "sharpe": 0.33303189953665485,
+          "dd_max": 6.14682422480152,
+          "r_vendite": 0.5423601815541698,
+          "r_stress": 0.4168125321500968,
+          "veto": false,
+          "motivi_veto": [],
+          "promossa": true,
+          "falliti": []
+        }
+      }
+    },
+    {
+      "spinta": 0.01,
+      "seme": 16,
+      "varianti": {
+        "V-T": {
+          "n": 302,
+          "r_medio": 0.18513602076287988,
+          "errore_std": 0.06406716274758321,
+          "sharpe": 0.16628457395297155,
+          "dd_max": 7.789484097829757,
+          "r_vendite": 0.18510287195151143,
+          "r_stress": 0.1479811505162205,
+          "veto": false,
+          "motivi_veto": [],
+          "promossa": true,
+          "falliti": []
+        },
+        "V-S": {
+          "n": 302,
+          "r_medio": 0.3659882867213311,
+          "errore_std": 0.0906531602362879,
+          "sharpe": 0.23231687984834185,
+          "dd_max": 10.51344497630673,
+          "r_vendite": 0.36564718544308406,
+          "r_stress": 0.2862960546804044,
+          "veto": false,
+          "motivi_veto": [],
+          "promossa": true,
+          "falliti": []
+        }
+      }
+    },
+    {
+      "spinta": 0.01,
+      "seme": 17,
+      "varianti": {
+        "V-T": {
+          "n": 320,
+          "r_medio": 0.29704292757312517,
+          "errore_std": 0.06112305611034973,
+          "sharpe": 0.271668426186803,
+          "dd_max": 6.152177663477644,
+          "r_vendite": 0.3074980433696303,
+          "r_stress": 0.2497637283306901,
+          "veto": false,
+          "motivi_veto": [],
+          "promossa": true,
+          "falliti": []
+        },
+        "V-S": {
+          "n": 320,
+          "r_medio": 0.465223252229276,
+          "errore_std": 0.08272064747108276,
+          "sharpe": 0.31439273280043123,
+          "dd_max": 5.849819877879874,
+          "r_vendite": 0.538350394303031,
+          "r_stress": 0.38066189333400596,
+          "veto": false,
+          "motivi_veto": [],
+          "promossa": true,
+          "falliti": []
+        }
+      }
+    },
+    {
+      "spinta": 0.01,
+      "seme": 18,
+      "varianti": {
+        "V-T": {
+          "n": 320,
+          "r_medio": 0.24594932026901595,
+          "errore_std": 0.0618579800421655,
+          "sharpe": 0.22226695681240585,
+          "dd_max": 8.370165999084207,
+          "r_vendite": 0.3007446930203055,
+          "r_stress": 0.19849896662537922,
+          "veto": false,
+          "motivi_veto": [],
+          "promossa": true,
+          "falliti": []
+        },
+        "V-S": {
+          "n": 320,
+          "r_medio": 0.4198853723160896,
+          "errore_std": 0.08726913672714402,
+          "sharpe": 0.2689645705423122,
+          "dd_max": 8.086997666250687,
+          "r_vendite": 0.501587645575388,
+          "r_stress": 0.3377450131084939,
+          "veto": false,
+          "motivi_veto": [],
+          "promossa": true,
+          "falliti": []
+        }
+      }
+    },
+    {
+      "spinta": 0.01,
+      "seme": 19,
+      "varianti": {
+        "V-T": {
+          "n": 316,
+          "r_medio": 0.20457541883999447,
+          "errore_std": 0.06249201158455137,
+          "sharpe": 0.18415580065968834,
+          "dd_max": 10.235914164965301,
+          "r_vendite": 0.17028447524880622,
+          "r_stress": 0.1529580270730635,
+          "veto": true,
+          "motivi_veto": [
+            "range 20': R medio 0.0362 sotto il 50% della base 0.2046"
+          ],
+          "promossa": false,
+          "falliti": [
+            "nessun veto di robustezza"
+          ]
+        },
+        "V-S": {
+          "n": 316,
+          "r_medio": 0.40458338721244136,
+          "errore_std": 0.086554930317983,
+          "sharpe": 0.26294970846612414,
+          "dd_max": 9.29518514182989,
+          "r_vendite": 0.35896223660081256,
+          "r_stress": 0.32486849266618256,
+          "veto": false,
+          "motivi_veto": [],
+          "promossa": true,
+          "falliti": []
+        }
+      }
+    },
+    {
+      "spinta": 0.01,
+      "seme": 20,
+      "varianti": {
+        "V-T": {
+          "n": 307,
+          "r_medio": 0.17313910800093646,
+          "errore_std": 0.06385910308567991,
+          "sharpe": 0.154740207006437,
+          "dd_max": 9.63942371649623,
+          "r_vendite": 0.12029737118488208,
+          "r_stress": 0.11061953191825674,
+          "veto": false,
+          "motivi_veto": [],
+          "promossa": true,
+          "falliti": []
+        },
+        "V-S": {
+          "n": 307,
+          "r_medio": 0.34161884081993615,
+          "errore_std": 0.08857372635582982,
+          "sharpe": 0.22012415956794254,
+          "dd_max": 9.682542097892636,
+          "r_vendite": 0.2226238421565457,
+          "r_stress": 0.26643091453995044,
+          "veto": false,
+          "motivi_veto": [],
+          "promossa": true,
+          "falliti": []
+        }
+      }
+    },
+    {
+      "spinta": 0.02,
+      "seme": 1,
+      "varianti": {
+        "V-T": {
+          "n": 300,
+          "r_medio": 0.5984914174280713,
+          "errore_std": 0.06038383836359088,
+          "sharpe": 0.5722378542403564,
+          "dd_max": 6.500074247444189,
+          "r_vendite": 0.6205312229998046,
+          "r_stress": 0.5580908680292566,
+          "veto": false,
+          "motivi_veto": [],
+          "promossa": true,
+          "falliti": []
+        },
+        "V-S": {
+          "n": 300,
+          "r_medio": 1.0463663341126106,
+          "errore_std": 0.10047221362248403,
+          "sharpe": 0.6012805559762102,
+          "dd_max": 6.389395533563913,
+          "r_vendite": 1.1229454824423875,
+          "r_stress": 0.9288537984751778,
+          "veto": false,
+          "motivi_veto": [],
+          "promossa": true,
+          "falliti": []
+        }
+      }
+    },
+    {
+      "spinta": 0.02,
+      "seme": 2,
+      "varianti": {
+        "V-T": {
+          "n": 299,
+          "r_medio": 0.5168412321204511,
+          "errore_std": 0.06142047836898007,
+          "sharpe": 0.486640628546524,
+          "dd_max": 5.088298032968993,
+          "r_vendite": 0.4762780976675359,
+          "r_stress": 0.4539945991908344,
+          "veto": false,
+          "motivi_veto": [],
+          "promossa": false,
+          "falliti": [
+            "numero di trade"
+          ]
+        },
+        "V-S": {
+          "n": 299,
+          "r_medio": 0.8617143548867048,
+          "errore_std": 0.09628683019620254,
+          "sharpe": 0.5175601663334135,
+          "dd_max": 4.978015954027455,
+          "r_vendite": 0.7861716337776199,
+          "r_stress": 0.753552814477912,
+          "veto": false,
+          "motivi_veto": [],
+          "promossa": false,
+          "falliti": [
+            "numero di trade"
+          ]
+        }
+      }
+    },
+    {
+      "spinta": 0.02,
+      "seme": 3,
+      "varianti": {
+        "V-T": {
+          "n": 319,
+          "r_medio": 0.6349240642894665,
+          "errore_std": 0.05862225129449818,
+          "sharpe": 0.6064066472566348,
+          "dd_max": 5.182973921281095,
+          "r_vendite": 0.7155058798919149,
+          "r_stress": 0.5856868981660367,
+          "veto": false,
+          "motivi_veto": [],
+          "promossa": true,
+          "falliti": []
+        },
+        "V-S": {
+          "n": 319,
+          "r_medio": 1.0709064947577696,
+          "errore_std": 0.09405010935072566,
+          "sharpe": 0.6375245392994684,
+          "dd_max": 5.182973921281095,
+          "r_vendite": 1.2357735466053203,
+          "r_stress": 0.9496763775198233,
+          "veto": false,
+          "motivi_veto": [],
+          "promossa": true,
+          "falliti": []
+        }
+      }
+    },
+    {
+      "spinta": 0.02,
+      "seme": 4,
+      "varianti": {
+        "V-T": {
+          "n": 295,
+          "r_medio": 0.5623314919966359,
+          "errore_std": 0.06270717898658462,
+          "sharpe": 0.52211255213048,
+          "dd_max": 5.109107447925908,
+          "r_vendite": 0.6442988721973438,
+          "r_stress": 0.501930254554617,
+          "veto": false,
+          "motivi_veto": [],
+          "promossa": false,
+          "falliti": [
+            "numero di trade"
+          ]
+        },
+        "V-S": {
+          "n": 295,
+          "r_medio": 1.0391583852461457,
+          "errore_std": 0.10411602652472361,
+          "sharpe": 0.5811030475037123,
+          "dd_max": 4.965865113607379,
+          "r_vendite": 1.2344544672487727,
+          "r_stress": 0.9207730518858094,
+          "veto": false,
+          "motivi_veto": [],
+          "promossa": false,
+          "falliti": [
+            "numero di trade"
+          ]
+        }
+      }
+    },
+    {
+      "spinta": 0.02,
+      "seme": 5,
+      "varianti": {
+        "V-T": {
+          "n": 319,
+          "r_medio": 0.5578660930420327,
+          "errore_std": 0.06029430984965319,
+          "sharpe": 0.5180340373565658,
+          "dd_max": 6.236333994763726,
+          "r_vendite": 0.48716766238646914,
+          "r_stress": 0.5205859172634882,
+          "veto": false,
+          "motivi_veto": [],
+          "promossa": true,
+          "falliti": []
+        },
+        "V-S": {
+          "n": 319,
+          "r_medio": 0.9826468502014102,
+          "errore_std": 0.09598535232756267,
+          "sharpe": 0.5731880948507421,
+          "dd_max": 6.236333994763669,
+          "r_vendite": 0.8985621138309016,
+          "r_stress": 0.8698613406846923,
+          "veto": false,
+          "motivi_veto": [],
+          "promossa": true,
+          "falliti": []
+        }
+      }
+    },
+    {
+      "spinta": 0.02,
+      "seme": 6,
+      "varianti": {
+        "V-T": {
+          "n": 309,
+          "r_medio": 0.5917081240024797,
+          "errore_std": 0.06001933084162215,
+          "sharpe": 0.5608376271901796,
+          "dd_max": 5.006252701226529,
+          "r_vendite": 0.6252866783690223,
+          "r_stress": 0.5351115886232216,
+          "veto": false,
+          "motivi_veto": [],
+          "promossa": true,
+          "falliti": []
+        },
+        "V-S": {
+          "n": 309,
+          "r_medio": 1.0009234492663694,
+          "errore_std": 0.09594770895535354,
+          "sharpe": 0.5934539366507228,
+          "dd_max": 6.60699465722908,
+          "r_vendite": 1.118630026381673,
+          "r_stress": 0.8855681974179174,
+          "veto": false,
+          "motivi_veto": [],
+          "promossa": true,
+          "falliti": []
+        }
+      }
+    },
+    {
+      "spinta": 0.02,
+      "seme": 7,
+      "varianti": {
+        "V-T": {
+          "n": 313,
+          "r_medio": 0.5416149574811074,
+          "errore_std": 0.061048238165074445,
+          "sharpe": 0.5014704492217711,
+          "dd_max": 4.564069809791263,
+          "r_vendite": 0.5509170160438903,
+          "r_stress": 0.49343838048511657,
+          "veto": false,
+          "motivi_veto": [],
+          "promossa": true,
+          "falliti": []
+        },
+        "V-S": {
+          "n": 313,
+          "r_medio": 0.9171576679521004,
+          "errore_std": 0.09267382468818586,
+          "sharpe": 0.5593900609063369,
+          "dd_max": 4.447015639817678,
+          "r_vendite": 0.8222378822189924,
+          "r_stress": 0.8069648266789988,
+          "veto": false,
+          "motivi_veto": [],
+          "promossa": true,
+          "falliti": []
+        }
+      }
+    },
+    {
+      "spinta": 0.02,
+      "seme": 8,
+      "varianti": {
+        "V-T": {
+          "n": 325,
+          "r_medio": 0.5540223669645734,
+          "errore_std": 0.05944826864334889,
+          "sharpe": 0.5169474615183727,
+          "dd_max": 5.637538622122747,
+          "r_vendite": 0.4401551488644517,
+          "r_stress": 0.5041633062455021,
+          "veto": false,
+          "motivi_veto": [],
+          "promossa": true,
+          "falliti": []
+        },
+        "V-S": {
+          "n": 325,
+          "r_medio": 0.9486425560819305,
+          "errore_std": 0.09636687631543055,
+          "sharpe": 0.5460509172091854,
+          "dd_max": 5.332357800343161,
+          "r_vendite": 0.8564546742041783,
+          "r_stress": 0.8361942450348246,
+          "veto": false,
+          "motivi_veto": [],
+          "promossa": true,
+          "falliti": []
+        }
+      }
+    },
+    {
+      "spinta": 0.02,
+      "seme": 9,
+      "varianti": {
+        "V-T": {
+          "n": 304,
+          "r_medio": 0.6442269622526378,
+          "errore_std": 0.058600029851150114,
+          "sharpe": 0.6305278414525025,
+          "dd_max": 5.213318473324108,
+          "r_vendite": 0.592383075846381,
+          "r_stress": 0.5844297913974618,
+          "veto": false,
+          "motivi_veto": [],
+          "promossa": true,
+          "falliti": []
+        },
+        "V-S": {
+          "n": 304,
+          "r_medio": 1.133696533092226,
+          "errore_std": 0.10086835649421502,
+          "sharpe": 0.6446219388455613,
+          "dd_max": 5.21331847332408,
+          "r_vendite": 1.064862819978226,
+          "r_stress": 1.0085661500405612,
+          "veto": false,
+          "motivi_veto": [],
+          "promossa": true,
+          "falliti": []
+        }
+      }
+    },
+    {
+      "spinta": 0.02,
+      "seme": 10,
+      "varianti": {
+        "V-T": {
+          "n": 295,
+          "r_medio": 0.6222887905345227,
+          "errore_std": 0.06094216208237738,
+          "sharpe": 0.5945154044880664,
+          "dd_max": 3.972086619193332,
+          "r_vendite": 0.688170361309647,
+          "r_stress": 0.5639922889812413,
+          "veto": false,
+          "motivi_veto": [],
+          "promossa": false,
+          "falliti": [
+            "numero di trade"
+          ]
+        },
+        "V-S": {
+          "n": 295,
+          "r_medio": 1.0594211627441759,
+          "errore_std": 0.10138218710226765,
+          "sharpe": 0.6084094907342392,
+          "dd_max": 4.016612931303371,
+          "r_vendite": 1.0991271080553007,
+          "r_stress": 0.9403187881852987,
+          "veto": false,
+          "motivi_veto": [],
+          "promossa": false,
+          "falliti": [
+            "numero di trade"
+          ]
+        }
+      }
+    },
+    {
+      "spinta": 0.02,
+      "seme": 11,
+      "varianti": {
+        "V-T": {
+          "n": 307,
+          "r_medio": 0.5784679923491718,
+          "errore_std": 0.05962774475441901,
+          "sharpe": 0.5536837303183716,
+          "dd_max": 3.9743715072646353,
+          "r_vendite": 0.5390030011650171,
+          "r_stress": 0.5423286593138004,
+          "veto": false,
+          "motivi_veto": [],
+          "promossa": true,
+          "falliti": []
+        },
+        "V-S": {
+          "n": 307,
+          "r_medio": 1.0262229001945147,
+          "errore_std": 0.09715827062713214,
+          "sharpe": 0.6028270587765732,
+          "dd_max": 3.974371507264607,
+          "r_vendite": 0.9887213307592808,
+          "r_stress": 0.9084986142806748,
+          "veto": false,
+          "motivi_veto": [],
+          "promossa": true,
+          "falliti": []
+        }
+      }
+    },
+    {
+      "spinta": 0.02,
+      "seme": 12,
+      "varianti": {
+        "V-T": {
+          "n": 331,
+          "r_medio": 0.6253876741808113,
+          "errore_std": 0.05737143679987855,
+          "sharpe": 0.5991555604679891,
+          "dd_max": 5.511018161197413,
+          "r_vendite": 0.5054622301925344,
+          "r_stress": 0.5815496843876742,
+          "veto": false,
+          "motivi_veto": [],
+          "promossa": true,
+          "falliti": []
+        },
+        "V-S": {
+          "n": 331,
+          "r_medio": 1.0738509409988586,
+          "errore_std": 0.09137848071118529,
+          "sharpe": 0.645930916812773,
+          "dd_max": 4.869622308874955,
+          "r_vendite": 0.9911147611744979,
+          "r_stress": 0.954582352812672,
+          "veto": false,
+          "motivi_veto": [],
+          "promossa": true,
+          "falliti": []
+        }
+      }
+    },
+    {
+      "spinta": 0.02,
+      "seme": 13,
+      "varianti": {
+        "V-T": {
+          "n": 320,
+          "r_medio": 0.5767244607463671,
+          "errore_std": 0.05963435683901587,
+          "sharpe": 0.5406258937264442,
+          "dd_max": 4.975963919253289,
+          "r_vendite": 0.6006110377202319,
+          "r_stress": 0.5241227381871062,
+          "veto": false,
+          "motivi_veto": [],
+          "promossa": true,
+          "falliti": []
+        },
+        "V-S": {
+          "n": 320,
+          "r_medio": 1.1012146733201638,
+          "errore_std": 0.10164303682790307,
+          "sharpe": 0.6056467182137886,
+          "dd_max": 7.854369964326644,
+          "r_vendite": 1.214715545643645,
+          "r_stress": 0.9779417116128855,
+          "veto": false,
+          "motivi_veto": [],
+          "promossa": true,
+          "falliti": []
+        }
+      }
+    },
+    {
+      "spinta": 0.02,
+      "seme": 14,
+      "varianti": {
+        "V-T": {
+          "n": 304,
+          "r_medio": 0.46791336913573767,
+          "errore_std": 0.06258055930951566,
+          "sharpe": 0.4288340107236776,
+          "dd_max": 6.7646554411301025,
+          "r_vendite": 0.4975281451298633,
+          "r_stress": 0.4138627895392916,
+          "veto": false,
+          "motivi_veto": [],
+          "promossa": true,
+          "falliti": []
+        },
+        "V-S": {
+          "n": 304,
+          "r_medio": 0.8735058549323858,
+          "errore_std": 0.10002400904903444,
+          "sharpe": 0.5008697128189149,
+          "dd_max": 5.844084115598079,
+          "r_vendite": 0.8599761546556687,
+          "r_stress": 0.7658913390460995,
+          "veto": false,
+          "motivi_veto": [],
+          "promossa": true,
+          "falliti": []
+        }
+      }
+    },
+    {
+      "spinta": 0.02,
+      "seme": 15,
+      "varianti": {
+        "V-T": {
+          "n": 301,
+          "r_medio": 0.6486914177836736,
+          "errore_std": 0.06019633783145668,
+          "sharpe": 0.6211333292473087,
+          "dd_max": 3.211849121532822,
+          "r_vendite": 0.6309633077216584,
+          "r_stress": 0.5962498617556562,
+          "veto": false,
+          "motivi_veto": [],
+          "promossa": true,
+          "falliti": []
+        },
+        "V-S": {
+          "n": 301,
+          "r_medio": 1.051807701282921,
+          "errore_std": 0.09782768683317576,
+          "sharpe": 0.6197140093078427,
+          "dd_max": 3.211849121532822,
+          "r_vendite": 1.068628559186976,
+          "r_stress": 0.9343998807603151,
+          "veto": false,
+          "motivi_veto": [],
+          "promossa": true,
+          "falliti": []
+        }
+      }
+    },
+    {
+      "spinta": 0.02,
+      "seme": 16,
+      "varianti": {
+        "V-T": {
+          "n": 302,
+          "r_medio": 0.583510570038931,
+          "errore_std": 0.06041725216175825,
+          "sharpe": 0.5557561621518341,
+          "dd_max": 4.289604730151268,
+          "r_vendite": 0.589804673180985,
+          "r_stress": 0.5193130970055753,
+          "veto": false,
+          "motivi_veto": [],
+          "promossa": true,
+          "falliti": []
+        },
+        "V-S": {
+          "n": 302,
+          "r_medio": 0.9871106333575163,
+          "errore_std": 0.09998330187250346,
+          "sharpe": 0.5681132048697177,
+          "dd_max": 4.397454379840099,
+          "r_vendite": 0.9997291282127297,
+          "r_stress": 0.8711441552036182,
+          "veto": false,
+          "motivi_veto": [],
+          "promossa": true,
+          "falliti": []
+        }
+      }
+    },
+    {
+      "spinta": 0.02,
+      "seme": 17,
+      "varianti": {
+        "V-T": {
+          "n": 320,
+          "r_medio": 0.5616441598472279,
+          "errore_std": 0.06000012810702904,
+          "sharpe": 0.5232799329794403,
+          "dd_max": 3.9835907159267805,
+          "r_vendite": 0.5706959590238216,
+          "r_stress": 0.515061440277897,
+          "veto": false,
+          "motivi_veto": [],
+          "promossa": true,
+          "falliti": []
+        },
+        "V-S": {
+          "n": 320,
+          "r_medio": 0.9979758824109587,
+          "errore_std": 0.0946086026338021,
+          "sharpe": 0.5896773260709135,
+          "dd_max": 3.9835907159267947,
+          "r_vendite": 1.0925695896012546,
+          "r_stress": 0.8818977818557745,
+          "veto": false,
+          "motivi_veto": [],
+          "promossa": true,
+          "falliti": []
+        }
+      }
+    },
+    {
+      "spinta": 0.02,
+      "seme": 18,
+      "varianti": {
+        "V-T": {
+          "n": 320,
+          "r_medio": 0.5636728670787787,
+          "errore_std": 0.06014016605111335,
+          "sharpe": 0.5239471931242776,
+          "dd_max": 4.703121521130578,
+          "r_vendite": 0.6173516822645647,
+          "r_stress": 0.5125802441515449,
+          "veto": false,
+          "motivi_veto": [],
+          "promossa": true,
+          "falliti": []
+        },
+        "V-S": {
+          "n": 320,
+          "r_medio": 1.032633451988644,
+          "errore_std": 0.10023903950735517,
+          "sharpe": 0.5758830605907402,
+          "dd_max": 3.980762411245408,
+          "r_vendite": 1.1636955734954955,
+          "r_stress": 0.9137404750892207,
+          "veto": false,
+          "motivi_veto": [],
+          "promossa": true,
+          "falliti": []
+        }
+      }
+    },
+    {
+      "spinta": 0.02,
+      "seme": 19,
+      "varianti": {
+        "V-T": {
+          "n": 316,
+          "r_medio": 0.4871774683231764,
+          "errore_std": 0.061867385382592836,
+          "sharpe": 0.44297772713730743,
+          "dd_max": 5.626658726024232,
+          "r_vendite": 0.4418582116419514,
+          "r_stress": 0.43890715374852446,
+          "veto": false,
+          "motivi_veto": [],
+          "promossa": true,
+          "falliti": []
+        },
+        "V-S": {
+          "n": 316,
+          "r_medio": 0.9228702963377701,
+          "errore_std": 0.09881027912825849,
+          "sharpe": 0.5254059667141937,
+          "dd_max": 5.223740646349569,
+          "r_vendite": 0.8824280783720445,
+          "r_stress": 0.813124421502621,
+          "veto": false,
+          "motivi_veto": [],
+          "promossa": true,
+          "falliti": []
+        }
+      }
+    },
+    {
+      "spinta": 0.02,
+      "seme": 20,
+      "varianti": {
+        "V-T": {
+          "n": 307,
+          "r_medio": 0.44933151719151937,
+          "errore_std": 0.06289012324813387,
+          "sharpe": 0.4077699787429576,
+          "dd_max": 6.380376483841175,
+          "r_vendite": 0.4593665038327697,
+          "r_stress": 0.4001460109547201,
+          "veto": false,
+          "motivi_veto": [],
+          "promossa": true,
+          "falliti": []
+        },
+        "V-S": {
+          "n": 307,
+          "r_medio": 0.8461530612031443,
+          "errore_std": 0.09982776678796355,
+          "sharpe": 0.48375825214180734,
+          "dd_max": 5.353436490861483,
+          "r_vendite": 0.7411432512869321,
+          "r_stress": 0.7419624332348367,
+          "veto": false,
+          "motivi_veto": [],
+          "promossa": true,
+          "falliti": []
+        }
+      }
+    }
+  ]
+}
