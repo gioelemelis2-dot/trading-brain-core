@@ -217,6 +217,30 @@ class TestVerifica(unittest.TestCase):
         self.assertEqual(K.quota_anni_positivi([]), 0.0)
 
 
+class TestMinoriR15(unittest.TestCase):
+    """R15 di Gemini, minori nel perimetro (#107, #110), corretti il 17/11 su delega del titolare."""
+
+    def test_copertura_zero_senza_confronto_casuale(self):
+        """#107: con il confronto casuale assente la copertura registrata valeva 1,0 (100%)."""
+        e = K.screening(metriche_buone(), {}, {"batte_entrambi": True, "r_compro": 0.01, "r_vendo": -0.02}, False,
+                        0.03)
+        self.assertEqual(e["criteri"][3]["valore"][1], 0.0)
+        self.assertFalse(e["criteri"][3]["passa"])
+
+    def test_valori_non_ammessi_rifiutati_con_un_messaggio(self):
+        """#110: anni vuoti, Sharpe mancanti e percentili fuori da (0, 1] davano errori generici o valori sbagliati."""
+        tr = [trade(2005, 1, 1.0), trade(2005, 2, -1.0)]
+        with self.assertRaises(ValueError):
+            K.verifica(tr, n_prove=2, anni=[])
+        tr = [trade(2005 + k // 12, 1 + k % 12, 1.5 if k % 2 else -1.0) for k in range(60)]
+        with self.assertRaises(ValueError):
+            K.verifica(tr, n_prove=2, sharpe_prove=[None])
+        for q in (-0.5, 0.0, 1.5):
+            with self.assertRaises(ValueError, msg=q):
+                K.percentile([1.0, 2.0, 3.0], q)
+        self.assertEqual(K.percentile([1.0, 2.0, 3.0], 1.0), 3.0)
+
+
 class TestRapporto(unittest.TestCase):
     def test_rapporto_contiene_verdetto_e_criteri(self):
         e = K.screening(metriche_buone(), {"sopra": True, "percentile_95": 0.04},

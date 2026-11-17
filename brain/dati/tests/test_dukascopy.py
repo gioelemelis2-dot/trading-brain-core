@@ -99,6 +99,14 @@ class TestDecodificaEAggregazione(unittest.TestCase):
             self.assertIn(parola, str(e.exception))
         self.assertEqual(len(DK.decodifica(bi5([(x, p, p, p - 3, p + 5, 1.0) for x in (0, 60, 86340)]), g, 3)), 3)
 
+    def test_record_fuori_ordine_fermano(self):
+        """#111 (R15-06): i record al minuto sono in ordine crescente; un ordine diverso è un formato diverso."""
+        g = date(2026, 1, 5)
+        p = 2650000
+        with self.assertRaises(DK.ErroreDati) as e:
+            DK.decodifica(bi5([(660, p, p, p - 3, p + 5, 1.0), (600, p, p, p - 3, p + 5, 1.0)]), g, 3)
+        self.assertIn("ordine", str(e.exception))
+
     def test_decompressione_come_prima_su_coda_e_flussi(self):
         """#83: stessa semantica di lzma.decompress (coda non LZMA ignorata, flussi concatenati uniti, troncato rotto)."""
         g = date(2026, 1, 5)
