@@ -19,6 +19,11 @@ SUITE = ["brain.dati.tests.test_controlla_cache"]
 CC = "dati/pipeline/controlla_cache.py"
 CAL = "dati/pipeline/calendario.py"
 M = {
+    "Q12 confronto: BID senza ASK non visto": [(CC, "        if fb.exists() and not fa.exists():", "        if False:")],
+    "Q13 confronto: vuoto da un lato non visto": [(CC, "and (fb.stat().st_size > 0) != (fa.stat().st_size > 0):", "and False:")],
+    "Q14 confronto: sempre allineati": [(CC, "            \"allineati\": not (senza_ask or senza_bid or vuoto_lato)}", "            \"allineati\": True}")],
+    "Q15 confronto: --ask senza periodo accettato": [(CC, "    if x.ask and not (x.inizio and x.fine):", "    if False:")],
+    "Q16 confronto: esito ignorato nel codice d'uscita": [(CC, "    return 0 if all(e.get(\"pulito\", True) for e in esiti) and allineati else 1", "    return 0 if all(e.get(\"pulito\", True) for e in esiti) else 1")],
     "Q01 file mancanti non contati": [(CC, "            a[\"mancanti\"] += 1\n", "            pass\n")],
     "Q02 illeggibili ignorati": [(CC, "                    a[\"illeggibili\"].append(g.isoformat())\n", "                    pass\n")],
     "Q03 chiusure note anche il 24/12": [(CAL, "        g |= {cap, nat, date(a, 12, 26), ", "        g |= {cap, nat, date(a, 12, 24), date(a, 12, 26), ")],

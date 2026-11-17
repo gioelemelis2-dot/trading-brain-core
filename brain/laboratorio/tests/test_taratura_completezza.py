@@ -34,8 +34,14 @@ class TestTaratura(unittest.TestCase):
         m.update(_minuti(date(2024, 1, 10), 263, dalle=ora_t(12, 22)))  # solo pomeriggio
         m.update(_minuti(date(2024, 1, 11), 90))                       # quasi vuoto
         m.update(_minuti(date(2024, 12, 24), 100))                     # vigilia: solo mattino
+        m.update(_minuti(date(2024, 12, 26), 40))                      # Santo Stefano CON dati: chiusura nota, esclusa
+        m.update(_minuti(date(2024, 1, 12), 50))                       # venerdì corto...
+        m.update(_minuti(date(2024, 1, 12), 300, dalle=ora_t(17, 0)))   # ...con molti minuti FUORI sessione
+        m.update(_minuti(date(2024, 1, 15), 30))                       # 90 minuti spalmati sui tre terzi
+        m.update(_minuti(date(2024, 1, 15), 30, dalle=ora_t(11, 0)))
+        m.update(_minuti(date(2024, 1, 15), 30, dalle=ora_t(14, 0)))
         m.update(_minuti(date(2024, 1, 1), 0))                         # chiusura nota: file vuoto
-        SN.scrivi_cache(m, self.cache, inizio=date(2024, 1, 1), fine=date(2024, 12, 24))
+        SN.scrivi_cache(m, self.cache, inizio=date(2024, 1, 1), fine=date(2024, 12, 26))
         # NB: scrivi_cache crea un file VUOTO per ogni giorno senza dati fra inizio e fine
 
     def tearDown(self):
@@ -52,12 +58,18 @@ class TestTaratura(unittest.TestCase):
         self.assertEqual(per["2024-01-11"]["terzi"], [90, 0, 0])
         self.assertNotIn("2024-01-06", per)                            # sabato: fuori
         self.assertNotIn("prezzo", str(e))
+        e2 = T.esamina(self.cache, date(2024, 1, 5), date(2024, 1, 8))
+        self.assertEqual(e2["feriali_vuoti"], 1)                       # solo venerdì 5: il fine settimana non conta
+        e3 = T.esamina(self.cache, date(2024, 1, 12), date(2024, 1, 12))
+        self.assertEqual(e3["per_giorno"][0]["sessione"], 50)          # i 300 minuti delle 17 restano fuori
 
     def test_vigilie_contate_a_parte_e_chiusure_escluse(self):
         e = T.esamina(self.cache, date(2024, 1, 1), date(2024, 12, 24))
         self.assertEqual([g["giorno"] for g in e["vigilie"]], ["2024-12-24"])
         self.assertEqual(e["vigilie"][0]["terzi"][0], 100)
         self.assertNotIn("2024-01-01", [g["giorno"] for g in e["per_giorno"]])      # chiusura nota vuota: esclusa
+        e2 = T.esamina(self.cache, date(2024, 12, 26), date(2024, 12, 26))
+        self.assertEqual((e2["per_giorno"], e2["vigilie"], e2["feriali_vuoti"]), ([], [], 0))   # anche con dati
         self.assertGreater(e["feriali_vuoti"], 200)                    # gli altri feriali sono file vuoti
 
     def test_quote_della_griglia_contano_i_giorni_sotto_soglia(self):
@@ -68,6 +80,14 @@ class TestTaratura(unittest.TestCase):
         self.assertEqual(r2["sotto"], ["2024-01-10", "2024-01-11"])    # terzi vuoti: cadono anche con soglie basse
         r3 = T.verifica_quote(e, quota_sessione=0.1, quota_terzo=0.0)
         self.assertEqual(r3["sotto"], [])                              # senza vincolo sui terzi passano tutti
+        e4 = T.esamina(self.cache, date(2024, 1, 8), date(2024, 1, 15))
+        r4 = T.verifica_quote(e4, quota_sessione=0.5, quota_terzo=0.1)
+        self.assertIn("2024-01-15", r4["sotto"])                       # cade SOLO per la sessione (i terzi passano)
+
+    def test_percentili_ordinati(self):
+        self.assertEqual(T.percentili([525, 525, 263, 90]),
+                         {"min": 90, "p1": 90, "p5": 90, "p10": 90, "p25": 90, "p50": 263, "max": 525})
+        self.assertEqual(T.percentili([]), {})
 
     def test_rapporto_di_testo_senza_prezzi(self):
         e = T.esamina(self.cache, date(2024, 1, 8), date(2024, 1, 11))

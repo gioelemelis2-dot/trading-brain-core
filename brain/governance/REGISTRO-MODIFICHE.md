@@ -538,3 +538,10 @@ Formato: data · versione della base · cosa · perché · file.
 - **Log dei nuovi tentativi (richiesta dell'utente, pomeriggio del 16/11):** `dukascopy.richiesta_http` accetta `annota` e scrive una riga per ogni NUOVO tentativo (motivo: codice HTTP o tipo di errore di rete, attesa in secondi); lo scaricatore la collega al log con il giorno e il lato. Comportamento invariato; il registro CSV resta com'è (ha già il conteggio dei tentativi; cambiare le colonne romperebbe la continuità dei CSV in corso). Mutanti nuovi W42, W43.
 - Corsa completa di convalida (3.13: scaricatore, esecuzione, DSR; poi tutta la 3.9) lanciata in sottofondo; esiti nel prossimo aggiornamento.
 
+## 2026-11-17 · v1.45 (notte: strumenti per la fine dello scaricamento, convalida R13)
+
+- **Corsa dei mutanti su 3.13 dopo le correzioni R13 e il log dei tentativi:** scaricatore 42/42, esecuzione 170/170, DSR e partizione 44/44 (più controllo della cache 11/11, riconteggio 31/31, simulatore 40/40 nella corsa precedente). Corsa completa su 3.9: ancora da fare.
+- **`laboratorio/studi/taratura_completezza.py`** (`361fd5e` rosso, poi verde): per tarare le soglie PROVVISORIE di completezza (#49, #63) sui conteggi veri della cache: minuti in sessione e per terzo, percentili, giorni sotto una griglia di soglie, vigilie a parte, chiusure note escluse. Solo conteggi e date, mai prezzi. Mutanti TA01–TA06 6/6 (TA01 vivo al primo giro: mancava una festività CON dati; test aggiunto).
+- **`controlla_cache --ask`**: confronto BID/ASK sullo stesso periodo (giorni con il file da un lato solo, vuoti da un lato solo), codice d'uscita 1 se non allineati. Mutanti Q12–Q16, 16/16.
+- **Revisione notturna a occhi freschi** (revisore separato) su dati e governance: 13 rilievi, da riprodurre e smistare (vedi il prossimo aggiornamento). La revisione del nucleo del laboratorio è stata interrotta due volte dal limite d'uso: da riprendere.
+

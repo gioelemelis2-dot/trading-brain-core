@@ -165,3 +165,19 @@ class TestConfrontoBidAsk(unittest.TestCase):
         self.assertEqual(rc, 1)                                        # non allineati: codice diverso da 0
         self.assertIn("2010-03-09", buf.getvalue())
         self.assertNotIn("2222", buf.getvalue())
+        import sys as _sys
+        with contextlib.redirect_stderr(io.StringIO()):
+            self.assertEqual(CC.main([str(self.bid), "--ask", str(self.ask)]), 2)   # senza periodo: errore
+
+    def test_codice_di_uscita_dal_solo_confronto(self):
+        """Cartelle entrambe pulite (la chiusura nota vuota è tollerata), ma NON allineate: codice 1."""
+        import contextlib, io, tempfile
+        from datetime import date as d
+        with tempfile.TemporaryDirectory() as dtmp:
+            b, a_ = Path(dtmp) / "B", Path(dtmp) / "A"
+            b.mkdir(); a_.mkdir()
+            (b / "2010-01-01.bi5").write_bytes(bi5(1))                 # venerdì, chiusura nota: dati da un lato
+            (a_ / "2010-01-01.bi5").write_bytes(b"")                   # vuoto dall'altro
+            with contextlib.redirect_stdout(io.StringIO()):
+                rc = CC.main([str(b), "--ask", str(a_), "--inizio", "2010-01-01", "--fine", "2010-01-01"])
+            self.assertEqual(rc, 1)

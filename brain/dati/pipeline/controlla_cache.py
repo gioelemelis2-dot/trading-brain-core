@@ -110,21 +110,58 @@ def testo(e: dict) -> str:
     return "\n".join(righe)
 
 
+def confronta(cartella_bid: Path, cartella_ask: Path, inizio: date, fine: date) -> dict:
+    """BID e ASK insieme (per la fine dello scaricamento): giorni con il file da un lato solo, o vuoti da un lato
+    solo. Solo nomi e date: nessun prezzo."""
+    senza_ask, senza_bid, vuoto_lato = [], [], []
+    g, giorni = inizio, 0
+    while g <= fine:
+        fb = Path(cartella_bid) / f"{g.isoformat()}.bi5"
+        fa = Path(cartella_ask) / f"{g.isoformat()}.bi5"
+        giorni += 1
+        if fb.exists() and not fa.exists():
+            senza_ask.append(g.isoformat())
+        elif fa.exists() and not fb.exists():
+            senza_bid.append(g.isoformat())
+        elif fb.exists() and fa.exists() and (fb.stat().st_size > 0) != (fa.stat().st_size > 0):
+            vuoto_lato.append(g.isoformat())
+        g += timedelta(days=1)
+    return {"giorni": giorni, "senza_file_ask": senza_ask, "senza_file_bid": senza_bid,
+            "vuoto_da_un_lato": vuoto_lato,
+            "allineati": not (senza_ask or senza_bid or vuoto_lato)}
+
+
 def main(argv=None) -> int:
     a = argparse.ArgumentParser(description=__doc__.split("\n\n")[0])
     a.add_argument("cartelle", nargs="+", type=Path)
     a.add_argument("--inizio", type=date.fromisoformat)
     a.add_argument("--fine", type=date.fromisoformat)
     a.add_argument("--json", type=Path)
+    a.add_argument("--ask", type=Path, help="cartella ASK da confrontare con la prima cartella (BID)")
     x = a.parse_args(argv)
+    if x.ask and not (x.inizio and x.fine):
+        print("ERRORE: --ask richiede --inizio e --fine", file=sys.stderr)
+        return 2
     esiti = []
     for c in x.cartelle:
         e = esamina(c, x.inizio, x.fine)
         esiti.append(e)
         print(testo(e), "\n")
+    allineati = True
+    if x.ask:
+        r = confronta(x.cartelle[0], x.ask, x.inizio, x.fine)
+        allineati = r["allineati"]
+        print(f"CONFRONTO BID/ASK su {r['giorni']} giorni: "
+              + ("ALLINEATI" if allineati else "NON allineati"))
+        for chiave, nome in (("senza_file_ask", "con BID ma senza file ASK"),
+                             ("senza_file_bid", "con ASK ma senza file BID"),
+                             ("vuoto_da_un_lato", "vuoti da un lato solo")):
+            if r[chiave]:
+                print(f"  {nome} ({len(r[chiave])}): {', '.join(r[chiave][:15])}")
+        esiti.append(r)
     if x.json:
         x.json.write_text(json.dumps(esiti, indent=2, ensure_ascii=False), encoding="utf-8")
-    return 0 if all(e["pulito"] for e in esiti) else 1
+    return 0 if all(e.get("pulito", True) for e in esiti) and allineati else 1
 
 
 if __name__ == "__main__":

@@ -17,7 +17,8 @@ BRAIN, OUT = Path(__file__).resolve().parents[2], Path(sys.argv[1]).resolve()
 PROCESSI = int(sys.argv[2]) if len(sys.argv) >= 3 else 2
 PREFISSI = tuple(sys.argv[3].split(",")) if len(sys.argv) == 4 else ("",)
 SUITE = ["brain.laboratorio.tests.test_esecuzione", "brain.laboratorio.tests.test_esegui_h002",
-         "brain.laboratorio.tests.test_riserva", "brain.laboratorio.tests.test_potenza_soglia"]
+         "brain.laboratorio.tests.test_riserva", "brain.laboratorio.tests.test_potenza_soglia",
+         "brain.laboratorio.tests.test_taratura_completezza"]
 SG = "laboratorio/esecuzione/sigillo.py"
 K = "laboratorio/esecuzione/criteri.py"
 C = "laboratorio/esecuzione/caricatore.py"
@@ -25,7 +26,14 @@ E = "laboratorio/esecuzione/esegui_h002.py"
 CAL = "dati/pipeline/calendario.py"
 RV = "laboratorio/esecuzione/riserva.py"
 PS = "laboratorio/studi/potenza_soglia.py"
+TA = "laboratorio/studi/taratura_completezza.py"
 M = {
+    "TA01 taratura: chiusure note contate": [(TA, "if g.weekday() < 5 and g not in chiusure_note(g.year) and f.exists():", "if g.weekday() < 5 and f.exists():")],
+    "TA02 taratura: fine settimana contato": [(TA, "if g.weekday() < 5 and g not in chiusure_note(g.year) and f.exists():", "if g not in chiusure_note(g.year) and f.exists():")],
+    "TA03 taratura: minuti fuori sessione contati": [(TA, "        if a <= t < b:\n            t3[min(2, int((t - a) / durata))] += 1", "        if True:\n            t3[min(2, abs(int((t - a) / durata)) % 3)] += 1")],
+    "TA04 taratura: vigilie mischiate": [(TA, "(vigilie if g in giorni_corti(g.year) else per_giorno).append(voce)", "per_giorno.append(voce)")],
+    "TA05 taratura: soglia di sessione ignorata": [(TA, "             if g[\"sessione\"] < min_s or any(t < min_t for t in g[\"terzi\"])]", "             if any(t < min_t for t in g[\"terzi\"])]")],
+    "TA06 taratura: percentili non ordinati": [(TA, "    v = sorted(valori)", "    v = list(valori)")],
     'N23 terzi della sessione ignorati': [(C, ' and all(n >= minimo_terzo for n in terzi)', '')],
     'N24 HEAD staccata accettata': [(SG, '    if _git(radice, "symbolic-ref", "-q", "HEAD").returncode != 0:', '    if False:')],
     'N25 ramo senza versione remota accettato': [(SG, '    if remoto.returncode != 0:\n        raise ValueError("il ramo non ha', '    if remoto.returncode != 0:\n        return\n        raise ValueError("il ramo non ha')],
