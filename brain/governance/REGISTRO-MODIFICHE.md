@@ -572,4 +572,4 @@ Formato: data · versione della base · cosa · perché · file.
   `python3 -I -S -B brain/laboratorio/esecuzione/avvio.py --modalita … --rapporto …`
 - **Test modificati, dichiarati:** i test con il controllo dell'ambiente simulato dichiarano l'avvio dal lanciatore; il test del comando documentato ora cerca il lanciatore.
 - **Mutanti nuovi:** N55–N61. La corsa del laboratorio è stata fermata e rilanciata sul codice finale.
-
+- **D-24 (decisione del titolare):** modello di minaccia della regola d'uscita: contano i rilievi E e M a costo basso; prima della verifica un giro su tutte le manomissioni e la decisione sulla protezione del ramo. Aggiornati la proposta v3.2 §C, il modello di scheda H-003 §11, la scheda di stato e il mandato R14.

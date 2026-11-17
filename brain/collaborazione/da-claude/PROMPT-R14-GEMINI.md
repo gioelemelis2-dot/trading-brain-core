@@ -66,8 +66,9 @@ Per ogni rilievo aggiungi due colonne:
   esce dal protocollo, dati incompleti); oppure (M) manomissione deliberata che richiede di scrivere o
   preparare file sul Mac (bytecode, moduli falsi, registri scritti a mano, rami riscritti).
 - «costo per l'attaccante»: basso / medio / alto.
-Non decidere tu quali contano: il titolare decide se la regola dei due giri puliti vale per (E) soltanto o per
-(E) e (M). Usa SOLO dati personali INVENTATI per l'esportazione redatta.
+Decisione del titolare (D-24, 17/11): i due giri puliti contano i rilievi (E) e (M) a costo basso; gli (M) a
+costo medio o alto si registrano e si correggono se costa poco. Classifica con onestà: nei casi dubbi scrivi
+«dubbio» e il motivo, decide il titolare. Usa SOLO dati personali INVENTATI per l'esportazione redatta.
 
 CONSEGNA
 brain/collaborazione/da-gemini/G-<data>-R14.md: tabella dei rilievi (critica/importante/minore, tipo, costo), esito di A

@@ -12,7 +12,7 @@ Il banco di prova (simulatore, criteri, sigillo, registri, scaricatore) è **cos
 |---|---|
 | Difetti registrati | **95** (23 critici, 51 importanti, 21 minori; conteggio del 17/11), #92 dichiarato, #94 b in DA-31, gli altri corretti il 17/11, trovati da Gemini, DGS, revisori esterni, utente e Claude. Tutti corretti e provati, tranne **#42** (difetto della scheda H-002: parcheggiato con lei; regola obbligatoria nel modello H-003) |
 | Giri di revisione | Gemini: R7, R8, R11, R12-bis, R13 (+ repliche); DGS: 01–04; revisori separati di Claude (16 e 17/11: dati e governance, 13 rilievi; laboratorio, in corso); **ogni giro ha trovato difetti importanti** |
-| Giri puliti di fila (regola del sigillo) | **0 su 2 richiesti**. Prossimo: R14 (mandato pronto) |
+| Giri puliti di fila (regola del sigillo) | **0 su 2 richiesti** (contano i rilievi di tipo E e M a costo basso, D-24; prima della verifica, un giro su tutte le manomissioni). Prossimo: R14 (mandato pronto) |
 | Test automatici | ~370 (dati, laboratorio, governance) + 77 Guardian, verdi su Python 3.13 **e** 3.9, rete bloccata |
 | Mutanti negli script | **~370** in 6 script (+21 manuali sull'esportazione redatta), con controllo di validità del mutante (ha scartato un mio mutante con sintassi rotta, Q19, poi riscritto) |
 | N (prove selezionabili) | **Nessun sigillo ancora: registro delle prove vuoto.** Censimento delle esecuzioni pre-sigillo (G-20261115-03) **riconfermato il 17/11** con lo strumento corretto: riserva intatta (`governance/censimento/RICONTEGGIO-20261117.md`). Esplorazioni E-001–E-003 contano per le ipotesi che ne usano i tagli. Emendamento su N recepito in DA-19 |
@@ -41,7 +41,8 @@ Il banco di prova (simulatore, criteri, sigillo, registri, scaricatore) è **cos
 
 ## Decisioni aperte del titolare
 - P1 regola per IA-02 · P2 regole di spesa della riserva · P3 modello di scheda H-003 (pareri chiesti al DGS il 16/11).
-- DA-31 verdetto a due o tre stati (#94 b) · protezione del ramo su GitHub (#86, azione del titolare).
+- DA-31 verdetto a due o tre stati (#94 b) · protezione del ramo su GitHub (#86): da decidere prima della verifica (D-24); su un repository privato richiede GitHub Pro.
+- Già decise il 17/11: D-24 modello di minaccia («A con il giro B prima della verifica»).
 - Già decise: H-002 parcheggiata con condizione d'uscita scritta; IA-02 = 0,15 R; congelamento post-incidente.
 
 ## Rischi aperti, dichiarati

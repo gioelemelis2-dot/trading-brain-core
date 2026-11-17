@@ -114,7 +114,7 @@ Il sigillo si fa solo quando **tutte** queste condizioni sono vere, ognuna con u
 1. ogni `[DA COMPILARE]` e `[DA SCEGLIERE]` è deciso dall'utente;
 2. la replica indipendente (Gemini) è uguale al simulatore e al programma dei criteri su dati inventati, casi d'oro compresi;
 3. test verdi e mutanti al 100% su Python 3.13 e 3.9;
-4. due revisioni di fila senza rilievi critici o importanti;
+4. due revisioni di fila senza rilievi critici o importanti; contano i rilievi di tipo E (errori in buona fede) e M a costo basso (D-24, 17/11/2026); prima della verifica sulla riserva serve in più un giro su TUTTE le manomissioni, senza rilievi critici o importanti, e la decisione sulla protezione del ramo su GitHub;
 5. al sigillo si registrano le impronte SHA-256 della scheda e del codice che la esegue. Dopo il sigillo nulla cambia: un errore trovato dopo vuol dire un'ipotesi nuova.
 
 **Prima del sigillo nessuno esegue la strategia sui dati veri**, né lo sviluppo né la riserva: è la lezione dell'incidente del 14/11 (#41). Le prove si fanno solo su dati inventati.
