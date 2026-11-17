@@ -287,6 +287,38 @@ class TestValoriR13(Base):
         RV.stato(self.reg)
 
 
+class TestTestaRicontrollata(Base):
+    def test_testa_scritta_a_mano_rifiutata(self):
+        """#93 (revisore del laboratorio): la ricostruzione non ricontrollava la testa: α totale 5,0 o una parte
+        protetta fuori dalla riserva erano accettati da un file scritto a mano."""
+        for campo, valore in (("alfa_tot", 5.0), ("alfa_tot", 0.0), ("alfa_tot", True),
+                              ("protetta", ["2010-01-01", "2010-12-31"]), ("protetta", ["2005-12-31", "2005-11-01"]),
+                              ("fine", "2004-12-31")):
+            dati = json.loads(self.reg.read_text())
+            originale = dati["riserva"][campo]
+            dati["riserva"][campo] = valore
+            self.reg.write_text(json.dumps(dati))
+            with self.assertRaises(ValueError, msg=f"{campo} = {valore!r}"):
+                RV.stato(self.reg)
+            dati["riserva"][campo] = originale
+            self.reg.write_text(json.dumps(dati))
+        RV.stato(self.reg)
+
+    def test_contatore_j_intero(self):
+        """#94 (a): j = True o 1.0 erano accettati (True == 1)."""
+        self.prenota("A", D(2005, 1, 1), D(2005, 1, 31))
+        RV.autorizza(self.reg, "A", 12, "dati-A", ORA)
+        for valore in (True, 1.0):
+            dati = json.loads(self.reg.read_text())
+            dati["eventi"][-1]["j"] = valore
+            self.reg.write_text(json.dumps(dati))
+            with self.assertRaises(ValueError, msg=repr(valore)):
+                RV.stato(self.reg)
+            dati["eventi"][-1]["j"] = 1
+            self.reg.write_text(json.dumps(dati))
+        RV.stato(self.reg)
+
+
 class TestAncoraR13(unittest.TestCase):
     """#64 (R13-C1-01): il file della riserva ancorato alla versione su GitHub, come il registro delle prove."""
 
