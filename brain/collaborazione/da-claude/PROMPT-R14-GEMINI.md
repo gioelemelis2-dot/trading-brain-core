@@ -1,6 +1,6 @@
 # Mandato R14 per Gemini (Antigravity)
 
-Riscritto il 17/11/2026 pomeriggio, dopo la correzione dei difetti #72–#94. **Da consegnare solo quando Claude lo conferma**: dopo la corsa completa dei mutanti sul codice finale e, se c'è, dopo il rapporto BANCO-02. Da incollare in Antigravity così com'è.
+Riscritto il 17/11/2026 pomeriggio (#72–#95, BANCO-02 integrato). **Pronto da consegnare**: il codice è quello finale; Gemini rifà comunque i mutanti nel compito C. Se la corsa dei mutanti di Claude trova un buco, è registrato a parte. Da incollare in Antigravity così com'è.
 
 ```
 MANDATO R14 PER GEMINI — verifica delle correzioni #61–#95 e sesto attacco
@@ -60,8 +60,17 @@ C. Test e mutanti ufficiali (stampa l'output; tutti con la rete bloccata):
    python3 -s -B brain/governance/censimento/mutazioni_riconta.py <cartella fuori dal repository> 2
    Nota: con #87 i test si fermano se in brain ci sono cartelle __pycache__ (create senza -B): cancellale prima.
 
+CLASSIFICAZIONE OBBLIGATORIA DI OGNI RILIEVO (per una decisione del titolare sul «modello di minaccia»)
+Per ogni rilievo aggiungi due colonne:
+- «tipo»: (E) errore o svista possibile anche in buona fede (comando sbagliato, file dimenticato, agente IA che
+  esce dal protocollo, dati incompleti); oppure (M) manomissione deliberata che richiede di scrivere o
+  preparare file sul Mac (bytecode, moduli falsi, registri scritti a mano, rami riscritti).
+- «costo per l'attaccante»: basso / medio / alto.
+Non decidere tu quali contano: il titolare decide se la regola dei due giri puliti vale per (E) soltanto o per
+(E) e (M). Usa SOLO dati personali INVENTATI per l'esportazione redatta.
+
 CONSEGNA
-brain/collaborazione/da-gemini/G-<data>-R14.md: tabella dei rilievi (critica/importante/minore), esito di A
+brain/collaborazione/da-gemini/G-<data>-R14.md: tabella dei rilievi (critica/importante/minore, tipo, costo), esito di A
 rilievo per rilievo con le prove, output dei comandi, elenco completo dei comandi eseguiti, e la frase finale
 esplicita: «R14: nessun difetto critico o importante» oppure l'elenco. Commit con la tua identità e push su
 rev/gemini-r14. Se una regola ti impedisce un compito, fermati su quel compito e scrivilo.
