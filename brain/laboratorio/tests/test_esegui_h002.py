@@ -883,6 +883,22 @@ class TestEsitoDopoIlControlloFinale(BaseRiga):
         self.assertEqual(self.esecuzioni("robustezza"), [])
 
 
+class TestEsitiUnici(BaseRiga):
+    def test_un_solo_esito_per_variante_e_solo_dopo_la_verifica(self):
+        """#90 (revisore del laboratorio): il registro accettava esiti senza verifica e più esiti, anche
+        contraddittori, per la stessa variante."""
+        self.sigilla()
+        with self.assertRaises(ValueError) as e:
+            S.registra_esecuzione(self.registro, "H-002", {"ruolo": "esito", "variante": "V-T", "promossa": True}, ORA)
+        self.assertIn("senza verifica", str(e.exception))
+        S.registra_esecuzione(self.registro, "H-002", {"ruolo": "verifica", "variante": "V-T", "n_prove": 2}, ORA)
+        S.registra_esecuzione(self.registro, "H-002", {"ruolo": "esito", "variante": "V-T", "promossa": False}, ORA)
+        with self.assertRaises(ValueError) as e:
+            S.registra_esecuzione(self.registro, "H-002", {"ruolo": "esito", "variante": "V-T", "promossa": True}, ORA)
+        self.assertIn("già registrato", str(e.exception))
+        self.assertEqual([x["promossa"] for x in self.esecuzioni("esito")], [False])
+
+
 class TestComandoIsolato(unittest.TestCase):
     def test_la_forma_documentata_del_comando_funziona(self):
         """Il comando del docstring (python3 -I -S -B -c ...) trova il pacchetto e arriva alla riga di comando."""
