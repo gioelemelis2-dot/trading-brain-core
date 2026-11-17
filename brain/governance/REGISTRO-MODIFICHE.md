@@ -645,3 +645,19 @@ Nulla di questo tocca il candidato `8e51ce9` su cui lavora R15.
   - **Scaricamento BID finito** (08/06/2009 → 11/11/2023): 3.914 giorni già in cache, 1.356 scaricati, 0 errori http, 0 rovinati, 0 «404»; 1 file trovato in cartella ma non registrato (il giorno del riavvio dell'11/02/2020), ora registrato.
   - **Controllo `controlla_cache` sul BID 2005-01-01 → 2023-11-11: ESITO PULITO.** Nessun giorno senza file, nessun feriale vuoto, nessun file illeggibile, nessun temporaneo rimasto. Le chiusure note vuote sono 1–3 per anno. I 30 giorni «corti» visti sono vigilie e festività (Venerdì Santo, 2 gennaio, 26 dicembre). Solo conteggi: nessun prezzo letto né stampato.
   - **ASK in corso:** circa il 22% (al 07/02/2009), con rallentamenti di Dukascopy (HTTP 503) gestiti dai tentativi.
+
+## 2026-11-17 · v1.53 (notte: protocollo DGS-07 adottato e impegnato)
+
+- **DGS-07 ricevuto**: protocollo deterministico per scegliere (fase 1) e validare (fase 2) il metodo del test IA-02. **Il titolare l'ha adottato «così com'è» (D-25).** DGS-06 e DGS-07 sono archiviati senza modifiche in `collaborazione/da-chatgpt/`.
+- **Impegno prima della lettura** (`laboratorio/studi/IMPEGNO-PROTOCOLLO-IA02.md`, commit `4f076c4`): impronte, versione del pilota, ambiente, serializzazione dei semi, matrice, soglie, e attestazione di chi ha visto cosa.
+  - **Dichiarazione di Claude:** durante i test ha visto piccoli conteggi della fase 0 (40 repliche, B = 99, celle 2, 3, 7). Per DGS-07 la fase 1 resta quindi **sviluppo** e l'impegno non si descrive come anteriore a ogni lettura. La fase 2 è prospettica.
+  - **Errore mio, per omissione:** nel messaggio 5 al DGS avevo scritto «nessuno ha ancora visto i risultati» senza dichiarare quei conteggi di fase 0.
+- **#112 (errore mio):** il bootstrap del pilota accettava un intervallo di ampiezza nulla, contro DGS-06 §2c. Il mio test rosso si aspettava proprio quel valore e io avevo adattato il codice al test invece che al disegno. L'ha fatto emergere DGS-07 §2a.3. Corretto in TDD (`069e09a` → `4883dd9`).
+- **Rendiconto del protocollo** (`laboratorio/studi/protocollo_ia02.py`, TDD):
+  - conteggi E, P, B, I per metodo × margine × cella;
+  - Clopper–Pearson unilaterale (riproduce i valori del DGS: 60/3.000 e 248/12.000);
+  - dieci controlli e classifica della fase 1;
+  - verdetto della fase 2, che esegue da sola l'inventario dei semi e i 216 confronti fra flussi.
+- **Pilota:** salva i limiti grezzi per replica con l'impronta della propria versione e può girare con un solo metodo. Un test prova che ordine delle celle e numero di processi non cambiano il file.
+- **Mutanti:** PI21–PI25 e PR01–PR27. Nella prova rapida è sopravvissuto PI24: nessun test vedeva un errore salvato come intervallo finto. Ho aggiunto il test dopo il mutante (dichiarato).
+- **Corsa dei mutanti su 303890b interrotta:** si è fermata al limite di tempo (circa 2,5 ore) senza risultati, perché avevo fatto girare insieme Python 3.13, Python 3.9, il pilota e i test su 4 processori. Errore di pianificazione mio. Rilanciata in sequenza, con l'uscita riga per riga.
