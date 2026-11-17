@@ -45,3 +45,15 @@
 - Tabella descrittiva del pilota (non aperta), SHA-256 `2c4fd7abad53c2c6729f91a9f05d85f845dbd44011f02556cd038b7c417119d4`.
 - Intestazione del file (non sono risultati): versione `717e5599…`, fase 1, 3.000 repliche, B = 3.999, master 2026111706, celle 1–12, due metodi.
 - Prossimo passo, meccanico: `protocollo_ia02 --limiti … --fase 1`, poi la classifica di DGS-07 §2a.5 così com'è.
+
+## 6. Esito meccanico della fase 1 e congelamento (17/11, 23:5x)
+
+- Rendiconto: `laboratorio/studi/risultati/ia02/rendiconto_fase1.md` (`protocollo_ia02`, versione `233a6e64…`).
+- **Ammissibili:** HAC Δ = 0,05 (min P = 76, somma 416) e bootstrap Δ = 0,05 (min P = 76, somma 421). Tutti gli altri sei candidati falliscono almeno un controllo.
+- **Candidato scelto dalla classifica §2a.5:** **bootstrap circolare a blocchi, ℓ = 10, B = 3.999, intervallo basic, Δ = 0,05 R** (parità sul minimo, vince la somma). Versione congelata: `pilota_ia02.py` SHA-256 `717e5599…`, CPython 3.13.18.
+- **Fase 2:** solo questo candidato, fase = 2, repliche 1…12.000, tutte e 12 le celle, master 2026111706. Nessuna lettura intermedia.
+- **Osservazioni di Claude (non cambiano nulla, servono al titolare e al DGS):**
+  1. A margine 0 entrambi i metodi sono ben tarati nelle celle regolari (falsa promozione al confine 2,4–2,9%). La regola «U_CP ≤ 0,025» richiede un tasso vero intorno al 2% o meno, quindi un metodo tarato esattamente non può passare. Era deducibile prima dei risultati; nessuno dei due l'ha scritto in chiaro.
+  2. La cella 11 (perdite rare) è quella che impone il margine: a Δ = 0 le false promozioni sono 12,5% con il bootstrap e 6,5% con HAC.
+  3. Con Δ = 0,05 la promozione richiede L > 0,20 R. A D = 1.000 la potenza descrittiva è circa 2,5% a μ = 0,20, 72% (iid) e 53% (AR) a μ = 0,30. Il metodo è prudente, ma con molte sedute serve un vantaggio grande. Se usarlo davvero resta una decisione del titolare (DGS-07 §2a.6).
+  4. La scelta fra bootstrap e HAC si è decisa per 5 promozioni su circa 420 (spareggio sulla somma). HAC costa molto meno da calcolare.
