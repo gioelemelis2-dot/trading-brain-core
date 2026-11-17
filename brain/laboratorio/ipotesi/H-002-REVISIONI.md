@@ -440,3 +440,25 @@ Rapporto: `collaborazione/da-gemini/G-20261116-R13.md` (commit `6e17782`, identi
 - **Riproduzione:** Claude ha riprodotto R14-01 e R14-02 prima di correggere. Tutti sono corretti in TDD come #96–#104 (`79e6b4e`, poi rosso, `b6a2c3e`).
 - **Per la regola d'uscita:** R14 ha trovato un difetto critico che conta (M a costo basso, D-24) e quattro importanti. **Il contatore dei giri puliti resta a zero.**
 
+## R15 di Gemini (17/11/2026)
+
+- **Consegna:** `collaborazione/da-gemini/G-20261117-R15.md` (commit `6509a00`).
+  - Candidato `8e51ce9` dichiarato.
+  - Ambiente dichiarato: Apple Python 3.9.6, macOS 14.5 arm64, opzioni con e senza `-I` (parere P6).
+- **A:** tutte le correzioni #86–#104 verificate come chiuse. #104 è chiuso in parte (vedi #106). Gli script BANCO-02 e R14 rilanciati sul registro canonico: tutti «ATTACCO RESPINTO».
+- **B, taratura su 80 mercati inventati** (20 semi × 4 livelli di spinta, `sintetico.mercato`, `esegui_sviluppo`). È il primo dato sul comportamento dell'intera procedura di screening:
+
+  | Spinta | Promozioni | R medio V-T |
+  |---|---|---|
+  | **0** (nessun vantaggio) | **0 / 20** | −0,06 |
+  | 0,005 | 2 / 20 | +0,11 |
+  | 0,01 | 16 / 20 | +0,27 |
+  | 0,02 | 17 / 20 | +0,57 |
+
+  A spinta 0,02 i 3 mancati sono solo per il minimo di 300 trade. Con vantaggio debole il segnale si perde soprattutto sul veto di robustezza e sul drawdown.
+
+  **Limite:** sono mercati del generatore del progetto (lo stesso autore del codice), con 20 semi. L'intervallo del caso nullo arriva al 16%.
+- **C:** 6 sonde, 6 mutanti nuovi uccisi; rilievi minori #107–#111.
+- **D sul Mac:** riconteggio 53/53, controllo della cache 20/20, scaricatore 50/50. Mutanti dell'esecuzione fermi per #106; 1/353 test fallito (#106).
+- **Per la regola d'uscita (D-24):** Gemini segnala due casi «dubbio» per il titolare: #106 (difetto di un test, non del codice sigillato) e #108. Se il titolare li esclude, R15 è il **primo giro pulito**. Nel frattempo il contatore resta a **0 su 2**.
+

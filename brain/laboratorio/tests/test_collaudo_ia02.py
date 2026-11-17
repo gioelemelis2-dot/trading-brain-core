@@ -87,6 +87,39 @@ class TestGeneratoreEMetodi(unittest.TestCase):
         self.assertEqual(forte["promosse"], 50)                                     # vantaggio molto forte
 
 
+class TestCoperturaDopoIMutanti(unittest.TestCase):
+    """Scritti DOPO la corsa dei mutanti (CO02, CO07, CO08, CO10 vivi al primo giro): dichiarato."""
+
+    def test_primo_valore_gia_stazionario(self):
+        rnd = random.Random(21)
+        primi = [C.serie_ar1(1, 0.15, 1.25, 0.25, rnd)[0] for _ in range(20_000)]
+        m = sum(primi) / len(primi)
+        var = sum((v - m) ** 2 for v in primi) / (len(primi) - 1)
+        self.assertAlmostEqual(var, 1.25 ** 2, delta=0.06)
+
+    def test_blocchi_allargano_l_intervallo_con_dipendenza(self):
+        x = C.serie_ar1(1000, 0.15, 1.25, 0.8, random.Random(4))
+        a_blocchi = C.limite_bootstrap(x, 0.025, 299, random.Random(9))
+        a_singoli = C.limite_bootstrap(x, 0.025, 299, random.Random(9), blocco=1)
+        self.assertLess(a_blocchi, a_singoli - 0.05)
+
+    def test_quantile_del_bootstrap(self):
+        """Il limite è il k-esimo valore ordinato delle medie, k = ⌈a·R⌉ (calcolo indipendente)."""
+        x = C.serie_ar1(100, 0.15, 1.25, 0.0, random.Random(8))
+        R, a = 199, 0.025
+        rnd = random.Random(3)
+        b = C.blocco_predefinito(len(x))
+        blocchi = math.ceil(len(x) / b)
+        medie = sorted(sum(sum(x[i:i + b]) for i in [rnd.randint(0, len(x) - b) for _ in range(blocchi)])
+                       / (blocchi * b) for _ in range(R))
+        self.assertAlmostEqual(C.limite_bootstrap(x, a, R, random.Random(3)), medie[math.ceil(a * R) - 1], places=9)
+
+    def test_test_ingenuo_al_confine_con_dati_indipendenti(self):
+        """Con trade indipendenti il test ingenuo al confine promuove circa il 2,5% (teoria del DGS)."""
+        r = C.cella(n=1000, mu=0.15, rho=0.0, metodo="ingenuo", repliche=2000, seme=17)
+        self.assertTrue(0.015 <= r["promosse"] / 2000 <= 0.04, r)
+
+
 class TestRigaDiComando(unittest.TestCase):
     def test_pilota_ridotto(self):
         buf = io.StringIO()
