@@ -46,6 +46,7 @@ def n_per_potenza(mu: float, sigma: float, soglia: float, potenza: float, regola
     """Trade minimi perché la regola promuova con almeno quella probabilità; None se mu ≤ soglia."""
     if not 0.0 < potenza < 1.0:
         raise ValueError(f"potenza {potenza} fuori da (0, 1)")
+    _spostamento(regola)                                               # #94: regola controllata sempre
     if mu <= soglia:
         return None
     z = _spostamento(regola) + _N.inv_cdf(potenza)
@@ -67,6 +68,7 @@ def simula(mu: float, target: float, n: int, soglia: float, regola: str, prove: 
     """Frequenza di promozione su esiti inventati −1 / +target con media mu, errore standard stimato dal campione."""
     if n < 2:
         raise ValueError("servono almeno 2 trade per stimare la varianza")
+    sigma_esiti(mu, target)                                            # #94: mu in (−1, target)
     z = _spostamento(regola)
     p = (mu + 1.0) / (target + 1.0)
     rnd = random.Random(seme)

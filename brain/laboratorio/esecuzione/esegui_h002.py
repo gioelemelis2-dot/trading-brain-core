@@ -396,8 +396,8 @@ def main(argv=None) -> int:
                         "registrato": ora}
         if x.modalita == "verifica":
             n = max([S.n_prove(S.leggi(x.registro))] + [S.n_prove(d) for d in storia])   # #86: N non scende
-            for v in promosse:                                    # prima del calcolo: una volta sola, anche se cade
-                S.registra_esecuzione(x.registro, IPOTESI, dict(traccia, ruolo="verifica", variante=v, n_prove=n), ora)
+            S.registra_esecuzioni(x.registro, IPOTESI, [dict(traccia, ruolo="verifica", variante=v, n_prove=n)
+                                                        for v in promosse], ora)   # prima del calcolo, tutte (#94)
             ris = esegui_verifica(bid, ask, promosse, n, range(inizio.year, fine.year + 1))
             if CONTROLLO_AMBIENTE:                                             # #61, #91: prima dell'esito
                 controlla_ambiente(sigillo["codice"])

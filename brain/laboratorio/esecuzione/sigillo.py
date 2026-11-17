@@ -207,8 +207,23 @@ def registra_esecuzione(registro: Path, ipotesi: str, voce: dict, ora: str) -> d
         return _registra(registro, ipotesi, voce, ora)
 
 
+def registra_esecuzioni(registro: Path, ipotesi: str, voci: List[dict], ora: str) -> List[dict]:
+    """Più esecuzioni in una sola scrittura: tutte o nessuna (#94: le verifiche di più varianti insieme)."""
+    with _bloccato(registro):
+        dati = leggi(registro)
+        nuove = [_controlla_e_aggiungi(dati, ipotesi, v, ora) for v in voci]
+        _scrivi(registro, dati)
+        return nuove
+
+
 def _registra(registro: Path, ipotesi: str, voce: dict, ora: str) -> dict:
     dati = leggi(registro)
+    e = _controlla_e_aggiungi(dati, ipotesi, voce, ora)
+    _scrivi(registro, dati)
+    return e
+
+
+def _controlla_e_aggiungi(dati: dict, ipotesi: str, voce: dict, ora: str) -> dict:
     if _sigillo(dati, ipotesi) is None:
         raise NonSigillata(f"{ipotesi} non risulta sigillata: nessuna esecuzione")
     ruolo = voce.get("ruolo")
@@ -235,5 +250,4 @@ def _registra(registro: Path, ipotesi: str, voce: dict, ora: str) -> dict:
             raise ValueError(f"esito di {ipotesi} {variante} già registrato: uno solo")
     e = dict(voce, ipotesi=ipotesi, ora=ora)
     dati["esecuzioni"].append(e)
-    _scrivi(registro, dati)
     return e
