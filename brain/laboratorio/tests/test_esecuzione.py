@@ -383,6 +383,7 @@ class TestRevisioneR11GeminiCriteri(Cartella):
         with self.assertRaises(ValueError):
             S.registra_esecuzione(self.registro, "H-999", {"ruolo": "sviluppo"}, ORA)
         S.registra_esecuzione(self.registro, "H-999", {"ruolo": "robustezza", "variante": "V-T range 20'"}, ORA)
+        S.registra_esecuzione(self.registro, "H-999", {"ruolo": "verifica", "variante": "V-T"}, ORA)   # #90
         S.registra_esecuzione(self.registro, "H-999", {"ruolo": "esito", "variante": "V-T", "promossa": False}, ORA)
 
     def test_codice_nel_sigillo(self):

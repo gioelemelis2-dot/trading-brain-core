@@ -227,6 +227,12 @@ def _registra(registro: Path, ipotesi: str, voce: dict, ora: str) -> dict:
     if ruolo == "verifica" and any(e["ipotesi"] == ipotesi and e["ruolo"] == "verifica"
                                    and e.get("variante") == voce.get("variante") for e in dati["esecuzioni"]):
         raise ValueError(f"verifica di {ipotesi} {voce.get('variante')} già eseguita: si fa una volta sola")
+    if ruolo == "esito":                                   # #90: uno solo, e solo dopo la verifica
+        stessa = [x for x in dati["esecuzioni"] if x["ipotesi"] == ipotesi and x.get("variante") == variante]
+        if not any(x["ruolo"] == "verifica" for x in stessa):
+            raise ValueError(f"esito di {ipotesi} {variante} senza verifica registrata")
+        if any(x["ruolo"] == "esito" for x in stessa):
+            raise ValueError(f"esito di {ipotesi} {variante} già registrato: uno solo")
     e = dict(voce, ipotesi=ipotesi, ora=ora)
     dati["esecuzioni"].append(e)
     _scrivi(registro, dati)

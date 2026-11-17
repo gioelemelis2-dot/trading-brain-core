@@ -48,6 +48,8 @@ M = {
     'N33 robustezza del sigillo non controllata': [(E, '        if sorted(sigillo.get("robustezza") or []) != nomi_robustezza():     # #69', '        if False:     # #69')],
     'N34 robustezza non dichiarata accettata': [(SG, ' and (not prove or prova in prove)', '')],
     'N36 completezza per record, non per minuti (#85)': [(C, '    for t in set(tempi):                                            # #85: minuti distinti\n        if a <= t < b:\n            terzi[', '    for t in tempi:\n        if a <= t < b:\n            terzi[')],
+    'N47 esito senza verifica accettato (#90)': [(SG, '        if not any(x["ruolo"] == "verifica" for x in stessa):', '        if False:')],
+    'N48 secondo esito accettato (#90)': [(SG, '        if any(x["ruolo"] == "esito" for x in stessa):', '        if False:')],
     'N35 ambiente non ricontrollato prima dell\'esito (#91)': [(E, '            ris = esegui_verifica(bid, ask, promosse, n, range(inizio.year, fine.year + 1))\n            if CONTROLLO_AMBIENTE:', '            ris = esegui_verifica(bid, ask, promosse, n, range(inizio.year, fine.year + 1))\n            if False:')],
     'N37 registro non canonico accettato (#86)': [(E, '            if x.registro.resolve() != (RADICE / REL_REGISTRO).resolve():', '            if False:')],
     'N38 storia git ignorata (#86)': [(E, '            storia = S.versioni_nella_storia(RADICE, REL_REGISTRO)', '            storia = []')],
