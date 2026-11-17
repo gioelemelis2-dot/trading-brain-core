@@ -38,3 +38,10 @@
 - La corsa avviata alle 22:51 da `fc0c639` **si è interrotta per il riavvio del contenitore senza scrivere nulla**: il file d'uscita è vuoto (0 byte), e nessuno ha visto risultati.
 - **La corsa della fase 1 è quindi quella avviata alle 23:3x da `4d0c904`**: `pilota_ia02.py` del commit `4883dd9`, SHA-256 `717e55996b23a4954d69c97722458e30c2499000b5055fdcca4cba29f864b0ee` (contratto di #112 applicato, limiti grezzi salvati). Il rendiconto usa `protocollo_ia02.py`, SHA-256 `233a6e64ed634f8b95e9a8c8c90fa78b13acdbc5289e9c44cd3b2c17d9f09827`.
 - Non c'è più una corsa «a conteggi soli» da confrontare: il confronto di §3 cade. Semi, generatori e metodi sono gli stessi dell'impegno.
+
+## 5. Corsa della fase 1 finita, impronte registrate PRIMA dell'apertura
+
+- Uscita 0, nessun messaggio d'errore. File dei limiti grezzi: 3.142.109 byte, SHA-256 `8ed698a9d6699caf8fd787a4f84b308573109127e1a127bdb525200d191d0edf`. Archiviato compresso (gzip -9 -n) in `laboratorio/studi/risultati/ia02/limiti_fase1.json.gz`.
+- Tabella descrittiva del pilota (non aperta), SHA-256 `2c4fd7abad53c2c6729f91a9f05d85f845dbd44011f02556cd038b7c417119d4`.
+- Intestazione del file (non sono risultati): versione `717e5599…`, fase 1, 3.000 repliche, B = 3.999, master 2026111706, celle 1–12, due metodi.
+- Prossimo passo, meccanico: `protocollo_ia02 --limiti … --fase 1`, poi la classifica di DGS-07 §2a.5 così com'è.
