@@ -1,5 +1,7 @@
 # Mandato R14 per Gemini (Antigravity)
 
+> **BLOCCATO il 17/11 alle 9:30:** la revisione del laboratorio ha trovato tre difetti critici aperti (#86–#88). Non consegnare finché non sono corretti; il mandato andrà riscritto per verificarli.
+
 Preparato la notte del 16–17/11/2026, aggiornato il 17/11 mattina (#72–#85). **Da consegnare solo quando Claude lo conferma** (dopo l'integrazione della revisione del laboratorio, ancora in corso): R14 deve girare su codice fermo. Da incollare in Antigravity così com'è.
 
 ```

@@ -552,4 +552,5 @@ Formato: data · versione della base · cosa · perché · file.
 - **Conseguenza da non nascondere:** quattro difetti del riconteggio (#75 comandi su più righe, #78 date compatte, #80 uscite con soli prezzi, #81 `toolUseResult`) toccano il censimento G-20261115-03 («riserva intatta»). La conclusione **va riconfermata** rilanciando il riconteggio corretto sul Mac.
 - **#85** (revisore del laboratorio): completezza per minuti distinti (`cb34b05` rosso, `67ff7a6`).
 - Mutanti: riconteggio 46/46, controllo della cache 20/20 (Q19 scartato prima come NON VALIDO dal controllo di validità: sintassi rotta, riscritto), scaricatore 48/48, su 3.13 e 3.9; X21 manuale sull'esportazione. Corsa completa su 3.9 di tutti gli script: in corso.
+- **Revisione del nucleo del laboratorio (ripresa dopo l'interruzione), 14 rilievi:** registrati come #86–#94, **APERTI**. Riprodotti da Claude: #86 (verifica ripetuta con un secondo registro o un ramo nuovo) e #89 (la mia correzione #85 era incompleta). Gli altri sono riprodotti dal revisore su una copia e vanno riprodotti da Claude prima di correggerli. Non corretti stanotte: è finito il tempo concesso (fino alle 9). R14 bloccato.
 
