@@ -83,6 +83,25 @@ class TestSeduta(Base):
         s = self.seduta(X.esamina(self.cache, g, g), g)
         self.assertEqual((s["comuni_validi"], s["comuni_non_validi"], s["buco_max"]), (521, 4, 2))
 
+    def test_estremi_incrociati_contati_a_parte(self):
+        """#108 (R15-03): un minimo ASK sotto il minimo BID (o un massimo ASK sotto il massimo BID) indica quotazioni
+        incrociate dentro il minuto. Il minuto resta valido come per il simulatore (apertura e chiusura), ma si conta
+        a parte: sui dati veri dirà quanto conta il rilievo."""
+        g = date(2024, 1, 12)
+        self.giorno(g)
+        t = _utc(g, ora_t(8, 0)) + timedelta(minutes=50)
+        o, h, l, c = self.ask[t]
+        self.ask[t] = (o, h, l - 2.0, c)                                 # minimo ASK sotto il minimo BID
+        t2 = _utc(g, ora_t(8, 0)) + timedelta(minutes=60)
+        o, h, l, c = self.ask[t2]
+        self.ask[t2] = (o, self.bid[t2][1] - 0.1, min(l, o, c) - 0.0, c)  # massimo ASK sotto il massimo BID
+        self.scrivi(g, g)
+        e = X.esamina(self.cache, g, g)
+        s = self.seduta(e, g)
+        self.assertEqual((s["comuni_validi"], s["estremi_incrociati"]), (525, 2))
+        self.assertEqual(e["anni"]["2024"]["estremi_incrociati"], 2)
+        self.assertIn("incrociat", X.tabella(e))
+
     def test_buchi_ai_bordi_contano(self):
         g = date(2024, 1, 11)
         self.giorno(g, bid=518, ask=518, dalle=ora_t(8, 4))             # mancano i primi 4 e gli ultimi 3 minuti

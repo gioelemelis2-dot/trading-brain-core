@@ -1088,10 +1088,18 @@ class TestAvvioR14(TestAvvioControllato):
         self.assertIn("-I", out.stderr)
         self.assertFalse(self.spia.exists())
 
-    def test_senza_meno_b_o_con_cartella_esterna_del_bytecode_si_ferma(self):
+    def test_senza_meno_b_si_ferma(self):
+        """#106 (R15-01 di Gemini): sul Python 3.9 di Apple -I implica già -B, quindi lì il caso non esiste: il test
+        lo dichiara e si salta, invece di fallire."""
+        implicito = _sp.run([sys.executable, "-I", "-S", "-c", "import sys; print(sys.flags.dont_write_bytecode)"],
+                            capture_output=True, text=True).stdout.strip()
+        if implicito == "1":
+            self.skipTest("su questo interprete -I implica già -B (Python di Apple): caso impossibile")
         out = self.avvia("--help", opzioni=("-I", "-S"))
         self.assertEqual(out.returncode, 2)
         self.assertIn("-B", out.stderr)
+
+    def test_cartella_esterna_del_bytecode_si_ferma(self):
         out = self.avvia("--help", opzioni=("-I", "-S", "-B", "-X", f"pycache_prefix={self.dir / 'pyc'}"))
         self.assertEqual(out.returncode, 2)
         self.assertIn("pycache_prefix", out.stderr)
