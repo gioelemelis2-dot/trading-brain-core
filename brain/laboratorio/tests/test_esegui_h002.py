@@ -931,15 +931,107 @@ class TestFusoOrario(BaseRiga):
         self.assertEqual(self.esecuzioni("sviluppo"), [])
 
 
-class TestComandoIsolato(unittest.TestCase):
-    def test_la_forma_documentata_del_comando_funziona(self):
-        """Il comando del docstring (python3 -I -S -B -c ...) trova il pacchetto e arriva alla riga di comando."""
-        import re
-        riga = re.search(r'python3 -I -S -B -c "([^"]+)"', E.__doc__).group(1)
-        out = _sp.run([sys.executable, "-I", "-S", "-B", "-c", riga, "--help"], cwd=str(E.RADICE),
-                      capture_output=True, text=True)
+class TestAvvioControllato(unittest.TestCase):
+    """#95 (17/11, dagli output di BANCO-02 di Gemini, riprodotto da Claude): i controlli dell'ambiente giravano DOPO
+    gli import, quando il codice estraneo era già stato eseguito e poteva manometterli (un .pyc che sostituisce
+    importlib.util.cache_from_source dava «AMBIENTE OK»). Il lanciatore controlla tutto PRIMA di importare il progetto.
+    Prove in una COPIA di `brain`; il codice estraneo scrive un file-spia quando viene eseguito: non deve esistere."""
+
+    AVVIO = "brain/laboratorio/esecuzione/avvio.py"
+
+    def setUp(self):
+        import shutil
+        self._t = tempfile.TemporaryDirectory()
+        self.dir = Path(self._t.name)
+        shutil.copytree(E.RADICE / "brain", self.dir / "brain", ignore=shutil.ignore_patterns("__pycache__"))
+        self.spia = self.dir / "SPIA"
+        self.sigilla()
+
+    def tearDown(self):
+        self._t.cleanup()
+
+    def sigilla(self):
+        import json as _json
+        reg = self.dir / "brain/laboratorio/registro_prove.json"
+        reg.write_text(_json.dumps({"prove": [], "sigilli": [{"ipotesi": "H-002", "codice": E.impronte_codice(self.dir)}],
+                                    "esecuzioni": []}), encoding="utf-8")
+
+    def avvia(self, *argomenti, opzioni=("-I", "-S", "-B")):
+        return _sp.run([sys.executable, *opzioni, self.AVVIO, *argomenti], cwd=str(self.dir), capture_output=True,
+                       text=True)
+
+    def veleno(self):
+        return f"\nimport pathlib as _p\n_p.Path({str(self.spia)!r}).write_text('eseguito')\n"
+
+    def test_copia_pulita_arriva_alla_riga_di_comando(self):
+        out = self.avvia("--help")
         self.assertEqual(out.returncode, 0, out.stderr)
         self.assertIn("--modalita", out.stdout)
+
+    def test_bytecode_rifiutato_prima_di_eseguirlo(self):
+        import importlib.util, marshal, struct
+        src = self.dir / "brain/laboratorio/esecuzione/criteri.py"
+        st = src.stat()
+        pyc = Path(importlib.util.cache_from_source(str(src)))
+        pyc.parent.mkdir(parents=True, exist_ok=True)
+        pyc.write_bytes(importlib.util.MAGIC_NUMBER + struct.pack("<III", 0, int(st.st_mtime) & 0xFFFFFFFF,
+                                                                  st.st_size & 0xFFFFFFFF)
+                        + marshal.dumps(compile(src.read_text(encoding="utf-8") + self.veleno(), str(src), "exec")))
+        out = self.avvia("--help")
+        self.assertEqual(out.returncode, 2, out.stdout + out.stderr)
+        self.assertIn("__pycache__", out.stderr)
+        self.assertFalse(self.spia.exists())
+
+    def test_modulo_nella_cartella_di_lancio_rifiutato_prima_di_eseguirlo(self):
+        for nome in ("sysconfig.py", "statistics.py"):
+            (self.dir / nome).write_text(self.veleno(), encoding="utf-8")
+            out = self.avvia("--help")
+            self.assertEqual(out.returncode, 2, out.stdout + out.stderr)
+            self.assertIn(nome, out.stderr)
+            self.assertFalse(self.spia.exists())
+            (self.dir / nome).unlink()
+
+    def test_file_sigillato_modificato_rifiutato_prima_di_eseguirlo(self):
+        f = self.dir / "brain/laboratorio/esecuzione/criteri.py"
+        f.write_text(f.read_text(encoding="utf-8") + self.veleno(), encoding="utf-8")
+        out = self.avvia("--help")
+        self.assertEqual(out.returncode, 2, out.stdout + out.stderr)
+        self.assertIn("criteri.py", out.stderr)
+        self.assertFalse(self.spia.exists())
+
+    def test_senza_sigillo_o_senza_modalita_isolata_si_ferma(self):
+        (self.dir / "brain/laboratorio/registro_prove.json").unlink()
+        out = self.avvia("--help")
+        self.assertEqual(out.returncode, 2)
+        self.assertIn("sigillo", out.stderr)
+        self.sigilla()
+        out = self.avvia("--help", opzioni=("-s", "-B"))
+        self.assertEqual(out.returncode, 2)
+        self.assertIn("-I", out.stderr)
+
+    def test_il_lanciatore_e_sigillato(self):
+        self.assertIn(self.AVVIO, E.impronte_codice())
+
+
+class TestSoloDalLanciatore(BaseRiga):
+    def test_con_il_controllo_attivo_serve_il_lanciatore(self):
+        """#95: chiamato direttamente, main si ferma (il lanciatore è il solo ingresso con i controlli prima
+        degli import). Limite dichiarato: chi lancia il codice a mano può sempre aggirare il lanciatore."""
+        from unittest import mock
+        self.cache_di(date(2024, 1, 1), 60)
+        self.sigilla()
+        with mock.patch.object(E, "CONTROLLO_AMBIENTE", True), mock.patch.object(E, "controlla_ambiente", lambda s: None):
+            rc, err = self.lancia_errore("--modalita", "sviluppo")
+        self.assertEqual(rc, 2)
+        self.assertIn("avvio.py", err)
+        self.assertEqual(self.esecuzioni("sviluppo"), [])
+
+
+class TestComandoIsolato(unittest.TestCase):
+    def test_la_forma_documentata_e_il_lanciatore(self):
+        """#95: il comando documentato passa dal lanciatore (controlli prima degli import), non da python3 -c."""
+        self.assertIn("python3 -I -S -B brain/laboratorio/esecuzione/avvio.py", E.__doc__)
+        self.assertNotIn("python3 -I -S -B -c", E.__doc__)
 
 
 class TestRigaDiComandoR13(BaseRiga):
@@ -959,6 +1051,7 @@ class TestRigaDiComandoR13(BaseRiga):
         self.sigilla()
         chiamate = []
         with mock.patch.object(E, "CONTROLLO_AMBIENTE", True), \
+                mock.patch.object(sys, "_tb_avvio_controllato", True, create=True), \
                 mock.patch.object(E, "controlla_ambiente", lambda s: chiamate.append(sorted(s) == sorted(E.impronte_codice()))):
             self.assertEqual(self.lancia("--modalita", "sviluppo"), 0)
         self.assertEqual(chiamate, [True, True])
