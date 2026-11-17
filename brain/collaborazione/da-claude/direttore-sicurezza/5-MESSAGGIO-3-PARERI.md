@@ -1,19 +1,22 @@
 # Messaggio 3 per il DGS (ChatGPT), 16/11/2026
 
-Da incollare nella chat del Progetto «Trading Brain», **allegando il pacchetto nuovo** `trading_brain_dgs05.zip`. Il pacchetto è redatto: niente nome, utente GitHub o percorsi personali. Gli archivi precedenti sono superati.
+Da incollare nella chat del Progetto «Trading Brain», **allegando il pacchetto nuovo** `trading_brain_dgs05b.zip` (17/11, commit `1573ad7`, SHA-256 `ccf54d6b…`). Il pacchetto è redatto: niente nome, utente GitHub o percorsi personali. **NON allegare `trading_brain_dgs05.zip`** (16/11): conteneva il nome dell'utente dentro uno ZIP annidato (difetto #72). Se è già stato inviato, dirlo a Claude: va registrato. Gli archivi precedenti sono superati.
 
 ```
 MESSAGGIO 3 AL DGS — tre pareri da dare al titolare, più un controllo del pacchetto
 
 PACCHETTO
-trading_brain_dgs05.zip: contenuto esatto di un commit del ramo feat/esecutore-h002, REDATTO (richiesta DGS-10,
-difetto #43). Leggi LEGGIMI-PACCHETTO.md e controlla ogni file contro MANIFEST.tsv (colonna sha256). I file con
+trading_brain_dgs05b.zip: contenuto esatto di un commit del ramo feat/esecutore-h002, REDATTO (richiesta DGS-10,
+difetto #43; difetto #72: due archivi annidati esclusi e dichiarati in LEGGIMI). Leggi LEGGIMI-PACCHETTO.md e controlla ogni file contro MANIFEST.tsv (colonna sha256). I file con
 redatto = no hanno la stessa impronta del commit su GitHub. Dichiara cosa hai letto per intero, in parte o no.
 
 COSA È SUCCESSO DOPO DGS-04 (da verificare sui documenti, non da credere)
 1. Censimento delle esecuzioni sui dati veri chiuso: collaborazione/da-gemini/G-20261115-03-censimento-esecuzioni.md
    (sezioni 5–8). Riserva 2005 → 31/10/2023 intatta per tutto ciò che è contabile; esplorazioni di Gemini registrate
-   come E-003 (laboratorio/studi/REGISTRO-ESPLORAZIONI.md).
+   come E-003 (laboratorio/studi/REGISTRO-ESPLORAZIONI.md). ATTENZIONE, dopo questo pacchetto: una revisione
+   notturna ha trovato quattro buchi nello strumento di riconteggio (#75, #78, #80, #81: comandi su più righe, date
+   compatte, uscite con soli prezzi, un campo delle trascrizioni non letto). Corretti; la conclusione «intatta»
+   è DA RICONFERMARE con il riconteggio corretto sul Mac. Non trattarla come chiusa.
 2. H-002: «non decidibile · parcheggiata» per decisione del titolare, con condizione d'uscita scritta
    (laboratorio/ipotesi/H-002-REVISIONI.md): solo su dati successivi al 12/11/2026, sigillata prima, contata in N.
    La patch dei tre verdetti di Gemini (riprova sugli stessi dati) è archiviata e NON applicata.
