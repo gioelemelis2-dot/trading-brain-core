@@ -766,6 +766,108 @@ class TestAmbienteInUnaCopia(unittest.TestCase):
         self.assertIn("FERMO", out.stdout, out.stdout + out.stderr)
 
 
+class TestVerificaUnaVoltaNellaStoria(BaseRiga):
+    """#86 (revisore del laboratorio, 17/11): la verifica si rifaceva con un secondo registro (--registro libero) o
+    con un ramo nuovo da un commit precedente; e N scendeva. Repository git temporaneo con un remoto «GitHub» finto."""
+
+    def setUp(self):
+        super().setUp()
+        from unittest import mock
+        remoto, self.repo = self.dir / "remoto.git", self.dir / "repo"
+        _sp.run(["git", "init", "-q", "--bare", str(remoto)], check=True)
+        _sp.run(["git", "clone", "-q", str(remoto), str(self.repo)], check=True, capture_output=True)
+        self.g = ["git", "-C", str(self.repo), "-c", "user.name=t", "-c", "user.email=t@invalid"]
+        _sp.run(self.g + ["checkout", "-q", "-b", "principale"], check=True)
+        self.registro = self.repo / "brain" / "laboratorio" / "registro_prove.json"
+        self.registro.parent.mkdir(parents=True)
+        self.scheda = self.repo / "H-002.md"
+        self.scheda.write_text("# H-002 di prova\n", encoding="utf-8")
+        for nome, valore in (("RADICE", self.repo), ("ANCORA_GIT", True)):
+            cerotto = mock.patch.object(E, nome, valore)
+            cerotto.start()
+            self.addCleanup(cerotto.stop)
+        self.cache_di(date(2024, 1, 1), 60)
+        self.cache_di(date(2010, 1, 1), 59)
+
+    def spingi(self, messaggio, ramo="principale"):
+        _sp.run(self.g + ["add", "-A"], check=True)
+        _sp.run(self.g + ["commit", "-q", "-m", messaggio], check=True)
+        _sp.run(self.g + ["push", "-q", "-u", "origin", ramo], check=True, capture_output=True)
+        return _sp.run(self.g + ["rev-parse", "HEAD"], capture_output=True, text=True).stdout.strip()
+
+    def ramo_nuovo(self, nome, commit):
+        _sp.run(self.g + ["checkout", "-q", "-b", nome, commit], check=True)
+        _sp.run(self.g + ["push", "-q", "-u", "origin", nome], check=True, capture_output=True)
+
+    def prepara(self):
+        self.sigilla()
+        self.sviluppo_finto(V_T=True, V_S=True)
+        return self.spingi("sigillo e sviluppo")
+
+    def test_registro_diverso_da_quello_canonico_rifiutato(self):
+        self.prepara()
+        bis = self.repo / "registro_bis.json"
+        canonico, self.registro = self.registro, bis
+        self.prepara()
+        rc, err = self.lancia_errore("--modalita", "verifica", "--varianti", "V-T,V-S")
+        self.assertEqual(rc, 2, err)
+        self.assertIn("canonico", err)
+
+    def test_verifica_gia_fatta_su_un_altro_ramo_rifiutata(self):
+        prima = self.prepara()
+        self.assertEqual(self.lancia("--modalita", "verifica", "--varianti", "V-T,V-S"), 0)
+        self.spingi("verifica")
+        self.ramo_nuovo("rifaccio", prima)
+        self.assertEqual(self.esecuzioni("verifica"), [])                      # su questo ramo non c'è
+        rc, err = self.lancia_errore("--modalita", "verifica", "--varianti", "V-T,V-S")
+        self.assertEqual(rc, 2, err)
+        self.assertIn("storia", err)
+
+    def test_n_non_scende_su_un_ramo_piu_vecchio(self):
+        prima = self.prepara()                                                  # N = 2
+        S.sigilla(self.registro, "H-001", self.scheda, [f"X{k}" for k in range(8)], ORA)
+        self.spingi("altre 8 prove")                                            # N = 10
+        self.ramo_nuovo("vecchio", prima)
+        self.assertEqual(self.lancia("--modalita", "verifica", "--varianti", "V-T,V-S"), 0)
+        self.assertEqual({e["n_prove"] for e in self.esecuzioni("verifica")}, {10})
+
+
+class TestEsitoDopoIlControlloFinale(BaseRiga):
+    """#91: l'esito (verifica) e gli esiti dello screening (sviluppo) si scrivono DOPO il secondo controllo
+    dell'ambiente: se quel controllo ferma, nel registro non resta un risultato contaminato."""
+
+    def ambiente_che_cade_alla_fine(self):
+        from unittest import mock
+        chiamate = []
+
+        def finto(s):
+            chiamate.append(1)
+            if len(chiamate) == 2:
+                raise ValueError("ambiente non pulito (simulato)")
+        for nome, valore in (("CONTROLLO_AMBIENTE", True), ("controlla_ambiente", finto)):
+            cerotto = mock.patch.object(E, nome, valore)
+            cerotto.start()
+            self.addCleanup(cerotto.stop)
+
+    def test_verifica_senza_esito(self):
+        self.cache_di(date(2024, 1, 1), 60)
+        self.cache_di(date(2010, 1, 1), 59)
+        self.sigilla()
+        self.sviluppo_finto(V_T=True, V_S=True)
+        self.ambiente_che_cade_alla_fine()
+        self.assertEqual(self.lancia("--modalita", "verifica", "--varianti", "V-T,V-S"), 2)
+        self.assertEqual(len(self.esecuzioni("verifica")), 2)                  # la verifica resta bruciata
+        self.assertEqual(self.esecuzioni("esito"), [])
+
+    def test_sviluppo_senza_esiti(self):
+        self.cache_di(date(2024, 1, 1), 60)
+        self.sigilla()
+        self.ambiente_che_cade_alla_fine()
+        self.assertEqual(self.lancia("--modalita", "sviluppo"), 2)
+        self.assertEqual(self.esecuzioni("sviluppo"), [])
+        self.assertEqual(self.esecuzioni("robustezza"), [])
+
+
 class TestComandoIsolato(unittest.TestCase):
     def test_la_forma_documentata_del_comando_funziona(self):
         """Il comando del docstring (python3 -I -S -B -c ...) trova il pacchetto e arriva alla riga di comando."""
