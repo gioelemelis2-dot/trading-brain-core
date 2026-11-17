@@ -106,7 +106,7 @@ I Gate 0 e 1 sono chiusi e il 2 è in corso; i Gate 3–7 sono una proposta di C
 | Gate | Stato (13/11) | Contenuto | Esce quando |
 |---|---|---|---|
 | 0 · Verifica del codice | chiuso 12/11 | Guardian e Binario B su main; ALTO-2 e ALTO-7 verificati con controesempi indipendenti | 108/108 test verdi con -W error su Python 3.13 e 3.9 |
-| 1 · Conto demo e regole personali | chiuso 12/11 | Conto demo broker ECN MT5 da 50.000 USD, XAU/USD; regole interne 5% giornaliero e 10% totale | scheda G0 funzionante con P-01 = 0,5% e P-05 = 1,5% confermate |
+| 1 · Conto demo e regole personali | **configurato ma NON riconciliato** (rilievo G-20261113-01; nota del 17/11: la parola «chiuso» qui era superata) | Conto demo broker ECN MT5 da 50.000 USD, XAU/USD; regole interne 5% giornaliero e 10% totale | scheda G0 funzionante con P-01 = 0,5% e P-05 = 1,5% confermate |
 | 2 · Dati storici e sigillo Out-of-Sample | in corso | XAUUSD 15 minuti da Dukascopy; partizione da decidere (DA-26) | partizione decisa, dati sigillati, meta.json e commitment.json verificati su GitHub |
 | 3 · Ricerca In-Sample | proposto | prima DA-19 e DA-20 decisi; ogni ipotesi scritta e sigillata, ogni prova contata | una candidata supera il criterio DA-20 sui soli dati In-Sample |
 | 4 · Validazione Out-of-Sample | proposto | sigillo aperto una volta sola; se non regge si torna al Gate 3, prova contata | il criterio regge anche Out-of-Sample |
