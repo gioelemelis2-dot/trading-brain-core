@@ -203,9 +203,15 @@ def decodifica(dati: bytes, giorno: date, cifre: int) -> List[tuple]:
         raise ErroreDati(f"{giorno}: {len(grezzo)} byte, non multiplo di {RECORD.size} (file troncato o formato diverso)")
     inizio = datetime(giorno.year, giorno.month, giorno.day, tzinfo=timezone.utc)
     minuti = []
+    visti = set()
     for sec, o, c, lo, hi, vol in RECORD.iter_unpack(grezzo):
         if not 0 <= sec < 86400:
             raise ErroreDati(f"{giorno}: secondi {sec} fuori dal giorno")
+        if sec % 60:                                             # #89: un record per minuto, a inizio minuto
+            raise ErroreDati(f"{giorno} +{sec}s: record non allineato al minuto (formato diverso)")
+        if sec in visti:
+            raise ErroreDati(f"{giorno} +{sec}s: minuto ripetuto (formato diverso)")
+        visti.add(sec)
         if not math.isfinite(vol):
             raise ErroreDati(f"{giorno} +{sec}s: volume non finito ({vol})")
         if vol <= 0:
