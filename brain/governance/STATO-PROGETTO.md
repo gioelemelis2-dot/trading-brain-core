@@ -21,7 +21,7 @@ Il banco di prova (simulatore, criteri, sigillo, registri, scaricatore) è **cos
 | Impegni anticipati | IA-01 (0,15 R, senza prova di anteriorità) · **IA-02: R medio netto ≥ +0,15 R**, fissato prima di ogni idea H-003 (commit `032250b`) |
 
 ## Cosa manca per il primo sigillo, in ordine
-1. **Due giri di revisione di fila senza difetti critici o importanti** (contatore a 0; R14 pronto).
+1. **Due giri di revisione di fila senza difetti critici o importanti che contano per D-24** (contatore a 0; R14 integrato il 17/11; R15 sul candidato `8e51ce9`, con commit, ambiente e perimetro dichiarati).
 2. **Dati storici completi** e controllo della cache pulito; poi taratura della soglia di completezza sui conteggi dei minuti.
 3. **Ratifica del registro della riserva** (α totale, scelta delle finestre, parte protetta) — titolare, con il parere del DGS (P2).
 4. **Scelta della regola per IA-02** («sulla stima» o «sul limite inferiore», per sviluppo e verifica) — titolare, con il parere del DGS (P1).

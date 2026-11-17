@@ -1,6 +1,6 @@
 # Mandato R15 per Gemini (Antigravity)
 
-Preparato il 17/11/2026 sera, dopo l'integrazione di R14 (#96–#104). **Da consegnare quando Claude conferma che la corsa dei mutanti sul codice finale è chiusa** (R15 deve girare su codice fermo). Da incollare in Antigravity così com'è.
+Preparato il 17/11/2026 sera, dopo l'integrazione di R14 (#96–#104). **Pronto: la corsa dei mutanti sul candidato `8e51ce9` è chiusa** (esecuzione 213/213, simulatore 40/40, DSR 44/44, riconteggio 53/53, controllo della cache 20/20, scaricatore 50/50; 366 test verdi su Python 3.13.18 e 3.9.25 di Claude). Da incollare in Antigravity così com'è.
 
 ```
 MANDATO R15 PER GEMINI — verifica di R14, taratura del banco su mercati inventati, settimo attacco
@@ -17,7 +17,15 @@ CONTESTO
 - Decisione del titolare D-24 (brain/governance/DECISIONI.md): i due giri puliti di fila contano i rilievi
   critici o importanti di tipo (E) errore in buona fede e (M) manomissione a costo BASSO. Gli (M) a costo
   medio o alto si registrano e basta. Contatore attuale: 0 su 2. R15 può essere il primo giro pulito.
-- Commit di partenza: l'ultimo di origin/feat/esecutore-h002 al momento della consegna. Dichiaralo.
+- CANDIDATO: commit 8e51ce9 (non «l'ultimo»: commit successivi di soli documenti non cambiano il candidato;
+  se Claude cambia codice, lo dichiara e il giro si riferisce comunque a 8e51ce9).
+- PERIMETRO del candidato (il codice che il sigillo protegge): brain/laboratorio/esecuzione/ (avvio, esegui_h002,
+  sigillo, caricatore, criteri, riserva, sintetico), brain/laboratorio/simulatori/orb_londra.py,
+  brain/dati/pipeline/dukascopy.py e calendario.py. Strumenti di contorno, valutati ma fuori dal sigillo:
+  scarica_cache, controlla_cache, taratura_completezza, riconta, esporta_redatto, potenza_soglia.
+- AMBIENTE (parere P6 del DGS, regola per contare i giri): dichiara nel rapporto commit esatto (git rev-parse
+  HEAD), python3 --version, sys.version, platform.platform(), sys.flags e sys.pycache_prefix con e senza -I.
+  Claude ha verificato su Linux con Python 3.13.18 e 3.9.25; tu verifichi sul Mac con l'Apple Python 3.9.
 
 REGOLE (una violazione invalida il giro)
 1. NESSUN DATO VERO: niente brain/dati/reali/, niente caricatore.carica o esegui_h002 su percorsi reali,
@@ -27,7 +35,7 @@ REGOLE (una violazione invalida il giro)
    ~/scarica_ask.log, i processi attivi, né gli altri worktree.
 3. Worktree nuovo:
      cd ~/Downloads/trading-brain-core && git fetch origin feat/esecutore-h002
-     git worktree add ../tb-r15 -b rev/gemini-r15 origin/feat/esecutore-h002
+     git worktree add ../tb-r15 -b rev/gemini-r15 8e51ce9
    Prima dei test: find brain -name __pycache__ -prune -exec rm -rf {} +
    File d'attacco SOLO in copie dentro cartelle temporanee. Scrivi SOLO in brain/collaborazione/da-gemini/.
    Commit con la tua identità: git -c user.name="Gemini (Antigravity)" -c user.email=gemini@invalid commit ...
