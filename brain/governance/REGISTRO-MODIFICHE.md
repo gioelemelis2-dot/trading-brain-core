@@ -564,3 +564,12 @@ Formato: data · versione della base · cosa · perché · file.
 - **#94 b:** opzioni in DA-31, nessuna scelta.
 - **Mutanti del controllo della cache:** Q11 si era staccato dalla riga che avevo cambiato con #85 (lo script l'ha segnalato: «la sostituzione compare 0 volte»), riagganciato; Q21 dichiarato equivalente dopo #89. 20/20 su 3.13 e 3.9. Scaricatore 50/50 e riconteggio 46/46 su entrambe le versioni.
 
+## 2026-11-17 · v1.48 (pomeriggio: riconteggio, BANCO-02, lanciatore)
+
+- **Riconteggio corretto sul Mac** (`riconta2`, `riconta3`): 112 segnalazioni, tutte classificate per origine; nessuna dalla cache vera. **La riserva resta intatta** per tutto ciò che è contabile (`governance/censimento/RICONTEGGIO-20261117.md`). Da confermare con Gemini il passo 3360. Lo strumento ora indica l'origine di ogni uscita (`60fa2de` rosso, `e3eeb08`; mutanti Z48–Z52, 51/51 su 3.13 e 3.9; due vivi al primo giro, Z49 e Z51, erano buchi dei miei test).
+- **BANCO-02 di Gemini** (commit `0c65580` su `rev/gemini-banco02`): #86–#91 riprodotti tutti in modo indipendente su `296b014`. Rilanciati da Claude sul codice corretto, con il registro canonico: #86, #87, #88, #89 e #91 RESPINTI. #90 RIUSCITO, ed era atteso: una voce di sviluppo scritta a mano non si può impedire in un file locale (limite dichiarato).
+- **#95, critico, errore mio:** gli output di BANCO-02 mostravano il codice avvelenato ESEGUITO anche quando l'attacco era respinto. Le mie correzioni #87 e #88 controllavano dopo gli import. Riprodotto, poi corretto con il lanciatore `brain/laboratorio/esecuzione/avvio.py`. Il comando documentato cambia:
+  `python3 -I -S -B brain/laboratorio/esecuzione/avvio.py --modalita … --rapporto …`
+- **Test modificati, dichiarati:** i test con il controllo dell'ambiente simulato dichiarano l'avvio dal lanciatore; il test del comando documentato ora cerca il lanciatore.
+- **Mutanti nuovi:** N55–N61. La corsa del laboratorio è stata fermata e rilanciata sul codice finale.
+

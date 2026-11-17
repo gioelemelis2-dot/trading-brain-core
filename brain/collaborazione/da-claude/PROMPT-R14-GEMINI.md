@@ -3,7 +3,7 @@
 Riscritto il 17/11/2026 pomeriggio, dopo la correzione dei difetti #72–#94. **Da consegnare solo quando Claude lo conferma**: dopo la corsa completa dei mutanti sul codice finale e, se c'è, dopo il rapporto BANCO-02. Da incollare in Antigravity così com'è.
 
 ```
-MANDATO R14 PER GEMINI — verifica delle correzioni #61–#94 e sesto attacco
+MANDATO R14 PER GEMINI — verifica delle correzioni #61–#95 e sesto attacco
 
 CONTESTO
 - Dopo il tuo R13 ci sono stati due giri di revisione con revisori separati di Claude (16–17/11): dati e
@@ -13,7 +13,11 @@ CONTESTO
 - Errori di Claude registrati: #72 (fuga di un nome in un pacchetto per il DGS), #85 incompleta (→ #89).
 - Restano dichiarati e NON correggibili nel codice: #90 in parte e #92 (i registri sono file locali: chi ha i
   file li può scrivere a mano; la difesa è la storia su GitHub). #94 b è una decisione del titolare (DA-31).
-- Se hai consegnato BANCO-02: rilancia i tuoi script; ognuno deve stampare «ATTACCO RESPINTO».
+- BANCO-02: grazie, #86–#91 confermati. Claude ha rilanciato i tuoi script sul codice corretto (con il
+  registro canonico, che ora è obbligatorio): #86, #87, #88, #89 e #91 RESPINTI; #90 RIUSCITO, ed è atteso
+  (limite dichiarato). Dai tuoi output (marker_esiste=True) è uscito #95: il codice avvelenato veniva
+  ESEGUITO prima dei controlli. Ora c'è il lanciatore brain/laboratorio/esecuzione/avvio.py, che controlla
+  tutto PRIMA degli import: attaccalo per primo (A.0).
 - Commit di partenza: l'ultimo di origin/feat/esecutore-h002 al momento della consegna. Dichiaralo.
 
 REGOLE (una violazione invalida il giro)
@@ -32,6 +36,10 @@ REGOLE (una violazione invalida il giro)
    ogni «chiuso» con una prova mostrata.
 
 COMPITI
+A.0 #95, lanciatore: c'è un modo di far eseguire codice non sigillato PRIMA dei suoi controlli (moduli della
+   libreria standard che lui stesso importa, variabili d'ambiente non coperte da -I, file nella cartella di
+   lancio con estensioni non elencate, collegamenti simbolici, file sigillati cambiati dopo il controllo e prima
+   dell'import, cioè una «corsa»)?
 A. Verifica, rilievo per rilievo (chiuso / chiuso in parte / aperto, con la prova):
    - #86: verifica ripetuta con un secondo registro, con un ramo nuovo da un commit precedente, con N più
      basso. Attacca: riferimenti remoti riscritti a mano, etichette, reflog, storia «potata».
