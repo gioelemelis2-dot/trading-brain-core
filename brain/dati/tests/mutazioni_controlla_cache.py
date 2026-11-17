@@ -27,7 +27,9 @@ M = {
     "Q18 nomi non AAAA-MM-GG.bi5 come giorni (#82)": [(CC, "    if not NOME_GIORNO.fullmatch(nome):\n        return None\n", "")],
     "Q19 file messi da parte non stampati (#82)": [(CC, "        if e.get(chiave):\n            righe.append(f\"{nome}: {len(e[chiave])}", "        if False:\n            righe.append(f\"{nome}: {len(e[chiave])}")],
     "Q20 .bi5 validi fra gli estranei (#82)": [(CC, "if p.name.endswith(\".bi5\") and _data(p.name) is None", "if p.name.endswith(\".bi5\")")],
-    "Q21 minuti contati per record (#85)": [(CC, "n = len({m[0] for m in DK.decodifica(dati, g, DK.SCALA[simbolo])})", "n = len(DK.decodifica(dati, g, DK.SCALA[simbolo]))")],
+    # Q21 «minuti contati per record (#85)» DICHIARATO EQUIVALENTE il 17/11 e tolto dall'elenco: dopo #89 decodifica
+    # rifiuta i minuti ripetuti, quindi contare i minuti distinti o i record dà lo stesso numero. Il conteggio dei
+    # distinti resta come difesa in profondità. (Sopravvissuto nella corsa del 17/11 su 3.13 e 3.9.)
     "Q16 confronto: esito ignorato nel codice d'uscita": [(CC, "    return 0 if all(e.get(\"pulito\", True) for e in esiti) and allineati else 1", "    return 0 if all(e.get(\"pulito\", True) for e in esiti) else 1")],
     "Q01 file mancanti non contati": [(CC, "            a[\"mancanti\"] += 1\n", "            pass\n")],
     "Q02 illeggibili ignorati": [(CC, "                    a[\"illeggibili\"].append(g.isoformat())\n", "                    pass\n")],
@@ -41,7 +43,7 @@ M = {
     "Q09 periodo esplicito ignorato": [(CC, "    inizio = inizio or min(file)\n    fine = fine or max(file)\n",
                                          "    inizio = min(file)\n    fine = max(file)\n")],
     "Q10 fine settimana contati come feriali vuoti": [(CC, "            elif n == 0 and g.weekday() < 5:", "            elif n == 0:")],
-    "Q11 prezzi nell'esito": [(CC, "                    n = len(DK.decodifica(dati, g, DK.SCALA[simbolo]))         # solo il numero dei minuti\n",
+    "Q11 prezzi nell'esito": [(CC, "                    n = len({m[0] for m in DK.decodifica(dati, g, DK.SCALA[simbolo])})   # minuti distinti (#85)\n",
                                 "                    _m = DK.decodifica(dati, g, DK.SCALA[simbolo]); n = len(_m); a.setdefault(\"p\", str(_m[0][1]) if _m else None)\n")],
 }
 
