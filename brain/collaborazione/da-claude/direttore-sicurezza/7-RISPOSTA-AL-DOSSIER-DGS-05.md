@@ -77,3 +77,14 @@ Correzione per il DGS: l'arresto del BID all'11/02/2020 è attestato da «Last l
 5. **P3:** autorizzare l'aggiornamento documentale del modello H-003 con le quattro integrazioni.
 
 Nessun valore numerico del DGS è stato applicato al codice o ai documenti normativi.
+
+## Errata dopo DGS-06 (17/11/2026 sera)
+
+Il DGS ha ricalcolato in modo indipendente. Accetto queste correzioni:
+1. **Arrotondamenti.** Un minimo si arrotonda per eccesso: 546 (non 545) e 1.227 (non 1.226). Con la dipendenza (F(n) esatto, non 1,66) i valori corretti sono 908, 2.044 e 8.176, non 905, 2.036 e 8.143. Anche questi valgono solo nel modello gaussiano con varianza e dipendenza note.
+2. **Conclusione troppo forte.** «Solo vantaggi da +0,25 R in su sono verificabili» **non segue** dai calcoli. Con 4.700 trade ipotetici la potenza 80% si ha da circa +0,216 R; con 2.500 da circa +0,240 R. A +0,20 R la potenza è circa il 57%, non zero. Il dimensionamento si fa nella scheda di ogni ipotesi.
+3. **«Un metodo al livello nominale non passa mai»** è sbagliato: passa con probabilità piccola, al più δ.
+4. **Tempi.** «Si fanno in ore» non era una stima sufficiente. Misura del 17/11 sul pilota già scritto: circa 13 ms a replica per il bootstrap con 499 ricampionamenti. Con i 3.999 proposti dal DGS sono circa 0,1 s a replica, cioè circa 1 ora in serie per le 36.000 serie del pilota a 12 celle (stima da confermare con un benchmark). HAC: trascurabile.
+
+I nove budget di repliche del §4 sono **sufficienti** (DGS-06 §1.2), ma non sono i minimi interi.
+

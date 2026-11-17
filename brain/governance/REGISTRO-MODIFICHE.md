@@ -620,4 +620,5 @@ Nulla di questo tocca il candidato `8e51ce9` su cui lavora R15.
 - **#108, misura:** il rendiconto dell'intersezione conta a parte i minuti con estremi incrociati (mutanti IX17, IX18), così i dati veri diranno quanto conta il rilievo.
 - **Minori #107, #109, #110, #111 nel codice sigillato: NON corretti.** Il titolare aveva chiesto di non toccare `8e51ce9`. Proposte in `collaborazione/da-claude/PROPOSTA-MINORI-R15.md`.
 - **Contatore:** 0 su 2. R15 diventa il **primo giro pulito** se il titolare esclude i due casi «dubbio» (#106 è un difetto di un test, #108 una scelta di metodo).
+- **DGS-06 ricevuto (sera):** controllo riga per riga della risposta 7, ricalcoli indipendenti e quattro bozze (DA-31 completa, testi P3, pilota a 12 celle, procedura per l'ordine delle finestre). **Errata di Claude** registrata in fondo alla risposta 7: arrotondamenti per difetto, conclusione «da +0,25 R» troppo forte, «non passa mai» sbagliato, stima dei tempi insufficiente. Le bozze del DGS sono proposte: nessuna applicata.
 
