@@ -95,6 +95,54 @@ class TestEsporta(unittest.TestCase):
             X.esporta(self.repo, "HEAD", self.dir / "fuori" / "p.zip", SOST)
         self.assertIn("note_di_mario.md", str(e.exception))
 
+    def committa(self, nome, dati):
+        f = self.repo / nome
+        f.parent.mkdir(parents=True, exist_ok=True)
+        f.write_bytes(dati)
+        subprocess.run(self.g + ["add", nome], check=True)
+        subprocess.run(self.g + ["commit", "-q", "-m", nome], check=True)
+
+    def test_altre_codifiche_rifiutate(self):
+        """#72 (revisione notturna): UTF-16 e latin-1 passavano come «binari» non controllabili."""
+        for nome, dati in (("u16.txt", "Autore: Mario Rossi".encode("utf-16")),
+                           ("lat.txt", "Relazione di José".encode("latin-1"))):
+            with self.subTest(nome):
+                self.committa(nome, dati)
+                with self.assertRaises(ValueError) as e:
+                    X.esporta(self.repo, "HEAD", self.dir / "fuori" / "p.zip", SOST + [("José", "<titolare>")])
+                self.assertIn(nome, str(e.exception))
+                subprocess.run(self.g + ["rm", "-q", nome], check=True)
+                subprocess.run(self.g + ["commit", "-q", "-m", "via"], check=True)
+
+    def test_forma_nfd_redatta(self):
+        self.committa("nfd.md", "Autore: Jose\u0301 Rossi\n".encode("utf-8"))
+        zp = self.dir / "fuori" / "p.zip"
+        X.esporta(self.repo, "HEAD", zp, SOST + [("José", "<titolare>")])
+        testo = self.leggi(zp)["nfd.md"].decode("utf-8")
+        self.assertNotIn("Jos", testo)
+
+    def test_archivi_annidati_rifiutati_o_esclusi(self):
+        """#72: uno ZIP annidato con un nome dentro passava (contenuto compresso). Successo davvero: pacchetto DGS-05."""
+        import io as _io
+        buf = _io.BytesIO()
+        with zipfile.ZipFile(buf, "w", zipfile.ZIP_DEFLATED) as z:
+            z.writestr("dentro.md", "Autore: Mario Rossi\n")
+        self.committa("vecchio/pacchetto.zip", buf.getvalue())
+        with self.assertRaises(ValueError) as e:
+            X.esporta(self.repo, "HEAD", self.dir / "fuori" / "p.zip", SOST)
+        self.assertIn("vecchio/pacchetto.zip", str(e.exception))
+        zp = self.dir / "fuori" / "q.zip"
+        r = X.esporta(self.repo, "HEAD", zp, SOST, escludi=["vecchio/pacchetto.zip"])
+        f = self.leggi(zp)
+        self.assertNotIn("vecchio/pacchetto.zip", f)
+        self.assertIn("vecchio/pacchetto.zip", f["LEGGIMI-PACCHETTO.md"].decode("utf-8"))   # esclusione dichiarata
+        self.assertEqual(r["esclusi"], 1)
+
+    def test_sostituzione_con_barre_rovesciate(self):
+        zp = self.dir / "fuori" / "p.zip"
+        X.esporta(self.repo, "HEAD", zp, [("Mario Rossi", "C:\\utenti\\g"), ("mrossi-dot", "<u>"), ("mario", "<u>")])
+        self.assertIn("C:\\utenti\\g", self.leggi(zp)["a.md"].decode("utf-8"))
+
     def test_destinazione_fuori_dal_repository(self):
         with self.assertRaises(ValueError):
             X.esporta(self.repo, "HEAD", self.repo / "p.zip", SOST)
