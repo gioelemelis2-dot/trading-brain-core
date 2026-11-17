@@ -252,6 +252,11 @@ def _libreria_standard() -> Path:
     return Path(sys.modules["encodings"].__file__).resolve().parent.parent
 
 
+def _fuori_standard(p: Path, standard: Path) -> bool:
+    """Fuori dalla libreria standard, o dentro ma in site-packages/dist-packages (pacchetti installati)."""
+    return bool({"site-packages", "dist-packages"} & set(p.parts)) or not _dentro(p, standard)
+
+
 def controlla_ambiente(sigillati: Dict[str, str], isolato_richiesto: bool = True) -> None:
     """#61 (R13-B-01): l'ambiente non deve far eseguire codice non sigillato.
     - modalità isolata (`python3 -I -S`): niente PYTHONPATH, pacchetti dell'utente, file .pth, sitecustomize;
@@ -280,7 +285,7 @@ def controlla_ambiente(sigillati: Dict[str, str], isolato_richiesto: bool = True
             elif Path(importlib.util.cache_from_source(str(p))).exists():
                 problemi.append(f"{rel}: c'è un bytecode in __pycache__ (-B non impedisce di leggerlo e non è "
                                 f"sigillato): cancellare le cartelle __pycache__ di brain")       # #87
-        elif {"site-packages", "dist-packages"} & set(p.parts) or not _dentro(p, standard):
+        elif _fuori_standard(p, standard):
             problemi.append(f"{nome} da {p}: fuori dalla libreria standard")
     if problemi:
         raise ValueError(f"ambiente non pulito: {problemi[:10]}")

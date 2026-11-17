@@ -759,6 +759,21 @@ class TestAmbienteInUnaCopia(unittest.TestCase):
         self.assertNotIn("AMBIENTE OK", out.stdout, out.stdout + out.stderr)
         self.assertIn("FERMO", out.stdout, out.stderr)
 
+    def test_cartella_esterna_del_bytecode_si_ferma(self):
+        """#87 (copertura, scritto dopo il codice): -X pycache_prefix farebbe leggere bytecode da un'altra cartella."""
+        out = _sp.run([sys.executable, "-I", "-S", "-B", "-X", f"pycache_prefix={self.dir / 'pyc'}", "-c", self.PROG],
+                      cwd=str(self.dir), capture_output=True, text=True)
+        self.assertIn("FERMO", out.stdout, out.stderr)
+        self.assertIn("pycache_prefix", out.stdout)
+
+    def test_pacchetti_installati_fuori_dalla_libreria_standard(self):
+        """#88 (copertura, scritto dopo il codice): site-packages sta DENTRO la cartella della libreria standard."""
+        std = Path("/x/lib/python3.13")
+        self.assertTrue(E._fuori_standard(std / "site-packages" / "numpy" / "__init__.py", std))
+        self.assertTrue(E._fuori_standard(Path("/usr/lib/python3/dist-packages/a.py"), Path("/usr/lib/python3")))
+        self.assertTrue(E._fuori_standard(Path("/altrove/statistics.py"), std))
+        self.assertFalse(E._fuori_standard(std / "statistics.py", std))
+
     def test_sysconfig_falso_da_solo_si_ferma(self):
         """#88: anche se nessun altro modulo è ombrato, un sysconfig fuori dalla libreria standard è un problema."""
         self.sysconfig_falso()
