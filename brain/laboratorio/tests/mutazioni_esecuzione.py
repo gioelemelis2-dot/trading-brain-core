@@ -54,6 +54,8 @@ M = {
     'N50 alfa totale booleano accettato (#93)': [(RV, '    if type(alfa_tot) not in (int, float) or not 0.0 < alfa_tot < 1.0:', '    if not 0.0 < alfa_tot < 1.0:')],
     'N51 contatore j non intero accettato (#94)': [(RV, 'if type(e.get("j")) is not int or e.get("j") != self.j + 1:', 'if e.get("j") != self.j + 1:')],
     'N52 verifiche registrate una per volta (#94)': [(SG, '        nuove = [_controlla_e_aggiungi(dati, ipotesi, v, ora) for v in voci]\n        _scrivi(registro, dati)\n', '        nuove = []\n        for v in voci:\n            nuove.append(_controlla_e_aggiungi(dati, ipotesi, v, ora))\n            _scrivi(registro, dati)\n')],
+    'N53 fuso orario non controllato (#94)': [(E, '        controlla_fuso()                                                       # #94 (d)\n', '')],
+    'N54 ultimo giorno d\'estate sbagliato (#94)': [(E, 'if estate[0] <= g < estate[1] else', 'if estate[0] <= g <= estate[1] else')],
     'N35 ambiente non ricontrollato prima dell\'esito (#91)': [(E, '            ris = esegui_verifica(bid, ask, promosse, n, range(inizio.year, fine.year + 1))\n            if CONTROLLO_AMBIENTE:', '            ris = esegui_verifica(bid, ask, promosse, n, range(inizio.year, fine.year + 1))\n            if False:')],
     'N37 registro non canonico accettato (#86)': [(E, '            if x.registro.resolve() != (RADICE / REL_REGISTRO).resolve():', '            if False:')],
     'N38 storia git ignorata (#86)': [(E, '            storia = S.versioni_nella_storia(RADICE, REL_REGISTRO)', '            storia = []')],

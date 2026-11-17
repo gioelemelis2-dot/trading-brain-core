@@ -25,7 +25,7 @@ import os
 import re
 import sys
 from dataclasses import replace
-from datetime import date, datetime, timezone
+from datetime import date, datetime, timedelta, timezone
 from pathlib import Path
 from statistics import mean
 from typing import Dict, List, Optional
@@ -246,6 +246,28 @@ def _dentro(p: Path, cartella: Path) -> bool:
         return False
 
 
+def _ultima_domenica(anno: int, mese: int) -> date:
+    g = date(anno, mese, 31)
+    return g - timedelta(days=(g.weekday() - 6) % 7)
+
+
+def controlla_fuso() -> None:
+    """#94 (d): i dati del fuso orario (tzdata del sistema) non sono sigillati; uno diverso sposterebbe la sessione di
+    Londra con lo stesso codice e la stessa cache. Si confronta Europe/London, a mezzogiorno UTC di ogni giorno dei
+    due periodi, con la regola europea dell'ora legale (dal 1996): dall'ultima domenica di marzo all'ultima di ottobre,
+    passaggio alle 01:00 UTC."""
+    for anno in range(min(PERIODO_VERIFICA[0], PERIODO_SVILUPPO[0]).year,
+                      max(PERIODO_VERIFICA[1], PERIODO_SVILUPPO[1]).year + 1):
+        estate = (_ultima_domenica(anno, 3), _ultima_domenica(anno, 10))
+        g = date(anno, 1, 1)
+        while g.year == anno:
+            atteso = timedelta(hours=1) if estate[0] <= g < estate[1] else timedelta(0)
+            if datetime(g.year, g.month, g.day, 12, tzinfo=timezone.utc).astimezone(O.LONDRA).utcoffset() != atteso:
+                raise ValueError(f"fuso orario di Londra diverso dalla regola europea il {g}: dati del fuso del "
+                                 f"sistema (tzdata) da controllare")
+            g += timedelta(days=1)
+
+
 def _libreria_standard() -> Path:
     """La libreria standard VERA: la cartella da cui l'interprete ha caricato `encodings` all'avvio, prima di ogni
     modifica di sys.path. #88: prima la si chiedeva a `sysconfig`, che si può ombrare dalla cartella di lancio."""
@@ -325,6 +347,7 @@ def main(argv=None) -> int:
         if not _ORA_ISO.fullmatch(ora):                                       # #51: orario nel formato del registro
             raise ValueError(f"--ora {ora!r} non è nel formato AAAA-MM-GGThh:mm:ssZ")
         datetime.strptime(ora, "%Y-%m-%dT%H:%M:%SZ")
+        controlla_fuso()                                                       # #94 (d)
         storia: List[dict] = []
         if ANCORA_GIT:
             if x.registro.resolve() != (RADICE / REL_REGISTRO).resolve():     # #86: niente registri alternativi
