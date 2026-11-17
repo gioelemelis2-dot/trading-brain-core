@@ -24,6 +24,7 @@ Uso:
 """
 import argparse
 import hashlib
+import json
 import math
 import random
 import sys
@@ -82,6 +83,19 @@ def genera(cella: int, fase: int, replica: int) -> list:
     return coppie
 
 
+def impronta_modulo() -> str:
+    """SHA-256 di questo file: identifica la versione che ha prodotto un file di limiti (DGS-07 §2a.1)."""
+    with open(__file__, "rb") as f:
+        return hashlib.sha256(f.read()).hexdigest()
+
+
+def intervallo_valido(lo: float, hi: float):
+    """Contratto di DGS-06 §2c: limiti non finiti, invertiti o di ampiezza nulla sono errori (non stimabilità)."""
+    if not (math.isfinite(lo) and math.isfinite(hi)) or not lo < hi:
+        return None
+    return lo, hi
+
+
 def ritardi_predefiniti(d: int) -> int:
     return math.floor(4 * (d / 100) ** (2 / 9))
 
@@ -102,7 +116,7 @@ def intervallo_hac(coppie: list, ritardi: int = None):
     if not v > 0 or not math.isfinite(v):
         return None
     se = math.sqrt(v / (n * kbar * kbar))
-    return mu - Z * se, mu + Z * se
+    return intervallo_valido(mu - Z * se, mu + Z * se)
 
 
 def medie_bootstrap(coppie: list, rnd: random.Random, ricampionamenti: int, blocco: int = BLOCCO):
@@ -137,22 +151,27 @@ def intervallo_bootstrap(coppie: list, rnd: random.Random, ricampionamenti: int 
     mu = sum(s for s, _ in coppie) / sk
     o = sorted(medie)
     q = lambda p: o[math.ceil(p * ricampionamenti) - 1]              # noqa: E731
-    return 2 * mu - q(1 - A), 2 * mu - q(A)
+    return intervallo_valido(2 * mu - q(1 - A), 2 * mu - q(A))
 
 
-def esegui_cella(cella: int, fase: int, repliche: int, ricampionamenti: int = 3999) -> dict:
+METODI = ("hac", "bootstrap")
+
+
+def esegui_cella(cella: int, fase: int, repliche: int, ricampionamenti: int = 3999, metodi: tuple = METODI) -> dict:
     mu = CELLE[cella][1]
-    out = {"cella": cella, "tipo": CELLE[cella][0], "mu": mu, "repliche": repliche, "secondi": {}}
+    out = {"cella": cella, "tipo": CELLE[cella][0], "mu": mu, "repliche": repliche, "secondi": {},
+           "limiti": {m: [] for m in metodi}}
     conta = {m: {"promosse": 0, "bocciate": 0, "attraversamenti": 0, "errori": 0, "coperture": 0, "ampiezze": [],
-                 "stime": []} for m in ("hac", "bootstrap")}
-    tempi = {"hac": 0.0, "bootstrap": 0.0}
+                 "stime": []} for m in metodi}
+    tempi = {m: 0.0 for m in metodi}
     for r in range(1, repliche + 1):
         coppie = genera(cella, fase, r)
-        for metodo in ("hac", "bootstrap"):
+        for metodo in metodi:
             t0 = time.perf_counter()
             iv = intervallo_hac(coppie) if metodo == "hac" else \
                 intervallo_bootstrap(coppie, flusso(fase, cella, r, 3), ricampionamenti)
             tempi[metodo] += time.perf_counter() - t0
+            out["limiti"][metodo].append(None if iv is None else [iv[0], iv[1]])
             c = conta[metodo]
             if iv is None:
                 c["errori"] += 1
@@ -190,8 +209,11 @@ def main(argv=None) -> int:
     p.add_argument("--ricampionamenti", type=int, default=3999)
     p.add_argument("--celle", default=",".join(map(str, CELLE)))
     p.add_argument("--processi", type=int, default=4)
+    p.add_argument("--metodi", default=",".join(METODI))
+    p.add_argument("--limiti", help="file JSON dove salvare i limiti grezzi per replica (DGS-07 §2a.1)")
     x = p.parse_args(argv)
     celle = [int(c) for c in x.celle.split(",")]
+    metodi = tuple(m for m in METODI if m in x.metodi.split(","))
     if x.fase != 1 or x.repliche < 3000:
         print(f"ATTENZIONE: fase {x.fase}, {x.repliche} repliche: questo NON è il pilota impegnato (fase 1, 3.000 "
               f"repliche per cella).\n")
@@ -199,16 +221,22 @@ def main(argv=None) -> int:
     if x.processi > 1:
         with ProcessPoolExecutor(max_workers=x.processi) as ex:
             ris = list(ex.map(esegui_cella, celle, [x.fase] * len(celle), [x.repliche] * len(celle),
-                              [x.ricampionamenti] * len(celle)))
+                              [x.ricampionamenti] * len(celle), [metodi] * len(celle)))
     else:
-        ris = [esegui_cella(c, x.fase, x.repliche, x.ricampionamenti) for c in celle]
+        ris = [esegui_cella(c, x.fase, x.repliche, x.ricampionamenti, metodi) for c in celle]
+    if x.limiti:
+        with open(x.limiti, "w", encoding="utf-8") as f:
+            json.dump({"versione": impronta_modulo(), "fase": x.fase, "repliche": x.repliche,
+                       "ricampionamenti": x.ricampionamenti, "master": MASTER,
+                       "celle": {str(r["cella"]): r["limiti"] for r in sorted(ris, key=lambda r: r["cella"])}},
+                      f, sort_keys=True)
     print(f"Pilota IA-02 (DGS-06 §2c): D = {D}, a = b = {A}, soglia +{SOGLIA}, master {MASTER}, fase {x.fase}, "
           f"B = {x.ricampionamenti}. Intervalli: Clopper–Pearson bilaterali DESCRITTIVI al 95%.\n")
     print("| cella | generatore | μ vera | metodo | L > 0,15 (intervallo) | U < 0,15 (intervallo) | attraversano | "
           "errori | copertura di μ | ampiezza mediana | tempo/replica |")
     print("|---|---|---|---|---|---|---|---|---|---|---|")
     for r in ris:
-        for metodo in ("hac", "bootstrap"):
+        for metodo in metodi:
             print(_riga(r, metodo))
     print(f"\nLettura: sotto e al confine (μ ≤ 0,15) «L > 0,15» è falsa promozione; sopra è potenza. Al confine «U < 0,15» "
           f"è falsa bocciatura. Nessuna certificazione. Tempo totale {time.time() - t0:.0f} s.")
