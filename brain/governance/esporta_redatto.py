@@ -36,6 +36,7 @@ from typing import List, Optional, Tuple
 
 RADICE = Path(__file__).resolve().parents[2]
 PERCORSI_MAC = re.compile(r"/Users/(?!<utente>)[^/\s\"'`<>]+")
+PERCORSI_MAC_BYTE = re.compile(PERCORSI_MAC.pattern.encode("ascii"))
 # Archivi: il contenuto compresso non si può controllare (#72: uno ZIP annidato con il nome dentro è passato)
 FIRME_ARCHIVI = (b"PK\x03\x04", b"\x1f\x8b", b"7z\xbc\xaf\x27\x1c", b"\xfd7zXZ", b"BZh", b"Rar!")
 CODIFICHE = ("utf-8", "utf-16-le", "utf-16-be", "utf-32-le", "utf-32-be", "latin-1", "cp1252")
@@ -109,6 +110,7 @@ def esporta(repo: Path, rev: str, uscita: Path, sostituzioni: List[Tuple[str, st
                       if any(rx.search(d) or rx.search(n.encode("utf-8")) for rx in controlli)
                       or any(f in d or f in n.encode("utf-8") for f in forme)})
     residui += sorted(n for n in esclusi if any(rx.search(n.encode("utf-8")) for rx in controlli))
+    residui += sorted(n for n, d, _ in file if PERCORSI_MAC_BYTE.search(d))        # #84: binari, non UTF-8
     if residui:
         raise ValueError(f"dati personali ancora presenti (non redigibili) in: {residui[:20]}")
     redatti = sum(1 for _, d, o in file if _sha(d) != o)

@@ -37,7 +37,11 @@ SENSIBILE = re.compile(r"cache_dukascopy|dati/reali|partizioni|\.bi5|xauusd|duka
                        r"caricatore|carica\(", re.I)
 ESECUZIONE = re.compile(r"(?<![\w-])(?:[\w./~-]*/)?(?:python[\d.]*|pytest|ipython|node|perl|ruby|Rscript|g?awk)(?![\w-])"
                         r"|(?<![\w./-])\./[\w./-]+"
-                        r"|(?<![\w-])(?:sh|bash|zsh|source)\s+[\w./~$-]+", re.I)
+                        r"|(?<![\w-])(?:sh|bash|zsh|source)\s+[\w./~$-]+"
+                        # #77: altri esecutori; «make» solo a inizio comando (non dentro un messaggio di commit)
+                        r"|(?<![\w-])(?:npx|php|deno|bun)\s+[\w./~$-]+"
+                        r"|(?<![\w-])(?:npm|uv|cargo|poetry|pipenv|yarn|pnpm)\s+run(?![\w-])"
+                        r"|(?:^|(?<=[;&|]))\s*make(?![\w-])", re.I | re.M)
 # input a un processo già aperto (può essere codice) e sottoagenti (eseguono a loro volta)
 SEMPRE_ESECUZIONE = {"send_command_input", "invoke_subagent", "Agent", "Task"}
 DATA_ISO = re.compile(r"(?<!\d)((?:19|20)\d{2})-(\d{2})-(\d{2})(?!\d)")
@@ -47,9 +51,13 @@ DATA_DUKA = re.compile(r"(?<!\d)((?:19|20)\d{2})/(\d{2})/(\d{2})(?=/(?:(?i:bid|a
 # AAAA.MM.GG e AAAA/MM/GG generici (anche dentro un percorso), esclusi i casi Dukascopy qui sopra
 DATA_AMG = re.compile(r"(?<![\d.])(?<![A-Z]{6}/)((?:19|20)\d{2})([./])(\d{2})\2(\d{2})(?!\d|[./]\d|/(?i:bid|ask))")
 DATA_GMA = re.compile(r"(?<![\d./-])(\d{2})([./-])(\d{2})\2((?:19|20)\d{2})(?![\d./-])")
-DATA_COMPATTA = re.compile(r"(?<![\w])(?<!\d\.)((?:19|20)\d{2})(\d{2})(\d{2})(?![\w])(?!\.\d)")   # #68
+# #68; #78: attaccata a lettere, «_» o «T» è ancora una data (XAUUSD_20150615, 20231031T120000)
+DATA_COMPATTA = re.compile(r"(?<!\d)(?<!\d\.)((?:19|20)\d{2})(\d{2})(\d{2})(?!\d)(?!\.\d)")
 TIMESTAMP = re.compile(r"(?<![\w.])(\d{13}|\d{10})(?![\w.])")
-PREZZO = re.compile(r"(?<!\d)(?<!\d[.,])(?:[1-9]\d{0,2}[.,]\d{3}[.,]\d{1,4}|[1-9]\d{2,3}[.,]\d{1,4})(?!\d|[.,]\d)")
+# #79: fino a 17 decimali (rappresentazione di un float, es. 427.35000000000002)
+PREZZO = re.compile(r"(?<!\d)(?<!\d[.,])(?:[1-9]\d{0,2}[.,]\d{3}[.,]\d{1,4}|[1-9]\d{2,3}[.,]\d{1,17})(?!\d|[.,]\d)")
+# #80: oro 2005–2023 sotto 1.900 USD; dal 15/11/2023 (sviluppo) sopra. Euristica: non vede la riserva sopra 1.900
+SOTTO_SVILUPPO, MIN_PREZZI_SENZA_DATE = 1900.0, 5
 TESTO_ANTIGRAVITY = {"USER_INPUT", "PLANNER_RESPONSE"}          # tutto il resto è un'uscita
 CAMPI_DA_MOSTRARE = {"CommandLine", "command", "cmd", "Path", "AbsolutePath", "path", "file_path", "TargetFile",
                      "Input", "query", "url", "Url", "pattern", "description", "toolSummary"}
@@ -92,6 +100,12 @@ def numeri_prezzo(testo: str) -> list:
     return PREZZO.findall(testo)
 
 
+def _valore(prezzo: str) -> float:
+    """Valore di un numero da prezzo («1.234,5», «1,234.5», «427.35»): l'ultimo separatore è quello decimale."""
+    i = max(prezzo.rfind("."), prezzo.rfind(","))
+    return float(prezzo[:i].replace(".", "").replace(",", "") + "." + prezzo[i + 1:])
+
+
 def _testo(x) -> str:
     if isinstance(x, str):
         return x
@@ -119,15 +133,26 @@ def _voci(riga: dict, n: int):
                 uscite.append(_testo(x.get("content", "")))
             elif x is not None:
                 testi.append(_testo(x.get("text", "") if isinstance(x, dict) else x))
+        if riga.get("toolUseResult") is not None:                  # #81: può avere l'uscita intera
+            extra = _valori(riga["toolUseResult"])
+            if uscite:
+                uscite[-1] = uscite[-1] + "\n" + extra                 # stessa uscita, non una seconda
+            else:
+                uscite.append(extra)
         return "claude", n, riga.get("timestamp", ""), chiamate, uscite, testi
     return None, n, "", [], [_testo(riga)], []                     # formato sconosciuto: per prudenza, un'uscita
 
 
 def _uscita(passo, ora, testo):
     d = date_riserva(testo)
+    prezzi = numeri_prezzo(testo)
+    p = len(prezzi)
     if not d:
-        return None
-    p = len(numeri_prezzo(testo))
+        bassi = {x for x in prezzi if _valore(x) < SOTTO_SVILUPPO}
+        if len(bassi) < MIN_PREZZI_SENZA_DATE:
+            return None
+        return {"passo": passo, "ora": ora, "date": 0, "prima": "-", "ultima": "-", "numeri_prezzo": p,
+                "da_guardare": True}
     return {"passo": passo, "ora": ora, "date": len(d), "prima": d[0], "ultima": d[-1], "numeri_prezzo": p,
             "da_guardare": p >= 3 or len(d) >= 10}
 

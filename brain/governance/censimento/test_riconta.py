@@ -303,6 +303,12 @@ class TestRevisioneNotturna(unittest.TestCase):
         r = self.scrivi(tempfile.mkdtemp(), uscita("2650.10 2651.00 2649.50 2650.70 2652.00 2655.10"))   # sviluppo
         self.assertEqual(r["uscite_riserva"], [])
 
+    def test_valore_dei_prezzi(self):
+        """Copertura (#80, scritto dopo il codice): separatori delle migliaia nei due stili."""
+        self.assertEqual(R._valore("1.234,5"), 1234.5)
+        self.assertEqual(R._valore("1,234.50"), 1234.5)
+        self.assertEqual(R._valore("427.35"), 427.35)
+
     def test_tool_use_result_letto(self):
         """#81 (rilievo 5): nelle trascrizioni di Claude Code `toolUseResult` può contenere l'uscita intera (verificato
         sulle trascrizioni di questa sessione: 370 su 1.875 hanno testo che non è in message.content)."""

@@ -161,13 +161,44 @@ def scarica_giorno(simbolo: str, giorno: date, cache: Optional[Path], scarica: C
 # ---------------------------------------------------------------------------------------------------------------
 # Decodifica e aggregazione
 # ---------------------------------------------------------------------------------------------------------------
+MAX_MINUTI = 1440
+
+
+def _decomprimi(dati: bytes, limite: int) -> bytes:
+    """Come lzma.decompress (flussi concatenati uniti, coda non LZMA ignorata, troncato = EOFError), ma senza espandere
+    più di `limite` byte: oltre, OverflowError (#83: un giorno ha al massimo 1.440 minuti; una «bomba» di
+    decompressione esaurirebbe la memoria prima di ogni controllo)."""
+    pezzi, totale, resto = [], 0, dati
+    while True:
+        d = lzma.LZMADecompressor()
+        try:
+            pezzo = d.decompress(resto, max_length=limite + 1 - totale)
+        except lzma.LZMAError:
+            if pezzi:
+                break
+            raise
+        pezzi.append(pezzo)
+        totale += len(pezzo)
+        if totale > limite:
+            raise OverflowError(totale)
+        if not d.eof:
+            raise EOFError("Compressed data ended before the end-of-stream marker was reached")
+        resto = d.unused_data
+        if not resto:
+            break
+    return b"".join(pezzi)
+
+
 def decodifica(dati: bytes, giorno: date, cifre: int) -> List[tuple]:
     """Minuti con scambi: (orario UTC, open, high, low, close, volume). Prezzi in Decimal esatti (intero × 10^-cifre).
     Solleva ErroreDati su file troncato o OHLC incoerente (per esempio campi in un ordine diverso dal previsto)."""
     try:
-        grezzo = lzma.decompress(dati)
+        grezzo = _decomprimi(dati, MAX_MINUTI * RECORD.size)
     except (lzma.LZMAError, EOFError) as e:
         raise ErroreDati(f"{giorno}: file compresso danneggiato ({e}); cancellarlo dalla cache e riscaricarlo") from None
+    except OverflowError:
+        raise ErroreDati(f"{giorno}: file troppo grande (oltre {MAX_MINUTI} minuti): formato diverso o file "
+                         f"ostile") from None
     if len(grezzo) % RECORD.size:
         raise ErroreDati(f"{giorno}: {len(grezzo)} byte, non multiplo di {RECORD.size} (file troncato o formato diverso)")
     inizio = datetime(giorno.year, giorno.month, giorno.day, tzinfo=timezone.utc)

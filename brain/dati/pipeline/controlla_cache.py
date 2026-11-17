@@ -20,6 +20,7 @@ Opzioni: --inizio AAAA-MM-GG --fine AAAA-MM-GG (periodo atteso), --json FILE (es
 """
 import argparse
 import json
+import re
 import sys
 from datetime import date, timedelta
 from pathlib import Path
@@ -32,9 +33,15 @@ from .calendario import chiusure_note, pasqua  # noqa: F401  (pasqua: interfacci
 QUOTA_CORTI = 0.5
 
 
+NOME_GIORNO = re.compile(r"\d{4}-\d{2}-\d{2}\.bi5")
+
+
 def _data(nome: str) -> Optional[date]:
+    """Solo AAAA-MM-GG.bi5 (#82: da Python 3.11 fromisoformat accetta anche «20100308»)."""
+    if not NOME_GIORNO.fullmatch(nome):
+        return None
     try:
-        return date.fromisoformat(nome[:-4]) if nome.endswith(".bi5") else None
+        return date.fromisoformat(nome[:-4])
     except ValueError:
         return None
 
@@ -50,8 +57,12 @@ def esamina(cartella: Path, inizio: Optional[date] = None, fine: Optional[date] 
         if g is not None:
             file[g] = p
     tmp = sorted(p.name for p in cartella.iterdir() if p.name.startswith(".") and p.name.endswith(".tmp"))
+    # #82: file messi da parte dallo scaricatore e .bi5 con nomi non validi (informazione, non sporcano la cache)
+    altri = {"messi_da_parte": sorted(p.name for p in cartella.iterdir() if p.name.endswith(".rovinato")),
+             "file_estranei": sorted(p.name for p in cartella.iterdir()
+                                     if p.name.endswith(".bi5") and _data(p.name) is None)}
     if not file and (inizio is None or fine is None):
-        return {"cartella": str(cartella), "anni": {}, "tmp_residui": tmp, "pulito": False}
+        return {"cartella": str(cartella), "anni": {}, "tmp_residui": tmp, "pulito": False, **altri}
     inizio = inizio or min(file)
     fine = fine or max(file)
     anni: Dict[str, dict] = {}
@@ -89,7 +100,7 @@ def esamina(cartella: Path, inizio: Optional[date] = None, fine: Optional[date] 
     pulito = bool(file) and not tmp and all(
         a["mancanti"] == 0 and not a["feriali_vuoti"] and not a["illeggibili"] for a in anni.values())
     return {"cartella": str(cartella), "inizio": inizio.isoformat(), "fine": fine.isoformat(), "anni": anni,
-            "tmp_residui": tmp, "pulito": pulito}
+            "tmp_residui": tmp, "pulito": pulito, **altri}
 
 
 def testo(e: dict) -> str:
@@ -105,6 +116,10 @@ def testo(e: dict) -> str:
         if tutte:
             righe.append(f"{nome} ({len(tutte)}), primi: {', '.join(tutte[:15])}")
     righe.append(f"file temporanei rimasti: {len(e['tmp_residui'])} {e['tmp_residui'][:10]}")
+    for chiave, nome in (("messi_da_parte", "file messi da parte dallo scaricatore (rovinati, poi riscaricati)"),
+                         ("file_estranei", ".bi5 con nome non valido (ignorati)")):
+        if e.get(chiave):
+            righe.append(f"{nome}: {len(e[chiave])} {e[chiave][:10]}")
     righe.append("ESITO: " + ("PULITO" if e["pulito"] else "DA SISTEMARE (vedi sopra)") +
                  " — i giorni corti vanno guardati, ma non rendono la cache sporca")
     return "\n".join(righe)

@@ -197,6 +197,7 @@ class TestRevisioneNotturna(unittest.TestCase):
         """#82 (rilievo 12b): da Python 3.11 date.fromisoformat accetta «20100308»: un file così collideva con
         2010-03-08.bi5 e uno dei due spariva dal controllo."""
         self.assertIsNone(CC._data("20100308.bi5"))
+        self.assertIsNone(CC._data("2010-03-08.csv"))                  # copertura (scritto dopo il codice)
         self.assertEqual(CC._data("2010-03-08.bi5"), date(2010, 3, 8))
 
     def test_file_messi_da_parte_segnalati(self):
