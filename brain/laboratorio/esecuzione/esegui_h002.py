@@ -20,10 +20,10 @@ Periodi, ripetizioni, seme e varianti sono costanti di questo file, che è sigil
 import argparse
 import ast
 import hashlib
+import importlib.util
 import os
 import re
 import sys
-import sysconfig
 from dataclasses import replace
 from datetime import date, datetime, timezone
 from pathlib import Path
@@ -245,6 +245,12 @@ def _dentro(p: Path, cartella: Path) -> bool:
         return False
 
 
+def _libreria_standard() -> Path:
+    """La libreria standard VERA: la cartella da cui l'interprete ha caricato `encodings` all'avvio, prima di ogni
+    modifica di sys.path. #88: prima la si chiedeva a `sysconfig`, che si può ombrare dalla cartella di lancio."""
+    return Path(sys.modules["encodings"].__file__).resolve().parent.parent
+
+
 def controlla_ambiente(sigillati: Dict[str, str], isolato_richiesto: bool = True) -> None:
     """#61 (R13-B-01): l'ambiente non deve far eseguire codice non sigillato.
     - modalità isolata (`python3 -I -S`): niente PYTHONPATH, pacchetti dell'utente, file .pth, sitecustomize;
@@ -254,9 +260,9 @@ def controlla_ambiente(sigillati: Dict[str, str], isolato_richiesto: bool = True
     if isolato_richiesto and not (sys.flags.isolated and sys.flags.no_site):
         raise ValueError("eseguire con python3 -I -S -B (modalità isolata, senza site): l'ambiente potrebbe "
                          "far eseguire codice non sigillato")
-    percorsi = sysconfig.get_paths()
-    standard = {Path(percorsi[k]).resolve() for k in ("stdlib", "platstdlib")}
-    siti = {Path(percorsi[k]).resolve() for k in ("purelib", "platlib")}
+    if getattr(sys, "pycache_prefix", None):                         # #87: bytecode da una cartella esterna
+        raise ValueError("eseguire senza -X pycache_prefix: il bytecode verrebbe letto da un'altra cartella")
+    standard = _libreria_standard()
     radice = RADICE.resolve()
     problemi = []
     for nome, modulo in list(sys.modules.items()):
@@ -270,7 +276,10 @@ def controlla_ambiente(sigillati: Dict[str, str], isolato_richiesto: bool = True
                 problemi.append(f"{rel}: modulo brain non sigillato")
             elif hashlib.sha256(p.read_bytes()).hexdigest() != sigillati[rel]:
                 problemi.append(f"{rel}: diverso da quello sigillato")
-        elif any(_dentro(p, s) for s in siti) or not any(_dentro(p, s) for s in standard):
+            elif Path(importlib.util.cache_from_source(str(p))).exists():
+                problemi.append(f"{rel}: c'è un bytecode in __pycache__ (-B non impedisce di leggerlo e non è "
+                                f"sigillato): cancellare le cartelle __pycache__ di brain")       # #87
+        elif {"site-packages", "dist-packages"} & set(p.parts) or not _dentro(p, standard):
             problemi.append(f"{nome} da {p}: fuori dalla libreria standard")
     if problemi:
         raise ValueError(f"ambiente non pulito: {problemi[:10]}")
