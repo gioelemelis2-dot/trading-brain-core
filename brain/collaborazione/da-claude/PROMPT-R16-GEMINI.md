@@ -19,8 +19,10 @@ CONTESTO
   verifica con git diff 303890b HEAD -- <perimetro> che il perimetro sia identico. Dichiara commit, ambiente e
   perimetro (P6).
 
-REGOLE: quelle di R15 (nessun dato vero, rete bloccata, worktree nuovo ../tb-r16 sul candidato, scrivere solo
-in da-gemini, non modificare il codice, mai compiacente).
+REGOLE: quelle di R15 (nessun dato vero, rete bloccata, worktree nuovo ../tb-r16 sulla punta del ramo
+feat/esecutore-h002, scrivere solo in da-gemini, non modificare il codice, mai compiacente).
+In più: sul Mac sta girando lo scaricamento ASK da ~/Downloads/tb-riconta. NON toccare quella cartella, né
+brain/dati/reali/, né i processi scarica_cache (niente checkout, pulizie, kill o letture della cache).
 
 COMPITI
 A. Sul Mac (Apple Python 3.9): suite ufficiale completa CON i nuovi moduli di test
