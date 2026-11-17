@@ -838,6 +838,15 @@ class TestVerificaUnaVoltaNellaStoria(BaseRiga):
         self.assertEqual(rc, 2, err)
         self.assertIn("storia", err)
 
+    def test_registro_canonico_non_committato_rifiutato(self):
+        """Copertura (N09, staccato da #86): con il registro canonico, l'ancora deve ancora pretendere che sia
+        identico a quello committato e spinto."""
+        self.prepara()
+        S.sigilla(self.registro, "H-001", self.scheda, ["X0"], ORA)             # modifica non committata
+        rc, err = self.lancia_errore("--modalita", "verifica", "--varianti", "V-T,V-S")
+        self.assertEqual(rc, 2, err)
+        self.assertIn("committ", err)
+
     def test_storia_parziale_rifiutata(self):
         """R14-03 (Gemini): in un clone parziale (--depth 1) la storia non c'è e la verifica si rifaceva."""
         self.prepara()
@@ -1071,6 +1080,13 @@ class TestAvvioR14(TestAvvioControllato):
             self.assertEqual(out.returncode, 2, nome)
             self.assertIn(nome, out.stderr)
             (self.dir / nome).unlink()
+
+    def test_senza_meno_i_si_ferma(self):
+        """Copertura (N61): con -S -B ma senza -I il lanciatore si ferma prima degli import."""
+        out = self.avvia("--help", opzioni=("-S", "-B"))
+        self.assertEqual(out.returncode, 2, out.stdout + out.stderr)
+        self.assertIn("-I", out.stderr)
+        self.assertFalse(self.spia.exists())
 
     def test_senza_meno_b_o_con_cartella_esterna_del_bytecode_si_ferma(self):
         out = self.avvia("--help", opzioni=("-I", "-S"))

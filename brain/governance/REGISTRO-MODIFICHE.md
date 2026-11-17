@@ -585,4 +585,5 @@ Formato: data · versione della base · cosa · perché · file.
 - **Contatore dei giri puliti:** resta a zero.
 - **Corsa completa dei mutanti:** in corso sul codice finale.
 - **DGS:** il DGS si era fermato a DGS-04 (archivio di `83c8956`); il messaggio 3 e i pacchetti `dgs05` e `dgs05b` non sono mai stati inviati (quindi la fuga #72 non è mai uscita). Preparati il messaggio 4 di riallineamento e il pacchetto `trading_brain_dgs06.zip` (commit `c5ca93d`, SHA-256 `58d29429…`, 369 file, 29 redatti, due zip esclusi; ricontrollato in modo indipendente, nessun residuo).
+- **Corsa completa dei mutanti sul codice finale (17/11 sera):** esecuzione 213/213 su 3.13 e 3.9 (205 nella corsa completa, 8 riagganciati o coperti e rifatti a parte; N57 dichiarato equivalente), simulatore 40/40, DSR 44/44, riconteggio 53/53, controllo della cache 20/20, scaricatore 50/50. Errore mio registrato come #105 (mutanti staccati dalle mie correzioni). 366 test verdi su 3.13 e 3.9.
 

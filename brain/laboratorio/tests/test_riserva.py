@@ -291,7 +291,7 @@ class TestTestaRicontrollata(Base):
     def test_testa_scritta_a_mano_rifiutata(self):
         """#93 (revisore del laboratorio): la ricostruzione non ricontrollava la testa: α totale 5,0 o una parte
         protetta fuori dalla riserva erano accettati da un file scritto a mano."""
-        for campo, valore in (("alfa_tot", 5.0), ("alfa_tot", 0.0), ("alfa_tot", True),
+        for campo, valore in (("alfa_tot", 5.0), ("alfa_tot", 0.0), ("alfa_tot", True), ("alfa_tot", "0.05"),
                               ("protetta", ["2010-01-01", "2010-12-31"]), ("protetta", ["2005-12-31", "2005-11-01"]),
                               ("fine", "2004-12-31")):
             dati = json.loads(self.reg.read_text())
