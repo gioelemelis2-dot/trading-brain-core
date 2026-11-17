@@ -429,3 +429,14 @@ Rapporto: `collaborazione/da-gemini/G-20261116-R13.md` (commit `6e17782`, identi
 
 **Per la regola d'uscita:** R13 ha trovato difetti importanti: contatore dei giri puliti a zero.
 
+## R14 di Gemini (17/11/2026)
+
+- **Consegna:** `brain/collaborazione/da-gemini/G-20261117-R14.md`, commit `e305e4a` su `rev/gemini-r14`, partito da `6b1b136`. Rilievi classificati per tipo (E o M) e costo, come chiesto (D-24).
+- **Verificate chiuse da Gemini:** #86 (secondo registro, ramo nuovo, etichette), #89, #90 (salvo il limite dichiarato), #91, #93, #94 a/c/d, #73–#85, riconteggio 51/51, controllo della cache 20/20, scaricatore 50/50.
+- **Rilievi:**
+  - **R14-01, critico, M a costo basso:** conta per D-24.
+  - **R14-02, R14-03, R14-04, R14-05, importanti:** R14-02 era un difetto dei miei test.
+  - **R14-06…R14-09, minori.**
+- **Riproduzione:** Claude ha riprodotto R14-01 e R14-02 prima di correggere. Tutti sono corretti in TDD come #96–#104 (`79e6b4e`, poi rosso, `b6a2c3e`).
+- **Per la regola d'uscita:** R14 ha trovato un difetto critico che conta (M a costo basso, D-24) e quattro importanti. **Il contatore dei giri puliti resta a zero.**
+

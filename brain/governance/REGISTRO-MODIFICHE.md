@@ -573,3 +573,15 @@ Formato: data · versione della base · cosa · perché · file.
 - **Test modificati, dichiarati:** i test con il controllo dell'ambiente simulato dichiarano l'avvio dal lanciatore; il test del comando documentato ora cerca il lanciatore.
 - **Mutanti nuovi:** N55–N61. La corsa del laboratorio è stata fermata e rilanciata sul codice finale.
 - **D-24 (decisione del titolare):** modello di minaccia della regola d'uscita: contano i rilievi E e M a costo basso; prima della verifica un giro su tutte le manomissioni e la decisione sulla protezione del ramo. Aggiornati la proposta v3.2 §C, il modello di scheda H-003 §11, la scheda di stato e il mandato R14.
+
+## 2026-11-17 · v1.49 (sera: R14 di Gemini integrato)
+
+- **R14 di Gemini:** 1 critico (R14-01) e 4 importanti (R14-02…05), più minori. Riprodotti da Claude R14-01 (cartella `statistics/` con `__init__.pyc`) e R14-02 (Python di Apple, simulato con `PYTHONPYCACHEPREFIX`). Tutti corretti in TDD come #96–#104.
+- **Regola nuova dell'esportazione redatta:** solo testo UTF-8, ogni altro file rifiutato salvo esclusione dichiarata. Più semplice e più robusta delle firme degli archivi.
+- **Test modificati, dichiarati:**
+  - nel test dell'esportazione non c'è più un binario nel repository di prova;
+  - il bytecode d'attacco va sempre in `__pycache__`;
+  - un mio test della storia parziale era costruito male: il clone non indicava il ramo. Corretto e controllato al contrario: fallisce sul codice vecchio.
+- **Contatore dei giri puliti:** resta a zero.
+- **Corsa completa dei mutanti:** in corso sul codice finale.
+
