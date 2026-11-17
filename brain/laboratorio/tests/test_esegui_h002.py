@@ -911,6 +911,26 @@ class TestVerificheInsieme(BaseRiga):
         self.assertEqual([e["variante"] for e in self.esecuzioni("verifica")], ["V-S"])     # V-T non scritta
 
 
+class TestFusoOrario(BaseRiga):
+    """#94 (d) (revisore del laboratorio): i dati del fuso orario non sono sigillati; un tzdata diverso sposterebbe la
+    sessione di Londra con lo stesso codice e la stessa cache. Si controllano contro la regola europea."""
+
+    def test_fuso_vero_passa(self):
+        E.controlla_fuso()
+
+    def test_fuso_diverso_ferma_prima_di_ogni_esecuzione(self):
+        from unittest import mock
+        from zoneinfo import ZoneInfo
+        self.cache_di(date(2024, 1, 1), 60)
+        self.sigilla()
+        for zona in ("America/New_York", "UTC", "Europe/Paris"):              # Dublino ha gli stessi orari: non è un errore
+            with mock.patch.object(E.O, "LONDRA", ZoneInfo(zona)):
+                rc, err = self.lancia_errore("--modalita", "sviluppo")
+            self.assertEqual(rc, 2, zona)
+            self.assertIn("fuso", err)
+        self.assertEqual(self.esecuzioni("sviluppo"), [])
+
+
 class TestComandoIsolato(unittest.TestCase):
     def test_la_forma_documentata_del_comando_funziona(self):
         """Il comando del docstring (python3 -I -S -B -c ...) trova il pacchetto e arriva alla riga di comando."""
