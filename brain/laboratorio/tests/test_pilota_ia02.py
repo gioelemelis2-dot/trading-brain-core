@@ -147,7 +147,26 @@ class TestMetodi(unittest.TestCase):
         mu = sum(s for s, _ in coppie) / 50
         ordinate = sorted(medie)
         atteso = (2 * mu - ordinate[math.ceil(0.975 * 99) - 1], 2 * mu - ordinate[math.ceil(0.025 * 99) - 1])
-        self.assertEqual(P.intervallo_bootstrap(coppie, P.flusso(9, 0, 2, 3), 99, 10), atteso)
+        # #112 (errore mio, corretto dopo DGS-07): questi dati hanno blocchi tutti uguali, quindi l'intervallo ha
+        # ampiezza nulla; per DGS-06 §2c è NON STIMABILE, non un intervallo valido. Prima il test si aspettava `atteso`.
+        self.assertEqual(atteso[0], atteso[1])
+        self.assertIsNone(P.intervallo_bootstrap(coppie, P.flusso(9, 0, 2, 3), 99, 10))
+
+    def test_intervallo_valido_secondo_il_contratto(self):
+        """#112: limiti non finiti, invertiti o di ampiezza nulla sono errori (DGS-06 §2c, DGS-07 §2a.3)."""
+        self.assertEqual(P.intervallo_valido(0.1, 0.2), (0.1, 0.2))
+        for lo, hi in ((0.2, 0.2), (0.3, 0.2), (float("nan"), 0.2), (0.1, float("inf")), (-float("inf"), 0.2)):
+            self.assertIsNone(P.intervallo_valido(lo, hi), (lo, hi))
+
+    def test_hac_passa_dal_contratto(self):
+        orig = P.intervallo_valido
+        try:
+            P.intervallo_valido = lambda lo, hi: None
+            self.assertIsNone(P.intervallo_hac([(1.0, 1), (0.0, 1), (2.0, 1), (-1.0, 1)] * 5))
+            self.assertIsNone(P.intervallo_bootstrap([(float(i % 7), 1) for i in range(100)], P.flusso(9, 0, 1, 3),
+                                                     99, 10))
+        finally:
+            P.intervallo_valido = orig
 
     def test_bootstrap_ranghi_su_medie_diverse(self):
         """Aggiunto dopo il primo codice (dichiarato): il caso sopra ha blocchi tutti uguali (periodo 5, blocco 10),
@@ -214,6 +233,47 @@ class TestCellaERigaDiComando(unittest.TestCase):
                     visti["sotto"] += hi < mu
                 self.assertEqual({c: r[metodo][c] for c in atteso}, atteso, msg=(cella, metodo))
         self.assertTrue(all(v > 0 for v in visti.values()), visti)
+
+    def test_cella_conserva_i_limiti_grezzi(self):
+        """DGS-07 §2a.1: servono i limiti grezzi per replica, non solo i conteggi a margine zero."""
+        r = P.esegui_cella(1, fase=0, repliche=5, ricampionamenti=99)
+        for metodo in ("hac", "bootstrap"):
+            self.assertEqual(len(r["limiti"][metodo]), 5)
+            for k, iv in enumerate(r["limiti"][metodo], 1):
+                g = P.genera(1, 0, k)
+                atteso = P.intervallo_hac(g) if metodo == "hac" else P.intervallo_bootstrap(g, P.flusso(0, 1, k, 3), 99)
+                self.assertEqual(tuple(iv), atteso)
+
+    def test_un_solo_metodo(self):
+        r = P.esegui_cella(2, fase=0, repliche=3, ricampionamenti=99, metodi=("hac",))
+        self.assertEqual(set(r["limiti"]), {"hac"})
+        self.assertNotIn("bootstrap", r)
+
+    def test_file_dei_limiti_uguale_con_qualunque_ordine_e_processi(self):
+        """DGS-07 §2b.3: lo stesso lavoro, in ordine diverso o su più processi, dà lo stesso risultato."""
+        import json
+        import os
+        import tempfile
+        with tempfile.TemporaryDirectory() as t:
+            uscite = []
+            for celle, processi in (("1,11", "1"), ("11,1", "2")):
+                f = os.path.join(t, f"l{processi}.json")
+                with redirect_stdout(io.StringIO()):
+                    P.main(["--fase", "0", "--repliche", "3", "--ricampionamenti", "99", "--celle", celle,
+                            "--processi", processi, "--limiti", f])
+                with open(f, encoding="utf-8") as fh:
+                    uscite.append(json.load(fh))
+        self.assertEqual(uscite[0], uscite[1])
+        d = uscite[0]
+        self.assertEqual((d["fase"], d["repliche"], d["ricampionamenti"], d["master"]), (0, 3, 99, P.MASTER))
+        self.assertEqual(sorted(d["celle"]), ["1", "11"])
+        self.assertEqual(len(d["celle"]["11"]["bootstrap"]), 3)
+        self.assertEqual(d["versione"], P.impronta_modulo())
+
+    def test_impronta_del_modulo(self):
+        import hashlib
+        with open(P.__file__, "rb") as fh:
+            self.assertEqual(P.impronta_modulo(), hashlib.sha256(fh.read()).hexdigest())
 
     def test_riga_di_comando_ridotta(self):
         buf = io.StringIO()
