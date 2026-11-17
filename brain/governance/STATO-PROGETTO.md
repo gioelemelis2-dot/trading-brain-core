@@ -17,7 +17,7 @@ Il banco di prova (simulatore, criteri, sigillo, registri, scaricatore) è **cos
 | Mutanti negli script | **~370** in 6 script (+21 manuali sull'esportazione redatta), con controllo di validità del mutante (ha scartato un mio mutante con sintassi rotta, Q19, poi riscritto) |
 | N (prove selezionabili) | **Nessun sigillo ancora: registro delle prove vuoto.** Censimento delle esecuzioni pre-sigillo (G-20261115-03) **riconfermato il 17/11** con lo strumento corretto: riserva intatta (`governance/censimento/RICONTEGGIO-20261117.md`). Esplorazioni E-001–E-003 contano per le ipotesi che ne usano i tagli. Emendamento su N recepito in DA-19 |
 | Riserva di verifica | 2005-01-01 → 31/10/2023, mai letta dal sistema. Meccanismo del registro pronto (`riserva.py`); **α totale, finestre e parte protetta da ratificare** |
-| Dati | Sviluppo (15/11/2023 → 12/11/2026) completo, BID e ASK. Storico: BID in scaricamento (al 2016 la sera del 16/11), poi ASK dal 2005 (**esistenza da verificare**) |
+| Dati | Sviluppo (15/11/2023 → 12/11/2026) completo, BID e ASK. Storico (17/11): BID completo fino all'11/02/2020, in scaricamento dal 12/02/2020; ASK in scaricamento dal 2005 (i dati esistono) |
 | Impegni anticipati | IA-01 (0,15 R, senza prova di anteriorità) · **IA-02: R medio netto ≥ +0,15 R**, fissato prima di ogni idea H-003 (commit `032250b`) |
 
 ## Cosa manca per il primo sigillo, in ordine
@@ -47,6 +47,6 @@ Il banco di prova (simulatore, criteri, sigillo, registri, scaricatore) è **cos
 ## Rischi aperti, dichiarati
 - **Il banco protegge dagli errori, non da chi ha i file (#90, #92):** il registro delle prove e quello della riserva sono file locali; chi ha accesso al Mac può scriverli a mano o leggere la cache con un altro script. La difesa vera è la storia su GitHub (voci spinte prima di ogni passo) letta dai revisori, più la protezione del ramo su GitHub, che spetta al titolare.
 - **La memoria umana non si censisce:** chi ha guardato grafici 2005–2023 in passato resta non cieco; il sistema sì.
-- **ASK storico forse inesistente:** senza, la verifica non misura gli stessi costi dello sviluppo; decidere prima come trattarla.
+- **ASK storico:** il 17/11 lo scaricamento ha trovato dati ASK dal gennaio 2005 (121 giorni con dati fino al 01/05/2005). La copertura completa si saprà a scaricamento finito, con `controlla_cache --ask`.
 - **Sviluppo contaminato** (incidente del 14/11, #41): per le idee che usano i tagli E-003 lo sviluppo non è un banco pulito.
 - **Correlazione fra trade:** misurata da Gemini (R13): gonfia i falsi positivi della regola «sulla stima»; da stimare nella scheda H-003.
