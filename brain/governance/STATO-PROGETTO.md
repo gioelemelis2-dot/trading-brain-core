@@ -15,7 +15,7 @@ Il banco di prova (simulatore, criteri, sigillo, registri, scaricatore) è **cos
 | Giri puliti di fila (regola del sigillo) | **0 su 2 richiesti**. Prossimo: R14 (mandato pronto) |
 | Test automatici | ~370 (dati, laboratorio, governance) + 77 Guardian, verdi su Python 3.13 **e** 3.9, rete bloccata |
 | Mutanti negli script | **~370** in 6 script (+21 manuali sull'esportazione redatta), con controllo di validità del mutante (ha scartato un mio mutante con sintassi rotta, Q19, poi riscritto) |
-| N (prove selezionabili) | **Nessun sigillo ancora: registro delle prove vuoto.** Censimento delle esecuzioni pre-sigillo (G-20261115-03) **riconfermato il 17/11** con lo strumento corretto: riserva intatta (`governance/censimento/RICONTEGGIO-20261117.md`; da confermare con Gemini il passo 3360). Esplorazioni E-001–E-003 contano per le ipotesi che ne usano i tagli. Emendamento su N recepito in DA-19 |
+| N (prove selezionabili) | **Nessun sigillo ancora: registro delle prove vuoto.** Censimento delle esecuzioni pre-sigillo (G-20261115-03) **riconfermato il 17/11** con lo strumento corretto: riserva intatta (`governance/censimento/RICONTEGGIO-20261117.md`). Esplorazioni E-001–E-003 contano per le ipotesi che ne usano i tagli. Emendamento su N recepito in DA-19 |
 | Riserva di verifica | 2005-01-01 → 31/10/2023, mai letta dal sistema. Meccanismo del registro pronto (`riserva.py`); **α totale, finestre e parte protetta da ratificare** |
 | Dati | Sviluppo (15/11/2023 → 12/11/2026) completo, BID e ASK. Storico: BID in scaricamento (al 2016 la sera del 16/11), poi ASK dal 2005 (**esistenza da verificare**) |
 | Impegni anticipati | IA-01 (0,15 R, senza prova di anteriorità) · **IA-02: R medio netto ≥ +0,15 R**, fissato prima di ogni idea H-003 (commit `032250b`) |

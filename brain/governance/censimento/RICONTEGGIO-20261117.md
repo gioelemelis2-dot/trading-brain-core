@@ -21,10 +21,8 @@
 - **Altro:** pagina delle regole FTMO; compilazione di un'app web del 07/11, in un'altra conversazione e con le dimensioni dei file; verifica numerica di un overflow; `git diff` di codice.
 - **Trascrizioni di Claude Code sul Mac:** nessuna segnalazione.
 
-**Chiamate sensibili nuove nei file già esaminati il 16/11:** tutte successive al 16/11 (R12-bis e R13, con dati inventati). Una sola nomina `cache_dukascopy` in un comando: il passo 3360 del 16/11, R13, una sonda con `tempfile` e la rete bloccata. **Da confermare con Gemini** che fosse una cartella temporanea.
+**Chiamate sensibili nuove nei file già esaminati il 16/11:** tutte successive al 16/11 (R12-bis e R13, con dati inventati). Una sola nomina `cache_dukascopy` in un comando: il passo 3360 del 16/11, R13, una sonda con `tempfile` e la rete bloccata. **Confermato (17/11, comando completo fornito da Gemini tramite l'utente):** copia `brain` in una cartella temporanea escludendo `cache_dukascopy`, `partizioni`, `*.csv` e `da-gemini`; cache sintetica creata nel temporaneo (`_cache_sviluppo_valida`); scopo: provare l'ombra di `statistics.py` (R13). Nessun dato vero letto.
 
-**Conclusione:** per tutto ciò che è contabile nelle trascrizioni presenti sul Mac, **la riserva resta intatta** anche con lo strumento corretto. Restano due cose:
-- la conferma del passo 3360;
-- il limite già dichiarato: ciò che una persona ha guardato a mano non si conta.
+**Conclusione:** per tutto ciò che è contabile nelle trascrizioni presenti sul Mac, **la riserva resta intatta** anche con lo strumento corretto. Resta solo il limite già dichiarato: ciò che una persona ha guardato a mano non si conta.
 
 **Limite del metodo:** l'origine è la chiamata più recente prima dell'uscita, non un legame certo. Con chiamate in parallelo sono elencate tutte. La classificazione si basa su comandi e percorsi, non sui contenuti, che nessuno ha letto.

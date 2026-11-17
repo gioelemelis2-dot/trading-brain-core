@@ -3,7 +3,7 @@
 Ultimo aggiornamento: **2026-11-15**, dopo il mandato notturno su H-002 (programma dei criteri, strumento di sigillo, quaderno delle ipotesi; ramo `feat/esecutore-h002`, **non unito a main**). Leggere questo file per primo (vale anche per Gemini, insieme a `collaborazione/HANDOFF-GEMINI.md`).
 
 ## Aggiornamento del 17/11/2026, notte (leggere prima della sezione seguente)
-- **Riserva di verifica: intatta, RICONFERMATA il 17/11** con lo strumento di riconteggio corretto (`governance/censimento/RICONTEGGIO-20261117.md`; da confermare con Gemini il passo 3360).
+- **Riserva di verifica: intatta, RICONFERMATA il 17/11** con lo strumento di riconteggio corretto (`governance/censimento/RICONTEGGIO-20261117.md`).
 - **Comando dell'esecutore cambiato (#95):** `python3 -I -S -B brain/laboratorio/esecuzione/avvio.py …` (controlli prima degli import). Prima di ogni esecuzione vera: niente cartelle `__pycache__` in `brain`.
 - **Scaricamenti (17/11):** BID ripreso dal 12/02/2020 e ASK dal 2005, entrambi da `~/Downloads/tb-riconta` con `caffeinate`; log `~/scarica_storico.log` e `~/scarica_ask.log`. Il BID si era fermato all'11/02/2020 senza messaggio (Mac spento o riavviato).
 - **Pacchetto per il DGS:** usare `trading_brain_dgs05b.zip`; il vecchio `trading_brain_dgs05.zip` conteneva il nome dell'utente in uno ZIP annidato (#72).
