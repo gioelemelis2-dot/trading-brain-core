@@ -176,7 +176,9 @@ def versioni_nella_storia(radice: Path, rel: str) -> List[dict]:
     remoti, etichette): #86, una verifica fatta su un ramo non si rifà su un altro ramo né da un commit precedente.
     Limite dichiarato: vede i riferimenti presenti nel repository locale (dopo l'ultimo `git fetch`); un ramo
     cancellato anche su GitHub va impedito con la protezione dei rami."""
-    elenco = _git(radice, "rev-list", "--all", "--", rel)
+    if _git(radice, "rev-parse", "--is-shallow-repository").stdout.strip() == "true":     # R14-03
+        raise ValueError("storia git parziale (clone --depth): scaricare la storia completa (git fetch --unshallow)")
+    elenco = _git(radice, "rev-list", "--all", "--reflog", "--", rel)          # R14-03: anche il reflog
     if elenco.returncode != 0:
         raise ValueError(f"storia git di {rel} non leggibile: {elenco.stderr.strip()}")
     versioni = []

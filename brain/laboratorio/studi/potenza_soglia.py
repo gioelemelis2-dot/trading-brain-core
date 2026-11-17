@@ -47,6 +47,8 @@ def n_per_potenza(mu: float, sigma: float, soglia: float, potenza: float, regola
     if not 0.0 < potenza < 1.0:
         raise ValueError(f"potenza {potenza} fuori da (0, 1)")
     _spostamento(regola)                                               # #94: regola controllata sempre
+    if sigma <= 0:                                                     # R14-06: anche sotto la soglia
+        raise ValueError(f"serve sigma > 0 (sigma = {sigma})")
     if mu <= soglia:
         return None
     z = _spostamento(regola) + _N.inv_cdf(potenza)

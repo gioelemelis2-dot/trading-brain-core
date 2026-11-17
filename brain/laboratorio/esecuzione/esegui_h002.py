@@ -288,11 +288,11 @@ def controlla_ambiente(sigillati: Dict[str, str], isolato_richiesto: bool = True
     if isolato_richiesto and not (sys.flags.isolated and sys.flags.no_site):
         raise ValueError("eseguire con python3 -I -S -B (modalità isolata, senza site): l'ambiente potrebbe "
                          "far eseguire codice non sigillato")
-    if getattr(sys, "pycache_prefix", None):                         # #87: bytecode da una cartella esterna
-        raise ValueError("eseguire senza -X pycache_prefix: il bytecode verrebbe letto da un'altra cartella")
     standard = _libreria_standard()
     radice = RADICE.resolve()
     problemi = []
+    if getattr(sys, "pycache_prefix", None):                         # #87; R14-02: tutti i problemi insieme
+        problemi.append("eseguire senza -X pycache_prefix: il bytecode verrebbe letto da un'altra cartella")
     for nome, modulo in list(sys.modules.items()):
         f = getattr(modulo, "__file__", None)
         if not f:
@@ -431,6 +431,7 @@ def main(argv=None) -> int:
             intestazione["N (prove nel registro)"] = n
             testo = rapporto(ris, f"{IPOTESI}: verifica sigillata", intestazione)
             impronta = hashlib.sha256(testo.encode("utf-8")).hexdigest()
+            x.rapporto.write_text(testo, encoding="utf-8")                     # R14-09: prima degli esiti
             for v, r in ris["varianti"].items():                                  # R11-S4: esito nel registro
                 ver = r["verifica"]
                 quota = [c["valore"] for c in ver["criteri"] if c["nome"].startswith("quota")][0]
@@ -443,6 +444,7 @@ def main(argv=None) -> int:
                 controlla_ambiente(sigillo["codice"])
             testo = rapporto(ris, f"{IPOTESI}: screening sullo sviluppo", intestazione)
             impronta = hashlib.sha256(testo.encode("utf-8")).hexdigest()
+            x.rapporto.write_text(testo, encoding="utf-8")                     # R14-09: prima degli esiti
             for v, r in ris["varianti"].items():
                 m = r["metriche"]
                 S.registra_esecuzione(x.registro, IPOTESI, dict(
@@ -452,7 +454,6 @@ def main(argv=None) -> int:
                 for nome, rm in r["robustezza"].items():
                     S.registra_esecuzione(x.registro, IPOTESI, {"ruolo": "robustezza", "variante": f"{v} {nome}",
                                                                 "periodo": periodo, "r_medio": rm}, ora)
-        x.rapporto.write_text(testo, encoding="utf-8")
     except (S.NonSigillata, ValueError, OSError) as e:
         print(f"FERMO: {e}", file=sys.stderr)
         return 2

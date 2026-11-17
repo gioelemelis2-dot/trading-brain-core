@@ -8,7 +8,8 @@ un file sigillato modificato) viene eseguito all'import e può manomettere i con
 Questo file usa SOLO la libreria standard caricata con `-I` (la cartella di lancio non è nel percorso finché i
 controlli non sono passati) e, prima di importare `brain`, controlla:
 - modalità isolata (`-I -S`) e nessuna cartella esterna del bytecode (`-X pycache_prefix`);
-- nessun file importabile nella cartella di lancio (.py, .pyc, .so, .pth, .zip, pacchetti), a parte `brain`;
+- nessun file importabile nella cartella di lancio (.py, .pyc, .so, .pth, .zip, …) e nessuna cartella con un nome
+  importabile, a parte `brain` (R14-01: una cartella `statistics/` con il solo `__init__.pyc` era un pacchetto);
 - nessun bytecode o estensione compilata dentro `brain`;
 - l'impronta SHA-256 di OGNI file sigillato con H-002 (sigillo nel registro canonico), letta dal disco.
 Solo allora aggiunge il repository al percorso, segna l'avvio controllato e passa a `esegui_h002.main`.
@@ -33,7 +34,7 @@ COMPILATI = (".pyc", ".pyo", ".so", ".pyd", ".pth")
 
 def controlla(radice: str) -> list:
     problemi = []
-    if not (sys.flags.isolated and sys.flags.no_site):
+    if not (sys.flags.isolated and sys.flags.no_site and sys.flags.dont_write_bytecode):    # R14-09: anche -B
         problemi.append("eseguire con python3 -I -S -B")
     if getattr(sys, "pycache_prefix", None):
         problemi.append("eseguire senza -X pycache_prefix")
@@ -42,8 +43,10 @@ def controlla(radice: str) -> list:
             continue
         p = os.path.join(radice, nome)
         if os.path.isdir(p):
-            if nome == "__pycache__" or os.path.exists(os.path.join(p, "__init__.py")):
-                problemi.append(f"{nome}/: pacchetto o bytecode nella cartella di lancio")
+            # R14-01: ogni cartella con un nome importabile può diventare un pacchetto (anche con il solo
+            # __init__.pyc); ammesse solo cartelle con nomi non importabili (.vscode, dati-utente)
+            if nome.isidentifier():
+                problemi.append(f"{nome}/: cartella con un nome importabile nella cartella di lancio (spostarla)")
         elif nome.endswith(IMPORTABILI):
             problemi.append(f"{nome}: file importabile nella cartella di lancio")
     for cartella, sotto, file in os.walk(os.path.join(radice, "brain")):

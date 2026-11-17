@@ -7,7 +7,8 @@ Cosa fa:
 - prende ESATTAMENTE il contenuto di un commit (`git archive`), non la cartella di lavoro;
 - nei file di testo sostituisce, senza distinguere maiuscole e minuscole, le stringhe date al lancio (le più lunghe
   per prime) e ogni nome utente nei percorsi del Mac (`/Users/<nome>` → `/Users/<utente>`);
-- i file binari restano come sono;
+- i file che non sono testo UTF-8 (binari, archivi, altre codifiche) si rifiutano, salvo esclusione dichiarata
+  con --escludi (R14-04, R14-05);
 - se una delle stringhe date resta anche in un solo file (per esempio un binario) o in un nome di file, si FERMA
   e non scrive il pacchetto;
 - aggiunge `MANIFEST.tsv` (percorso, SHA-256 e byte del file esportato, righe, se è stato redatto, SHA-256 del file
@@ -37,13 +38,10 @@ from typing import List, Optional, Tuple
 RADICE = Path(__file__).resolve().parents[2]
 PERCORSI_MAC = re.compile(r"/Users/(?!<utente>)[^/\s\"'`<>]+")
 PERCORSI_MAC_BYTE = re.compile(PERCORSI_MAC.pattern.encode("ascii"))
-# Archivi: il contenuto compresso non si può controllare (#72: uno ZIP annidato con il nome dentro è passato)
-FIRME_ARCHIVI = (b"PK\x03\x04", b"\x1f\x8b", b"7z\xbc\xaf\x27\x1c", b"\xfd7zXZ", b"BZh", b"Rar!")
-CODIFICHE = ("utf-8", "utf-16-le", "utf-16-be", "utf-32-le", "utf-32-be", "latin-1", "cp1252")
-
-
-def _archivio(dati: bytes) -> bool:
-    return dati.startswith(FIRME_ARCHIVI) or dati[257:262] == b"ustar"
+# Forme in cui cercare i dati dentro un testo UTF-8 valido (UTF-16/32 di testo ASCII è UTF-8 valido, con byte nulli).
+# I file che NON sono UTF-8 si rifiutano (R14-04, R14-05: archivi con prefisso, flussi compressi, codifiche
+# imprevedibili): latin-1 e cp1252 non servono più.
+CODIFICHE = ("utf-8", "utf-16-le", "utf-16-be", "utf-32-le", "utf-32-be")
 
 
 def _forme(stringa: str) -> set:
@@ -80,7 +78,7 @@ def esporta(repo: Path, rev: str, uscita: Path, sostituzioni: List[Tuple[str, st
     controlli = [re.compile(re.escape(a.encode("utf-8")), re.I) for a, _ in sostituzioni]
     forme = set().union(*(_forme(a) for a, _ in sostituzioni))
     escludi = set(escludi or [])
-    esclusi, archivi = [], []
+    esclusi, non_testo = [], []
     file = []
     with tarfile.open(fileobj=io.BytesIO(archivio)) as t:
         for m in t.getmembers():
@@ -90,27 +88,24 @@ def esporta(repo: Path, rev: str, uscita: Path, sostituzioni: List[Tuple[str, st
                 esclusi.append(m.name)
                 continue
             dati = t.extractfile(m).read()
-            if _archivio(dati):
-                archivi.append(m.name)
-                continue
             try:
                 testo = dati.decode("utf-8")
-            except UnicodeDecodeError:
-                nuovo = dati
-            else:
-                testo = unicodedata.normalize("NFC", testo)           # #72: la forma NFD sfuggiva
-                for rx, b in regole:
-                    testo = rx.sub(lambda _m, b=b: b, testo)         # sostituzione letterale (barre rovesciate)
-                nuovo = PERCORSI_MAC.sub("/Users/<utente>", testo).encode("utf-8")
+            except UnicodeDecodeError:                                # R14-04, R14-05: niente binari
+                non_testo.append(m.name)
+                continue
+            testo = unicodedata.normalize("NFC", testo)               # #72: la forma NFD sfuggiva
+            for rx, b in regole:
+                testo = rx.sub(lambda _m, b=b: b, testo)             # sostituzione letterale (barre rovesciate)
+            nuovo = PERCORSI_MAC.sub("/Users/<utente>", testo).encode("utf-8")
             file.append((m.name, nuovo, _sha(dati)))
-    if archivi:
-        raise ValueError(f"archivi annidati, non controllabili: {archivi[:20]}; escluderli con --escludi "
-                         f"(l'esclusione è dichiarata nel pacchetto)")
+    if non_testo:
+        raise ValueError(f"file che non è testo UTF-8, non controllabili (archivi, binari, altre codifiche): "
+                         f"{non_testo[:20]}; escluderli con --escludi (l'esclusione è dichiarata nel pacchetto)")
     residui = sorted({n for n, d, _ in file
                       if any(rx.search(d) or rx.search(n.encode("utf-8")) for rx in controlli)
                       or any(f in d or f in n.encode("utf-8") for f in forme)})
     residui += sorted(n for n in esclusi if any(rx.search(n.encode("utf-8")) for rx in controlli))
-    residui += sorted(n for n, d, _ in file if PERCORSI_MAC_BYTE.search(d))        # #84: binari, non UTF-8
+    residui += sorted(n for n, d, _ in file if PERCORSI_MAC_BYTE.search(d.replace(b"\0", b"")))  # #84, R14-04
     if residui:
         raise ValueError(f"dati personali ancora presenti (non redigibili) in: {residui[:20]}")
     redatti = sum(1 for _, d, o in file if _sha(d) != o)
@@ -125,7 +120,7 @@ def esporta(repo: Path, rev: str, uscita: Path, sostituzioni: List[Tuple[str, st
                f"- **File:** {len(file)}, di cui **{redatti} redatti**\n\n"
                f"**Redazione:** nei file di testo nome, utente GitHub e nome utente del computer sono sostituiti da "
                f"segnaposto (`<titolare>`, `<utente-github>`, `<utente>`), e ogni percorso `/Users/<nome>` diventa "
-               f"`/Users/<utente>`. I binari sono invariati. Per questo l'impronta dei file redatti differisce da "
+               f"`/Users/<utente>`. I file non di testo sono esclusi e dichiarati. Per questo l'impronta dei file redatti differisce da "
                f"quella nel repository: `MANIFEST.tsv` riporta entrambe (`sha256` del file nel pacchetto, "
                f"`sha256_originale` nel commit).\n\n"
                f"**Verifica:** ricalcolare lo SHA-256 di ogni file e confrontarlo con la colonna `sha256`; per i file "

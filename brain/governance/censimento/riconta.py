@@ -53,7 +53,8 @@ DATA_AMG = re.compile(r"(?<![\d.])(?<![A-Z]{6}/)((?:19|20)\d{2})([./])(\d{2})\2(
 DATA_GMA = re.compile(r"(?<![\d./-])(\d{2})([./-])(\d{2})\2((?:19|20)\d{2})(?![\d./-])")
 # #68; #78: attaccata a lettere, «_» o «T» è ancora una data (XAUUSD_20150615, 20231031T120000)
 DATA_COMPATTA = re.compile(r"(?<!\d)(?<!\d\.)((?:19|20)\d{2})(\d{2})(\d{2})(?!\d)(?!\.\d)")
-TIMESTAMP = re.compile(r"(?<![\w.])(\d{13}|\d{10})(?![\w.])")
+# R14-07: anche attaccati a lettere o «_» (file_1434326400.csv), ma non dentro un'impronta esadecimale (a–f intorno)
+TIMESTAMP = re.compile(r"(?:(?<![\w.])|(?<=[_g-zG-Z]))(\d{13}|\d{10})(?!\d)(?!\.\d)")
 # #79: fino a 17 decimali (rappresentazione di un float, es. 427.35000000000002)
 PREZZO = re.compile(r"(?<!\d)(?<!\d[.,])(?:[1-9]\d{0,2}[.,]\d{3}[.,]\d{1,4}|[1-9]\d{2,3}[.,]\d{1,17})(?!\d|[.,]\d)")
 # #80: oro 2005–2023 sotto 1.900 USD; dal 15/11/2023 (sviluppo) sopra. Euristica: non vede la riserva sopra 1.900

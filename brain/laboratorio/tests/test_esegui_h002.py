@@ -844,7 +844,8 @@ class TestVerificaUnaVoltaNellaStoria(BaseRiga):
         self.assertEqual(self.lancia("--modalita", "verifica", "--varianti", "V-T,V-S"), 0)
         self.spingi("verifica")
         parziale = self.dir / "parziale"
-        _sp.run(["git", "clone", "-q", "--depth", "1", f"file://{self.dir / 'remoto.git'}", str(parziale)],
+        _sp.run(["git", "clone", "-q", "--depth", "1", "--branch", "principale", f"file://{self.dir / 'remoto.git'}",
+                 str(parziale)],
                 check=True, capture_output=True)
         with self.assertRaises(ValueError) as e:
             S.versioni_nella_storia(parziale, E.REL_REGISTRO)

@@ -64,6 +64,8 @@ M = {
     "Z52 origine con i prezzi in chiaro": ('ultime = PREZZO.sub("#", "; ".join(', 'ultime = (lambda x: x)(str() + "; ".join('),
     "Z50 origine non stampata": ("f\" | da: {_breve(u.get('da', ''), casa, 220)}\")", "f\"\")"),
     "Z51 origine stampata senza maschera": ("f\" | da: {_breve(u.get('da', ''), casa, 220)}\")", "f\" | da: {u.get('da', '')}\")"),
+    "Z53 timestamp attaccati a lettere non visti (R14-07)": ('(?:(?<![\\w.])|(?<=[_g-zG-Z]))(\\d{13}|\\d{10})', '(?<![\\w.])(\\d{13}|\\d{10})'),
+    "Z54 timestamp dentro impronte esadecimali (R14-07)": ('(?<=[_g-zG-Z]))(\\d{13}|\\d{10})', '(?<=[_a-zA-Z]))(\\d{13}|\\d{10})'),
     "Z28 formato sconosciuto come testo": ('    return None, n, "", [], [_testo(riga)], []', '    return None, n, "", [], [], [_testo(riga)]'),
 }
 
