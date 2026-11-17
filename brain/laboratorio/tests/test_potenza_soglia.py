@@ -80,3 +80,11 @@ class TestDominioR17(unittest.TestCase):
         with self.assertRaises(ValueError):
             P.n_per_potenza(0.1, 1.0, 0.15, 0.8, "inesistente")
 
+
+class TestR14(unittest.TestCase):
+    def test_sigma_controllata_anche_sotto_soglia(self):
+        """R14-06 (Gemini): con mu ≤ soglia n_per_potenza restituiva None anche con sigma ≤ 0."""
+        for sigma in (-5.0, 0.0):
+            with self.assertRaises(ValueError):
+                P.n_per_potenza(-0.1, sigma, 0.15, 0.8, "stima")
+

@@ -367,5 +367,15 @@ class TestOrigineDelleUscite(unittest.TestCase):
         self.assertNotIn("1234.56", buf.getvalue())
 
 
+class TestR14(unittest.TestCase):
+    def test_timestamp_attaccati_a_lettere(self):
+        """R14-07 (Gemini): timestamp di 10 o 13 cifre attaccati a lettere o «_» non visti. Restano esclusi quelli
+        dentro un'impronta esadecimale (lettere a–f intorno): troppi falsi allarmi."""
+        for t in ("file_1434326400.csv", "XAU1434326400000", "run_1434326400", "t1434326400.log"):
+            self.assertEqual(R.date_riserva(t), ["2015-06-15"], t)
+        for t in ("3fa1434326400bc9", "deadbeef1434326400ab", "1434326400.5", "11434326400"):
+            self.assertEqual(R.date_riserva(t), [], t)
+
+
 if __name__ == "__main__":
     unittest.main()

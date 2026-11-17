@@ -31,7 +31,6 @@ class TestEsporta(unittest.TestCase):
         g = ["git", "-C", str(self.repo), "-c", "user.name=t", "-c", "user.email=t@invalid"]
         (self.repo / "a.md").write_text("Autore: Mario Rossi (GitHub mrossi-dot), percorso /Users/mario/Downloads/x.\n"
                                         "MARIO e /Users/qualcuno/y\n", encoding="utf-8")
-        (self.repo / "b.bin").write_bytes(bytes(range(256)))
         (self.repo / "dir").mkdir()
         (self.repo / "dir" / "c.py").write_text("x = 1\n", encoding="utf-8")
         subprocess.run(g + ["init", "-q"], check=True)
@@ -58,11 +57,10 @@ class TestEsporta(unittest.TestCase):
         self.assertIn("<utente-github>", testo)
         self.assertIn("/Users/<utente>/Downloads/x", testo)
         self.assertIn("/Users/<utente>/y", testo)                                # anche altri nomi utente nei percorsi
-        self.assertEqual(f["b.bin"], bytes(range(256)))
         self.assertNotIn("non_committato.md", f)                                  # solo il contenuto del commit
         righe = list(csv.DictReader(io.StringIO(f["MANIFEST.tsv"].decode("utf-8")), delimiter="\t"))
         per = {x["percorso"]: x for x in righe}
-        self.assertEqual(set(per), {"a.md", "b.bin", "dir/c.py"})
+        self.assertEqual(set(per), {"a.md", "dir/c.py"})        # R14: niente binari nel pacchetto di prova
         self.assertEqual(per["a.md"]["sha256"], hashlib.sha256(f["a.md"]).hexdigest())
         self.assertEqual(per["a.md"]["redatto"], "sì")
         self.assertEqual(per["dir/c.py"]["redatto"], "no")
@@ -72,7 +70,7 @@ class TestEsporta(unittest.TestCase):
         commit = subprocess.run(["git", "-C", str(self.repo), "rev-parse", "HEAD"], capture_output=True,
                                 text=True).stdout.strip()
         self.assertIn(commit, f["LEGGIMI-PACCHETTO.md"].decode("utf-8"))
-        self.assertEqual((r["file"], r["redatti"]), (3, 1))
+        self.assertEqual((r["file"], r["redatti"]), (2, 1))
         for nome, contenuto in f.items():                                         # niente dati nemmeno nei file aggiunti
             self.assertNotIn(b"Mario", contenuto, nome)
             self.assertNotIn(b"mrossi", contenuto, nome)
@@ -144,6 +142,45 @@ class TestEsporta(unittest.TestCase):
         with self.assertRaises(ValueError) as ex:
             X.esporta(self.repo, "HEAD", self.dir / "fuori" / "p.zip", SOST)
         self.assertIn("dati.bin", str(ex.exception))
+
+    def test_file_non_di_testo_rifiutati_salvo_esclusione(self):
+        """R14-04, R14-05 (Gemini): codifiche e formati non previsti (UTF-16, archivi con un prefisso, flussi zlib)
+        passavano. Regola nuova e più semplice: ogni file che non è testo UTF-8 si rifiuta, salvo esclusione
+        dichiarata. Nel repository vero ce ne sono due, gli zip già esclusi."""
+        import io as _io, zlib
+        buf = _io.BytesIO()
+        with zipfile.ZipFile(buf, "w", zipfile.ZIP_DEFLATED) as z:
+            z.writestr("dentro.md", "Autore: Mario Rossi\n" * 20)
+        for nome, dati in (("img.bin", bytes(range(256))), ("pref.dat", b"PREF" + buf.getvalue()),
+                           ("flusso.z", zlib.compress(b"Autore: Mario Rossi"))):
+            with self.subTest(nome):
+                self.committa(nome, dati)
+                with self.assertRaises(ValueError) as e:
+                    X.esporta(self.repo, "HEAD", self.dir / "fuori" / "p.zip", SOST)
+                self.assertIn(nome, str(e.exception))
+                self.assertIn("non è testo", str(e.exception))
+                r = X.esporta(self.repo, "HEAD", self.dir / "fuori" / "q.zip", SOST, escludi=[nome])
+                self.assertEqual(r["esclusi"], 1)
+                subprocess.run(self.g + ["rm", "-q", nome], check=True)
+                subprocess.run(self.g + ["commit", "-q", "-m", "via"], check=True)
+
+    def test_percorsi_mac_in_utf16_o_utf32_senza_bom(self):
+        """R14-04: UTF-16/32 senza BOM di testo ASCII è UTF-8 valido (byte nulli in mezzo): /Users/<nome> passava."""
+        for cod in ("utf-16-le", "utf-16-be", "utf-32-le"):
+            with self.subTest(cod):
+                self.committa("note.txt", "vedi /Users/alice_inventata/segreto.txt".encode(cod))
+                with self.assertRaises(ValueError) as e:
+                    X.esporta(self.repo, "HEAD", self.dir / "fuori" / "p.zip", SOST)
+                self.assertIn("note.txt", str(e.exception))
+                subprocess.run(self.g + ["rm", "-q", "note.txt"], check=True)
+                subprocess.run(self.g + ["commit", "-q", "-m", "via"], check=True)
+
+    def test_nome_in_utf32_dentro_un_testo_valido(self):
+        """Copertura (M-R14-05 di Gemini): un nome in UTF-32 dentro un file che è comunque UTF-8 valido."""
+        self.committa("u32.txt", b"testo " + "Mario Rossi".encode("utf-32-le"))
+        with self.assertRaises(ValueError) as e:
+            X.esporta(self.repo, "HEAD", self.dir / "fuori" / "p.zip", SOST)
+        self.assertIn("u32.txt", str(e.exception))
 
     def test_sostituzione_con_barre_rovesciate(self):
         zp = self.dir / "fuori" / "p.zip"

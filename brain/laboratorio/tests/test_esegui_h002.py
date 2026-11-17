@@ -739,7 +739,7 @@ class TestAmbienteInUnaCopia(unittest.TestCase):
         src = self.dir / "brain/laboratorio/esecuzione/criteri.py"
         codice = compile(src.read_text(encoding="utf-8") + "\nATTACCO = 1\n", str(src), "exec")
         st = src.stat()
-        pyc = Path(importlib.util.cache_from_source(str(src)))
+        pyc = src.parent / "__pycache__" / f"{src.stem}.{sys.implementation.cache_tag}.pyc"   # R14-02
         pyc.parent.mkdir(parents=True, exist_ok=True)
         pyc.write_bytes(importlib.util.MAGIC_NUMBER + struct.pack("<III", 0, int(st.st_mtime) & 0xFFFFFFFF,
                                                                   st.st_size & 0xFFFFFFFF) + marshal.dumps(codice))
@@ -834,6 +834,32 @@ class TestVerificaUnaVoltaNellaStoria(BaseRiga):
         self.spingi("verifica")
         self.ramo_nuovo("rifaccio", prima)
         self.assertEqual(self.esecuzioni("verifica"), [])                      # su questo ramo non c'è
+        rc, err = self.lancia_errore("--modalita", "verifica", "--varianti", "V-T,V-S")
+        self.assertEqual(rc, 2, err)
+        self.assertIn("storia", err)
+
+    def test_storia_parziale_rifiutata(self):
+        """R14-03 (Gemini): in un clone parziale (--depth 1) la storia non c'è e la verifica si rifaceva."""
+        self.prepara()
+        self.assertEqual(self.lancia("--modalita", "verifica", "--varianti", "V-T,V-S"), 0)
+        self.spingi("verifica")
+        parziale = self.dir / "parziale"
+        _sp.run(["git", "clone", "-q", "--depth", "1", f"file://{self.dir / 'remoto.git'}", str(parziale)],
+                check=True, capture_output=True)
+        with self.assertRaises(ValueError) as e:
+            S.versioni_nella_storia(parziale, E.REL_REGISTRO)
+        self.assertIn("parziale", str(e.exception))
+
+    def test_ramo_cancellato_e_riferimento_remoto_riscritto_visti_nel_reflog(self):
+        """R14-03 (Gemini): dopo `branch -D` e `update-ref` del riferimento remoto, la verifica restava solo nel
+        reflog, che `rev-list --all` non legge."""
+        prima = self.prepara()
+        self.assertEqual(self.lancia("--modalita", "verifica", "--varianti", "V-T,V-S"), 0)
+        self.spingi("verifica")
+        _sp.run(self.g + ["checkout", "-q", "-b", "rifaccio", prima], check=True)
+        _sp.run(self.g + ["branch", "-q", "-D", "principale"], check=True)
+        _sp.run(self.g + ["update-ref", "refs/remotes/origin/principale", prima], check=True)
+        _sp.run(self.g + ["push", "-q", "-u", "origin", "rifaccio"], check=True, capture_output=True)
         rc, err = self.lancia_errore("--modalita", "verifica", "--varianti", "V-T,V-S")
         self.assertEqual(rc, 2, err)
         self.assertIn("storia", err)
@@ -975,7 +1001,7 @@ class TestAvvioControllato(unittest.TestCase):
         import importlib.util, marshal, struct
         src = self.dir / "brain/laboratorio/esecuzione/criteri.py"
         st = src.stat()
-        pyc = Path(importlib.util.cache_from_source(str(src)))
+        pyc = src.parent / "__pycache__" / f"{src.stem}.{sys.implementation.cache_tag}.pyc"   # R14-02
         pyc.parent.mkdir(parents=True, exist_ok=True)
         pyc.write_bytes(importlib.util.MAGIC_NUMBER + struct.pack("<III", 0, int(st.st_mtime) & 0xFFFFFFFF,
                                                                   st.st_size & 0xFFFFFFFF)
@@ -1014,6 +1040,81 @@ class TestAvvioControllato(unittest.TestCase):
 
     def test_il_lanciatore_e_sigillato(self):
         self.assertIn(self.AVVIO, E.impronte_codice())
+
+
+class TestAvvioR14(TestAvvioControllato):
+    """R14-01 (Gemini, riprodotto da Claude): una cartella `statistics/` con il solo `__init__.pyc` nella radice
+    veniva importata al posto della libreria standard. R14-08, R14-09: coperture mancanti e -B non richiesto."""
+
+    def test_pacchetto_compilato_nella_radice_rifiutato(self):
+        import marshal, importlib.util
+        d = self.dir / "statistics"
+        d.mkdir()
+        (d / "__init__.pyc").write_bytes(importlib.util.MAGIC_NUMBER + b"\0" * 12
+                                         + marshal.dumps(compile(self.veleno(), "statistics", "exec")))
+        out = self.avvia("--help")
+        self.assertEqual(out.returncode, 2, out.stdout + out.stderr)
+        self.assertIn("statistics", out.stderr)
+        self.assertFalse(self.spia.exists())
+
+    def test_cartelle_non_importabili_ammesse(self):
+        for nome in (".vscode", "dati-utente"):
+            (self.dir / nome).mkdir()
+        out = self.avvia("--help")
+        self.assertEqual(out.returncode, 0, out.stderr)
+
+    def test_archivi_nella_radice_rifiutati(self):
+        for nome in ("pacchetto.zip", "ruota.whl", "uovo.egg"):
+            (self.dir / nome).write_bytes(b"x")
+            out = self.avvia("--help")
+            self.assertEqual(out.returncode, 2, nome)
+            self.assertIn(nome, out.stderr)
+            (self.dir / nome).unlink()
+
+    def test_senza_meno_b_o_con_cartella_esterna_del_bytecode_si_ferma(self):
+        out = self.avvia("--help", opzioni=("-I", "-S"))
+        self.assertEqual(out.returncode, 2)
+        self.assertIn("-B", out.stderr)
+        out = self.avvia("--help", opzioni=("-I", "-S", "-B", "-X", f"pycache_prefix={self.dir / 'pyc'}"))
+        self.assertEqual(out.returncode, 2)
+        self.assertIn("pycache_prefix", out.stderr)
+
+
+class TestPortabilitaPythonApple(unittest.TestCase):
+    def test_test_dell_ambiente_con_cartella_esterna_del_bytecode(self):
+        """R14-02 (Gemini, riprodotto da Claude): il Python 3.9 di Apple imposta una cartella esterna per il bytecode
+        (~/Library/Caches/com.apple.python) fuori dalla modalità isolata; tre test fallivano. Simulata con
+        PYTHONPYCACHEPREFIX."""
+        import os
+        with tempfile.TemporaryDirectory() as d:
+            nomi = ["brain.laboratorio.tests.test_esegui_h002." + t for t in (
+                "TestAmbiente.test_libreria_standard_ombrata_si_ferma",
+                "TestAmbienteInUnaCopia.test_bytecode_preparato_si_ferma",
+                "TestAvvioControllato.test_bytecode_rifiutato_prima_di_eseguirlo")]
+            out = _sp.run([sys.executable, "-s", "-B", "-m", "unittest", *nomi], cwd=str(E.RADICE),
+                          capture_output=True, text=True, env=dict(os.environ, PYTHONPYCACHEPREFIX=d))
+        self.assertEqual(out.returncode, 0, out.stderr[-1500:])
+
+
+class TestRapportoPrimaDegliEsiti(BaseRiga):
+    def test_rapporto_non_scrivibile_niente_esito(self):
+        """R14-09 (Gemini): gli esiti si scrivevano prima del rapporto; se il rapporto non si scrive, nel registro
+        restava un esito senza rapporto."""
+        from unittest import mock
+        self.cache_di(date(2024, 1, 1), 60)
+        self.cache_di(date(2010, 1, 1), 59)
+        self.sigilla()
+        self.sviluppo_finto(V_T=True, V_S=True)
+        originale = Path.write_text
+
+        def scrivi(percorso, *a, **k):
+            if Path(percorso) == self.uscita:
+                raise OSError("disco pieno (simulato)")
+            return originale(percorso, *a, **k)
+        with mock.patch.object(Path, "write_text", scrivi):
+            self.assertEqual(self.lancia("--modalita", "verifica", "--varianti", "V-T,V-S"), 2)
+        self.assertEqual(len(self.esecuzioni("verifica")), 2)                  # bruciata
+        self.assertEqual(self.esecuzioni("esito"), [])
 
 
 class TestSoloDalLanciatore(BaseRiga):
