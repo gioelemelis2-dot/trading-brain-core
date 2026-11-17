@@ -164,9 +164,12 @@ def esamina_file(percorso: Path) -> dict:
     if percorso.suffix == ".log":
         r["formato"], r["righe"] = "log", 1
         u = _uscita(percorso.name, "", percorso.read_text(encoding="utf-8", errors="replace"))
+        if u:
+            u["da"] = "file di log"
         r["uscite_riserva"] = [u] if u else []
         return r
     strumenti = Counter()
+    ultime = "(nessuna chiamata prima)"            # origine delle uscite: le chiamate più recenti (17/11)
     with open(percorso, encoding="utf-8", errors="replace") as f:
         for n, linea in enumerate(f, 1):
             if not linea.strip():
@@ -181,6 +184,8 @@ def esamina_file(percorso: Path) -> dict:
                 continue
             formato, passo, ora, chiamate, uscite, testi = _voci(riga, n)
             r["formato"] = r["formato"] or formato
+            if chiamate:
+                ultime = PREZZO.sub("#", "; ".join(f"{nome}: {_mostrabile(arg)}" for nome, arg in chiamate))
             for nome, arg in chiamate:
                 strumenti[nome] += 1
                 t = arg if isinstance(arg, str) else json.dumps(arg, ensure_ascii=False)
@@ -193,6 +198,7 @@ def esamina_file(percorso: Path) -> dict:
             for t in uscite:
                 u = _uscita(passo, ora, t)
                 if u:
+                    u["da"] = ultime                   # solo comandi e percorsi (_mostrabile), mai contenuti
                     r["uscite_riserva"].append(u)
             r["testo_con_date_riserva"] += sum(1 for t in testi if date_riserva(t))
     r["strumenti"] = dict(strumenti)
@@ -268,7 +274,8 @@ def main(argv=None) -> int:
             print(f"  S [{c['passo']}] {c['ora']} {c['strumento']} {','.join(c['parole'])} | {_breve(c['estratto'], casa)}")
         for u in r["uscite_riserva"][:x.max_righe]:
             print(f"  U [{u['passo']}] {u['ora']} date={u['date']} {u['prima']}..{u['ultima']} "
-                  f"numeri_prezzo={u['numeri_prezzo']}{'  DA GUARDARE' if u['da_guardare'] else ''}")
+                  f"numeri_prezzo={u['numeri_prezzo']}{'  DA GUARDARE' if u['da_guardare'] else ''}"
+                  f" | da: {_breve(u.get('da', ''), casa, 220)}")
         print()
     print("TOTALE: " + ", ".join(f"{k}={tot[k]}" for k in
                                  ("file", "righe", "esecuzioni", "sensibili", "uscite_riserva", "da_guardare")))

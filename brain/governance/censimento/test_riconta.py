@@ -120,7 +120,8 @@ class TestRiconta(unittest.TestCase):
     def test_il_risultato_non_conserva_il_testo_delle_uscite(self):
         r = R.esamina_file(antigravity(self.dir))
         for u in r["uscite_riserva"]:
-            self.assertEqual(set(u), {"passo", "ora", "date", "prima", "ultima", "numeri_prezzo", "da_guardare"})
+            self.assertEqual(set(u), {"passo", "ora", "date", "prima", "ultima", "numeri_prezzo", "da_guardare",
+                                  "da"})                               # «da»: solo comando o percorso (17/11)
         self.assertNotIn("427.35", repr(r))
 
     def test_date_dukascopy_e_limiti_della_riserva(self):
@@ -336,6 +337,24 @@ class TestOrigineDelleUscite(unittest.TestCase):
         with tempfile.TemporaryDirectory() as d:
             r = R.esamina_file(claude(Path(d)))
             self.assertTrue(all("Read" in x["da"] for x in r["uscite_riserva"]))
+
+    def test_origine_senza_contenuti_e_con_la_casa_abbreviata(self):
+        """Copertura (Z49, Z51): nell'origine solo comandi e percorsi; la cartella personale stampata come «~»."""
+        casa = str(Path.home())
+        with tempfile.TemporaryDirectory() as d:
+            f = Path(d) / "c.jsonl"
+            righe = [{"type": "assistant", "message": {"content": [
+                        {"type": "tool_use", "name": "Write", "input": {"file_path": casa + "/progetto/a.py",
+                                                                         "content": "SEGRETO dal 2010-05-03"}}]}},
+                     {"type": "user", "message": {"content": [{"type": "tool_result", "content": "fatto 2010-05-03"}]}}]
+            f.write_text("\n".join(json.dumps(x) for x in righe) + "\n")
+            u = R.esamina_file(f)["uscite_riserva"][0]
+            self.assertNotIn("SEGRETO", u["da"])
+            buf = io.StringIO()
+            with redirect_stdout(buf):
+                R.main([d])
+        self.assertIn("~/progetto/a.py", buf.getvalue())
+        self.assertNotIn(casa + "/progetto", buf.getvalue())
 
     def test_origine_stampata(self):
         with tempfile.TemporaryDirectory() as d:

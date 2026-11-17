@@ -59,6 +59,11 @@ M = {
     "Z45 toolUseResult ignorato (#81)": ('if riga.get("toolUseResult") is not None:', 'if False:'),
     "Z46 toolUseResult come seconda uscita (#81)": ('                uscite[-1] = uscite[-1] + "\\n" + extra', '                uscite.append(extra)'),
     "Z47 separatore delle migliaia non tolto (#80)": ('prezzo[:i].replace(".", "").replace(",", "")', 'prezzo[:i]'),
+    "Z48 origine delle uscite non aggiornata": ('            if chiamate:\n                ultime = ', '            if False:\n                ultime = '),
+    "Z49 origine con i contenuti": ('"; ".join(f"{nome}: {_mostrabile(arg)}" for nome, arg in chiamate))', '"; ".join(f"{nome}: {arg}" for nome, arg in chiamate))'),
+    "Z52 origine con i prezzi in chiaro": ('ultime = PREZZO.sub("#", "; ".join(', 'ultime = (lambda x: x)(str() + "; ".join('),
+    "Z50 origine non stampata": ("f\" | da: {_breve(u.get('da', ''), casa, 220)}\")", "f\"\")"),
+    "Z51 origine stampata senza maschera": ("f\" | da: {_breve(u.get('da', ''), casa, 220)}\")", "f\" | da: {u.get('da', '')}\")"),
     "Z28 formato sconosciuto come testo": ('    return None, n, "", [], [_testo(riga)], []', '    return None, n, "", [], [], [_testo(riga)]'),
 }
 
