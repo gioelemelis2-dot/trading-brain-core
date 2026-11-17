@@ -34,6 +34,7 @@ import csv
 import fcntl
 import hashlib
 import os
+import re
 import sys
 import time
 import urllib.error
@@ -188,7 +189,8 @@ def _scarica_periodo(simbolo, lato, inizio, fine, cache, registro, richiesta, pa
                 DK.decodifica(corpo, g, DK.SCALA[simbolo])                # solo controllo: nessun prezzo esce
             except DK.ErroreDati as e:
                 _registra(registro, dict(riga, esito="danneggiato"))
-                raise Fermo(f"{g.isoformat()} {lato}: file scaricato non valido ({e}). Fermo: segnalarlo") from None
+                motivo = re.sub(r"\d+\.\d+", "#", str(e))                # #73: niente prezzi nel messaggio
+                raise Fermo(f"{g.isoformat()} {lato}: file scaricato non valido ({motivo}). Fermo: segnalarlo") from None
         _scrivi_atomico(f, corpo)
         _registra(registro, riga)
         registrati.add(g.isoformat())

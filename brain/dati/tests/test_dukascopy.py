@@ -72,6 +72,30 @@ class TestDecodificaEAggregazione(unittest.TestCase):
             with self.assertRaises(DK.ErroreDati, msg=repr(rec)):
                 DK.decodifica(bi5([rec]), date(2026, 1, 5), 3)
 
+    def test_decompressione_limitata(self):
+        """#83 (rilievo 13): un giorno ha al massimo 1.440 minuti; oltre è un formato diverso o una bomba di
+        decompressione, da fermare prima di espandere tutto in memoria."""
+        g = date(2026, 1, 5)
+        p = 2650000
+        buono = [(60 * (k % 1440), p, p, p - 3, p + 5, 1.0) for k in range(1440)]
+        self.assertEqual(len(DK.decodifica(bi5(buono), g, 3)), 1440)
+        with self.assertRaises(DK.ErroreDati) as e:
+            DK.decodifica(bi5(buono + [buono[0]]), g, 3)
+        self.assertIn("troppo grande", str(e.exception))
+        bomba = lzma.compress(b"\x00" * 200_000_000, format=lzma.FORMAT_ALONE)
+        with self.assertRaises(DK.ErroreDati):
+            DK.decodifica(bomba, g, 3)
+
+    def test_decompressione_come_prima_su_coda_e_flussi(self):
+        """#83: stessa semantica di lzma.decompress (coda non LZMA ignorata, flussi concatenati uniti, troncato rotto)."""
+        g = date(2026, 1, 5)
+        a = bi5([(600, 2650000, 2650000, 2649990, 2650010, 1.0)])
+        b = bi5([(660, 2650000, 2650000, 2649990, 2650010, 1.0)])
+        self.assertEqual(DK.decodifica(a + b"spazzatura", g, 3), DK.decodifica(a, g, 3))
+        self.assertEqual(len(DK.decodifica(a + b, g, 3)), 2)
+        with self.assertRaises(DK.ErroreDati):
+            DK.decodifica(a[:-5], g, 3)
+
     def test_campi_in_ordine_diverso_o_file_troncato_fermano(self):
         g = date(2026, 1, 5)
         with self.assertRaises(DK.ErroreDati):                        # low sopra high: ordine dei campi sbagliato

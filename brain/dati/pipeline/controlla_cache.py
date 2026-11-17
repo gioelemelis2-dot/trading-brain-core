@@ -139,6 +139,9 @@ def main(argv=None) -> int:
     a.add_argument("--json", type=Path)
     a.add_argument("--ask", type=Path, help="cartella ASK da confrontare con la prima cartella (BID)")
     x = a.parse_args(argv)
+    if x.inizio and x.fine and x.inizio > x.fine:                     # #74: periodo invertito = zero giorni
+        print("ERRORE: --inizio è dopo --fine", file=sys.stderr)
+        return 2
     if x.ask and not (x.inizio and x.fine):
         print("ERRORE: --ask richiede --inizio e --fine", file=sys.stderr)
         return 2

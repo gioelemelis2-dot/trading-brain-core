@@ -138,6 +138,13 @@ class TestEsporta(unittest.TestCase):
         self.assertIn("vecchio/pacchetto.zip", f["LEGGIMI-PACCHETTO.md"].decode("utf-8"))   # esclusione dichiarata
         self.assertEqual(r["esclusi"], 1)
 
+    def test_percorsi_mac_nei_binari_rifiutati(self):
+        """#84 (rilievo 10): un /Users/<nome> non dato al lancio, dentro un binario o un testo non UTF-8, passava."""
+        self.committa("dati.bin", b"\x00\xff/Users/qualcuno/Library\x00")
+        with self.assertRaises(ValueError) as ex:
+            X.esporta(self.repo, "HEAD", self.dir / "fuori" / "p.zip", SOST)
+        self.assertIn("dati.bin", str(ex.exception))
+
     def test_sostituzione_con_barre_rovesciate(self):
         zp = self.dir / "fuori" / "p.zip"
         X.esporta(self.repo, "HEAD", zp, [("Mario Rossi", "C:\\utenti\\g"), ("mrossi-dot", "<u>"), ("mario", "<u>")])

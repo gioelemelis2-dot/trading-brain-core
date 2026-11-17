@@ -163,7 +163,7 @@ def esamina_file(percorso: Path) -> dict:
                 parole = sorted({m.lower() for m in SENSIBILE.findall(t)})
                 if parole:
                     r["chiamate_sensibili"].append(dict(voce, parole=parole))
-                if nome in SEMPRE_ESECUZIONE or ESECUZIONE.search(t):
+                if nome in SEMPRE_ESECUZIONE or ESECUZIONE.search(_valori(arg)):   # #75: a capo veri, non «\\n»
                     r["esecuzioni"].append(voce)
             for t in uscite:
                 u = _uscita(passo, ora, t)
@@ -172,6 +172,17 @@ def esamina_file(percorso: Path) -> dict:
             r["testo_con_date_riserva"] += sum(1 for t in testi if date_riserva(t))
     r["strumenti"] = dict(strumenti)
     return r
+
+
+def _valori(arg) -> str:
+    """Le stringhe dell'argomento, decodificate (nel JSON l'a capo è «\\n» e nasconde il comando che segue)."""
+    if isinstance(arg, str):
+        return arg
+    if isinstance(arg, dict):
+        return "\n".join(_valori(v) for v in arg.values())
+    if isinstance(arg, list):
+        return "\n".join(_valori(v) for v in arg)
+    return str(arg)
 
 
 def _mostrabile(arg) -> str:
@@ -204,6 +215,10 @@ def main(argv=None) -> int:
     x = a.parse_args(argv)
     casa = str(Path.home())
     file = []
+    mancanti = [str(p) for p in x.percorsi if not p.expanduser().exists()]
+    if mancanti:                                                       # #76: audit incompleto in silenzio
+        print(f"ERRORE: percorsi inesistenti: {', '.join(mancanti)}", file=sys.stderr)
+        return 2
     for p in x.percorsi:
         p = p.expanduser()
         file += [p] if p.is_file() else sorted(q for q in p.rglob("*") if q.is_file() and q.suffix in (".jsonl", ".log"))

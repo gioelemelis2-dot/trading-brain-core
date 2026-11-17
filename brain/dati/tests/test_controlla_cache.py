@@ -191,3 +191,23 @@ class TestPeriodoInvertito(unittest.TestCase):
                 contextlib.redirect_stderr(io.StringIO()):
             self.assertEqual(CC.main([d, "--inizio", "2023-01-01", "--fine", "2005-01-01"]), 2)
 
+
+class TestRevisioneNotturna(unittest.TestCase):
+    def test_nomi_compatti_non_sono_date(self):
+        """#82 (rilievo 12b): da Python 3.11 date.fromisoformat accetta «20100308»: un file così collideva con
+        2010-03-08.bi5 e uno dei due spariva dal controllo."""
+        self.assertIsNone(CC._data("20100308.bi5"))
+        self.assertEqual(CC._data("2010-03-08.bi5"), date(2010, 3, 8))
+
+    def test_file_messi_da_parte_segnalati(self):
+        """#82 (rilievo 12a): i `.<giorno>.rovinato` dello scaricatore erano invisibili al controllo."""
+        with tempfile.TemporaryDirectory() as d:
+            c = Path(d)
+            (c / "2010-03-08.bi5").write_bytes(bi5(1000))
+            (c / ".2010-03-09.rovinato").write_bytes(b"x")
+            (c / "20100310.bi5").write_bytes(b"")
+            e = CC.esamina(c, date(2010, 3, 8), date(2010, 3, 8))
+            self.assertEqual(e["messi_da_parte"], [".2010-03-09.rovinato"])
+            self.assertEqual(e["file_estranei"], ["20100310.bi5"])
+            self.assertIn(".2010-03-09.rovinato", CC.testo(e))
+

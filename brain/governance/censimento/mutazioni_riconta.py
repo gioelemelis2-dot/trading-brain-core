@@ -44,6 +44,9 @@ M = {
     "Z27 contenuti dei file stampati": ('            elif k in CAMPI_DA_MOSTRARE:', '            elif True:'),
     "Z31 date compatte non lette vicino a un punto": ('(?<![\\w])(?<!\\d\\.)((?:19|20)\\d{2})(\\d{2})(\\d{2})(?![\\w])(?!\\.\\d)', '(?<![\\w.])((?:19|20)\\d{2})(\\d{2})(\\d{2})(?![\\w.])'),
     "Z32 date compatte dentro un decimale": ('(?<![\\w])(?<!\\d\\.)((?:19|20)\\d{2})(\\d{2})(\\d{2})(?![\\w])(?!\\.\\d)', '(?<![\\w])((?:19|20)\\d{2})(\\d{2})(\\d{2})(?![\\w])'),
+    "Z33 comandi su più righe (#75)": ('ESECUZIONE.search(_valori(arg))', 'ESECUZIONE.search(t)'),
+    "Z34 percorso inesistente accettato (#76)": ('    if mancanti:  ', '    if False:  '),
+    "Z35 valori delle liste ignorati (#75)": ('        return "\\n".join(_valori(v) for v in arg)\n    return str(arg)', '        return ""\n    return str(arg)'),
     "Z28 formato sconosciuto come testo": ('    return None, n, "", [], [_testo(riga)], []', '    return None, n, "", [], [], [_testo(riga)]'),
 }
 

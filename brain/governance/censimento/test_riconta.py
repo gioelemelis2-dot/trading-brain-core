@@ -238,11 +238,81 @@ class TestRevisioneNotturna(unittest.TestCase):
             f.write_text("\n".join(json.dumps(x) for x in righe) + "\n")
             self.assertEqual(len(R.esamina_file(f)["esecuzioni"]), 3)
 
+    def test_comando_come_lista_di_argomenti(self):
+        """#75 (copertura, non difetto): argomenti in lista (es. argv) restano visti anche leggendo i valori."""
+        with tempfile.TemporaryDirectory() as d:
+            f = Path(d) / "c.jsonl"
+            riga = {"type": "assistant", "message": {"content": [
+                {"type": "tool_use", "name": "Esegui", "input": {"argv": ["python3", "x.py"]}}]}}
+            f.write_text(json.dumps(riga) + "\n")
+            self.assertEqual(len(R.esamina_file(f)["esecuzioni"]), 1)
+
     def test_percorso_inesistente_rifiutato(self):
         """#76: un percorso inesistente era ignorato in silenzio (audit apparentemente completo)."""
         buf = io.StringIO()
         with redirect_stdout(buf), contextlib.redirect_stderr(io.StringIO()):
             self.assertEqual(R.main(["/percorso/che/non/esiste"]), 2)
+
+    def scrivi(self, d, righe):
+        f = Path(d) / "c.jsonl"
+        f.write_text("\n".join(json.dumps(x) for x in righe) + "\n")
+        return R.esamina_file(f)
+
+    def test_bash_fra_apici_inversi(self):
+        """Z17 vivo dopo #75: senza il JSON intorno, «bash» a inizio stringa copriva il caso; serve un apice inverso."""
+        r = self.scrivi(tempfile.mkdtemp(), [{"type": "assistant", "message": {"content": [
+            {"type": "tool_use", "name": "Bash", "input": {"command": "a=`bash y.sh`"}}]}}])
+        self.assertEqual(len(r["esecuzioni"]), 1)
+
+    def test_altri_esecutori(self):
+        """#77 (revisione notturna, rilievo 11): npx, uv/npm/cargo run, php, make a inizio comando."""
+        comandi = ["npx tsx a.ts", "uv run x.py", "php a.php", "npm run build", "cd x && make test",
+                   "cd x\nmake", "cargo run"]
+        r = self.scrivi(tempfile.mkdtemp(), [{"type": "assistant", "message": {"content": [
+            {"type": "tool_use", "name": "Bash", "input": {"command": c}} for c in comandi]}}])
+        self.assertEqual(len(r["esecuzioni"]), len(comandi))
+        r = self.scrivi(tempfile.mkdtemp(), [{"type": "assistant", "message": {"content": [
+            {"type": "tool_use", "name": "Bash", "input": {"command": "git commit -m 'make it work'"}}]}}])
+        self.assertEqual(r["esecuzioni"], [])
+
+    def test_date_compatte_attaccate_a_lettere_o_trattini_bassi(self):
+        """#78 (rilievo 4): XAUUSD_20150615.csv, dump_20150615_bid, 20231031T120000, run20150615."""
+        for t, attesa in (("XAUUSD_20150615.csv", "2015-06-15"), ("dump_20150615_bid.bi5", "2015-06-15"),
+                          ("20231031T120000", "2023-10-31"), ("run20150615", "2015-06-15")):
+            self.assertEqual(R.date_riserva(t), [attesa], t)
+        for t in ("120150615", "201506150", "1.20150615", "20150615.5"):              # non date
+            self.assertEqual(R.date_riserva(t), [], t)
+
+    def test_prezzi_con_molti_decimali(self):
+        """#79 (rilievo 11): la rappresentazione di un float (427.35000000000002) non era né contata né mascherata."""
+        self.assertEqual(len(R.numeri_prezzo("o=427.35000000000002 h=1234.5000000001")), 2)
+        self.assertNotIn("427", R._breve("o=427.35000000000002", "/casa"))
+
+    def test_uscita_con_soli_prezzi_della_riserva(self):
+        """#80 (rilievo 4): un'uscita con prezzi della riserva e senza date passava inosservata. Euristica dichiarata:
+        almeno 5 prezzi sotto 1.900 (oro 2005–2023; dal 15/11/2023 l'oro è sopra 1.900). Non vede i prezzi della
+        riserva sopra 1.900 (2020–2023): limite noto."""
+        def uscita(testo):
+            return [{"type": "user", "message": {"content": [{"type": "tool_result", "content": testo}]}}]
+        r = self.scrivi(tempfile.mkdtemp(), uscita("427.35 428.10 427.60 427.80 431.20 430.00"))
+        self.assertEqual(len(r["uscite_riserva"]), 1)
+        self.assertTrue(r["uscite_riserva"][0]["da_guardare"])
+        self.assertEqual(r["uscite_riserva"][0]["date"], 0)
+        r = self.scrivi(tempfile.mkdtemp(), uscita("427.35 428.10 427.60 427.80"))                 # 4: sotto soglia
+        self.assertEqual(r["uscite_riserva"], [])
+        r = self.scrivi(tempfile.mkdtemp(), uscita("2650.10 2651.00 2649.50 2650.70 2652.00 2655.10"))   # sviluppo
+        self.assertEqual(r["uscite_riserva"], [])
+
+    def test_tool_use_result_letto(self):
+        """#81 (rilievo 5): nelle trascrizioni di Claude Code `toolUseResult` può contenere l'uscita intera (verificato
+        sulle trascrizioni di questa sessione: 370 su 1.875 hanno testo che non è in message.content)."""
+        r = self.scrivi(tempfile.mkdtemp(), [{"type": "user", "toolUseResult": {"stdout": "giorno 2010-05-03"},
+                                              "message": {"content": [{"type": "tool_result", "content": "ok"}]}}])
+        self.assertEqual(len(r["uscite_riserva"]), 1)
+        r = self.scrivi(tempfile.mkdtemp(), [{"type": "user", "toolUseResult": "giorno 2010-05-03",
+                                              "message": {"content": [{"type": "tool_result",
+                                                                       "content": "giorno 2010-05-03"}]}}])
+        self.assertEqual(len(r["uscite_riserva"]), 1)                              # una sola uscita, non due
 
 
 if __name__ == "__main__":
