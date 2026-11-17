@@ -545,3 +545,11 @@ Formato: data · versione della base · cosa · perché · file.
 - **`controlla_cache --ask`**: confronto BID/ASK sullo stesso periodo (giorni con il file da un lato solo, vuoti da un lato solo), codice d'uscita 1 se non allineati. Mutanti Q12–Q16, 16/16.
 - **Revisione notturna a occhi freschi** (revisore separato) su dati e governance: 13 rilievi, da riprodurre e smistare (vedi il prossimo aggiornamento). La revisione del nucleo del laboratorio è stata interrotta due volte dal limite d'uso: da riprendere.
 
+## 2026-11-17 · v1.46 (notte: fuga nel pacchetto DGS-05, revisione notturna integrata)
+
+- **#72, critico, errore mio:** il pacchetto `trading_brain_dgs05.zip` conteneva il nome dell'utente dentro uno ZIP annidato (4 file), e il mio controllo indipendente non apriva gli archivi. Corretto `esporta_redatto.py` (`1573ad7`): 7 codifiche, NFC/NFD, maiuscole, archivi rifiutati salvo esclusione dichiarata. Pacchetto rigenerato: `trading_brain_dgs05b.zip` (commit `1573ad7`, 364 file, 27 redatti, 2 archivi esclusi e dichiarati, SHA-256 `ccf54d6b…`), scansione indipendente anche degli archivi: pulito. **Il vecchio pacchetto non va inviato.**
+- **Revisione notturna (dati e governance), 13 rilievi:** riprodotti uno per uno; veri corretti in TDD come #73–#84 (test rossi `34a4048`, `8757279`; correzioni `37fde1e`); 1, 2, 9 già chiusi in #72; 11 respinto in parte con il motivo nel REGISTRO-DIFETTI; 13 respinto per la parte sulla lettura della risposta.
+- **Conseguenza da non nascondere:** quattro difetti del riconteggio (#75 comandi su più righe, #78 date compatte, #80 uscite con soli prezzi, #81 `toolUseResult`) toccano il censimento G-20261115-03 («riserva intatta»). La conclusione **va riconfermata** rilanciando il riconteggio corretto sul Mac.
+- **#85** (revisore del laboratorio): completezza per minuti distinti (`cb34b05` rosso, `67ff7a6`).
+- Mutanti: riconteggio 46/46, controllo della cache 20/20 (Q19 scartato prima come NON VALIDO dal controllo di validità: sintassi rotta, riscritto), scaricatore 48/48, su 3.13 e 3.9; X21 manuale sull'esportazione. Corsa completa su 3.9 di tutti gli script: in corso.
+
