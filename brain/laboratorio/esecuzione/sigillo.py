@@ -171,6 +171,25 @@ def ancora_git(file: Path, radice: Path, continua) -> None:
     continua(json.loads(su_github.stdout), json.loads(head.stdout))
 
 
+def versioni_nella_storia(radice: Path, rel: str) -> List[dict]:
+    """Ogni versione del file JSON `rel` in ogni commit raggiungibile da un riferimento qualsiasi (rami locali, rami
+    remoti, etichette): #86, una verifica fatta su un ramo non si rifà su un altro ramo né da un commit precedente.
+    Limite dichiarato: vede i riferimenti presenti nel repository locale (dopo l'ultimo `git fetch`); un ramo
+    cancellato anche su GitHub va impedito con la protezione dei rami."""
+    elenco = _git(radice, "rev-list", "--all", "--", rel)
+    if elenco.returncode != 0:
+        raise ValueError(f"storia git di {rel} non leggibile: {elenco.stderr.strip()}")
+    versioni = []
+    for commit in elenco.stdout.split():
+        v = _git(radice, "show", f"{commit}:{rel}")
+        if v.returncode == 0:
+            try:
+                versioni.append(json.loads(v.stdout))
+            except ValueError:
+                continue
+    return versioni
+
+
 def controlla_ancora(registro: Path, radice: Path) -> None:
     """Registro delle prove ancorato alla versione su GitHub (vedi `ancora_git`): le voci già spinte non si cambiano
     né si tolgono; si aggiungono solo voci nuove in fondo, committate."""

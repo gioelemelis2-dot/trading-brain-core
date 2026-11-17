@@ -38,7 +38,8 @@ from . import sigillo as S
 RADICE = Path(__file__).resolve().parents[3]
 IPOTESI = "H-002"
 SCHEDA = RADICE / "brain" / "laboratorio" / "ipotesi" / "H-002-ORB-v3.md"
-REGISTRO = RADICE / "brain" / "laboratorio" / "registro_prove.json"
+REL_REGISTRO = "brain/laboratorio/registro_prove.json"                    # #86: il solo registro valido
+REGISTRO = RADICE / REL_REGISTRO
 CACHE = RADICE / "brain" / "dati" / "reali" / "cache_dukascopy"
 SIMBOLO = "XAUUSD"
 # Periodi FISSI nel codice (DA-26; R11-S1 di Gemini). La fine della verifica è provvisoria finché DA-26 non la fissa.
@@ -319,8 +320,13 @@ def main(argv=None) -> int:
         if not _ORA_ISO.fullmatch(ora):                                       # #51: orario nel formato del registro
             raise ValueError(f"--ora {ora!r} non è nel formato AAAA-MM-GGThh:mm:ssZ")
         datetime.strptime(ora, "%Y-%m-%dT%H:%M:%SZ")
+        storia: List[dict] = []
         if ANCORA_GIT:
+            if x.registro.resolve() != (RADICE / REL_REGISTRO).resolve():     # #86: niente registri alternativi
+                raise ValueError(f"il registro deve essere quello canonico del repository ({REL_REGISTRO}), non "
+                                 f"{x.registro}")
             S.controlla_ancora(x.registro, RADICE)
+            storia = S.versioni_nella_storia(RADICE, REL_REGISTRO)
         sigillo = S.controlla_sigillo(x.registro, IPOTESI, x.scheda, codice=impronte_codice())   # §10 e codice
         if sorted(sigillo["varianti"]) != sorted(VARIANTI):                    # N giusto (P3 di Gemini)
             raise ValueError(f"il sigillo dichiara {sigillo['varianti']}, l'esecutore esegue {list(VARIANTI)}")
@@ -343,6 +349,11 @@ def main(argv=None) -> int:
                      and e["ruolo"] == "verifica" and e.get("variante") in promosse]
             if fatte:
                 raise ValueError(f"verifica già eseguita per {[e['variante'] for e in fatte]}: si fa una volta sola")
+            altrove = sorted({e.get("variante") for d in storia for e in d.get("esecuzioni", [])
+                              if e.get("ipotesi") == IPOTESI and e.get("ruolo") == "verifica"} & set(promosse))
+            if altrove:                                                       # #86: su un altro ramo o commit
+                raise ValueError(f"verifica già eseguita per {altrove} in un'altra versione del registro (storia "
+                                 f"git, tutti i rami): si fa una volta sola")
             esiti_sviluppo = _esiti_sviluppo(S.leggi(x.registro))
             da_verificare = [v for v in VARIANTI if esiti_sviluppo.get(v)
                              and all(bool(e.get("promossa")) for e in esiti_sviluppo[v])]          # P1
@@ -379,10 +390,12 @@ def main(argv=None) -> int:
                         "minuti BID / ASK": f"{info['minuti_bid']} / {info['minuti_ask']}",
                         "registrato": ora}
         if x.modalita == "verifica":
-            n = S.n_prove(S.leggi(x.registro))
+            n = max([S.n_prove(S.leggi(x.registro))] + [S.n_prove(d) for d in storia])   # #86: N non scende
             for v in promosse:                                    # prima del calcolo: una volta sola, anche se cade
                 S.registra_esecuzione(x.registro, IPOTESI, dict(traccia, ruolo="verifica", variante=v, n_prove=n), ora)
             ris = esegui_verifica(bid, ask, promosse, n, range(inizio.year, fine.year + 1))
+            if CONTROLLO_AMBIENTE:                                             # #61, #91: prima dell'esito
+                controlla_ambiente(sigillo["codice"])
             intestazione["N (prove nel registro)"] = n
             testo = rapporto(ris, f"{IPOTESI}: verifica sigillata", intestazione)
             impronta = hashlib.sha256(testo.encode("utf-8")).hexdigest()
@@ -394,6 +407,8 @@ def main(argv=None) -> int:
                     "r_medio": r["metriche"].get("r_medio"), "quota_anni": quota, "rapporto_sha256": impronta}, ora)
         else:
             ris = esegui_sviluppo(bid, ask)
+            if CONTROLLO_AMBIENTE:                                             # #61, #91: prima degli esiti
+                controlla_ambiente(sigillo["codice"])
             testo = rapporto(ris, f"{IPOTESI}: screening sullo sviluppo", intestazione)
             impronta = hashlib.sha256(testo.encode("utf-8")).hexdigest()
             for v, r in ris["varianti"].items():
@@ -405,8 +420,6 @@ def main(argv=None) -> int:
                 for nome, rm in r["robustezza"].items():
                     S.registra_esecuzione(x.registro, IPOTESI, {"ruolo": "robustezza", "variante": f"{v} {nome}",
                                                                 "periodo": periodo, "r_medio": rm}, ora)
-        if CONTROLLO_AMBIENTE:                                                 # #61: anche dopo l'esecuzione
-            controlla_ambiente(sigillo["codice"])
         x.rapporto.write_text(testo, encoding="utf-8")
     except (S.NonSigillata, ValueError, OSError) as e:
         print(f"FERMO: {e}", file=sys.stderr)
