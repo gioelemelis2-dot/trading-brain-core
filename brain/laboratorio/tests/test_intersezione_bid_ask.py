@@ -76,9 +76,12 @@ class TestSeduta(Base):
         for k in (100, 101, 300):
             t = _utc(g, ora_t(8, 0)) + timedelta(minutes=k)
             self.ask[t] = tuple(v - 1.0 for v in self.bid[t])
+        t = _utc(g, ora_t(8, 0)) + timedelta(minutes=400)                # solo l'apertura sotto il BID
+        o, h, l, c = self.bid[t]
+        self.ask[t] = (o - 1.0, h + 1.0, l - 1.0, c + 0.3)
         self.scrivi(g, g)
         s = self.seduta(X.esamina(self.cache, g, g), g)
-        self.assertEqual((s["comuni_validi"], s["comuni_non_validi"], s["buco_max"]), (522, 3, 2))
+        self.assertEqual((s["comuni_validi"], s["comuni_non_validi"], s["buco_max"]), (521, 4, 2))
 
     def test_buchi_ai_bordi_contano(self):
         g = date(2024, 1, 11)
@@ -96,6 +99,8 @@ class TestSeduta(Base):
         (self.cache / "XAUUSD" / f"{g2.isoformat()}.bi5").write_bytes(b"")
         (self.cache / "XAUUSD" / f"{g3.isoformat()}.bi5").write_bytes(b"rotto")
         e = X.esamina(self.cache, g1, g3)
+        a = e["anni"]["2024"]
+        self.assertEqual((a["mancanti_ask"], a["vuoti_bid"], a["illeggibili_bid"], a["con_entrambi_i_file"]), (1, 1, 1, 0))
         self.assertEqual(self.seduta(e, g1)["stati"], ["ok", "mancante"])
         self.assertEqual(self.seduta(e, g2)["stati"], ["vuoto", "ok"])
         self.assertEqual(self.seduta(e, g3)["stati"], ["illeggibile", "ok"])
@@ -139,6 +144,7 @@ class TestAnniEDiagnostica(Base):
         self.assertEqual(X.ammissibili(self.e, 0.98, 0.95, 10), ["2024-01-08", "2024-01-09"])
         self.assertEqual(X.ammissibili(self.e, 0.5, 0.25, 525), ["2024-01-08", "2024-01-09"])
         self.assertEqual(X.ammissibili(self.e, 0.5, 0.0, 525), ["2024-01-08", "2024-01-09", "2024-01-10"])
+        self.assertEqual(X.ammissibili(self.e, 0.9, 0.0, 525), ["2024-01-08", "2024-01-09"])   # solo la quota
 
     def test_uscita_senza_prezzi(self):
         testo = X.tabella(self.e)
@@ -169,6 +175,8 @@ class TestRigaDiComando(Base):
             self.assertEqual(X.main(["--cache", str(self.cache), "--inizio", "2024-01-09", "--fine", "2024-01-08"]), 2)
             self.assertEqual(X.main(["--cache", str(self.cache / "nessuna"), "--inizio", "2024-01-08",
                                      "--fine", "2024-01-08"]), 2)
+            (self.cache / "XAUUSD").mkdir()                                   # c'è il BID ma non l'ASK
+            self.assertEqual(X.main(["--cache", str(self.cache), "--inizio", "2024-01-08", "--fine", "2024-01-08"]), 2)
 
 
 if __name__ == "__main__":

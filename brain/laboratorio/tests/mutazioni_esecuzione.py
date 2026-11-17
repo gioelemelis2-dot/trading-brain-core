@@ -18,7 +18,7 @@ PROCESSI = int(sys.argv[2]) if len(sys.argv) >= 3 else 2
 PREFISSI = tuple(sys.argv[3].split(",")) if len(sys.argv) == 4 else ("",)
 SUITE = ["brain.laboratorio.tests.test_esecuzione", "brain.laboratorio.tests.test_esegui_h002",
          "brain.laboratorio.tests.test_riserva", "brain.laboratorio.tests.test_potenza_soglia",
-         "brain.laboratorio.tests.test_taratura_completezza"]
+         "brain.laboratorio.tests.test_taratura_completezza", "brain.laboratorio.tests.test_intersezione_bid_ask"]
 SG = "laboratorio/esecuzione/sigillo.py"
 K = "laboratorio/esecuzione/criteri.py"
 C = "laboratorio/esecuzione/caricatore.py"
@@ -28,7 +28,24 @@ RV = "laboratorio/esecuzione/riserva.py"
 AV = "laboratorio/esecuzione/avvio.py"
 PS = "laboratorio/studi/potenza_soglia.py"
 TA = "laboratorio/studi/taratura_completezza.py"
+IX = "laboratorio/studi/intersezione_bid_ask.py"
 M = {
+    "IX01 intersezione: ASK sotto BID valido": [(IX, "            if a[0] >= b[0] and a[1] >= b[1]:", "            if True:")],
+    "IX02 intersezione: solo la chiusura confrontata": [(IX, "            if a[0] >= b[0] and a[1] >= b[1]:", "            if a[1] >= b[1]:")],
+    "IX03 intersezione: buco non azzerato": [(IX, "        buco = 0 if valido else buco + 1", "        buco = buco + (0 if valido else 1)")],
+    "IX04 intersezione: buco dai bordi escluso": [(IX, "        buco_max = max(buco_max, buco)\n", "        buco_max = max(buco_max, buco) if valido or k < griglia - 1 else buco_max\n")],
+    "IX05 intersezione: solo BID come comune": [(IX, "        elif b is not None:\n            conta[\"solo_bid\"] += 1", "        elif b is not None:\n            conta[\"comuni_validi\"] += 1")],
+    "IX06 intersezione: vigilie piene": [(IX, "    griglia = terzo if corta else MINUTI_SESSIONE", "    griglia = MINUTI_SESSIONE")],
+    "IX07 intersezione: chiusure note contate": [(IX, "        if g.weekday() < 5 and g not in chiusure_note(g.year):", "        if g.weekday() < 5:")],
+    "IX08 intersezione: fine settimana contati": [(IX, "        if g.weekday() < 5 and g not in chiusure_note(g.year):", "        if g not in chiusure_note(g.year):")],
+    "IX09 intersezione: file vuoto come mancante": [(IX, '        return "vuoto", {}', '        return "mancante", {}')],
+    "IX10 intersezione: file rotto fa crollare": [(IX, "    except DK.ErroreDati:\n        return \"illeggibile\", {}", "    except ZeroDivisionError:\n        return \"illeggibile\", {}")],
+    "IX11 intersezione: soglia per terzo ignorata": [(IX, "        if any(t < math.ceil(quota_terzo * (MINUTI_SESSIONE // 3) - 1e-9) for t in s[\"terzi\"]):", "        if False:")],
+    "IX12 intersezione: buco massimo ignorato": [(IX, "        if s[\"buco_max\"] > buco_massimo:", "        if False:")],
+    "IX13 intersezione: quota della seduta ignorata": [(IX, "        if s[\"comuni_validi\"] < math.ceil(quota_seduta * s[\"griglia\"] - 1e-9):", "        if False:")],
+    "IX14 intersezione: prezzi nel rendiconto": [(IX, "    return dict(conta, giorno=giorno.isoformat(), stati=[stato_b, stato_a], griglia=griglia,", "    return dict(conta, prezzi=[str(v) for v in list(bid.values())[:2]], giorno=giorno.isoformat(), stati=[stato_b, stato_a], griglia=griglia,")],
+    "IX15 intersezione: ASK mancante non controllato": [(IX, '    if not (x.cache / x.simbolo).is_dir() or not (x.cache / f"{x.simbolo}_ASK").is_dir():', '    if not (x.cache / x.simbolo).is_dir():')],
+    "IX16 intersezione: stati non contati per anno": [(IX, '                a[f"{PLURALE[stato]}_{lato}"] += 1', '                pass')],
     "TA01 taratura: chiusure note contate": [(TA, "if g.weekday() < 5 and g not in chiusure_note(g.year) and f.exists():", "if g.weekday() < 5 and f.exists():")],
     "TA02 taratura: fine settimana contato": [(TA, "if g.weekday() < 5 and g not in chiusure_note(g.year) and f.exists():", "if g not in chiusure_note(g.year) and f.exists():")],
     "TA03 taratura: minuti fuori sessione contati": [(TA, "        if a <= t < b:\n            t3[min(2, int((t - a) / durata))] += 1", "        if True:\n            t3[min(2, abs(int((t - a) / durata)) % 3)] += 1")],
