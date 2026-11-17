@@ -43,6 +43,8 @@ M = {
     "CO09 collaudo: Clopper–Pearson su una coda intera": [(CO, "    d = (1 - livello) / 2", "    d = 1 - livello")],
     "CO10 collaudo: promozione con limite uguale alla soglia": [(CO, "        promosse += lim > SOGLIA", "        promosse += lim >= SOGLIA - 0.05")],
     "CO11 collaudo: avviso delle poche repliche tolto": [(CO, "    if x.repliche < 1000:", "    if False:")],
+    "IX17 intersezione: estremi incrociati non contati (#108)": [(IX, "                if a[2] < b[2] or a[3] < b[3]:", "                if a[2] < b[2]:")],
+    "IX18 intersezione: estremi incrociati non sommati per anno (#108)": [(IX, '        a["estremi_incrociati"] += s["estremi_incrociati"]\n', '')],
     "IX01 intersezione: ASK sotto BID valido": [(IX, "            if a[0] >= b[0] and a[1] >= b[1]:", "            if True:")],
     "IX02 intersezione: solo la chiusura confrontata": [(IX, "            if a[0] >= b[0] and a[1] >= b[1]:", "            if a[1] >= b[1]:")],
     "IX03 intersezione: buco non azzerato": [(IX, "        buco = 0 if valido else buco + 1", "        buco = buco + (0 if valido else 1)")],

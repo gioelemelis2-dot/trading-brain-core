@@ -607,3 +607,17 @@ Nulla di questo tocca il candidato `8e51ce9` su cui lavora R15.
   - **NON eseguito con le repliche vere:** è la decisione 4 del titolare.
   - **Errore mio:** nella risposta 7 avevo stimato «qualche ora di calcolo»; misurato, il pilota completo richiede qualche minuto. Corretto.
 
+## 2026-11-17 · v1.51 (pomeriggio: R15 di Gemini)
+
+- **R15 consegnato alle 15:03** (`6509a00`, integrato con un merge: solo la cartella di Gemini).
+  - Candidato `8e51ce9` e ambiente dichiarati.
+  - **Verifica di R14:** tutte le correzioni chiuse.
+  - **Taratura su 80 mercati inventati:** 0/20 promozioni senza vantaggio; 2/20 con vantaggio debole; 16/20 e 17/20 con vantaggio medio e forte.
+  - Rilievi:
+    - #106, importante dubbio: un mio test sul Python di Apple;
+    - #107–#111, minori nel perimetro.
+- **#106 corretto (solo test):** il caso «senza -B» si salta, dichiarandolo, dove `-I` implica già `-B`; il controllo della cartella esterna del bytecode diventa un test a sé. Sul Python di Apple il mutante N63 diventa **equivalente** (lì `-B` non può mancare): dichiarato.
+- **#108, misura:** il rendiconto dell'intersezione conta a parte i minuti con estremi incrociati (mutanti IX17, IX18), così i dati veri diranno quanto conta il rilievo.
+- **Minori #107, #109, #110, #111 nel codice sigillato: NON corretti.** Il titolare aveva chiesto di non toccare `8e51ce9`. Proposte in `collaborazione/da-claude/PROPOSTA-MINORI-R15.md`.
+- **Contatore:** 0 su 2. R15 diventa il **primo giro pulito** se il titolare esclude i due casi «dubbio» (#106 è un difetto di un test, #108 una scelta di metodo).
+

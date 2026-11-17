@@ -7,7 +7,9 @@ sessione di Londra (08:00–16:45, 525 minuti) con i due lati della cache e cont
 - minuti COMUNI VALIDI (BID e ASK presenti, ASK ≥ BID su apertura e chiusura: il confronto avviene solo qui dentro);
 - comuni non validi (ASK sotto BID), solo BID, solo ASK, mancanti su entrambi;
 - minuti comuni validi per terzo, e il BUCO più lungo (minuti consecutivi non comuni-validi, bordi compresi);
-- lo stato dei file per lato: ok, mancante, vuoto, illeggibile.
+- lo stato dei file per lato: ok, mancante, vuoto, illeggibile;
+- i minuti comuni validi con ESTREMI INCROCIATI (minimo o massimo ASK sotto quelli BID: quotazioni incrociate
+  dentro il minuto), contati a parte per misurare il rilievo #108 (R15-03) sui dati veri.
 Per anno: sedute, file, percentili, e una GRIGLIA DIAGNOSTICA di soglie (quante sedute sarebbero ammissibili con
 ciascuna). Le soglie NON sono decise qui: le decide il titolare, guardando anche l'effetto dei buchi su segnali ed
 esiti (DGS-05, addendum §4). Stampa SOLO conteggi, percentuali e date: MAI prezzi.
@@ -43,7 +45,7 @@ def _leggi(f: Path, giorno: date, simbolo: str):
         minuti = DK.decodifica(dati, giorno, DK.SCALA[simbolo])
     except DK.ErroreDati:
         return "illeggibile", {}
-    return "ok", {m[0]: (m[1], m[4]) for m in minuti}                 # (apertura, chiusura): solo per il confronto
+    return "ok", {m[0]: (m[1], m[4], m[2], m[3]) for m in minuti}     # (apertura, chiusura, massimo, minimo): confronto
 
 
 def esamina_seduta(cache: Path, giorno: date, simbolo: str = "XAUUSD", corta: bool = False) -> dict:
@@ -52,7 +54,8 @@ def esamina_seduta(cache: Path, giorno: date, simbolo: str = "XAUUSD", corta: bo
     inizio = _utc(giorno, SESSIONE[0])
     terzo = MINUTI_SESSIONE // 3
     griglia = terzo if corta else MINUTI_SESSIONE
-    conta = {"comuni_validi": 0, "comuni_non_validi": 0, "solo_bid": 0, "solo_ask": 0, "mancanti": 0}
+    conta = {"comuni_validi": 0, "comuni_non_validi": 0, "solo_bid": 0, "solo_ask": 0, "mancanti": 0,
+             "estremi_incrociati": 0}
     terzi = [0, 0, 0]
     buco = buco_max = 0
     for k in range(griglia):
@@ -64,6 +67,8 @@ def esamina_seduta(cache: Path, giorno: date, simbolo: str = "XAUUSD", corta: bo
                 conta["comuni_validi"] += 1
                 terzi[k // terzo] += 1
                 valido = True
+                if a[2] < b[2] or a[3] < b[3]:                     # #108: quotazioni incrociate dentro il minuto
+                    conta["estremi_incrociati"] += 1
             else:
                 conta["comuni_non_validi"] += 1
         elif b is not None:
@@ -90,7 +95,8 @@ def esamina(cache: Path, inizio: date, fine: date, simbolo: str = "XAUUSD") -> d
     for s in sedute + vigilie:
         a = anni.setdefault(s["giorno"][:4], {"sedute": 0, "vigilie": 0, "con_entrambi_i_file": 0,
                                               "mancanti_bid": 0, "mancanti_ask": 0, "vuoti_bid": 0, "vuoti_ask": 0,
-                                              "illeggibili_bid": 0, "illeggibili_ask": 0})
+                                              "illeggibili_bid": 0, "illeggibili_ask": 0, "estremi_incrociati": 0})
+        a["estremi_incrociati"] += s["estremi_incrociati"]
         a["vigilie" if s["griglia"] < MINUTI_SESSIONE else "sedute"] += 1
         a["con_entrambi_i_file"] += s["stati"] == ["ok", "ok"]
         for stato, lato in zip(s["stati"], ("bid", "ask")):
@@ -122,13 +128,15 @@ def tabella(e: dict) -> str:
     righe = ["Rendiconto dell'intersezione BID/ASK (solo conteggi; minuti comuni validi = BID e ASK presenti, "
              "ASK ≥ BID)", "",
              "| anno | sedute | vigilie | entrambi i file | mancanti B/A | vuoti B/A | illeggibili B/A | "
-             "quota comuni p1/p50 | terzo minimo p1/p50 | buco max p50/max |", "|---|---|---|---|---|---|---|---|---|---|"]
+             "quota comuni p1/p50 | terzo minimo p1/p50 | buco max p50/max | minuti con estremi incrociati |",
+             "|---|---|---|---|---|---|---|---|---|---|---|"]
     for anno, a in sorted(e["anni"].items()):
         q, t, b = a.get("quota_comuni") or {}, a.get("terzo_minimo") or {}, a.get("buco_max") or {}
         righe.append(f"| {anno} | {a['sedute']} | {a['vigilie']} | {a['con_entrambi_i_file']} | "
                      f"{a['mancanti_bid']}/{a['mancanti_ask']} | {a['vuoti_bid']}/{a['vuoti_ask']} | "
                      f"{a['illeggibili_bid']}/{a['illeggibili_ask']} | {q.get('p1', '—')}/{q.get('p50', '—')} | "
-                     f"{t.get('p1', '—')}/{t.get('p50', '—')} | {b.get('p50', '—')}/{b.get('max', '—')} |")
+                     f"{t.get('p1', '—')}/{t.get('p50', '—')} | {b.get('p50', '—')}/{b.get('max', '—')} | "
+                     f"{a['estremi_incrociati']} |")
     totale = len(e["sedute"]) + len(e["vigilie"])
     righe += ["", "Griglia DIAGNOSTICA (non è una decisione: le soglie le sceglie il titolare):", "",
               "| quota seduta | quota per terzo | buco massimo | sedute ammissibili |", "|---|---|---|---|"]
