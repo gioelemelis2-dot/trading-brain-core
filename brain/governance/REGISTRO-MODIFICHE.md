@@ -584,4 +584,5 @@ Formato: data · versione della base · cosa · perché · file.
   - un mio test della storia parziale era costruito male: il clone non indicava il ramo. Corretto e controllato al contrario: fallisce sul codice vecchio.
 - **Contatore dei giri puliti:** resta a zero.
 - **Corsa completa dei mutanti:** in corso sul codice finale.
+- **DGS:** il DGS si era fermato a DGS-04 (archivio di `83c8956`); il messaggio 3 e i pacchetti `dgs05` e `dgs05b` non sono mai stati inviati (quindi la fuga #72 non è mai uscita). Preparati il messaggio 4 di riallineamento e il pacchetto `trading_brain_dgs06.zip` (commit `c5ca93d`, SHA-256 `58d29429…`, 369 file, 29 redatti, due zip esclusi; ricontrollato in modo indipendente, nessun residuo).
 

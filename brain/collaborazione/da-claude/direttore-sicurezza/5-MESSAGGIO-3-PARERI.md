@@ -1,3 +1,5 @@
+> **SUPERATO il 17/11:** mai inviato. Sostituito da `6-MESSAGGIO-4-RIALLINEAMENTO.md` con il pacchetto `trading_brain_dgs06.zip`.
+
 # Messaggio 3 per il DGS (ChatGPT), 16/11/2026
 
 Da incollare nella chat del Progetto «Trading Brain», **allegando il pacchetto nuovo** `trading_brain_dgs05b.zip` (17/11, commit `1573ad7`, SHA-256 `ccf54d6b…`). Il pacchetto è redatto: niente nome, utente GitHub o percorsi personali. **NON allegare `trading_brain_dgs05.zip`** (16/11): conteneva il nome dell'utente dentro uno ZIP annidato (difetto #72). Se è già stato inviato, dirlo a Claude: va registrato. Gli archivi precedenti sono superati.
