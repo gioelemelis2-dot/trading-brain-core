@@ -211,6 +211,8 @@ def decodifica(dati: bytes, giorno: date, cifre: int) -> List[tuple]:
             raise ErroreDati(f"{giorno} +{sec}s: record non allineato al minuto (formato diverso)")
         if sec in visti:
             raise ErroreDati(f"{giorno} +{sec}s: minuto ripetuto (formato diverso)")
+        if visti and sec < max(visti):                           # #111: ordine crescente
+            raise ErroreDati(f"{giorno} +{sec}s: record fuori ordine (formato diverso)")
         visti.add(sec)
         if not math.isfinite(vol):
             raise ErroreDati(f"{giorno} +{sec}s: volume non finito ({vol})")

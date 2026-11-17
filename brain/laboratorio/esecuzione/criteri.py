@@ -20,6 +20,8 @@ def percentile(valori: Sequence[float], q: float) -> float:
     """Percentile a rango più vicino: il valore di rango ceil(q·n) fra quelli ordinati."""
     if not valori:
         raise ValueError("percentile di un elenco vuoto")
+    if not 0.0 < q <= 1.0:                                               # #110
+        raise ValueError(f"percentile {q} fuori da (0, 1]")
     ordinati = sorted(valori)
     k = max(1, math.ceil(q * len(ordinati) - 1e-9))
     return ordinati[k - 1]
@@ -79,7 +81,7 @@ def screening(m: dict, casuale: dict, benchmark: dict, veto: bool, r_stress: Opt
     r = m.get("r_medio")
     dd = m.get("dd_max")
     n = m.get("n", 0)
-    cop_casuale = casuale.get("copertura", 1.0)                                    # R11-S5: copertura vincolante
+    cop_casuale = casuale.get("copertura", 0.0)                         # R11-S5: vincolante; #107: assente = 0
     cop_bench = (benchmark.get("n_comuni", n) / n) if n else 0.0
     criteri = [
         _criterio("R medio netto", r, f"≥ {r_min}", _ge(r, r_min)),
@@ -139,6 +141,10 @@ def verifica(tr: List[dict], n_prove: int, dsr_min: float = 0.95, quota_anni: fl
     nel registro, T = numero di trade, asimmetria e curtosi degli R per trade.
     V (varianza degli Sharpe delle prove) come in backtester/dsr.py: max(1/(T − 1), varianza empirica degli Sharpe
     `sharpe_prove` delle ALTRE varianti eseguite sullo stesso periodo più quello di questa)."""
+    if anni is not None and not list(anni):                             # #110: valori non ammessi
+        raise ValueError("verifica: elenco degli anni vuoto")
+    if sharpe_prove is not None and not all(isinstance(x, (int, float)) for x in sharpe_prove):
+        raise ValueError(f"verifica: Sharpe delle prove non numerici: {sharpe_prove!r}")
     rs = [x["r"] for x in sorted(tr, key=lambda x: x["data"])]
     dsr = sr = None
     if len(rs) >= T_MIN_DSR and stdev(rs) > 0:                          # R11-S1: niente DSR con pochi trade

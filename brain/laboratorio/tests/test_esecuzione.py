@@ -147,7 +147,7 @@ def metriche_buone(**diverse):
 
 class TestScreening(unittest.TestCase):
     def esito(self, m=None, casuale_sopra=True, batte=True, veto=False, stress=0.03):
-        return K.screening(m or metriche_buone(), {"sopra": casuale_sopra, "percentile_95": 0.04},
+        return K.screening(m or metriche_buone(), {"sopra": casuale_sopra, "percentile_95": 0.04, "copertura": 1.0},
                            {"batte_entrambi": batte, "r_compro": 0.01, "r_vendo": -0.02}, veto, stress)
 
     def test_tutti_i_criteri_passano(self):
@@ -243,7 +243,7 @@ class TestMinoriR15(unittest.TestCase):
 
 class TestRapporto(unittest.TestCase):
     def test_rapporto_contiene_verdetto_e_criteri(self):
-        e = K.screening(metriche_buone(), {"sopra": True, "percentile_95": 0.04},
+        e = K.screening(metriche_buone(), {"sopra": True, "percentile_95": 0.04, "copertura": 1.0},   # #107: esplicita
                         {"batte_entrambi": True, "r_compro": 0.01, "r_vendo": -0.02}, False, 0.03)
         testo = K.rapporto_screening("H-999 V-T", e)
         self.assertIn("PROMOSSA", testo)

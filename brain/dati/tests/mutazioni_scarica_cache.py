@@ -69,6 +69,7 @@ M = {
     "W49 file troncato accettato (#83)": [(DK, "        if not d.eof:\n            raise EOFError(\"Compressed data ended before the end-of-stream marker was reached\")\n", "")],
     "W50 secondi non allineati accettati (#89)": [(DK, "        if sec % 60:  ", "        if False:  ")],
     "W51 minuti ripetuti accettati (#89)": [(DK, "        if sec in visti:\n", "        if False:\n")],
+    "W52 record fuori ordine accettati (#111)": [(DK, "        if visti and sec < max(visti):", "        if False:")],
     "W43 giorno non aggiornato nel log dei tentativi": [(SC, "            contesto[\"giorno\"] = g.isoformat()\n", "")],
     "W12 4xx con nuovi tentativi": [(DK, "            if e.code != 429 and e.code < 500:\n                raise\n", "            if False:\n                raise\n")],
 }
