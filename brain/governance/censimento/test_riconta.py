@@ -321,5 +321,32 @@ class TestRevisioneNotturna(unittest.TestCase):
         self.assertEqual(len(r["uscite_riserva"]), 1)                              # una sola uscita, non due
 
 
+class TestOrigineDelleUscite(unittest.TestCase):
+    """17/11: per decidere se un'uscita segnalata è innocua (lettura di un file di test con dati inventati) o no
+    (lettura della cache vera) serve sapere quale chiamata l'ha prodotta. Si mostra solo il comando o il percorso,
+    con i prezzi mascherati, mai il contenuto."""
+
+    def test_uscita_con_la_chiamata_che_la_precede(self):
+        with tempfile.TemporaryDirectory() as d:
+            r = R.esamina_file(antigravity(Path(d)))
+            u = [x for x in r["uscite_riserva"] if x["passo"] == 3][0]
+            self.assertIn("view_file", u["da"])
+            self.assertIn("XAUUSD_15m.csv", u["da"])
+            self.assertNotIn("1234.56", u["da"])                          # prezzi nel comando: mai in chiaro
+        with tempfile.TemporaryDirectory() as d:
+            r = R.esamina_file(claude(Path(d)))
+            self.assertTrue(all("Read" in x["da"] for x in r["uscite_riserva"]))
+
+    def test_origine_stampata(self):
+        with tempfile.TemporaryDirectory() as d:
+            antigravity(Path(d))
+            buf = io.StringIO()
+            with redirect_stdout(buf):
+                R.main([d])
+        righe = [x for x in buf.getvalue().splitlines() if x.startswith("  U [3]")]
+        self.assertTrue(righe and "da: " in righe[0], buf.getvalue())
+        self.assertNotIn("1234.56", buf.getvalue())
+
+
 if __name__ == "__main__":
     unittest.main()
