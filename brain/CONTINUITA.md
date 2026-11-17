@@ -2,6 +2,11 @@
 
 Ultimo aggiornamento: **2026-11-15**, dopo il mandato notturno su H-002 (programma dei criteri, strumento di sigillo, quaderno delle ipotesi; ramo `feat/esecutore-h002`, **non unito a main**). Leggere questo file per primo (vale anche per Gemini, insieme a `collaborazione/HANDOFF-GEMINI.md`).
 
+## Aggiornamento del 17/11/2026, notte (leggere prima della sezione seguente)
+- **Riserva di verifica: conclusione «intatta» DA RICONFERMARE.** La revisione notturna ha trovato quattro buchi in `riconta.py` (#75, #78, #80, #81) che possono aver nascosto uscite della riserva nel riconteggio del 16/11. Corretti; serve rilanciare il riconteggio sul Mac (comando in `governance/STATO-PROGETTO.md`, «Cosa serve dall'utente»).
+- **Pacchetto per il DGS:** usare `trading_brain_dgs05b.zip`; il vecchio `trading_brain_dgs05.zip` conteneva il nome dell'utente in uno ZIP annidato (#72).
+- **Difetti:** registro fino a #85; revisione notturna integrata (REGISTRO-MODIFICHE v1.46). R14 di Gemini: mandato aggiornato, da consegnare dopo la revisione del laboratorio.
+
 ## Stato al 15/11/2026 sera (leggere prima di tutto il resto)
 - **Scheda di stato aggiornata:** `governance/STATO-PROGETTO.md` (contatori, cosa manca per il sigillo, decisioni aperte).
 - **Ramo:** `feat/esecutore-h002`, non unito a main. **Congelamento** dopo l'incidente #41: nessuna esecuzione sui dati veri, nessuna modifica alle regole di H-002 senza decisione dell'utente.
