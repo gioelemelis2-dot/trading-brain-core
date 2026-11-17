@@ -57,7 +57,7 @@ Correzione per il DGS: l'arresto del BID all'11/02/2020 è attestato da «Last l
 - **Per la procedura intera** (simulatore, screening, veti) una replica costa da secondi a minuti. Migliaia di repliche per cella sono **sproporzionate**. Qui propongo di **stimare** i tassi con il loro intervallo su poche celle, senza certificare.
 - **Sul margine richiesto da U ≤ a:** un metodo esattamente al livello nominale (p = a) non passa mai. Con p* = a/2 si chiede un metodo «doppiamente prudente», e la potenza persa va pagata in trade (punto P1). Propongo di **decidere il margine dopo un pilota**, non prima e non dopo la verifica finale.
 
-**Passo minimo proposto (pilota), costo circa mezza giornata di lavoro e qualche ora di calcolo, solo dati inventati:**
+**Passo minimo proposto (pilota), solo dati inventati.** Costo misurato il 17/11 pomeriggio: il codice è già pronto e collaudato (`laboratorio/studi/collaudo_ia02.py`), e il calcolo richiede **qualche minuto**, non ore. Avevo sovrastimato. Dettagli:
 1. Due candidati: HAC con regola dei ritardi fissata, e bootstrap a blocchi giornalieri sulle coppie (S_d, K_d).
 2. Quattro celle: gaussiano indipendente e AR(1) con ρ = 0,25, ciascuno al confine μ = 0,15 e a +0,30, con n = 1.000 e quota 2,5%.
 3. 3.000 repliche per cella, semi impegnati prima.

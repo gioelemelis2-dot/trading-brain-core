@@ -587,3 +587,23 @@ Formato: data · versione della base · cosa · perché · file.
 - **DGS:** il DGS si era fermato a DGS-04 (archivio di `83c8956`); il messaggio 3 e i pacchetti `dgs05` e `dgs05b` non sono mai stati inviati (quindi la fuga #72 non è mai uscita). Preparati il messaggio 4 di riallineamento e il pacchetto `trading_brain_dgs06.zip` (commit `c5ca93d`, SHA-256 `58d29429…`, 369 file, 29 redatti, due zip esclusi; ricontrollato in modo indipendente, nessun residuo).
 - **Corsa completa dei mutanti sul codice finale (17/11 sera):** esecuzione 213/213 su 3.13 e 3.9 (205 nella corsa completa, 8 riagganciati o coperti e rifatti a parte; N57 dichiarato equivalente), simulatore 40/40, DSR 44/44, riconteggio 53/53, controllo della cache 20/20, scaricatore 50/50. Errore mio registrato come #105 (mutanti staccati dalle mie correzioni). 366 test verdi su 3.13 e 3.9.
 
+## 2026-11-17 · v1.50 (pomeriggio, titolare assente: strumenti di contorno e preparazioni)
+
+Nulla di questo tocca il candidato `8e51ce9` su cui lavora R15.
+
+- **Rendiconto dell'intersezione BID/ASK e dei buchi** (`laboratorio/studi/intersezione_bid_ask.py`; test rossi `ff…` poi `577887c`). Richiesta del DGS (DGS-05 P5).
+  - Per seduta: minuti comuni validi (BID e ASK presenti, ASK ≥ BID su apertura e chiusura, confronto solo interno), solo BID, solo ASK, comuni non validi, mancanti, conteggi per terzo, buco più lungo con i bordi, stato dei file per lato.
+  - Per anno: conteggi e percentili, più una griglia DIAGNOSTICA di soglie, dichiarata come non decisione.
+  - Solo conteggi e date: un test e un mutante (IX14) provano che nessun prezzo esce, nemmeno nel JSON.
+  - **Errori miei, trovati prima del commit del codice:**
+    - un conto sbagliato in un test (10 minuti mancanti nel primo terzo lo portano al 94,3%, sotto il 95%);
+    - 5 mutanti vivi su 16 al primo giro su 3.13: i test non coprivano l'ASK sotto il BID solo in apertura, l'esclusione per la sola quota della seduta, la cartella ASK mancante e gli stati per anno; IX14 era progettato male (non inseriva prezzi).
+
+    Test rafforzati e dichiarati come scritti dopo i mutanti; IX14 riscritto.
+- **Bozza del modello H-003** con le integrazioni P3 del DGS e DA-31 (`laboratorio/ipotesi/MODELLO-SCHEDA-H-003-BOZZA-P3.md`). **NON applicata:** è la decisione 5 del titolare. Ogni punto è marcato [DOC] o [METODO]. L'affermazione «stop prima del target nella stessa barra, come H-002» è stata controllata su `H-002-ORB-v3.md` (riga 85) e su `orb_londra.py` (righe 231–239).
+- **Pilota del collaudo IA-02** (`laboratorio/studi/collaudo_ia02.py`; test rossi poi codice).
+  - Contiene tre metodi (ingenuo, HAC Newey–West con regola dei ritardi fissata, bootstrap a blocchi mobili), il generatore AR(1) stazionario, i limiti di Clopper–Pearson e 4 celle impegnate.
+  - Riproduce i riferimenti analitici del DGS (F = 1,664691 e 2,991111; tassi 6,4371% e 12,8551%).
+  - **NON eseguito con le repliche vere:** è la decisione 4 del titolare.
+  - **Errore mio:** nella risposta 7 avevo stimato «qualche ora di calcolo»; misurato, il pilota completo richiede qualche minuto. Corretto.
+

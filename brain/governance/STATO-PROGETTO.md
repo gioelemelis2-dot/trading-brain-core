@@ -22,25 +22,25 @@ Il banco di prova (simulatore, criteri, sigillo, registri, scaricatore) è **cos
 
 ## Cosa manca per il primo sigillo, in ordine
 1. **Due giri di revisione di fila senza difetti critici o importanti che contano per D-24** (contatore a 0; R14 integrato il 17/11; R15 sul candidato `8e51ce9`, con commit, ambiente e perimetro dichiarati).
-2. **Dati storici completi** e controllo della cache pulito; poi taratura della soglia di completezza sui conteggi dei minuti.
+2. **Dati storici completi**, poi il consuntivo: controllo della cache, confronto BID/ASK, **rendiconto dell'intersezione al minuto e dei buchi** (`laboratorio/studi/intersezione_bid_ask.py`, pronto dal 17/11) e taratura. Le soglie di idoneità restano da decidere: le proposte del DGS sono state ritirate.
 3. **Ratifica del registro della riserva** (α totale, scelta delle finestre, parte protetta) — titolare, con il parere del DGS (P2).
 4. **Scelta della regola per IA-02** («sulla stima» o «sul limite inferiore», per sviluppo e verifica) — titolare, con il parere del DGS (P1).
 5. **Approvazione del modello di scheda H-003** — titolare, con il parere del DGS (P3).
 6. **Una scheda H-003 scritta e sigillata prima dei suoi dati** (l'idea è del titolare).
 
-## Cosa serve dall'utente (comandi sul Mac)
-1. **Riconteggio corretto** (legge soltanto; da un worktree nuovo, senza toccare `tb-scarica`):
-   ```
-   git -C ~/Downloads/trading-brain-core fetch origin feat/esecutore-h002
-   git -C ~/Downloads/trading-brain-core worktree add --detach ../tb-riconta FETCH_HEAD
-   cd ~/Downloads/tb-riconta && python3 -I -s -B brain/governance/censimento/riconta.py ~/.gemini/antigravity ~/.claude/projects > ~/Downloads/riconta2.txt; echo "codice $?"
-   ```
-   Poi mandare `riconta2.txt` a Claude (stampa solo conteggi, date ed estratti dei comandi con i prezzi mascherati). Codice 2 = un percorso non esiste: dirlo.
-2. **Pacchetto per il DGS:** inviare `trading_brain_dgs05b.zip`, mai `trading_brain_dgs05.zip` (#72). Se il vecchio è già partito, dirlo.
-3. **Scaricatore (facoltativo, quando comodo):** la versione in corso non scrive il motivo dei nuovi tentativi e non ha le correzioni #73 e #83. Per aggiornarlo, prima mandare a Claude l'uscita di `ps -o command= -p $(pgrep -f scarica_cache)`; Claude risponde con i comandi esatti di arresto e ripartenza (la ripresa è sicura: scrittura atomica e controllo dei file alla ripartenza).
+## Cosa serve dall'utente (aggiornato al 17/11 pomeriggio)
+- **Già fatto il 17/11:**
+  - riconteggio corretto (riserva intatta);
+  - pacchetto `dgs06` e messaggio 4 al DGS (DGS-05 ricevuto);
+  - scaricamenti BID (dal 12/02/2020) e ASK (dal 2005) ripartiti da `~/Downloads/tb-riconta` con `caffeinate`.
+- **Mac acceso e collegato** finché gli scaricamenti non finiscono. Ogni mattina:
+  `pgrep -fl scarica_cache; tail -3 ~/scarica_storico.log; tail -3 ~/scarica_ask.log`.
+  Se un processo manca, si rilancia lo stesso comando: riparte dal primo giorno mancante.
+- **A scaricamento finito:** i comandi del consuntivo (controllo della cache, confronto BID/ASK, intersezione al minuto, taratura), che Claude prepara al momento.
+- **Decisioni** (sezione seguente) e rapporti in arrivo: R15 di Gemini, DGS-06.
 
 ## Decisioni aperte del titolare
-- P1 regola per IA-02 · P2 regole di spesa della riserva · P3 modello di scheda H-003 (pareri chiesti al DGS il 16/11).
+- Dalla risposta 7 al DGS (`collaborazione/da-claude/direttore-sicurezza/7-RISPOSTA-AL-DOSSIER-DGS-05.md`, §5): (1) α totale della riserva; (2) ordine delle finestre, vecchi o recenti prima; (3) DA-31 a tre stati; (4) via al pilota del collaudo, già pronto (`laboratorio/studi/collaudo_ia02.py`); (5) via all'aggiornamento del modello H-003 (bozza `laboratorio/ipotesi/MODELLO-SCHEDA-H-003-BOZZA-P3.md`). Orientamento già espresso: stima nello screening, limite inferiore in verifica.
 - DA-31 verdetto a due o tre stati (#94 b) · protezione del ramo su GitHub (#86): da decidere prima della verifica (D-24); su un repository privato richiede GitHub Pro.
 - Già decise il 17/11: D-24 modello di minaccia («A con il giro B prima della verifica»).
 - Già decise: H-002 parcheggiata con condizione d'uscita scritta; IA-02 = 0,15 R; congelamento post-incidente.

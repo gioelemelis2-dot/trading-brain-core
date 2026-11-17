@@ -18,7 +18,8 @@ PROCESSI = int(sys.argv[2]) if len(sys.argv) >= 3 else 2
 PREFISSI = tuple(sys.argv[3].split(",")) if len(sys.argv) == 4 else ("",)
 SUITE = ["brain.laboratorio.tests.test_esecuzione", "brain.laboratorio.tests.test_esegui_h002",
          "brain.laboratorio.tests.test_riserva", "brain.laboratorio.tests.test_potenza_soglia",
-         "brain.laboratorio.tests.test_taratura_completezza", "brain.laboratorio.tests.test_intersezione_bid_ask"]
+         "brain.laboratorio.tests.test_taratura_completezza", "brain.laboratorio.tests.test_intersezione_bid_ask",
+         "brain.laboratorio.tests.test_collaudo_ia02"]
 SG = "laboratorio/esecuzione/sigillo.py"
 K = "laboratorio/esecuzione/criteri.py"
 C = "laboratorio/esecuzione/caricatore.py"
@@ -29,7 +30,19 @@ AV = "laboratorio/esecuzione/avvio.py"
 PS = "laboratorio/studi/potenza_soglia.py"
 TA = "laboratorio/studi/taratura_completezza.py"
 IX = "laboratorio/studi/intersezione_bid_ask.py"
+CO = "laboratorio/studi/collaudo_ia02.py"
 M = {
+    "CO01 collaudo: F senza il peso (1 - k/n)": [(CO, "    return 1 + 2 * sum((1 - k / n) * rho ** k for k in range(1, n))", "    return 1 + 2 * sum(rho ** k for k in range(1, n))")],
+    "CO02 collaudo: AR(1) non stazionario": [(CO, "    e = rnd.gauss(0.0, sigma)\n", "    e = 0.0\n")],
+    "CO03 collaudo: innovazioni non scalate": [(CO, "    scala = sigma * math.sqrt(1 - rho * rho)", "    scala = sigma")],
+    "CO04 collaudo: ingenuo con varianza su n": [(CO, "    s = math.sqrt(sum((v - m) ** 2 for v in x) / (n - 1))", "    s = math.sqrt(sum((v - m) ** 2 for v in x) / n)")],
+    "CO05 collaudo: HAC senza pesi di Bartlett": [(CO, "        var += 2 * (1 - l / (L + 1)) * sum(", "        var += 2 * sum(")],
+    "CO06 collaudo: HAC con un ritardo in meno": [(CO, "    for l in range(1, L + 1):", "    for l in range(1, L):")],
+    "CO07 collaudo: bootstrap senza blocchi": [(CO, "    b = blocco or blocco_predefinito(n)", "    b = blocco or 1")],
+    "CO08 collaudo: quantile del bootstrap spostato": [(CO, "    return medie[max(0, math.ceil(a * ricampionamenti) - 1)]", "    return medie[min(len(medie) - 1, math.ceil(a * ricampionamenti))]")],
+    "CO09 collaudo: Clopper–Pearson su una coda intera": [(CO, "    d = (1 - livello) / 2", "    d = 1 - livello")],
+    "CO10 collaudo: promozione con limite uguale alla soglia": [(CO, "        promosse += lim > SOGLIA", "        promosse += lim >= SOGLIA - 0.05")],
+    "CO11 collaudo: avviso delle poche repliche tolto": [(CO, "    if x.repliche < 1000:", "    if False:")],
     "IX01 intersezione: ASK sotto BID valido": [(IX, "            if a[0] >= b[0] and a[1] >= b[1]:", "            if True:")],
     "IX02 intersezione: solo la chiusura confrontata": [(IX, "            if a[0] >= b[0] and a[1] >= b[1]:", "            if a[1] >= b[1]:")],
     "IX03 intersezione: buco non azzerato": [(IX, "        buco = 0 if valido else buco + 1", "        buco = buco + (0 if valido else 1)")],
