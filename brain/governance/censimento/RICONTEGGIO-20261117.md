@@ -26,3 +26,6 @@
 **Conclusione:** per tutto ciò che è contabile nelle trascrizioni presenti sul Mac, **la riserva resta intatta** anche con lo strumento corretto. Resta solo il limite già dichiarato: ciò che una persona ha guardato a mano non si conta.
 
 **Limite del metodo:** l'origine è la chiamata più recente prima dell'uscita, non un legame certo. Con chiamate in parallelo sono elencate tutte. La classificazione si basa su comandi e percorsi, non sui contenuti, che nessuno ha letto.
+
+**Righe «svil screening» viste nel Terminale dell'utente (17/11, chiarito):** non erano un comando dell'utente. Erano l'uscita di `pgrep -fl dukascopy`, che stampa la riga di comando dei processi in corso: il processo era il benchmark di Gemini per BANCO-02. Lavorava in `tb-banco02` su giornate INVENTATE (`make_day`, prezzo base 2000.000) dentro `tempfile.TemporaryDirectory()`, con un registro temporaneo e le date dello sviluppo usate solo come nomi dei file finti. Nessun dato vero, nessun incidente.
+
