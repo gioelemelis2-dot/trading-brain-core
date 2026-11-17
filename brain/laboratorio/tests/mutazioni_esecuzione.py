@@ -19,7 +19,8 @@ PREFISSI = tuple(sys.argv[3].split(",")) if len(sys.argv) == 4 else ("",)
 SUITE = ["brain.laboratorio.tests.test_esecuzione", "brain.laboratorio.tests.test_esegui_h002",
          "brain.laboratorio.tests.test_riserva", "brain.laboratorio.tests.test_potenza_soglia",
          "brain.laboratorio.tests.test_taratura_completezza", "brain.laboratorio.tests.test_intersezione_bid_ask",
-         "brain.laboratorio.tests.test_collaudo_ia02", "brain.laboratorio.tests.test_pilota_ia02"]
+         "brain.laboratorio.tests.test_collaudo_ia02", "brain.laboratorio.tests.test_pilota_ia02",
+         "brain.laboratorio.tests.test_protocollo_ia02"]
 SG = "laboratorio/esecuzione/sigillo.py"
 K = "laboratorio/esecuzione/criteri.py"
 C = "laboratorio/esecuzione/caricatore.py"
@@ -32,7 +33,40 @@ TA = "laboratorio/studi/taratura_completezza.py"
 IX = "laboratorio/studi/intersezione_bid_ask.py"
 CO = "laboratorio/studi/collaudo_ia02.py"
 PI = "laboratorio/studi/pilota_ia02.py"
+PR = "laboratorio/studi/protocollo_ia02.py"
 M = {
+    "PI21 pilota: ampiezza nulla accettata (#112)": [(PI, '    if not (math.isfinite(lo) and math.isfinite(hi)) or not lo < hi:', '    if not (math.isfinite(lo) and math.isfinite(hi)) or not lo <= hi:')],
+    "PI22 pilota: limiti non finiti accettati (#112)": [(PI, '    if not (math.isfinite(lo) and math.isfinite(hi)) or not lo < hi:', '    if not lo < hi:')],
+    "PI23 pilota: HAC fuori dal contratto": [(PI, '    return intervallo_valido(mu - Z * se, mu + Z * se)', '    return mu - Z * se, mu + Z * se')],
+    "PI24 pilota: limiti grezzi non salvati per l'errore": [(PI, '            out["limiti"][metodo].append(None if iv is None else [iv[0], iv[1]])', '            out["limiti"][metodo].append([0.0, 0.0] if iv is None else [iv[0], iv[1]])')],
+    "PI25 pilota: file dei limiti senza versione": [(PI, '            json.dump({"versione": impronta_modulo(), "fase": x.fase,', '            json.dump({"versione": "", "fase": x.fase,')],
+    "PR01 protocollo: Clopper–Pearson con la disuguaglianza rovesciata": [(PR, '        if _cdf_binomiale(k, M, mid) > delta:', '        if _cdf_binomiale(k, M, mid) < delta:')],
+    "PR02 protocollo: soglia k con un evento in più": [(PR, '    while k + 1 < M and _cdf_binomiale(k + 1, M, TASSO) <= delta:', '    while k < M and _cdf_binomiale(k, M, TASSO) <= delta:')],
+    "PR03 protocollo: uguaglianza alla soglia come promozione": [(PR, '        elif iv[0] > alto:', '        elif iv[0] >= alto:')],
+    "PR04 protocollo: uguaglianza alla soglia come bocciatura": [(PR, '        elif iv[1] < basso:', '        elif iv[1] <= basso:')],
+    "PR05 protocollo: margine non simmetrico": [(PR, '    return round(SOGLIA + margine, 10), round(SOGLIA - margine, 10)', '    return round(SOGLIA + margine, 10), SOGLIA')],
+    "PR06 protocollo: errori fuori da k⁺": [(PR, 'per_cella[c] = dict(M=M, **n, kp=n["P"] + n["E"], km=n["B"] + n["E"])', 'per_cella[c] = dict(M=M, **n, kp=n["P"], km=n["B"] + n["E"])')],
+    "PR07 protocollo: errori fuori da k⁻": [(PR, 'per_cella[c] = dict(M=M, **n, kp=n["P"] + n["E"], km=n["B"] + n["E"])', 'per_cella[c] = dict(M=M, **n, kp=n["P"] + n["E"], km=n["B"])')],
+    "PR08 protocollo: celle sotto soglia non controllate": [(PR, '                for c in CELLE_SOTTO + CELLE_CONFINE:', '                for c in CELLE_CONFINE:')],
+    "PR09 protocollo: falsa bocciatura non controllata": [(PR, '                    controlli.append(("falsa bocciatura", c, k, ucp(k, M, delta), k <= kmax))', '                    controlli.append(("falsa bocciatura", c, k, ucp(k, M, delta), True))')],
+    "PR10 protocollo: cella 11 senza veto": [(PR, 'CELLE_CONFINE = (2, 6, 9, 11)', 'CELLE_CONFINE = (2, 6, 9)')],
+    "PR11 protocollo: potenza non richiesta": [(PR, '            ammissibile = completa and all(x[4] for x in controlli) and all(v >= 1 for v in potenze.values())', '            ammissibile = completa and all(x[4] for x in controlli)')],
+    "PR12 protocollo: completezza non controllata": [(PR, '                                        "potenze": potenze, "ammissibile": ammissibile, "kmax": kmax}', '                                        "potenze": potenze, "ammissibile": ammissibile or bool(controlli), "kmax": kmax}')],
+    "PR13 protocollo: lunghezza delle liste non controllata": [(PR, '                       and len(celle[str(c)][metodo]) == M\n', '                       and len(celle[str(c)][metodo]) >= 1\n')],
+    "PR14 protocollo: intervalli del file non controllati": [(PR, '                       and all(_intervallo_ammesso(iv) for iv in celle[str(c)][metodo]) for c in P.CELLE)', '                       for c in P.CELLE)')],
+    "PR15 protocollo: classifica per somma prima del minimo": [(PR, '    ordine = sorted(ammessi, key=lambda kv: (-min(kv[1]["potenze"].values()), -sum(kv[1]["potenze"].values()),', '    ordine = sorted(ammessi, key=lambda kv: (-sum(kv[1]["potenze"].values()), -min(kv[1]["potenze"].values()),')],
+    "PR16 protocollo: margine più grande a parità": [(PR, '                                             kv[0][1], P.METODI.index(kv[0][0])))', '                                             -kv[0][1], P.METODI.index(kv[0][0])))')],
+    "PR17 protocollo: bootstrap prima di HAC a parità": [(PR, '                                             kv[0][1], P.METODI.index(kv[0][0])))', '                                             kv[0][1], -P.METODI.index(kv[0][0])))')],
+    "PR18 protocollo: fase 2 senza 12.000 repliche": [(PR, '        if M != M_FASE2:', '        if M < 1:')],
+    "PR19 protocollo: diagnostica ignorata nel verdetto": [(PR, '    if not diagnostica_ok:', '    if False:')],
+    "PR20 protocollo: banda dei flussi allargata": [(PR, 'BANDA = (4796, 5204)', 'BANDA = (4790, 5210)')],
+    "PR21 protocollo: ritardo non applicato": [(PR, '            x = sum(1 for t in range(1, N_BIT + 1) if a[t] == b[t + h])', '            x = sum(1 for t in range(1, N_BIT + 1) if a[t] == b[t])')],
+    "PR22 protocollo: confronti di gruppo B solo in fase 1": [(PR, '        for f in (1, 2):', '        for f in (1, 1):')],
+    "PR23 protocollo: semi duplicati non visti": [(PR, '    ok = inv["chiavi"] == inv["semi_distinti"] and not segnalati', '    ok = not segnalati')],
+    "PR24 protocollo: fase del file non controllata": [(PR, '    if dati.get("fase") != x.fase:', '    if False:')],
+    "PR25 protocollo: p-value senza il fattore 2": [(PR, '    return min(1.0, 2 * min(basso, alto))', '    return min(1.0, min(basso, alto))')],
+    "PR26 protocollo: δ della fase 2 come la fase 1": [(PR, 'DELTA = {1: 0.05, 2: 0.001}', 'DELTA = {1: 0.05, 2: 0.05}')],
+    "PR27 protocollo: inventario senza la componente": [(PR, '                    semi.add(hashlib.sha256(f"{P.MASTER}:{fase}:{c}:{r}:{g}".encode()).digest())', '                    semi.add(hashlib.sha256(f"{P.MASTER}:{fase}:{c}:{r}".encode()).digest())')],
     "PI01 pilota: componente fuori dal seme": [(PI, 'chiave = f"{master}:{fase}:{cella}:{replica}:{componente}".encode()', 'chiave = f"{master}:{fase}:{cella}:{replica}".encode()')],
     "PI02 pilota: AR(1) che parte da zero": [(PI, '    z = [rnd.gauss(0.0, 1.0)]  ', '    z = [0.0]  ')],
     "PI03 pilota: innovazioni AR(1) non scalate": [(PI, '    s = math.sqrt(1 - RHO * RHO)', '    s = 1.0')],

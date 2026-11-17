@@ -244,6 +244,18 @@ class TestCellaERigaDiComando(unittest.TestCase):
                 atteso = P.intervallo_hac(g) if metodo == "hac" else P.intervallo_bootstrap(g, P.flusso(0, 1, k, 3), 99)
                 self.assertEqual(tuple(iv), atteso)
 
+    def test_errore_salvato_come_errore(self):
+        """Aggiunto dopo i mutanti (PI24 sopravvissuto, dichiarato): un errore va nel file come null, non come
+        intervallo finto."""
+        orig = P.intervallo_hac
+        try:
+            P.intervallo_hac = lambda coppie, ritardi=None: None
+            r = P.esegui_cella(4, fase=0, repliche=3, ricampionamenti=99, metodi=("hac",))
+        finally:
+            P.intervallo_hac = orig
+        self.assertEqual(r["limiti"]["hac"], [None, None, None])
+        self.assertEqual(r["hac"]["errori"], 3)
+
     def test_un_solo_metodo(self):
         r = P.esegui_cella(2, fase=0, repliche=3, ricampionamenti=99, metodi=("hac",))
         self.assertEqual(set(r["limiti"]), {"hac"})
