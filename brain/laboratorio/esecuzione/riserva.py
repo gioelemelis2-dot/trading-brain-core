@@ -49,12 +49,23 @@ def quota(alfa_tot: float, j: int, m: int = 1) -> float:
     return alfa_tot / (j * (j + 1)) / m
 
 
+def _controlla_testa(inizio: date, fine: date, alfa_tot, protetta) -> None:
+    """Gli stessi controlli alla creazione e a ogni ricostruzione (#93: un file scritto a mano non li saltava)."""
+    if fine < inizio:
+        raise ValueError(f"riserva rovesciata {inizio} → {fine}")
+    if type(alfa_tot) not in (int, float) or not 0.0 < alfa_tot < 1.0:
+        raise ValueError(f"α totale {alfa_tot!r} fuori da (0, 1)")
+    if protetta and not (inizio <= protetta[0] <= protetta[1] <= fine):
+        raise ValueError(f"parte protetta {protetta} fuori dalla riserva")
+
+
 class _Stato:
     def __init__(self, testa: dict):
         self.inizio, self.fine = _d(testa["inizio"]), _d(testa["fine"])
-        self.alfa_tot = float(testa["alfa_tot"])
         p = testa.get("protetta")
         self.protetta = (_d(p[0]), _d(p[1])) if p else None
+        _controlla_testa(self.inizio, self.fine, testa["alfa_tot"], self.protetta)
+        self.alfa_tot = float(testa["alfa_tot"])
         self.giorni = {}                       # data -> "prenotato" | "consumato" | "quarantena"
         self.prenotazioni = {}                 # id -> dict(evento, stato, autorizzazione, esito)
         self.j = 0
@@ -117,7 +128,7 @@ class _Stato:
                 raise ValueError(f"N globale = {n!r}: serve un intero ≥ 1 e non minore di {self.n_max}")
             if not isinstance(h, str) or not h:
                 raise ValueError("impronta dei dati vuota")
-            if e.get("j") != self.j + 1:
+            if type(e.get("j")) is not int or e.get("j") != self.j + 1:          # #94: True == 1, 1.0 == 1
                 raise ValueError(f"contatore j = {e.get('j')!r}, atteso {self.j + 1}")
             if abs(float(e.get("alfa_j", -1)) - quota(self.alfa_tot, self.j + 1, m)) > 1e-15:
                 raise ValueError(f"quota alfa_j = {e.get('alfa_j')!r} diversa da α_tot/[j(j+1)]/m")
@@ -164,12 +175,7 @@ def _aggiungi(registro: Path, evento: dict) -> dict:
 
 def crea(registro: Path, inizio: date, fine: date, alfa_tot: float, ora: str,
          protetta: Optional[Tuple[date, date]] = None) -> None:
-    if fine < inizio:
-        raise ValueError(f"riserva rovesciata {inizio} → {fine}")
-    if not 0.0 < alfa_tot < 1.0:
-        raise ValueError(f"α totale {alfa_tot} fuori da (0, 1)")
-    if protetta and not (inizio <= protetta[0] <= protetta[1] <= fine):
-        raise ValueError(f"parte protetta {protetta} fuori dalla riserva")
+    _controlla_testa(inizio, fine, alfa_tot, protetta)
     with _bloccato(registro):
         if Path(registro).exists():
             raise ValueError(f"{registro}: registro della riserva già creato")
