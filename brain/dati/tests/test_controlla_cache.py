@@ -181,3 +181,13 @@ class TestConfrontoBidAsk(unittest.TestCase):
             with contextlib.redirect_stdout(io.StringIO()):
                 rc = CC.main([str(b), "--ask", str(a_), "--inizio", "2010-01-01", "--fine", "2010-01-01"])
             self.assertEqual(rc, 1)
+
+
+class TestPeriodoInvertito(unittest.TestCase):
+    def test_periodo_invertito_rifiutato(self):
+        """#74 (revisione notturna): --inizio dopo --fine controllava zero giorni."""
+        import contextlib, io, tempfile
+        with tempfile.TemporaryDirectory() as d, contextlib.redirect_stdout(io.StringIO()), \
+                contextlib.redirect_stderr(io.StringIO()):
+            self.assertEqual(CC.main([d, "--inizio", "2023-01-01", "--fine", "2005-01-01"]), 2)
+

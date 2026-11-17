@@ -2,6 +2,7 @@
 Trascrizioni finte nei due formati (Antigravity e Claude Code). Uso (dalla radice del repository):
   python3 -s -B -W error -m unittest brain.governance.censimento.test_riconta
 """
+import contextlib
 import importlib.util
 import io
 import json
@@ -223,6 +224,25 @@ class TestR12bis(unittest.TestCase):
             self.assertNotIn(vietato, testo)
         self.assertIn("/repo/brain/note.md", testo)
         self.assertIn("Content", testo)                       # si dice QUALI campi c'erano, non cosa contenevano
+
+
+class TestRevisioneNotturna(unittest.TestCase):
+    def test_comandi_su_piu_righe(self):
+        """#75: nel JSON l'a capo diventa «\\n» e l'interprete subito dopo non era visto."""
+        with tempfile.TemporaryDirectory() as d:
+            f = Path(d) / "c.jsonl"
+            righe = [{"type": "assistant", "message": {"content": [
+                {"type": "tool_use", "name": "Bash", "input": {"command": "cd /repo\npython3 -m brain.x"}},
+                {"type": "tool_use", "name": "Bash", "input": {"command": "a\n./binario"}},
+                {"type": "tool_use", "name": "Bash", "input": {"command": "x\tpython3 y.py"}}]}}]
+            f.write_text("\n".join(json.dumps(x) for x in righe) + "\n")
+            self.assertEqual(len(R.esamina_file(f)["esecuzioni"]), 3)
+
+    def test_percorso_inesistente_rifiutato(self):
+        """#76: un percorso inesistente era ignorato in silenzio (audit apparentemente completo)."""
+        buf = io.StringIO()
+        with redirect_stdout(buf), contextlib.redirect_stderr(io.StringIO()):
+            self.assertEqual(R.main(["/percorso/che/non/esiste"]), 2)
 
 
 if __name__ == "__main__":

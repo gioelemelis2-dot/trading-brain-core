@@ -392,6 +392,15 @@ class TestScaricaCache(unittest.TestCase):
                                pausa=lambda: None, stampa=lambda *a, **k: righe.append(str(a[0])))
         self.assertTrue(any("2009-06-08" in r and "HTTP 503" in r and "BID" in r for r in righe), righe)
 
+    def test_il_fermo_per_file_non_valido_non_mostra_prezzi(self):
+        """#73 (revisione notturna): il messaggio di decodifica conteneva i quattro prezzi del record."""
+        import lzma, re
+        incoerente = lzma.compress(DK.RECORD.pack(0, 2000000, 2000001, 2000500, 2000002, 1.0), format=lzma.FORMAT_ALONE)
+        with self.assertRaises(SC.Fermo) as e:
+            self.scarica(Finta({date(2009, 6, 8): incoerente}), fine=date(2009, 6, 8))
+        self.assertIsNone(re.search(r"\d+\.\d{2,}", str(e.exception)), str(e.exception))
+        self.assertIn("non valido", str(e.exception))
+
     def test_file_danneggiato_dal_server_non_entra_in_cache(self):
         with self.assertRaises(SC.Fermo):
             self.scarica(Finta({date(2009, 6, 8): b"non lzma"}), fine=date(2009, 6, 8))
