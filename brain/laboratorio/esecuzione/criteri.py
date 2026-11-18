@@ -141,7 +141,8 @@ def verifica(tr: List[dict], n_prove: int, dsr_min: float = 0.95, quota_anni: fl
     nel registro, T = numero di trade, asimmetria e curtosi degli R per trade.
     V (varianza degli Sharpe delle prove) come in backtester/dsr.py: max(1/(T − 1), varianza empirica degli Sharpe
     `sharpe_prove` delle ALTRE varianti eseguite sullo stesso periodo più quello di questa)."""
-    if anni is not None and not list(anni):                             # #110: valori non ammessi
+    anni = None if anni is None else list(anni)                        # #114: un generatore si leggerebbe una volta
+    if anni is not None and not anni:                                   # #110: valori non ammessi
         raise ValueError("verifica: elenco degli anni vuoto")
     if sharpe_prove is not None and not all(isinstance(x, (int, float)) for x in sharpe_prove):
         raise ValueError(f"verifica: Sharpe delle prove non numerici: {sharpe_prove!r}")
