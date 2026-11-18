@@ -733,3 +733,4 @@ Nulla di questo tocca il candidato `8e51ce9` su cui lavora R15.
   3. **GBPJPY è un mercato nuovo:** servono DA-27, scaricamento, stesse date dell'oro e adattamento degli strumenti.
 - **Rischio delle strategie pubblicate:** l'autore le ha provate quasi certamente sugli anni che per noi sono riserva.
 - **Messaggio 7 al DGS** pronto (`collaborazione/da-claude/direttore-sicurezza/10-MESSAGGIO-7-STRATEGIE-E-GBPJPY.md`).
+- **Separazione dei ruoli, primo passo:** il titolare analizza le strategie in una **chat separata** di ChatGPT; il messaggio 7 va nella chat del DGS, con la nota sulla memoria fra chat. Nella chat delle strategie il titolare incolla le regole: dati e grafici solo dal 15/11/2023, provenienza di ogni idea, regole meccaniche, nessun ruolo di revisione. In attesa: elenco degli anni di GBPJPY già guardati.
