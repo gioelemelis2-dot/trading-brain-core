@@ -76,12 +76,14 @@ M = {
     "PI07 pilota: HAC senza pesi di Bartlett": [(PI, '        v += 2 * (1 - h / (L + 1)) * sum(', '        v += 2 * sum(')],
     "PI08 pilota: HAC con un ritardo in meno": [(PI, '    for h in range(1, L + 1):', '    for h in range(1, L):')],
     "PI09 pilota: HAC con K medio non al quadrato": [(PI, '    se = math.sqrt(v / (n * kbar * kbar))', '    se = math.sqrt(v / (n * kbar))')],
-    "PI10 pilota: varianza non positiva accettata": [(PI, '    if not v > 0 or not math.isfinite(v):', '    if not v >= 0 or not math.isfinite(v):')],
+    # PI10 «pilota: varianza non positiva accettata» DICHIARATO EQUIVALENTE il 18/11: dopo #112, con V = 0 l'intervallo
+    # ha ampiezza nulla e intervallo_valido lo rifiuta comunque; V < 0 non si presenta con i pesi di Bartlett. Il
+    # controllo resta per evitare la radice di un numero negativo per arrotondamento.
     "PI11 pilota: ritardi predefiniti sbagliati": [(PI, '    return math.floor(4 * (d / 100) ** (2 / 9))', '    return math.floor(3 * (d / 100) ** (2 / 9))')],
     "PI12 pilota: bootstrap non circolare": [(PI, '    estese = coppie + coppie[:blocco - 1]', '    estese = coppie + [(0.0, 0)] * (blocco - 1)')],
     "PI13 pilota: ricampionamento con ΣK = 0 saltato": [(PI, '        if tk == 0:\n            return None\n        medie.append', '        if tk == 0:\n            continue\n        medie.append')],
     "PI14 pilota: rango del quantile spostato": [(PI, '    q = lambda p: o[math.ceil(p * ricampionamenti) - 1]', '    q = lambda p: o[min(len(o) - 1, math.ceil(p * ricampionamenti))]')],
-    "PI15 pilota: intervallo percentile al posto del basic": [(PI, '    return 2 * mu - q(1 - A), 2 * mu - q(A)', '    return q(A), q(1 - A)')],
+    "PI15 pilota: intervallo percentile al posto del basic": [(PI, '    return intervallo_valido(2 * mu - q(1 - A), 2 * mu - q(A))', '    return intervallo_valido(q(A), q(1 - A))')],
     "PI16 pilota: promozione con limite vicino alla soglia": [(PI, '            c["promosse" if lo > SOGLIA else', '            c["promosse" if lo >= SOGLIA - 0.05 else')],
     "PI17 pilota: copertura solo dal basso": [(PI, '            c["coperture"] += lo <= mu <= hi', '            c["coperture"] += lo <= mu')],
     "PI18 pilota: bootstrap sul flusso dei dati": [(PI, 'intervallo_bootstrap(coppie, flusso(fase, cella, r, 3), ricampionamenti)', 'intervallo_bootstrap(coppie, flusso(fase, cella, r, 0), ricampionamenti)')],

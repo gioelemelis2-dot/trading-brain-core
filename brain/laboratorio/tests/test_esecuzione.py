@@ -230,7 +230,7 @@ class TestMinoriR15(unittest.TestCase):
     def test_valori_non_ammessi_rifiutati_con_un_messaggio(self):
         """#110: anni vuoti, Sharpe mancanti e percentili fuori da (0, 1] davano errori generici o valori sbagliati."""
         tr = [trade(2005, 1, 1.0), trade(2005, 2, -1.0)]
-        with self.assertRaises(ValueError):
+        with self.assertRaisesRegex(ValueError, "anni vuoto"):            # K15c: prima bastava un ValueError qualsiasi
             K.verifica(tr, n_prove=2, anni=[])
         tr = [trade(2005 + k // 12, 1 + k % 12, 1.5 if k % 2 else -1.0) for k in range(60)]
         with self.assertRaises(ValueError):
