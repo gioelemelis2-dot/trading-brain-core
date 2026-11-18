@@ -57,3 +57,10 @@
   2. La cella 11 (perdite rare) è quella che impone il margine: a Δ = 0 le false promozioni sono 12,5% con il bootstrap e 6,5% con HAC.
   3. Con Δ = 0,05 la promozione richiede L > 0,20 R. A D = 1.000 la potenza descrittiva è circa 2,5% a μ = 0,20, 72% (iid) e 53% (AR) a μ = 0,30. Il metodo è prudente, ma con molte sedute serve un vantaggio grande. Se usarlo davvero resta una decisione del titolare (DGS-07 §2a.6).
   4. La scelta fra bootstrap e HAC si è decisa per 5 promozioni su circa 420 (spareggio sulla somma). HAC costa molto meno da calcolare.
+
+## 7. Corsa della fase 2 finita, impronte registrate PRIMA del verdetto
+
+- Lanciata da `7ac484e` con `pilota_ia02.py` `717e5599…`, `--fase 2 --repliche 12000 --metodi bootstrap`. Uscita 0, nessun messaggio d'errore.
+- File dei limiti: 6.284.691 byte, SHA-256 `564eba71ab2ad0ef49ab37eff2022d02fbdf10c843c4f460f4097f6ddc0f7b1b`. Archiviato compresso in `risultati/ia02/limiti_fase2.json.gz`. Tabella descrittiva, SHA-256 `21f419d6b3d3bc2f9f41c416f23da2187be62da18703c7e0bc612bb779de34bd`.
+- Intestazione: fase 2, 12.000 repliche, B = 3.999, master 2026111706, 12 celle, solo bootstrap.
+- Prossimo passo, meccanico: `protocollo_ia02 --fase 2 --candidato bootstrap:0.05`, con inventario dei semi e 216 confronti. Un solo tentativo.
