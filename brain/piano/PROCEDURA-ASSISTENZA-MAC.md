@@ -56,3 +56,4 @@
 - **Prove, in ordine:** altra porta e altro cavo; aggiornamento di macOS; spegnimento completo, attesa di 30 s e riaccensione. Le ultime due solo dopo la fine dell'ASK, oppure rilanciando poi lo scaricamento.
 - **Per i tecnici:** mostrare le righe di `pmset -g log` citate sopra.
 - **18/11, pomeriggio:** aggiornato a macOS 14.8.9. Da controllare nei giorni seguenti: `pmset -g log | grep "Low Power Sleep" | tail -n 5`. Se compaiono stop nuovi, si passa all'assistenza.
+- **Precisazione del titolare (18/11):** alle 13:37 il Mac era **staccato** dalla corrente. È andato in ibernazione a batteria con la carica letta al 91%. Il caricatore è escluso; il sospetto è la **lettura della carica** (firmware o sensore). Prova prevista dopo l'aggiornamento e lo spegnimento completo: un'ora o due a batteria con il registratore `~/batteria.log` acceso (una riga al minuto con `pmset -g batt`). Se la carica salta ancora → assistenza, con le righe del registro come prova.
