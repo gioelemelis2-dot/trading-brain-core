@@ -227,6 +227,13 @@ class TestMinoriR15(unittest.TestCase):
         self.assertEqual(e["criteri"][3]["valore"][1], 0.0)
         self.assertFalse(e["criteri"][3]["passa"])
 
+    def test_anni_da_un_generatore_come_da_una_lista(self):
+        """#114 (R16-01 di Gemini): `anni` è un Iterable usato più volte; un generatore non deve esaurirsi."""
+        tr = [trade(2005 + k // 12, 1 + k % 12, 1.5 if k % 2 else -1.0) for k in range(60)]
+        da_lista = K.verifica(tr, n_prove=2, anni=list(range(2005, 2010)))
+        da_generatore = K.verifica(tr, n_prove=2, anni=(a for a in range(2005, 2010)))
+        self.assertEqual(da_generatore, da_lista)
+
     def test_valori_non_ammessi_rifiutati_con_un_messaggio(self):
         """#110: anni vuoti, Sharpe mancanti e percentili fuori da (0, 1] davano errori generici o valori sbagliati."""
         tr = [trade(2005, 1, 1.0), trade(2005, 2, -1.0)]
