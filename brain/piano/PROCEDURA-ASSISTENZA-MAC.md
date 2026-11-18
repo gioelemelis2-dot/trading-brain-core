@@ -44,3 +44,14 @@
 2. Si controlla l'impronta dello zip (`shasum -a 256`), che deve coincidere con quella registrata qui, e lo si estrae in `brain/dati/` senza aprire i file.
 3. Claude prepara i comandi di controllo: `controlla_cache` su BID e ASK (solo conteggi), confrontati con quelli registrati, e il riavvio dello scaricamento se l'ASK non era finito.
 4. Si registra l'evento nel REGISTRO-MODIFICHE. Copiare ed estrarre file non è una lettura dei dati: il censimento della riserva non cambia.
+
+## Diagnosi del 18/11/2026 (registri di sistema letti dal titolare con Claude)
+
+- **Il Mac non si spegne, si iberna:** nessun «Previous shutdown cause» negli ultimi 3 giorni. Lo scaricamento è sopravvissuto con gli stessi processi.
+- **Causa dell'ibernazione:** «Low Power Sleep», con valori di carica impossibili:
+  - 18/11 13:37:18 «Using Batt (Charge:91%)», poi alle 13:37:56 «Wake … Using AC (Charge:11%)»;
+  - 17/11: 10% allo stop e 94% pochi minuti dopo.
+- **Batteria sana:** 55 cicli, Condition Normal, capacità massima 100%. Caricatore da 61 W collegato.
+- **Ipotesi:** il collegamento al caricatore si interrompe per un attimo (cavo, connettore o porta), oppure il sensore della carica dà letture sbagliate.
+- **Prove, in ordine:** altra porta e altro cavo; aggiornamento di macOS; spegnimento completo, attesa di 30 s e riaccensione. Le ultime due solo dopo la fine dell'ASK, oppure rilanciando poi lo scaricamento.
+- **Per i tecnici:** mostrare le righe di `pmset -g log` citate sopra.
