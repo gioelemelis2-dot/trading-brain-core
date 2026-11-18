@@ -711,3 +711,15 @@ Nulla di questo tocca il candidato `8e51ce9` su cui lavora R15.
   - Mutanti di `criteri.py`: **33/33 su 3.13 e su 3.9**.
   - **Nuovo candidato per R17: `e476a9a`.** Rispetto a `303890b` nel perimetro cambia solo `criteri.py` (due righe).
 - **Messaggio 6 al DGS:** il titolare l'ha incollato in ChatGPT; si attende DGS-08.
+
+## 2026-11-18 · v1.58 (DGS-08 ricevuto)
+
+- **DGS-08** archiviato in `collaborazione/da-chatgpt/DGS-20261118-08-riscontro-ia02.md`. Concorda con selezione e verdetto della fase 2 (ricalcoli indipendenti); elenca ciò che resta attestato da Claude (impegno §9).
+- **Errata di Claude:** l'osservazione «un metodo tarato non può passare; nessuno l'ha scritto» era sbagliata due volte. Passare è improbabile, non impossibile (4,14% in fase 1, 0,099% in fase 2), e la prudenza era scritta in DGS-07 §2a.7. È la seconda volta che esagero in questo modo: lo stesso errore del «non passa mai», già corretto in DGS-06.
+- **Opzioni per la regola futura di IA-02 (DGS-08 §4c), decisione del titolare:**
+  1. bootstrap con Δ = 0,05 così com'è;
+  2. più sedute;
+  3. famiglia di strategie senza perdite rare;
+  4. nuovo protocollo.
+  Nessuna richiede di riaprire il verdetto.
+- **Regole di spesa (DGS-08 §4d):** spiegate con l'esempio di α = 5%; restano da decidere.

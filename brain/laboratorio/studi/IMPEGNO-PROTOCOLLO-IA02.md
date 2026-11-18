@@ -76,3 +76,16 @@
   - non certifica altri processi, altre numerosità o una strategia reale;
   - non dà al metodo una potenza utile: con Δ = 0,05 e 1.000 sedute serve un vantaggio vero intorno a +0,30 R per essere promossi con buona probabilità.
   - Usarlo nella regola futura, e con quale margine, resta una decisione del titolare.
+
+## 9. Riscontro del DGS (DGS-08, 18/11) ed errata di Claude
+
+- **DGS-08 concorda con la selezione e con il verdetto meccanico** sui numeri comunicati. Ha ricalcolato in modo indipendente i limiti 60/61 e 248/249, lo spareggio, i dieci limiti della fase 2 e le potenze. Restano **attestazioni di Claude**:
+  - ammissibilità completa di HAC a Δ = 0,05;
+  - anteriorità;
+  - riconciliazione E + P + B + I = M per riga;
+  - isolamento degli stati e indifferenza all'ordine dei processi (coperta da un test; la riproducibilità è chiesta a Gemini in R17, compito B).
+- **Errata di Claude sull'osservazione 1 di §6 (e 3a del messaggio 6):**
+  - «un metodo tarato esattamente **non può** passare» è **sbagliato**. Al 2,5% vero il singolo controllo passa con probabilità 4,14% in fase 1 e 0,099% in fase 2: è improbabile, non impossibile. È lo stesso tipo di errore del «non passa mai» già corretto dal DGS-06;
+  - «nessuno l'ha scritto in chiaro» è **falso**: DGS-07 §2a.7 riportava la probabilità di passare al 2,5% (0,0993%), e DGS-06 §1.2 trattava il caso p = a. La prudenza del criterio era voluta e documentata.
+- **Osservazione nuova del DGS (3c):** nella cella 12 (perdite rare, μ = +0,20) il limite inferiore grezzo supera la media vera nel 6,84% dei casi, invece del 2,5% nominale. Il limite grezzo, preso da solo, è ottimista in quello scenario. Il verdetto riguarda invece gli attraversamenti con margine.
+- **Per DGS-08, il DGS-07 ha esaurito il suo unico tentativo confermativo.** Scegliere HAC, togliere la cella 11 o cambiare Δ, soglia o numerosità **su queste repliche** violerebbe §2a.6. Ogni opzione futura richiede un protocollo nuovo.
