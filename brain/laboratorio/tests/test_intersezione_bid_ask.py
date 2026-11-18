@@ -141,6 +141,19 @@ class TestSeduta(Base):
         self.assertIn("2024-12-27", giorni)                             # venerdì aperto, senza file: va contato
 
 
+class TestPercentiliSoloSedute(Base):
+    def test_le_vigilie_non_entrano_nei_percentili_annuali(self):
+        """Aggiunto dopo R16 (mutante M-R16-01 di Gemini sopravvissuto, dichiarato): i percentili dell'anno usano solo
+        le sedute piene; una vigilia completa (175/175) non deve alzarli."""
+        self.giorno(date(2024, 12, 23), bid=300, ask=300)               # lunedì: 300 su 525
+        self.giorno(date(2024, 12, 24), bid=175, ask=175)               # vigilia completa
+        self.scrivi(date(2024, 12, 23), date(2024, 12, 24))
+        a = X.esamina(self.cache, date(2024, 12, 23), date(2024, 12, 24))["anni"]["2024"]
+        self.assertEqual((a["sedute"], a["vigilie"]), (1, 1))
+        self.assertEqual(a["quota_comuni"], X.percentili([round(300 / 525, 4)]))
+        self.assertEqual(a["buco_max"], X.percentili([225]))
+
+
 class TestAnniEDiagnostica(Base):
     def setUp(self):
         super().setUp()

@@ -35,6 +35,9 @@ CO = "laboratorio/studi/collaudo_ia02.py"
 PI = "laboratorio/studi/pilota_ia02.py"
 PR = "laboratorio/studi/protocollo_ia02.py"
 M = {
+    "IX19 intersezione: vigilie nei percentili annuali (M-R16-01 di Gemini)": [(IX, '        delle = [s for s in sedute if s["giorno"][:4] == anno]', '        delle = [s for s in sedute + vigilie if s["giorno"][:4] == anno]')],
+    "CO12 collaudo: media del bootstrap divisa per n (M-R16-03 di Gemini)": [(CO, '        medie.append(tot / (blocchi * b))', '        medie.append(tot / n)')],
+    "PI26 pilota: distorsione senza - μ (M-R16-06 di Gemini)": [(PI, '        c["distorsione"] = (sum(stime) / len(stime) - mu) if stime else None', '        c["distorsione"] = (sum(stime) / len(stime)) if stime else None')],
     "PI21 pilota: ampiezza nulla accettata (#112)": [(PI, '    if not (math.isfinite(lo) and math.isfinite(hi)) or not lo < hi:', '    if not (math.isfinite(lo) and math.isfinite(hi)) or not lo <= hi:')],
     "PI22 pilota: limiti non finiti accettati (#112)": [(PI, '    if not (math.isfinite(lo) and math.isfinite(hi)) or not lo < hi:', '    if not lo < hi:')],
     "PI23 pilota: HAC fuori dal contratto": [(PI, '    return intervallo_valido(mu - Z * se, mu + Z * se)', '    return mu - Z * se, mu + Z * se')],

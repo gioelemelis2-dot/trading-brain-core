@@ -114,6 +114,18 @@ class TestCoperturaDopoIMutanti(unittest.TestCase):
                        / (blocchi * b) for _ in range(R))
         self.assertAlmostEqual(C.limite_bootstrap(x, a, R, random.Random(3)), medie[math.ceil(a * R) - 1], places=9)
 
+    def test_quantile_del_bootstrap_con_blocco_che_non_divide_n(self):
+        """Aggiunto dopo R16 (mutante M-R16-03 di Gemini sopravvissuto, dichiarato): con b che non divide n la media si
+        fa su blocchi·b osservazioni, non su n."""
+        x = C.serie_ar1(100, 0.15, 1.25, 0.0, random.Random(8))
+        R, a, b = 199, 0.025, 7
+        rnd = random.Random(3)
+        blocchi = math.ceil(len(x) / b)
+        medie = sorted(sum(sum(x[i:i + b]) for i in [rnd.randint(0, len(x) - b) for _ in range(blocchi)])
+                       / (blocchi * b) for _ in range(R))
+        self.assertAlmostEqual(C.limite_bootstrap(x, a, R, random.Random(3), blocco=b), medie[math.ceil(a * R) - 1],
+                               places=9)
+
     def test_test_ingenuo_al_confine_con_dati_indipendenti(self):
         """Con trade indipendenti il test ingenuo al confine promuove circa il 2,5% (teoria del DGS)."""
         r = C.cella(n=1000, mu=0.15, rho=0.0, metodo="ingenuo", repliche=2000, seme=17)

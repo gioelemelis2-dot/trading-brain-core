@@ -244,6 +244,13 @@ class TestCellaERigaDiComando(unittest.TestCase):
                 atteso = P.intervallo_hac(g) if metodo == "hac" else P.intervallo_bootstrap(g, P.flusso(0, 1, k, 3), 99)
                 self.assertEqual(tuple(iv), atteso)
 
+    def test_distorsione_dell_hac(self):
+        """Aggiunto dopo R16 (mutante M-R16-06 di Gemini sopravvissuto, dichiarato): distorsione = media dei centri HAC
+        meno μ vera."""
+        r = P.esegui_cella(1, fase=0, repliche=6, ricampionamenti=99, metodi=("hac",))
+        centri = [(lo + hi) / 2 for lo, hi in (P.intervallo_hac(P.genera(1, 0, k)) for k in range(1, 7))]
+        self.assertAlmostEqual(r["hac"]["distorsione"], sum(centri) / 6 - 0.10, places=12)
+
     def test_errore_salvato_come_errore(self):
         """Aggiunto dopo i mutanti (PI24 sopravvissuto, dichiarato): un errore va nel file come null, non come
         intervallo finto."""
