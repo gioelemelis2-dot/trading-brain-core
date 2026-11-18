@@ -698,3 +698,16 @@ Nulla di questo tocca il candidato `8e51ce9` su cui lavora R15.
 - **Contatore D-24: 1 su 2.** R16 è il primo giro pulito, da confermare dal titolare per il caso di #112, fuori perimetro.
 - **ASK:** al 30/12/2011 la mattina del 18/11, circa 37%. **Errata di Claude:** la stima «10–12 ore» del 17/11 era troppo ottimista; a questo ritmo, con molti 503 di Dukascopy, servono ancora circa 1,5–2 giorni.
 - **Osservazione per il titolare:** i rapporti di Gemini contengono percorsi locali del Mac con il nome dell'utente (anche nei giri precedenti). I file di Gemini non si modificano (D-11). Proposta: nel prossimo mandato chiedere di scrivere `~` al posto del percorso completo. L'esportazione per il DGS li redige già.
+
+## 2026-11-18 · v1.57 (mattina: decisioni del titolare, #114 corretto)
+
+- **Decisioni del titolare:**
+  - D-26: #112 non conta per D-24, contatore **1 su 2**;
+  - D-27: #114 si corregge subito;
+  - D-28: percorsi con `~` nei mandati a Gemini;
+  - D-29 e D-30: trascritte DA-26 (partizione) e DA-29 (obiettivi), che erano decise ma figuravano solo fra le aperte.
+- **#114 corretto in TDD** (test rosso nel commit delle decisioni, codice in `e476a9a`): `criteri.verifica` legge `anni` una volta sola.
+  - Nuovo mutante K15e; K15c riallacciato al testo nuovo.
+  - Mutanti di `criteri.py`: **33/33 su 3.13 e su 3.9**.
+  - **Nuovo candidato per R17: `e476a9a`.** Rispetto a `303890b` nel perimetro cambia solo `criteri.py` (due righe).
+- **Messaggio 6 al DGS:** il titolare l'ha incollato in ChatGPT; si attende DGS-08.

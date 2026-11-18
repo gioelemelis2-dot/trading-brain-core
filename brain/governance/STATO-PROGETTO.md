@@ -12,7 +12,7 @@ Il banco di prova (simulatore, criteri, sigillo, registri, scaricatore) è **cos
 ## Contatori
 | Cosa | Stato |
 |---|---|
-| Difetti registrati | **115** (24 critici, 58 importanti, 33 minori; aggiornato il 18/11: #112–#115; aperto #114, minore nel perimetro, decisione del titolare), #92 dichiarato, #94 b in DA-31, gli altri corretti il 17/11, trovati da Gemini, DGS, revisori esterni, utente e Claude. Tutti corretti e provati, tranne **#42** (difetto della scheda H-002: parcheggiato con lei; regola obbligatoria nel modello H-003) |
+| Difetti registrati | **115** (24 critici, 58 importanti, 33 minori; aggiornato il 18/11: #112–#115; tutti corretti; #114 corretto in `e476a9a`, nuovo candidato per R17), #92 dichiarato, #94 b in DA-31, gli altri corretti il 17/11, trovati da Gemini, DGS, revisori esterni, utente e Claude. Tutti corretti e provati, tranne **#42** (difetto della scheda H-002: parcheggiato con lei; regola obbligatoria nel modello H-003) |
 | Giri di revisione | Gemini: R7, R8, R11, R12-bis, R13, BANCO-02, R14 (+ repliche); DGS: 01–04; revisori separati di Claude (16 e 17/11: dati e governance, 13 rilievi; laboratorio, in corso); **ogni giro ha trovato difetti importanti** |
 | Giri puliti di fila (regola del sigillo) | **1 su 2** (18/11): R16 di Gemini sul candidato `303890b` senza difetti critici o importanti. Da confermare dal titolare: #112 (fuori perimetro) non conta. Serve R17. Contano i rilievi E e M a costo basso (D-24); prima della verifica, un giro su tutte le manomissioni |
 | Test automatici | 366 (dati, laboratorio, governance) (dati, laboratorio, governance) + 77 Guardian, verdi su Python 3.13 **e** 3.9, rete bloccata |
