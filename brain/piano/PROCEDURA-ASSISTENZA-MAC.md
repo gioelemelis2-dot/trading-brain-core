@@ -17,7 +17,7 @@
 
 | Data | File | Dimensione | SHA-256 | Contenuto |
 |---|---|---|---|---|
-| 18/11/2026 13:42 | `~/Desktop/dati_reali_20261118.zip` | 136 MB | `0aec0b91f6a6f1633b301572261ebef534f626c4af488acc8f41f19e10d14113` | `brain/dati/reali/` completo: BID 2005–2023 controllato, sviluppo, ASK parziale (fino al 02/02/2013 circa), registri dello scaricamento |
+| 18/11/2026 13:42 | `~/Desktop/dati_reali_20261118.zip`; **copia nel cloud del titolare il 18/11** (confermata dal titolare) | 136 MB | `0aec0b91f6a6f1633b301572261ebef534f626c4af488acc8f41f19e10d14113` | `brain/dati/reali/` completo: BID 2005–2023 controllato, sviluppo, ASK parziale (fino al 02/02/2013 circa), registri dello scaricamento |
 
 **Regola:** lo zip contiene la riserva sigillata. Si copia, non si apre e non si guarda.
 
