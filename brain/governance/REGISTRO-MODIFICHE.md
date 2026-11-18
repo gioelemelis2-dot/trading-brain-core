@@ -741,3 +741,13 @@ Nulla di questo tocca il candidato `8e51ce9` su cui lavora R15.
 - **Copia di sicurezza di `brain/dati/reali/`:** `dati_reali_20261118.zip`, 136 MB, SHA-256 `0aec0b91f6a6f1633b301572261ebef534f626c4af488acc8f41f19e10d14113`. Fatta dal titolare con zip, senza aprire i file.
 - **Procedura prima e dopo l'assistenza:** `piano/PROCEDURA-ASSISTENZA-MAC.md`. Claude la richiama quando il titolare porta il Mac in assistenza.
 - **Copia dei dati fuori dal Mac:** il titolare ha copiato `dati_reali_20261118.zip` nel proprio cloud. **Diagnosi software:** macOS 14.5 (maggio 2024), modalità risparmio energetico sempre attiva, nessuna app che limita la carica. Prossimi passi: risparmio energetico «Solo con batteria», aggiornamento di macOS, nuovo avvio dello scaricamento ASK, controllo di «Low Power Sleep» nei giorni successivi.
+
+## 2026-11-18 · v1.61 (DGS-09: idee pubblicate, GBPJPY, ruoli)
+
+- **DGS-09** archiviato (`collaborazione/da-chatgpt/DGS-20261118-09-idee-pubblicate-gbpjpy-ruoli.md`).
+- **Fatto importante, segnalato dal DGS:** nella chat del DGS è arrivato un riassunto del lavoro che il titolare sta facendo nella chat delle strategie (il video su GBPJPY). La memoria di ChatGPT passa informazioni fra le chat, quindi **due chat separate non bastano** per una revisione cieca. Proposte del DGS: progetti distinti con memoria limitata al progetto, oppure chat temporanea; per le schede che richiedono cecità, un revisore che non le ha progettate.
+- **Istituiti** su proposta del DGS:
+  - registro della provenienza delle idee (`laboratorio/ipotesi/PROVENIENZA-IDEE.md`), prima riga retrospettiva P-001 per il video su GBPJPY;
+  - censimento dell'esposizione a GBPJPY (`governance/censimento/CENSIMENTO-GBPJPY.md`).
+  Entrambi da completare dal titolare.
+- **GBPJPY** resta pianificazione finché non si chiude la base sull'oro (sequenza in 6 passi, DGS-09 §2a). D-31 vale per GBPJPY solo con una corrispondenza motivata al dominio collaudato; se cambia una condizione materiale (quota, durata, stress), serve una giustificazione o un collaudo specifico.
