@@ -752,3 +752,8 @@ Nulla di questo tocca il candidato `8e51ce9` su cui lavora R15.
   Entrambi da completare dal titolare.
 - **GBPJPY** resta pianificazione finché non si chiude la base sull'oro (sequenza in 6 passi, DGS-09 §2a). D-31 vale per GBPJPY solo con una corrispondenza motivata al dominio collaudato; se cambia una condizione materiale (quota, durata, stress), serve una giustificazione o un collaudo specifico.
 - **Mac aggiornato a macOS 14.8.9 (23J631)** il 18/11 pomeriggio. Prima, gli installatori di app già installate o mai installate sono stati spostati nel Cestino; le app restano. Un primo controllo di Claude sulle app installate era sbagliato (`ls` con due percorsi dava «manca» anche per app presenti): fermato prima di qualunque azione e corretto. **Scaricamento ASK ripartito** (nuovi processi) dal 30/05/2013, con il primo tentativo in URLError subito dopo il riavvio; i tentativi successivi lo gestiscono.
+- **Costi del broker, primo passo (Gate 1, DA-25):** il titolare è entrato in MT5 con il conto Raw reale a saldo 0, in sola lettura. Specifiche di XAUUSD.cyr registrate in `dati/costi/SPECIFICHE-FPMARKETS-XAUUSD-20261118.md`:
+  - commissione 6 USD per lotto all'ingresso, da confermare con un estratto conto;
+  - margine pari a una leva 1:20;
+  - spread istantaneo di 0,40 USD.
+  Lo spread per ora del giorno richiede l'esportazione dei tick dalla versione desktop di MT5.
