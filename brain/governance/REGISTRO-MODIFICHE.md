@@ -723,3 +723,13 @@ Nulla di questo tocca il candidato `8e51ce9` su cui lavora R15.
   4. nuovo protocollo.
   Nessuna richiede di riaprire il verdetto.
 - **Regole di spesa (DGS-08 §4d):** spiegate con l'esempio di α = 5%; restano da decidere.
+
+## 2026-11-18 · v1.59 (strategie esterne e GBPJPY)
+
+- **D-31:** il titolare sceglie il metro severo in verifica (opzione A di DGS-08).
+- **Il titolare sta analizzando strategie con ChatGPT, anche su GBPJPY.** Claude ha segnalato tre punti:
+  1. **Grafici di GBPJPY** solo dal 15/11/2023 in poi, come per l'oro, e censimento di quanto già visto: altrimenti la riserva di GBPJPY si brucia.
+  2. **Conflitto di ruolo:** il DGS non dovrebbe giudicare il metodo di strategie che ha contribuito a progettare. Opzioni al titolare: un altro revisore (DeepSeek o Gemini) per quelle schede, oppure il DGS fuori dalla progettazione.
+  3. **GBPJPY è un mercato nuovo:** servono DA-27, scaricamento, stesse date dell'oro e adattamento degli strumenti.
+- **Rischio delle strategie pubblicate:** l'autore le ha provate quasi certamente sugli anni che per noi sono riserva.
+- **Messaggio 7 al DGS** pronto (`collaborazione/da-claude/direttore-sicurezza/10-MESSAGGIO-7-STRATEGIE-E-GBPJPY.md`).
