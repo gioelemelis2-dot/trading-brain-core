@@ -12,7 +12,7 @@ Il banco di prova (simulatore, criteri, sigillo, registri, scaricatore) è **cos
 ## Contatori
 | Cosa | Stato |
 |---|---|
-| Difetti registrati | **111** (24 critici, 57 importanti, 30 minori; conteggio del 17/11 pomeriggio), #92 dichiarato, #94 b in DA-31, gli altri corretti il 17/11, trovati da Gemini, DGS, revisori esterni, utente e Claude. Tutti corretti e provati, tranne **#42** (difetto della scheda H-002: parcheggiato con lei; regola obbligatoria nel modello H-003) |
+| Difetti registrati | **112** (24 critici, 58 importanti, 30 minori; aggiornato il 18/11: #112, errore di Claude nel pilota, corretto), #92 dichiarato, #94 b in DA-31, gli altri corretti il 17/11, trovati da Gemini, DGS, revisori esterni, utente e Claude. Tutti corretti e provati, tranne **#42** (difetto della scheda H-002: parcheggiato con lei; regola obbligatoria nel modello H-003) |
 | Giri di revisione | Gemini: R7, R8, R11, R12-bis, R13, BANCO-02, R14 (+ repliche); DGS: 01–04; revisori separati di Claude (16 e 17/11: dati e governance, 13 rilievi; laboratorio, in corso); **ogni giro ha trovato difetti importanti** |
 | Giri puliti di fila (regola del sigillo) | **0 su 2.** R15 non conta (lettura stretta di Claude su delega; parere del DGS in DGS-07 §2e: coerente, ma non imposta da D-24). R16 di Gemini in corso sul candidato `303890b`. Contano i rilievi E e M a costo basso (D-24); prima della verifica, un giro su tutte le manomissioni |
 | Test automatici | 366 (dati, laboratorio, governance) (dati, laboratorio, governance) + 77 Guardian, verdi su Python 3.13 **e** 3.9, rete bloccata |

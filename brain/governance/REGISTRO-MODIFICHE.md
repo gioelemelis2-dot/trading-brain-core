@@ -676,3 +676,16 @@ Nulla di questo tocca il candidato `8e51ce9` su cui lavora R15.
   - Archiviato il dossier del DGS del 17/11, che mancava.
   - Errata: il Gate 1 era scritto «chiuso» ma è configurato e NON riconciliato (rilievo G-20261113-01, l'ha notato il titolare). P-11 e P-14 sono già confermate.
 - **Conto per i costi:** la demo MT5 non è disponibile per la società europea di FP Markets, né dal sito né dall'app. Il titolare ha creato una demo MT4 Raw. Opzioni da riprendere: conto MT5 Raw reale a saldo 0 in sola lettura (consigliata, con password «investor»), demo MT4 o demo cTrader. Nessun dato del conto è registrato qui.
+
+## 2026-11-18 · v1.55 (notte: mutanti completi sul candidato)
+
+- **Mutanti, corsa completa sulla punta del ramo** (perimetro identico a `303890b`), una versione di Python alla volta:
+  - `mutazioni_esecuzione`: su 3.13 la prima corsa ha dato 295/298;
+  - su 3.9: 133/133 più 164/164, cioè 297 su 297.
+- **I 3 casi della corsa su 3.13, tutti miei:**
+  - **PI15** non valido: la correzione di #112 aveva cambiato la riga che il mutante cercava (stesso tipo di errore di #105). Riallacciato.
+  - **PI10** sopravvissuto: dopo #112 il controllo `V > 0` è ridondante. **Dichiarato equivalente**, con il motivo scritto nello script.
+  - **K15c** sopravvissuto: il test di #110 accettava qualunque ValueError, e l'elenco vuoto ne produceva uno lo stesso più avanti. Il test ora controlla il messaggio. K15c non era mai stato verificato prima, perché le corse su `303890b` si erano interrotte.
+  - Dopo le correzioni: 14/14 su K15 e PI1x, sia su 3.13 sia su 3.9.
+- **Altri script, tutti al 100% su 3.13 e su 3.9:** scaricatore 51/51 (con W52), controllo della cache 20/20, riconteggio 53/53, ORB 40/40, DSR e partizione 44/44.
+- **Messaggio 6 al DGS** pronto (`collaborazione/da-claude/direttore-sicurezza/9-MESSAGGIO-6-RISULTATI-IA02.md`): risultati delle fasi 1 e 2, osservazioni, richiesta di opzioni per il titolare.
