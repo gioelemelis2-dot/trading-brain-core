@@ -661,3 +661,18 @@ Nulla di questo tocca il candidato `8e51ce9` su cui lavora R15.
 - **Pilota:** salva i limiti grezzi per replica con l'impronta della propria versione e può girare con un solo metodo. Un test prova che ordine delle celle e numero di processi non cambiano il file.
 - **Mutanti:** PI21–PI25 e PR01–PR27. Nella prova rapida è sopravvissuto PI24: nessun test vedeva un errore salvato come intervallo finto. Ho aggiunto il test dopo il mutante (dichiarato).
 - **Corsa dei mutanti su 303890b interrotta:** si è fermata al limite di tempo (circa 2,5 ore) senza risultati, perché avevo fatto girare insieme Python 3.13, Python 3.9, il pilota e i test su 4 processori. Errore di pianificazione mio. Rilanciata in sequenza, con l'uscita riga per riga.
+
+## 2026-11-18 · v1.54 (notte: collaudo IA-02 eseguito secondo DGS-07)
+
+- **Riavvio del contenitore (23:30 circa):** si sono fermati la corsa dei mutanti e la prima corsa della fase 1, che non aveva scritto nulla e quindi non è stata vista da nessuno. Tutto era già su GitHub. Rilanciata la fase 1 nella versione che salva i limiti grezzi (impegno §4).
+- **Fase 1** (3.000 repliche, 8 candidati): ammissibili solo HAC e bootstrap con Δ = 0,05. **Vince il bootstrap** per la somma delle promozioni (421 contro 416), a parità sul minimo. Candidato congelato e pubblicato prima della fase 2 (`7ac484e`).
+- **Fase 2** (12.000 repliche nuove, solo il candidato): **CONFERMATO NEL DOMINIO DEL PILOTA**. 10 controlli su 10; semi 720.000/720.000 distinti; 0 segnalazioni su 216 confronti fra flussi.
+- **Osservazioni di Claude** (impegno §6 e §8), da portare al DGS e al titolare:
+  1. La regola «U_CP ≤ 0,025» esclude un metodo tarato esattamente: serve un tasso vero intorno al 2% o meno. Si poteva dedurre prima dei risultati.
+  2. Il margine è imposto dalla cella delle perdite rare.
+  3. Con Δ = 0,05 a 1.000 sedute la potenza è circa 3% a +0,20 R e 53–72% a +0,30 R.
+  4. Fra bootstrap e HAC hanno deciso 5 promozioni su circa 420.
+- **Roadmap:** riscritta (`piano/ROADMAP-20261117.md`), con il controllo dei passaggi.
+  - Archiviato il dossier del DGS del 17/11, che mancava.
+  - Errata: il Gate 1 era scritto «chiuso» ma è configurato e NON riconciliato (rilievo G-20261113-01, l'ha notato il titolare). P-11 e P-14 sono già confermate.
+- **Conto per i costi:** la demo MT5 non è disponibile per la società europea di FP Markets, né dal sito né dall'app. Il titolare ha creato una demo MT4 Raw. Opzioni da riprendere: conto MT5 Raw reale a saldo 0 in sola lettura (consigliata, con password «investor»), demo MT4 o demo cTrader. Nessun dato del conto è registrato qui.

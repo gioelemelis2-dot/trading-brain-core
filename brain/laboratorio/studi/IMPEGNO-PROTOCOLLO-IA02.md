@@ -64,3 +64,15 @@
 - File dei limiti: 6.284.691 byte, SHA-256 `564eba71ab2ad0ef49ab37eff2022d02fbdf10c843c4f460f4097f6ddc0f7b1b`. Archiviato compresso in `risultati/ia02/limiti_fase2.json.gz`. Tabella descrittiva, SHA-256 `21f419d6b3d3bc2f9f41c416f23da2187be62da18703c7e0bc612bb779de34bd`.
 - Intestazione: fase 2, 12.000 repliche, B = 3.999, master 2026111706, 12 celle, solo bootstrap.
 - Prossimo passo, meccanico: `protocollo_ia02 --fase 2 --candidato bootstrap:0.05`, con inventario dei semi e 216 confronti. Un solo tentativo.
+
+## 8. Verdetto meccanico della fase 2 (18/11, notte)
+
+**CONFERMATO NEL DOMINIO DEL PILOTA** (`risultati/ia02/verdetto_fase2.md`), per il bootstrap circolare a blocchi (ℓ = 10, B = 3.999, basic) con margine Δ = 0,05 R, a D = 1.000 sedute e a = b = 0,025.
+- **Controlli:** tutti e 10 passano (soglia k ≤ 248 su 12.000). Il più vicino alla soglia è la falsa promozione della cella 11 (perdite rare): k = 107, U_CP = 0,0119.
+- **Inventario dei semi delle fasi 1 e 2:** 720.000 chiavi, 720.000 semi distinti.
+- **Diagnostica dei flussi:** 216 confronti, nessuno fuori dalla banda 4.796…5.204.
+- **Potenza descrittiva (P/M)** a μ = 0,20: 3,1% (iid), 3,3% (AR), 2,8% (conteggi), 6,8% (perdite rare). A μ = 0,30: 71,6% (iid) e 52,7% (AR).
+- **Che cosa NON dice** (DGS-07 §2a.6):
+  - non certifica altri processi, altre numerosità o una strategia reale;
+  - non dà al metodo una potenza utile: con Δ = 0,05 e 1.000 sedute serve un vantaggio vero intorno a +0,30 R per essere promossi con buona probabilità.
+  - Usarlo nella regola futura, e con quale margine, resta una decisione del titolare.
