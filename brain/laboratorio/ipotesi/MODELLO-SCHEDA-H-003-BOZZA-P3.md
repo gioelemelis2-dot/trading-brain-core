@@ -53,3 +53,30 @@ Per ogni punto: **[DOC]** è un aggiornamento documentale, cioè rende esplicito
 ---
 
 **Cosa NON cambia:** IA-02 (+0,15 R), il §0 sulla contaminazione, il divieto di eseguire prima del sigillo, la verifica una volta sola.
+
+---
+
+## Aggiornamento del 18/11/2026: decisioni D-31, DGS-07, DGS-08 e DGS-09
+
+Anche queste voci sono **BOZZA, NON APPLICATA**: si applicano con il via del titolare, come il resto.
+
+## G. Nuovo §0 «Provenienza dell'idea» [METODO, DGS-09 §1]
+> - **Riga di provenienza** in `laboratorio/ipotesi/PROVENIENZA-IDEE.md`, compilata **prima** di questa scheda: fonte e versione, regola disponibile a quella data, informazioni dell'autore, selezione da parte nostra, destinazione.
+> - **Che cosa viene dalla fonte e che cosa aggiungiamo noi**: due elenchi separati.
+> - **Chi ha contribuito al disegno**: persone e chat, compresa la chat delle strategie. Serve a scegliere un revisore indipendente (DGS-09 §3).
+
+## H. §9 «Verifica»: stato della finestra candidata [METODO, DGS-09 §1b e §2b]
+> Per ogni finestra candidata della riserva: **vista per questa domanda / esposizione incerta / ammissibile in linea di principio**, con la motivazione e il rimando al censimento del mercato (per esempio `governance/censimento/CENSIMENTO-GBPJPY.md`). Si prenota solo una finestra ammissibile.
+
+## I. §8 «Criteri»: regola di verifica di D-31 e dominio collaudato [METODO, DGS-08 §4c, DGS-09 §2c]
+> - **Verifica:** bootstrap circolare a blocchi (ℓ = 10, B = 3.999, intervallo basic) con Δ = 0,05 R. Promozione se il limite inferiore grezzo supera **+0,20 R**, bocciatura se il limite superiore è sotto **+0,10 R** (D-31).
+> - **Corrispondenza al dominio collaudato**, da motivare con le sole informazioni ammesse dello sviluppo:
+>   - numero di sedute vicino a 1.000;
+>   - quota del 2,5% per coda;
+>   - operazioni per seduta, dipendenza, dispersione e perdite rare comparabili con le 12 celle del pilota.
+>   Se una condizione materiale cambia (per esempio la quota scende all'1,25% per una seconda variante o una seconda apertura), serve una giustificazione specifica o un collaudo preregistrato su repliche nuove **prima** dell'uso.
+> - **Pareggi alle soglie** (#116): limiti a meno di 1e-9 dalla soglia vanno contati e dichiarati nel rendiconto, con la regola di pareggio fissata prima.
+> - **Screening sullo sviluppo:** regola da decidere (orientamento del titolare: sulla stima).
+
+## J. §5 «Costi» [DOC, Gate 1]
+> Commissione e spread **fissati prima dei dati** da `dati/costi/` (specifiche del broker rilevate e spread per ora UTC misurato con `dati/pipeline/costi_tick.py` sullo sviluppo). Il costo in R dipende dalla distanza dello stop: va riportato per la distanza tipica della regola.
