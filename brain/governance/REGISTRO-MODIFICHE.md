@@ -734,3 +734,9 @@ Nulla di questo tocca il candidato `8e51ce9` su cui lavora R15.
 - **Rischio delle strategie pubblicate:** l'autore le ha provate quasi certamente sugli anni che per noi sono riserva.
 - **Messaggio 7 al DGS** pronto (`collaborazione/da-claude/direttore-sicurezza/10-MESSAGGIO-7-STRATEGIE-E-GBPJPY.md`).
 - **Separazione dei ruoli, primo passo:** il titolare analizza le strategie in una **chat separata** di ChatGPT; il messaggio 7 va nella chat del DGS, con la nota sulla memoria fra chat. Nella chat delle strategie il titolare incolla le regole: dati e grafici solo dal 15/11/2023, provenienza di ogni idea, regole meccaniche, nessun ruolo di revisione. In attesa: elenco degli anni di GBPJPY già guardati.
+
+## 2026-11-18 · v1.60 (Mac instabile: copia di sicurezza dei dati veri)
+
+- Il Mac del titolare si spegne anche con la batteria carica. **Lo scaricamento ASK però non si è mai fermato**: stessi processi 6113 e 6114 di ieri, al 02/02/2013 circa. Il secondo avvio è stato respinto da «GIÀ IN CORSO»: la protezione contro due scaricamenti ha funzionato.
+- **Copia di sicurezza di `brain/dati/reali/`:** `dati_reali_20261118.zip`, 136 MB, SHA-256 `0aec0b91f6a6f1633b301572261ebef534f626c4af488acc8f41f19e10d14113`. Fatta dal titolare con zip, senza aprire i file.
+- **Procedura prima e dopo l'assistenza:** `piano/PROCEDURA-ASSISTENZA-MAC.md`. Claude la richiama quando il titolare porta il Mac in assistenza.
