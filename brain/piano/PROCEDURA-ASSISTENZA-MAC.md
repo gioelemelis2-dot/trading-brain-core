@@ -55,3 +55,4 @@
 - **Ipotesi:** il collegamento al caricatore si interrompe per un attimo (cavo, connettore o porta), oppure il sensore della carica dà letture sbagliate.
 - **Prove, in ordine:** altra porta e altro cavo; aggiornamento di macOS; spegnimento completo, attesa di 30 s e riaccensione. Le ultime due solo dopo la fine dell'ASK, oppure rilanciando poi lo scaricamento.
 - **Per i tecnici:** mostrare le righe di `pmset -g log` citate sopra.
+- **18/11, pomeriggio:** aggiornato a macOS 14.8.9. Da controllare nei giorni seguenti: `pmset -g log | grep "Low Power Sleep" | tail -n 5`. Se compaiono stop nuovi, si passa all'assistenza.
