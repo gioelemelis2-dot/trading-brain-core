@@ -689,3 +689,12 @@ Nulla di questo tocca il candidato `8e51ce9` su cui lavora R15.
   - Dopo le correzioni: 14/14 su K15 e PI1x, sia su 3.13 sia su 3.9.
 - **Altri script, tutti al 100% su 3.13 e su 3.9:** scaricatore 51/51 (con W52), controllo della cache 20/20, riconteggio 53/53, ORB 40/40, DSR e partizione 44/44.
 - **Messaggio 6 al DGS** pronto (`collaborazione/da-claude/direttore-sicurezza/9-MESSAGGIO-6-RISULTATI-IA02.md`): risultati delle fasi 1 e 2, osservazioni, richiesta di opzioni per il titolare.
+
+## 2026-11-18 · v1.56 (mattina: R16 di Gemini integrato)
+
+- **R16 integrato e verificato sul codice** (`H-002-REVISIONI.md`, sezione R16). Nuovi difetti #113–#115, tutti minori.
+  - #113 e #115: test deboli di Claude, corretti; mutanti IX19, CO12 e PI26 uccisi 3/3 su 3.13 e 3.9.
+  - #114: iteratore in `criteri.verifica`, nel perimetro; aperto, opzioni al titolare.
+- **Contatore D-24: 1 su 2.** R16 è il primo giro pulito, da confermare dal titolare per il caso di #112, fuori perimetro.
+- **ASK:** al 30/12/2011 la mattina del 18/11, circa 37%. **Errata di Claude:** la stima «10–12 ore» del 17/11 era troppo ottimista; a questo ritmo, con molti 503 di Dukascopy, servono ancora circa 1,5–2 giorni.
+- **Osservazione per il titolare:** i rapporti di Gemini contengono percorsi locali del Mac con il nome dell'utente (anche nei giri precedenti). I file di Gemini non si modificano (D-11). Proposta: nel prossimo mandato chiedere di scrivere `~` al posto del percorso completo. L'esportazione per il DGS li redige già.

@@ -462,3 +462,28 @@ Rapporto: `collaborazione/da-gemini/G-20261116-R13.md` (commit `6e17782`, identi
 - **D sul Mac:** riconteggio 53/53, controllo della cache 20/20, scaricatore 50/50. Mutanti dell'esecuzione fermi per #106; 1/353 test fallito (#106).
 - **Per la regola d'uscita (D-24):** Gemini segnala due casi «dubbio» per il titolare: #106 (difetto di un test, non del codice sigillato) e #108. Se il titolare li esclude, R15 è il **primo giro pulito**. Nel frattempo il contatore resta a **0 su 2**.
 
+## R16 di Gemini (18/11/2026)
+
+- **Consegna:** `collaborazione/da-gemini/G-20261118-R16.md` (commit `500d681`, integrato in `9333d70`: solo la cartella di Gemini).
+  - Candidato `303890b` dichiarato; perimetro identico verificato con `git diff`.
+  - Ambiente: Apple Python 3.9.6, rete bloccata.
+- **Compito A:**
+  - suite ufficiale: 397 test, OK, 1 saltato (#106, dichiarato);
+  - `mutazioni_esecuzione`: 264/266. N63 è equivalente su Apple Python; K15c = #113, già corretto da Claude la stessa notte in `40253cc`;
+  - sonde C1, C2, S5: tutte chiuse.
+- **Compito B (taratura estesa):**
+
+  | Mercati inventati | Promozioni | Clopper–Pearson 95% |
+  |---|---|---|
+  | senza vantaggio (100) | 0/100 | 0–3,6% |
+  | spinta 0,005 (50) | 8/50 | — |
+  | spinta 0,01 (50) | 38/50 | — |
+
+- **Compito C:** 5 sonde superate sugli strumenti di contorno; dei 6 mutanti nuovi, 3 sopravvissuti (= #115, corretto in `807c978`).
+- **Verifica di Claude sul codice:**
+  - R16-01 confermato in due parti: #113 (test) e #114 (iteratore; il difetto è più vecchio di #110);
+  - R16-03 confermato (#115);
+  - R16-02 è un equivalente noto.
+- **D-24:** nessun difetto critico o importante, tutti E a costo basso e minori. **R16 è il primo giro pulito: contatore 1 su 2.**
+  - Caso da sottoporre al titolare: #112 (importante, errore di Claude) è stato trovato la stessa notte, ma nel pilota del collaudo, **fuori dal perimetro sigillato**. Per Claude non conta per D-24, perché riguarda gli strumenti di contorno e non il candidato. La decisione spetta al titolare.
+- **#114 nel perimetro:** correggerlo cambia il candidato. Opzioni per il titolare: (a) lasciarlo dichiarato (oggi nessun chiamante lo attiva) e fare R17 su `303890b`; (b) correggerlo in TDD (nuovo candidato), e R17 ripete le prove toccate.
