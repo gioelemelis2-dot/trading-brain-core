@@ -89,3 +89,20 @@
   - «nessuno l'ha scritto in chiaro» è **falso**: DGS-07 §2a.7 riportava la probabilità di passare al 2,5% (0,0993%), e DGS-06 §1.2 trattava il caso p = a. La prudenza del criterio era voluta e documentata.
 - **Osservazione nuova del DGS (3c):** nella cella 12 (perdite rare, μ = +0,20) il limite inferiore grezzo supera la media vera nel 6,84% dei casi, invece del 2,5% nominale. Il limite grezzo, preso da solo, è ottimista in quello scenario. Il verdetto riguarda invece gli attraversamenti con margine.
 - **Per DGS-08, il DGS-07 ha esaurito il suo unico tentativo confermativo.** Scegliere HAC, togliere la cella 11 o cambiare Δ, soglia o numerosità **su queste repliche** violerebbe §2a.6. Ogni opzione futura richiede un protocollo nuovo.
+
+## 10. Riproducibilità fra ambienti (R17 di Gemini, compito B) e pareggi alle soglie (18/11)
+
+- **Gemini, su Apple Python 3.9:** SHA-256 del file della fase 2 identico; verdetto rifatto identico riga per riga. Le prime 200 repliche delle celle 2 e 11, rigenerate, **non coincidono al bit** con CPython 3.13 su Linux: scarti fino a 6,6e-15, attribuibili alle librerie matematiche dei due sistemi.
+- **Controllo di Claude sui file archiviati:** molti limiti bootstrap delle celle a due valori cadono **a filo** delle soglie (distanza < 1e-12). Sono in tutto 199 + 183 in fase 1 e 803 + 681 in fase 2:
+
+  | Cella | Limite | Soglia | Fase 1 | Fase 2 |
+  |---|---|---|---|---|
+  | 11 | L e U | 0,15 | 177 L, 19 U | 732 L, 71 U, di cui 2 esattamente uguali |
+  | 12 | L, appena sotto | 0,20 | 183 | 681 |
+
+- **Effetto sul verdetto: nessuno.**
+  - Le soglie a 0,15 riguardano solo i candidati con Δ = 0, già esclusi per le celle regolari.
+  - I casi a 0,20 stanno nella cella 12, che conta solo per la potenza (P ≥ 1) e per lo spareggio. Se cambiassero lato, aumenterebbero le promozioni del bootstrap, che vincerebbe comunque.
+  - Nei dieci controlli del candidato (soglie 0,20 e 0,10, celle 1, 2, 5, 6, 9, 11) non c'è alcun caso a filo.
+- **Effetto descrittivo:** la potenza della cella 12 (6,84% in fase 2) dipende dall'arrotondamento. Su un altro ambiente potrebbe stare fra 6,84% e circa 12,5%. L'osservazione 3c di DGS-08 va letta con questa cautela.
+- **Per i collaudi futuri** (difetto #116): una regola sui pareggi fissata prima (aritmetica esatta o tolleranza dichiarata) e un controllo dei casi a filo nel rendiconto.
