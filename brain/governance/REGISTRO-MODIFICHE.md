@@ -757,3 +757,4 @@ Nulla di questo tocca il candidato `8e51ce9` su cui lavora R15.
   - margine pari a una leva 1:20;
   - spread istantaneo di 0,40 USD.
   Lo spread per ora del giorno richiede l'esportazione dei tick dalla versione desktop di MT5.
+- **Strumento dei costi del broker** (`dati/pipeline/costi_tick.py`, TDD: test rossi `b38d426`, poi codice): legge i tick esportati da MT5 desktop, calcola lo spread per ora UTC e per la sessione di Londra e il costo in R per diverse distanze dello stop. **Rifiuta l'intero file se contiene un tick anteriore al 15/11/2023** (riserva, D-29) e non stampa prezzi. Mutanti CT01–CT12: con lo script del controllo della cache, **32/32 su 3.13 e 3.9**.

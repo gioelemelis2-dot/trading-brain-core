@@ -15,10 +15,23 @@ if len(sys.argv) not in (2, 3, 4):
 BRAIN, OUT = Path(__file__).resolve().parents[2], Path(sys.argv[1]).resolve()
 PROCESSI = int(sys.argv[2]) if len(sys.argv) >= 3 else 2
 PREFISSI = tuple(sys.argv[3].split(",")) if len(sys.argv) == 4 else ("",)
-SUITE = ["brain.dati.tests.test_controlla_cache"]
+SUITE = ["brain.dati.tests.test_controlla_cache", "brain.dati.tests.test_costi_tick"]
 CC = "dati/pipeline/controlla_cache.py"
 CAL = "dati/pipeline/calendario.py"
+CT = "dati/pipeline/costi_tick.py"
 M = {
+    "CT01 costi: tick della riserva accettati": [(CT, '        if t < INIZIO_SVILUPPO:', '        if False:')],
+    "CT02 costi: confine della riserva spostato": [(CT, '        if t < INIZIO_SVILUPPO:', '        if t <= INIZIO_SVILUPPO:')],
+    "CT03 costi: fuso del server col segno sbagliato": [(CT, 't = (_ora(c[0], c[1]) - timedelta(hours=fuso_server))', 't = (_ora(c[0], c[1]) + timedelta(hours=fuso_server))')],
+    "CT04 costi: lato mancante non riusato": [(CT, '        if c[2].strip():\n            bid = float(c[2])', '        bid = float(c[2]) if c[2].strip() else None')],
+    "CT05 costi: intestazione non controllata": [(CT, '    if not righe or righe[0].split("\\t")[:4] != TESTA:', '    if not righe:')],
+    "CT06 costi: spread negativi inclusi": [(CT, '        if s < 0:', '        if False:')],
+    "CT07 costi: rango del 90° percentile spostato": [(CT, 'o[math.ceil(0.9 * len(o)) - 1]', 'o[min(len(o) - 1, math.ceil(0.9 * len(o)))]')],
+    "CT08 costi: mediana sostituita dalla media": [(CT, '"mediana": median(o)', '"mediana": sum(o) / len(o)')],
+    "CT09 costi: fine di Londra inclusa": [(CT, 'LONDRA[0] <= t.time() < LONDRA[1]', 'LONDRA[0] <= t.time() <= LONDRA[1]')],
+    "CT10 costi: commissione ignorata": [(CT, '    return (spread + commissione_lotto / contratto) / stop', '    return spread / stop')],
+    "CT11 costi: stop nullo accettato": [(CT, '    if not stop > 0:', '    if False:')],
+    "CT12 costi: errore con codice d'uscita 0": [(CT, '        print(f"ERRORE: {e}", file=sys.stderr)\n        return 2', '        print(f"ERRORE: {e}", file=sys.stderr)\n        return 0')],
     "Q12 confronto: BID senza ASK non visto": [(CC, "        if fb.exists() and not fa.exists():", "        if False:")],
     "Q13 confronto: vuoto da un lato non visto": [(CC, "and (fb.stat().st_size > 0) != (fa.stat().st_size > 0):", "and False:")],
     "Q14 confronto: sempre allineati": [(CC, "            \"allineati\": not (senza_ask or senza_bid or vuoto_lato)}", "            \"allineati\": True}")],
