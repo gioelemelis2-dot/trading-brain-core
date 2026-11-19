@@ -884,3 +884,18 @@ Nulla di questo tocca il candidato `8e51ce9` su cui lavora R15.
   - **Copia leggibile:** 566 messaggi del titolare, 1.007 risposte di Claude e 2 riassunti automatici. SHA-256 `b0b6226f…5837`.
   - **Copia completa grezza** (`.jsonl.gz`, 49 MB). SHA-256 `d07fef9a…ee`.
 - Le decisioni, i registri e i documenti restano comunque su GitHub, a ogni passo.
+
+## 2026-11-20 · v1.73 (visione multi-mercato e ricerca di fonti)
+
+- **`laboratorio/ipotesi/fonti/RICERCA-FONTI-20261120.md`:** ricerca di fonti oltre P-001 (accademiche, campioni certificati, test indipendenti), valutate con i criteri del dossier. **Nessuna idea registrata:** la scelta è del titolare.
+  - Una prova contraria pertinente: il test meccanico indipendente del «Silver Bullet» ICT, anche su GC (oro), è negativo.
+  - Il fixing di Londra cambia regime nel 2015, dentro la riserva.
+- **`piano/VISIONE-FABBRICA-MULTIMERCATO.md`:** su richiesta del titolare, visione da «strategia singola» a «fabbrica di ricerca multi-mercato».
+  - Le «circa 4 verifiche» valgono per la riserva di **un** mercato; ogni mercato ha la sua.
+  - La demo in avanti è un campo di prova illimitato; lo storico fa da primo filtro.
+  - Portafoglio di molti sistemi semplici.
+  - **La definizione di fatto (D-34) NON si allarga:** il motore generico è una fase successiva.
+- **Controllo di progetto (ricerca nel codice), primo esito:**
+  - neutri rispetto al mercato: `verdetto_d31.py`, `riserva.py`, `sigillo.py`;
+  - **`caricatore.py` non è neutro:** il controllo di qualità usa una sessione di Londra fissa (8:00–16:45) e importa una funzione dal simulatore di Londra. Da rendere parametro alla fase del secondo mercato; non si tocca ora (perimetro sigillato, corretto per l'oro).
+- **Errore mio corretto prima di pubblicare:** nella prima stesura della visione avevo scritto che i pezzi erano «già quasi tutti neutri» senza averlo verificato. La ricerca nel codice ha trovato l'eccezione del caricatore; il documento è stato corretto.
