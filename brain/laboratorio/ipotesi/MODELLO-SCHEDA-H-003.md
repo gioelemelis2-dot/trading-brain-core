@@ -1,6 +1,6 @@
 # Modello di scheda per H-003 (e ipotesi successive)
 
-**Stato del modello:** bozza di Claude, 16/11/2026, **da approvare dall'utente**. Non contiene nessuna idea: la parte «Ipotesi» la scrive l'utente.
+**Stato del modello:** bozza di Claude, 16/11/2026. **Non ancora approvato nel suo insieme.** Il 19/11/2026 il titolare ha approvato e fatto applicare tre parti, nel testo di DGS-10 §3 (D-32): §0 «Provenienza» (G), §2 «Stato della finestra» (H) e §11 «Tracciabilità dei giri» (F). Le altre modifiche proposte (A–E, I, J) restano in `MODELLO-SCHEDA-H-003-BOZZA-P3.md` e in DGS-10, in attesa delle decisioni del titolare. Non contiene nessuna idea: la parte «Ipotesi» la scrive l'utente.
 **Da dove viene:** struttura di H-002 v3.1, più le lezioni pagate con H-002:
 - la soglia IA-02 (`governance/IMPEGNI-ANTICIPATI.md`);
 - il difetto DGS-03 (uscita scelta guardando il futuro, #42);
@@ -29,6 +29,13 @@
   - **E-003**, i tagli di Gemini su H-002 del 14/11: apertura di Londra, ampiezza e durata del range, direzione, anno, regimi senza costi.
   - [DA COMPILARE: quali usa questa ipotesi]. Ogni taglio usato **conta in N** (§7).
 - **Risultati di H-002 visti da chi scrive:** [DA COMPILARE]. Se l'ipotesi nasce da come è andata H-002, è dipendente da H-002: va detto.
+- **Provenienza (approvata il 19/11, D-32; testo di DGS-10 §3 G).** Prima della scheda registrare, nel registro `laboratorio/ipotesi/PROVENIENZA-IDEE.md`:
+  - ID di provenienza, autore originario, fonte e versione databile, data di pubblicazione;
+  - regola e parametri allora disponibili, versioni precedenti, mercati e periodi usati dall'autore, con fonte oppure «ignoto»;
+  - chi ha scelto l'idea, quali alternative o risultati hanno orientato la scelta, quali periodi sono già stati osservati da persone o chat.
+
+  Separare gli elementi ereditati dalle aggiunte del titolare. Collegare esplorazioni pregresse, eventuale dipendenza da H-002, voci di N e censimento del mercato.
+- **Revisore (DGS-10 §3 G).** Per il revisore dichiarare i contributi alla progettazione e le informazioni ricevute prima del fascicolo congelato. Chi ha scelto la variante non firma il giudizio indipendente su quella scheda. In caso di esposizione passiva a dettagli rilevanti, dichiarare quali giudizi restano indipendenti e affidare gli altri a un revisore idoneo.
 
 ## 1. Ipotesi
 [DA COMPILARE: una frase che possa risultare falsa.] Esempio di forma: «Dopo X, il prezzo fa Y più spesso di quanto serva a pagare i costi.»
@@ -39,6 +46,16 @@
 - **Prezzi:** XAUUSD di Dukascopy, candele da 1 minuto BID e ASK; esecuzioni solo su minuti eseguibili (BID e ASK presenti, ASK ≥ BID), come H-002 v3.1 §2. [DA COMPILARE se diverso.]
 - **Sviluppo:** dal 15/11/2023 al 12/11/2026. **Dati già visti** (contaminazione al §0).
 - **Verifica:** una sola finestra della riserva 2005 → 31/10/2023, assegnata dal registro della riserva (`esecuzione/riserva.py`, una volta ratificato). **Una sola volta:** se fallisce, non si ripete sugli stessi dati.
+- **Stato della finestra (approvato il 19/11, D-32; testo di DGS-10 §3 H; si collega ai §§0 e 9).** Per ogni coppia domanda–finestra registrare: mercato, date esatte comprese le date accessorie, esposizioni dirette o tramite fonte esterna o mercato correlato, motivazione, stato e prove. Gli stati sono tre:
+  - **vista**: l'informazione del periodo ha influenzato questa domanda;
+  - **esposizione incerta**: un'influenza pertinente resta plausibile e irrisolta;
+  - **ammissibile in linea di principio**: censimento e provenienza sostengono questa classificazione.
+
+  Si prenota solo nell'ultimo stato, dopo i controlli indipendenti di calendario, copertura congiunta BID/ASK e quota.
+  - Si usano censimenti e conteggi consentiti, senza consultare prezzi della riserva.
+  - Si applicano le date di D-29 e si indica esplicitamente l'intervallo eventualmente non assegnato fra riserva e sviluppo.
+  - Una finestra compromessa per provenienza e un'apertura contabilizzata sono due eventi distinti da registrare.
+  - Le finestre dei mercati correlati seguono le disposizioni adottate sul calendario comune.
 - **ASK storico:** [DA COMPILARE dopo lo scaricamento]. Senza ASK la verifica non misura gli stessi costi dello sviluppo, e va deciso **prima** come trattarla.
 
 ## 3. Definizioni
@@ -116,6 +133,12 @@ Il sigillo si fa solo quando **tutte** queste condizioni sono vere, ognuna con u
 3. test verdi e mutanti al 100% su Python 3.13 e 3.9;
 4. due revisioni di fila senza rilievi critici o importanti; contano i rilievi di tipo E (errori in buona fede) e M a costo basso (D-24, 17/11/2026); prima della verifica sulla riserva serve in più un giro su TUTTE le manomissioni, senza rilievi critici o importanti, e la decisione sulla protezione del ramo su GitHub;
 5. al sigillo si registrano le impronte SHA-256 della scheda e del codice che la esegue. Dopo il sigillo nulla cambia: un errore trovato dopo vuol dire un'ipotesi nuova.
+
+**Tracciabilità dei giri (approvata il 19/11, D-32; testo di DGS-10 §3 F).** Per ogni giro che si intende contare registrare commit, ambiente, versione e opzioni di Python, perimetro, evidenze e rilievi per gravità e classe D-24.
+- Tra commit diversi, documentare le modifiche, quali evidenze restano applicabili al candidato finale e le riesecuzioni delle prove interessate.
+- Un giro si conta quando ne è documentata l'idoneità secondo la regola vigente.
+- Prima della verifica si aggiungono il giro su tutte le manomissioni e la decisione sulla protezione del ramo.
+- Registrare separatamente il contatore corrente e l'autorizzazione all'apertura.
 
 **Prima del sigillo nessuno esegue la strategia sui dati veri**, né lo sviluppo né la riserva: è la lezione dell'incidente del 14/11 (#41). Le prove si fanno solo su dati inventati.
 

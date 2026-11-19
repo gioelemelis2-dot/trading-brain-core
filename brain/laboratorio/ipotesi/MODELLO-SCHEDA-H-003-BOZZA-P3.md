@@ -26,13 +26,13 @@ Per ogni punto: **[DOC]** è un aggiornamento documentale, cioè rende esplicito
 > - **Primario:** media di R netto per trade (A). Benchmark («compro sempre», «vendo sempre», confronto casuale) **sulle stesse date eleggibili**, con la stessa esecuzione e lo stesso rischio.
 > - **Elenco chiuso** di ogni via di promozione: varianti, tagli ereditati (§0), veti, N e m (promozioni possibili nella stessa apertura). Una diagnostica usata per scegliere diventa una prova selezionabile e entra in N.
 
-## D. §8 «Criteri»: coerenza del campione [METODO]
+## D. §8 «Criteri»: coerenza del campione [METODO] — **superata da DGS-10 §3 D (metodo già fissato da D-31); da applicare con le decisioni del titolare**
 
 > - **Metodo dell'intervallo** per IA-02 in verifica: [DA SCEGLIERE dopo il pilota del collaudo: HAC con regola dei ritardi fissata, oppure bootstrap a blocchi delle coppie giornaliere (S_d, K_d)]. Quota unilaterale = quota della variante (P2).
 > - **Minimo tecnico** (per calcolare le statistiche) e **minimo informativo** (trade necessari per la potenza dichiarata, con la dipendenza stimata nello sviluppo), entrambi scritti prima. Il minimo informativo si calcola dalla frequenza osservata nello sviluppo e dall'effetto minimo plausibile **motivato prima**.
 > - **Anni:** definire gli anni parziali e gli «ultimi cinque anni». Una finestra senza cinque anni valutabili non può soddisfare il criterio 4 della verifica: va dichiarato prima se il criterio cade o se la finestra va allungata.
 
-## E. §8 «Esiti» a tre stati (sostituisce il blocco «Esiti») [METODO, dipende da DA-31]
+## E. §8 «Esiti» a tre stati (sostituisce il blocco «Esiti») [METODO, dipende da DA-31] — **superata da DGS-10 §3 E e §4 (opzione 1 a due stati, opzione 2 a tre stati con priorità); decisione del titolare**
 
 > | Esito | Regola scritta prima |
 > |---|---|
@@ -46,7 +46,7 @@ Per ogni punto: **[DOC]** è un aggiornamento documentale, cioè rende esplicito
 > - Se cambia la regola o il disegno per recuperare l'esito, è un'**ipotesi nuova**.
 > - **Conflitto da risolvere** (rilevato dal DGS): l'attuale frase «se nessuna variante passa, H-003 è chiusa» vale per «bocciata». Per «non decidibile» l'ipotesi resta **sospesa** fino al riesame preregistrato, oppure chiusa per scelta del titolare.
 
-## F. §11 «Sigillo», tracciabilità dei giri di revisione [DOC, già in vigore per R15]
+## F. §11 «Sigillo», tracciabilità dei giri di revisione [DOC, già in vigore per R15] — **APPLICATA il 19/11 (D-32) nel testo di DGS-10 §3 F**
 
 > Ogni giro di revisione che conta per la regola d'uscita dichiara: commit esatto, ambiente (sistema, versione e opzioni di Python), perimetro verificato e prove eseguite. Se tra due giri cambia il codice del perimetro, le prove toccate si rifanno sul candidato finale prima di contare entrambi i giri (D-24, parere P6 del DGS).
 
@@ -60,15 +60,17 @@ Per ogni punto: **[DOC]** è un aggiornamento documentale, cioè rende esplicito
 
 Anche queste voci sono **BOZZA, NON APPLICATA**: si applicano con il via del titolare, come il resto.
 
-## G. Nuovo §0 «Provenienza dell'idea» [METODO, DGS-09 §1]
+## G. Nuovo §0 «Provenienza dell'idea» [METODO, DGS-09 §1] — **APPLICATA il 19/11 (D-32) nel testo di DGS-10 §3 G**
 > - **Riga di provenienza** in `laboratorio/ipotesi/PROVENIENZA-IDEE.md`, compilata **prima** di questa scheda: fonte e versione, regola disponibile a quella data, informazioni dell'autore, selezione da parte nostra, destinazione.
 > - **Che cosa viene dalla fonte e che cosa aggiungiamo noi**: due elenchi separati.
 > - **Chi ha contribuito al disegno**: persone e chat, compresa la chat delle strategie. Serve a scegliere un revisore indipendente (DGS-09 §3).
 
-## H. §9 «Verifica»: stato della finestra candidata [METODO, DGS-09 §1b e §2b]
+## H. Stato della finestra candidata [METODO, DGS-09 §1b e §2b] — **APPLICATA il 19/11 (D-32) al §2, nel testo di DGS-10 §3 H**
 > Per ogni finestra candidata della riserva: **vista per questa domanda / esposizione incerta / ammissibile in linea di principio**, con la motivazione e il rimando al censimento del mercato (per esempio `governance/censimento/CENSIMENTO-GBPJPY.md`). Si prenota solo una finestra ammissibile.
 
 ## I. §8 «Criteri»: regola di verifica di D-31 e dominio collaudato [METODO, DGS-08 §4c, DGS-09 §2c]
+
+> **Superata da DGS-10 §3 I, che resta da applicare con le decisioni del titolare.** Correzione di un errore di Claude segnalato dal DGS: l'1,25% vale per **due varianti nella stessa apertura** (j = 1, m = 2). Una **seconda apertura** (j = 2, m = 1) dà lo **0,8333%**. La frase qui sotto confondeva i due casi.
 > - **Verifica:** bootstrap circolare a blocchi (ℓ = 10, B = 3.999, intervallo basic) con Δ = 0,05 R. Promozione se il limite inferiore grezzo supera **+0,20 R**, bocciatura se il limite superiore è sotto **+0,10 R** (D-31).
 > - **Corrispondenza al dominio collaudato**, da motivare con le sole informazioni ammesse dello sviluppo:
 >   - numero di sedute vicino a 1.000;
