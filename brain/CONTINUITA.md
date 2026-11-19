@@ -62,6 +62,14 @@ Ultimo aggiornamento: **2026-11-19 sera** (sezione in testa); prima: 2026-11-15,
   - dal cloud sono bloccati da YouTube (anti-bot), e non si aggira;
   - sul Mac il titolare li scarica con `~/Downloads/yt-dlp_macos` (2026.10.26) in `~/Downloads/p001_sottotitoli/`;
   - non vanno nel repository.
+- **Trascrizioni ricevute il 19/11, alle 23:55.** Lo zip `p001_sottotitoli.zip` (6,2 MB, 138 file) l'ha caricato in chat il titolare, che ne conserva la copia sul Mac in `~/Downloads/`. Le trascrizioni non vanno nel repository.
+  - **Copertura:** Brad Trades 100 su 111, con date reali dal 02/01/2025 al 27/10/2026; Market Mechanics e episodi collegati 38 su 38, dal 07/01/2024 al 18/06/2026.
+  - **Mancano 11 video di Brad Trades:** i 6 più recenti (novembre 2026) e alcuni dei risultati più grandi, fra cui −472k e +274k sull'oro. Gemini deve riprovare a scaricarli.
+  - **Prima estrazione automatica** (da verificare leggendo): in 19 video su 100 c'è una dichiarazione di rischio.
+    - All'inizio del 2025: «risking 5k», poi «10k» a trade, con vincite di 46k e 102k, cioè circa 9–10 R.
+    - Più volte «risk 1% per trade».
+    - Nel 2026: rischi di circa 50k–250k a trade.
+  - **Primo video (07/01/2024):** conto reale presso IG (regolato a Singapore). La trascrizione dice «10.000 $»; in un punto riporta anche «110.000»: da controllare nel video.
 - **Compito per Gemini** (`collaborazione/da-claude/PROMPT-P001-GEMINI-TRASCRIZIONI.md`): da dare **dopo R17**, con una prova su 10 video. Aggiungere che le trascrizioni ci sono già.
 
 **Bozze di idee di Claude (19/11 sera), NON registrate per scelta del titolare.** In chat Claude ha abbozzato, solo a parole, tre ipotesi:
