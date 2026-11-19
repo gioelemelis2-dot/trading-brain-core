@@ -850,3 +850,11 @@ Nulla di questo tocca il candidato `8e51ce9` su cui lavora R15.
   - (c) regola per il difetto #119;
   - (d) prova «manuale contro assistito» nella roadmap.
 - **Il DGS non aveva:** il punto 9 del messaggio 9 e le decisioni D-24 … D-40. Da mandare con la prossima richiesta.
+
+## 2026-11-19 · v1.69 (D-41: dossier sulla fonte P-001, prima parte)
+
+- **Rete:** con l'approvazione del titolare, aggiunti `www.youtube.com` e `youtubei.googleapis.com` agli indirizzi permessi dell'ambiente. yt-dlp è autorizzato dal titolare per elenchi e sottotitoli.
+- **Elenchi completi** dei tre canali (2.446 elementi, solo metadati) in `laboratorio/ipotesi/fonti/p001/`.
+- **Sottotitoli bloccati dal controllo anti-bot di YouTube** sulle richieste dal cloud: non aggirato. Proposto un comando da lanciare sul Mac.
+- **`laboratorio/ipotesi/DOSSIER-FONTE-P001.md`:** canali, percorso dichiarato e incoerenze, conteggio delle 111 operazioni dichiarate di Brad Trades (perdite mostrate nel 29–34% dei casi, dimensioni cresciute di circa 10 volte, importi solo in dollari), modello di business e incentivi, stile del canale, metodo (concetti ICT/SMC), che cosa la fonte può dare e che cosa no.
+- **Nessuna scheda e nessuna prova.**
