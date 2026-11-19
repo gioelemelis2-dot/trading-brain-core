@@ -5,6 +5,13 @@
 **Natura:** audit documentale e metodologico **in sola lettura**. Non ho modificato codice, test, registri, roadmap, contatori o decisioni: questo rapporto è l'unico file scritto. Non ho aperto la riserva, i dati di mercato, risultati protetti o materiali della chat delle strategie. L'unico calcolo nuovo è un esempio **interamente inventato** (§3.2) e una formula di potenza (§3.1).
 **Conflitto d'interessi dichiarato:** ho scritto gran parte del codice, dei test e delle specifiche che giudico. Per ogni conclusione indico chi ha prodotto l'evidenza e che cosa la smentirebbe.
 
+> **ERRATA (19/11/2026, sera, dopo DGS-11).**
+> - **Rischio n. 3 sovrastimato.** L'11,7% di false promozioni del §3.2 è in gran parte un artefatto del generatore inventato, dove le vincite erano tutte uguali.
+> - **Con vincite realistiche:** 0/300 con perdite rare di −20 R e 5% con −50 R.
+> - **Il rischio esiste solo per code di decine di R**, per esempio con stop molto stretti.
+> - **Altre conclusioni da rileggere:** la capienza della riserva (circa 4 verifiche in tutto, omessa qui) e l'errore di metodo segnalato dal DGS (§8: ho giudicato la macchina intera con un solo criterio).
+> - **Dettagli:** `RISCONTRO-DGS-11.md`.
+
 ---
 
 ## Pagina per il titolare

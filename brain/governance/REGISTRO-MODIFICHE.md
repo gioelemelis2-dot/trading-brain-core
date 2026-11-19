@@ -837,3 +837,16 @@ Nulla di questo tocca il candidato `8e51ce9` su cui lavora R15.
   - il collegamento all'esecutore;
   - la prova generale a vuoto;
   - i 2 giri di revisione del modulo.
+
+## 2026-11-19 · v1.68 (DGS-11: controverifica dell'audit)
+
+- **DGS-11** archiviato (`collaborazione/da-chatgpt/DGS-20261119-11-controverifica-audit.md`, nome del titolare sostituito).
+- **Riscontro di Claude:** `collaborazione/da-claude/RISCONTRO-DGS-11.md`. Tutti i numeri del DGS sono confermati.
+- **Errore di Claude, confermato e corretto:** l'11,7% di false promozioni dell'audit (rischio n. 3) era in gran parte un **artefatto del generatore**: vincite tutte uguali, più un intervallo di ampiezza circa 1e-13 accettato per arrotondamento. Rifatto con B = 3.999 e vincite realistiche: 0/300 con code di −20 R, 5% con −50 R. Errata aggiunta in testa all'audit; difetto #119 aperto.
+- **Errore di metodo dell'audit**, accettato (DGS-11 §8): ho giudicato la macchina intera con le proprietà di un solo criterio.
+- **Nuove decisioni per il titolare** (riscontro §5):
+  - (a) metro contro obiettivi, con le opzioni A6 e A7 aggiunte dal DGS;
+  - (b) testo della clausola sulle code;
+  - (c) regola per il difetto #119;
+  - (d) prova «manuale contro assistito» nella roadmap.
+- **Il DGS non aveva:** il punto 9 del messaggio 9 e le decisioni D-24 … D-40. Da mandare con la prossima richiesta.
