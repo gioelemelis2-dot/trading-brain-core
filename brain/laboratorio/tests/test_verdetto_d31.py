@@ -68,6 +68,19 @@ class TestSegnale(unittest.TestCase):
         for iv in (None, (0.3, 0.3), (0.5, 0.4), (float("nan"), 1.0), (0.0, float("inf")), (float("-inf"), 0.0)):
             self.assertEqual(V.segnale(iv), "invalido", iv)
 
+    def test_ampiezza_minima_119(self):
+        """#119 (D-44): un intervallo più stretto di 1e-9 R è degenere (arrotondamento su dati quasi costanti)."""
+        self.assertEqual(V.AMPIEZZA_MINIMA, 1e-9)
+        self.assertEqual(V.segnale((0.3, 0.3 + 5e-10)), "invalido")
+        self.assertEqual(V.segnale((0.3, 0.3 + 1e-13)), "invalido")
+        self.assertEqual(V.segnale((0.3, 0.3 + 2e-9)), "favorevole")
+        with mock.patch.object(P, "intervallo_bootstrap", return_value=(0.25, 0.25 + 1e-13)):
+            v = V.verdetto(SU, 5)
+        self.assertEqual((v["esito"], v["causa"]), ("non decidibile", "intervallo invalido"))
+        with mock.patch.object(P, "intervallo_bootstrap", return_value=(0.30, 0.30 + 1e-13)):
+            s = V.screening(costanti(0.6, 780), 9, 0.9)
+        self.assertIn("intervallo invalido", s["cause"])
+
     def test_vicini(self):
         self.assertEqual(V.vicini(0.2 + 5e-10, 0.5), ["L"])
         self.assertEqual(V.vicini(0.2 - 5e-10, 0.1 + 5e-10), ["L", "U"])
