@@ -780,3 +780,19 @@ Nulla di questo tocca il candidato `8e51ce9` su cui lavora R15.
 - **Ordine consigliato dal DGS:** subito G, H, F; prima del sigillo della prima scheda, I e le decisioni; dopo il sigillo, screening, poi compatibilità e prenotazione.
 - **Mac (19/11, notte):** quarta ibernazione e terza con lo stesso schema, ripresa dal registratore: a batteria 90% → 12% in un minuto, dopo l'aggiornamento di macOS. **Diagnosi: batteria guasta (hardware).** Assistenza da programmare dopo la consegna di R17 e la copia finale dei dati (`piano/PROCEDURA-ASSISTENZA-MAC.md`). Il ciclo di scaricamento ASK è sopravvissuto.
 - **D-33:** strategie in pausa finché la macchina non è finita. **Errore di priorità di Claude:** avevo preparato prompt per catalogare le operazioni dell'autore prima di aver chiuso l'infrastruttura, contro l'ordine concordato e contro DGS-09. Il titolare l'ha fermato.
+
+## 2026-11-19 · v1.64 (audit globale e messaggio 9 al DGS)
+
+- **Audit globale** su mandato del titolare, in sola lettura (`collaborazione/da-claude/AUDIT-GLOBALE-TRADING-BRAIN-E-ROADMAP.md`, commit `a77c7c6` e `1f61536`). Durante l'audit nessun altro file è stato modificato: questa voce di registro è scritta dopo la consegna.
+- **Rischi principali:**
+  1. Potenza del metro D-31 contro gli obiettivi del titolare: circa 24% a +0,25 R con 1.000 sedute, in un'approssimazione normale dichiarata come stima.
+  2. Il criterio D-31 non è nel codice della verifica sigillata (`criteri.verifica` controlla «R medio netto > 0»).
+  3. False promozioni con perdite rare fuori dal dominio collaudato: 11,7% su un esempio inventato.
+- **Altri rilievi:**
+  - i file di conteggio di N sono tre;
+  - il ciclo di revisioni non ha una «definizione di fatto»;
+  - Guardian, journal e previsioni non sono mai stati usati;
+  - la documentazione di continuità è vecchia.
+- Questi rilievi **non sono ancora nel REGISTRO-DIFETTI**: si assegnano con le decisioni del titolare.
+- **Errore trovato nella seconda lettura:** avevo proposto la riconciliazione del G0 sulla demo senza dire che la demo è MT4, mentre le specifiche dei costi sono del conto MT5. Corretto nel rapporto.
+- **Messaggio 9 al DGS** (`direttore-sicurezza/12-MESSAGGIO-9-AUDIT-GLOBALE.md`): richiesta di controverifica dei sei punti, con ricalcolo autonomo della potenza e di 0,998^1000.
