@@ -89,8 +89,9 @@ class TestCoppie(unittest.TestCase):
         self.assertEqual(V.minimi_mancanti(SU), [])
         self.assertTrue(V.minimi_mancanti(SU[:999])[0].startswith("sedute"))
         pochi = [(0.5, 1)] * 299 + [(0.0, 0)] * 701
-        self.assertEqual(len(V.minimi_mancanti(pochi)), 2)                  # 299 trade e 299 sedute attive
-        self.assertTrue(any(m.startswith("trade") for m in V.minimi_mancanti(pochi)))
+        self.assertEqual(len(V.minimi_mancanti(pochi)), 1)                  # 299 trade (299 sedute attive bastano)
+        self.assertTrue(V.minimi_mancanti(pochi)[0].startswith("trade"))     # errore di Claude nel test rosso: «2»
+        self.assertEqual(len(V.minimi_mancanti([(0.5, 1)] * 199 + [(0.0, 0)] * 801)), 2)
         concentrati = [(1.0, 2)] * 199 + [(0.0, 0)] * 801                     # 398 trade in 199 sedute
         self.assertEqual(len(V.minimi_mancanti(concentrati)), 1)
         self.assertTrue(V.minimi_mancanti(concentrati)[0].startswith("sedute con trade"))
@@ -178,7 +179,23 @@ class TestVerdetto(unittest.TestCase):
         self.assertEqual((v["esito"], v["vicini_soglia"]), ("promossa", ["L"]))
 
 
+    def test_media_per_trade_non_per_seduta(self):
+        coppie = [(1.2, 2)] * 400 + [(0.0, 0)] * 600                       # 800 trade in 1.000 sedute: 0,6 a trade
+        # (errore di Claude: con 500 sedute da 2 trade il test non distingueva trade e sedute; VD26 sopravviveva)
+        with mock.patch.object(P, "intervallo_bootstrap", return_value=(0.3, 0.9)):
+            v = V.verdetto(coppie, 5)
+        self.assertAlmostEqual(v["media"], 0.6, places=12)
+        self.assertEqual((v["trade"], v["sedute_attive"]), (800, 400))
+
+
 class TestScreening(unittest.TestCase):
+    def test_limite_zero_non_passa_e_media_per_trade(self):
+        coppie = [(1.2, 2)] * 300 + [(0.0, 0)] * 480                       # 600 trade in 780 sedute (VD35, stesso errore)
+        with mock.patch.object(P, "intervallo_bootstrap", return_value=(0.0, 0.9)):
+            s = V.screening(coppie, 9, 0.9)
+        self.assertAlmostEqual(s["media"], 0.6, places=12)
+        self.assertEqual(s["cause"], ["limite inferiore non > 0"])
+
     def test_ammessa(self):
         s = V.screening(costanti(0.6, 780), 9, 0.50)                       # potenza 50% inclusa
         self.assertTrue(s["ammessa"])

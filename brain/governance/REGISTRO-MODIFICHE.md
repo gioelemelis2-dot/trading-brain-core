@@ -816,3 +816,24 @@ Nulla di questo tocca il candidato `8e51ce9` su cui lavora R15.
 - Il titolare ha deciso sul documento unico: **1-A** (D-34), **2-B-y** (D-35, chiude DA-31), **3-C con +0,25 R** (D-36), **4-A** (D-37), **5-A** (D-38), **7-A** (D-39), **no alla 8** e **la 6 dopo il DGS** (D-40).
 - Per la 2 e la 3, le precisazioni (riesame «y» e soglia +0,25 R) sono state chieste da Claude con una domanda esplicita: il titolare aveva risposto solo «2 b» e «3 c».
 - **Lavoro tecnico che ne segue (D-34):** modulo nuovo per il criterio D-31 con i tre esiti, lo screening D-36 e i minimi D-37, in TDD; registro unico di N; poi la prova generale a vuoto.
+
+## 2026-11-19 · v1.67 (modulo del verdetto D-31)
+
+- **`laboratorio/verdetto/verdetto_d31.py`** (D-34, fuori dal perimetro sigillato), in TDD: test rossi `e9231cb`, poi il codice.
+  - **Tre esiti** con la tabella delle priorità di DGS-10 §4 (D-35).
+  - **Minimi** di D-37: 1.000 sedute, 300 trade, 200 sedute con trade.
+  - **Screening** di D-36: media > +0,25 R, L > 0, potenza ≥ 50%.
+  - **Veto per blocchi**: soglia e minimo li fissa la scheda.
+  - **Metro di riferimento collaudato:** `pilota_ia02.intervallo_bootstrap`, con impronta congelata `717e5599…`. Il modulo si rifiuta di calcolare se il pilota cambia.
+- **Verifica:**
+  - 32 test verdi su 3.13 e 3.9;
+  - mutanti VD01–VD46 con `tests/mutazioni_verdetto.py`: **45/46 su 3.13 e 3.9**. VD13 è dichiarato equivalente.
+- **Difetto #118:** tre errori miei nei test rossi, corretti prima della consegna.
+- **Precisazione su D-36 (da confermare dal titolare):** i confronti stretti valgono per la media (> +0,25 R) e per il limite (> 0); la potenza è «≥ 50%», come scritto nella decisione.
+- **Restano**, dall'elenco D-34:
+  - il registro unico di N;
+  - la clausola sulle code;
+  - i tipi epistemici nei rapporti;
+  - il collegamento all'esecutore;
+  - la prova generale a vuoto;
+  - i 2 giri di revisione del modulo.
