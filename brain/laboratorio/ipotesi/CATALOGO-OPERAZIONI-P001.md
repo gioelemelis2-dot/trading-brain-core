@@ -1,5 +1,7 @@
 # Catalogo delle operazioni dal vivo dell'autore (idea P-001, Market Mechanics)
 
+**IN PAUSA (D-33, 19/11/2026):** si riprende solo quando l'infrastruttura di valutazione è finita.
+
 **Istituito il 19/11/2026** su richiesta del titolare. Fonte: il canale dell'autore con le operazioni dal vivo («Brad Trades», citato in Market Mechanics ep. 1).
 
 **A che cosa serve.** A **ricostruire le regole** che nel corso mancano (ingresso, invalidazione, stop, uscita, scadenza) guardando che cosa l'autore ha fatto davvero. I risultati dichiarati sono **dichiarazioni dell'autore**, non prove: non entrano nella stima del vantaggio in R (DGS-09 §1). La prova la fa il banco di prova, dopo il sigillo di una scheda.
