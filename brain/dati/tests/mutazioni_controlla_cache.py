@@ -109,9 +109,10 @@ def main():
     shutil.rmtree(OUT / "M00")
     print("M00 copia non mutata: suite verde", flush=True)
     with ThreadPoolExecutor(PROCESSI) as ex:
-        esiti = list(ex.map(lambda a: mutante(*a), [(i, n, s) for i, (n, s) in enumerate(M.items(), 1) if n.startswith(PREFISSI)]))
-    for nome, esito in esiti:
-        print(f"{esito:6} {nome}")
+        esiti = []
+        for nome, esito in ex.map(lambda a: mutante(*a), [(i, n, s) for i, (n, s) in enumerate(M.items(), 1) if n.startswith(PREFISSI)]):
+            esiti.append((nome, esito))                    # R17: ogni esito si stampa appena è pronto
+            print(f"{esito:6} {nome}", flush=True)
     uccisi = sum(1 for _, e in esiti if e == "UCCISO")
     print(f"\n{uccisi}/{len(esiti)} mutanti uccisi ({sys.version.split()[0]})")
     return 0 if uccisi == len(esiti) else 1

@@ -759,3 +759,10 @@ Nulla di questo tocca il candidato `8e51ce9` su cui lavora R15.
   Lo spread per ora del giorno richiede l'esportazione dei tick dalla versione desktop di MT5.
 - **Strumento dei costi del broker** (`dati/pipeline/costi_tick.py`, TDD: test rossi `b38d426`, poi codice): legge i tick esportati da MT5 desktop, calcola lo spread per ora UTC e per la sessione di Londra e il costo in R per diverse distanze dello stop. **Rifiuta l'intero file se contiene un tick anteriore al 15/11/2023** (riserva, D-29) e non stampa prezzi. Mutanti CT01–CT12: con lo script del controllo della cache, **32/32 su 3.13 e 3.9**.
 - **Messaggio 8 al DGS:** il file allegato non era arrivato a ChatGPT; il titolare incolla le parti (A) e (B) in due messaggi. **Incoerenza mia nella bozza del modello H-003:** le sezioni D (metodo «da scegliere») ed E (soglie +0,15) sono anteriori a D-31 e non le avevo riallineate quando ho aggiunto G–J. Segnalata al DGS con richiesta di testo allineato (+0,20 / +0,10, bootstrap).
+
+## 2026-11-19 · v1.62 (R17 in corso: correzioni anticipate)
+
+- **#117:** due test deboli di Claude in `protocollo_ia02`, trovati da Gemini in R17 (M-R17-02, M-R17-03). Corretti con due test dichiarati; mutanti PR28 e PR29, uccisi su 3.13 (PR20–PR29: 10/10).
+- **Script dei mutanti** (`mutazioni_esecuzione`, `mutazioni_scarica_cache`, `mutazioni_controlla_cache`): ora **stampano ogni esito appena è pronto**. Prima accumulavano tutto e stampavano solo alla fine: in R17 la corsa di Gemini con un solo processo è andata in timeout senza stampare nulla, e l'ha dovuta dividere in quattro blocchi. Difetto pratico rilevato da Gemini.
+- **Scaricamento ASK:** fermato con codice 3 (molti 503 di Dukascopy sul 29/09/2013), a 4.290 file. Rilanciato con un ciclo che riprova ogni 30 minuti solo per il codice 3.
+- **Batteria:** nessun «Low Power Sleep» dopo l'aggiornamento (ultimo il 18/11 alle 13:37), con il registratore attivo.

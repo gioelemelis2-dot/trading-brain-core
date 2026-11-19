@@ -138,6 +138,15 @@ class TestSelezione(unittest.TestCase):
         self.assertEqual(R.seleziona(v), ("bootstrap", 0.0))
         self.assertEqual(v[("hac", 0.0)]["potenze"][12], 0)
 
+    def test_ogni_cella_di_potenza_conta(self):
+        """Aggiunto dopo R17 (mutante M-R17-02 di Gemini sopravvissuto, dichiarato): zero promozioni in UNA qualunque
+        delle celle 3, 7, 10, 12 rende il candidato non ammissibile."""
+        self.assertEqual(R.CELLE_POTENZA, (3, 7, 10, 12))
+        for c in R.CELLE_POTENZA:
+            v = R.valuta(dati_finti(3000, {"hac": {c: lista(att=3000)}, "bootstrap": {c: lista(att=3000)}}), 1)
+            self.assertFalse(v[("hac", 0.0)]["ammissibile"], c)
+            self.assertIsNone(R.seleziona(v), c)
+
     def test_corsa_incompleta_non_valutabile(self):
         d = dati_finti(3000, {})
         d["celle"]["4"]["hac"] = d["celle"]["4"]["hac"][:-1]                # una replica mancante
@@ -169,6 +178,15 @@ class TestFase2(unittest.TestCase):
         esito, cause = R.verdetto_fase2(v, ("bootstrap", 0.0), diagnostica_ok=True)
         self.assertEqual(esito, "NON CONFERMATO")
         self.assertTrue(any("11" in c for c in cause))
+
+    def test_fase2_senza_promozioni_in_una_cella_di_potenza(self):
+        """Aggiunto dopo R17 (mutante M-R17-03 di Gemini sopravvissuto, dichiarato): potenza zero in fase 2 →
+        NON CONFERMATO, con la causa scritta."""
+        for c in (3, 10):
+            v = R.valuta(dati_finti(12000, {"bootstrap": {c: lista(att=12000)}}, fase=2, metodi=("bootstrap",)), 2)
+            esito, cause = R.verdetto_fase2(v, ("bootstrap", 0.0), diagnostica_ok=True)
+            self.assertEqual(esito, "NON CONFERMATO", c)
+            self.assertTrue(any(f"cella di potenza {c}" in x for x in cause), cause)
 
     def test_fase2_con_meno_repliche_non_valutabile(self):
         v = R.valuta(dati_finti(3000, {}, fase=2, metodi=("hac",)), 2)

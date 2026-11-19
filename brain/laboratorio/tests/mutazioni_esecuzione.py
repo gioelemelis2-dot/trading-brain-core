@@ -35,6 +35,8 @@ CO = "laboratorio/studi/collaudo_ia02.py"
 PI = "laboratorio/studi/pilota_ia02.py"
 PR = "laboratorio/studi/protocollo_ia02.py"
 M = {
+    "PR28 protocollo: cella 10 tolta dalla potenza (M-R17-02 di Gemini)": [(PR, 'CELLE_POTENZA = (3, 7, 10, 12)', 'CELLE_POTENZA = (3, 7, 12)')],
+    "PR29 protocollo: potenza zero accettata in fase 2 (M-R17-03 di Gemini)": [(PR, '            if p < 1:\n', '            if p < 0:\n')],
     "IX19 intersezione: vigilie nei percentili annuali (M-R16-01 di Gemini)": [(IX, '        delle = [s for s in sedute if s["giorno"][:4] == anno]', '        delle = [s for s in sedute + vigilie if s["giorno"][:4] == anno]')],
     "CO12 collaudo: media del bootstrap divisa per n (M-R16-03 di Gemini)": [(CO, '        medie.append(tot / (blocchi * b))', '        medie.append(tot / n)')],
     "PI26 pilota: distorsione senza - μ (M-R16-06 di Gemini)": [(PI, '        c["distorsione"] = (sum(stime) / len(stime) - mu) if stime else None', '        c["distorsione"] = (sum(stime) / len(stime)) if stime else None')],
@@ -452,9 +454,10 @@ def main():
     shutil.rmtree(OUT / "M00")
     print("M00 copia non mutata: suite verde", flush=True)
     with ThreadPoolExecutor(PROCESSI) as ex:
-        esiti = list(ex.map(lambda a: mutante(*a), [(i, n, s) for i, (n, s) in enumerate(M.items(), 1) if n.startswith(PREFISSI)]))
-    for nome, esito in esiti:
-        print(f"{esito:6} {nome}")
+        esiti = []
+        for nome, esito in ex.map(lambda a: mutante(*a), [(i, n, s) for i, (n, s) in enumerate(M.items(), 1) if n.startswith(PREFISSI)]):
+            esiti.append((nome, esito))                    # R17: ogni esito si stampa appena è pronto
+            print(f"{esito:6} {nome}", flush=True)
     uccisi = sum(1 for _, e in esiti if e == "UCCISO")
     print(f"\n{uccisi}/{len(esiti)} mutanti uccisi ({sys.version.split()[0]})")
     return 0 if uccisi == len(esiti) else 1
