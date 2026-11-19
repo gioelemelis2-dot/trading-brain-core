@@ -899,3 +899,14 @@ Nulla di questo tocca il candidato `8e51ce9` su cui lavora R15.
   - neutri rispetto al mercato: `verdetto_d31.py`, `riserva.py`, `sigillo.py`;
   - **`caricatore.py` non è neutro:** il controllo di qualità usa una sessione di Londra fissa (8:00–16:45) e importa una funzione dal simulatore di Londra. Da rendere parametro alla fase del secondo mercato; non si tocca ora (perimetro sigillato, corretto per l'oro).
 - **Errore mio corretto prima di pubblicare:** nella prima stesura della visione avevo scritto che i pezzi erano «già quasi tutti neutri» senza averlo verificato. La ricerca nel codice ha trovato l'eccezione del caricatore; il documento è stato corretto.
+
+## 2026-11-20 · v1.74 (correzione della visione: il costo della prova in avanti è il tempo)
+
+- **Su domanda del titolare («in che senso?»), Claude corregge una propria esagerazione** nella visione multi-mercato. Aveva scritto che la demo in avanti è «un campo di prova illimitato».
+  - È **pulita** e **non si consuma**, ma arriva un giorno alla volta: il suo costo è il **tempo**.
+  - Stime con il test di Wald e 15–20 trade al mese: circa 5–7 mesi per un vantaggio di circa +0,30 R; 1,5–2 anni o più per circa +0,10 R.
+  - Il vantaggio è il **parallelismo**.
+- **Aggiunta la distinzione fra:**
+  - **prova in avanti simulata:** automatica, sui dati nuovi di ogni giorno, senza conto né ordini, per molte strategie;
+  - **demo con ordini sul broker:** solo per le migliori, per la fedeltà d'esecuzione (DA-29).
+- **Le prove in avanti si contano in N** come le altre.

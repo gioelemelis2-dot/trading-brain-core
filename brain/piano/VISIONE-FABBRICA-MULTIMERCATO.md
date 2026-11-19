@@ -40,9 +40,21 @@ Queste parti hanno una **struttura unica** e un **contenuto per mercato**: si co
 
 - La **riserva storica** è una risorsa scarsa e irripetibile: una volta vista, una finestra è consumata. Serve come **primo filtro**, non come prova infinita.
 - Il **futuro** è illimitato e sempre pulito. La **demo in avanti** (con il test di Wald, DA-29) prova una strategia su dati che nessuno ha mai visto, su quanti mercati vogliamo, senza consumare niente.
-- **Il motore della fabbrica, a regime, è la demo in avanti.** Lo storico dà il primo sì/no veloce; la demo dà la prova vera e continua.
+- **Il motore della fabbrica, a regime, è la prova in avanti.** Lo storico dà il primo sì/no veloce; la prova in avanti dà la prova vera e continua.
 
-Questo capovolge il problema della scarsità: smette di essere il collo di bottiglia.
+**Correzione (20/11/2026, su domanda del titolare): «illimitato» non vuol dire «veloce».** Il futuro arriva un giorno alla volta, e il costo è il **tempo**. Con 15–20 trade al mese (stime, test di Wald):
+- una strategia forte, circa +0,30 R, si riconosce in circa 100 trade, cioè **5–7 mesi**;
+- una debole, circa +0,10 R, in alcune centinaia di trade, cioè **1,5–2 anni o più**.
+
+**Il vantaggio non è la velocità, è il parallelismo.** Il tempo passa uguale per tutte le strategie sigillate: se ne possono seguire molte, su molti mercati, nello stesso momento, senza consumare niente.
+
+**Due livelli di prova in avanti, da non confondere:**
+1. **Prova in avanti simulata.** Ogni giorno si scaricano i dati nuovi e si fanno girare le strategie sigillate sul simulatore. È automatica, senza conto, senza ordini e senza il tempo del titolare. Serve per **tante strategie in parallelo**.
+2. **Demo con ordini sul broker.** Solo per le poche migliori: misura la fedeltà dell'esecuzione reale (slittamenti, spread, DA-29) rispetto alla simulazione.
+
+**Anche qui la statistica vale:** seguendo molte strategie in avanti, alcune sembreranno buone per caso. Le prove in avanti si contano nel registro, con le soglie fissate prima.
+
+Con queste precisazioni, il problema della scarsità si sposta: lo storico non è più il collo di bottiglia; lo diventa il **tempo**, che si gestisce con il parallelismo.
 
 ## 4. L'ampiezza non è gratis (la sfumatura onesta)
 
