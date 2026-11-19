@@ -64,6 +64,13 @@ Ultimo aggiornamento: **2026-11-19 sera** (sezione in testa); prima: 2026-11-15,
   - non vanno nel repository.
 - **Compito per Gemini** (`collaborazione/da-claude/PROMPT-P001-GEMINI-TRASCRIZIONI.md`): da dare **dopo R17**, con una prova su 10 video. Aggiungere che le trascrizioni ci sono già.
 
+**Bozze di idee di Claude (19/11 sera), NON registrate per scelta del titolare.** In chat Claude ha abbozzato, solo a parole, tre ipotesi:
+- (A) compressione asiatica ed espansione a Londra (Crabel con H-002);
+- (B) falsa rottura del range asiatico a Londra (Raschke «Turtle Soup» con la «sweep» di ICT/Brad);
+- (C) momentum intraday da Londra a New York sull'oro (Gao e coll., 2018).
+
+Il titolare ha deciso di **non registrarle ora**: prima Claude legge il materiale di Brad e l'analisi dei video di Gemini. Questa nota serve solo alla provenienza: le bozze sono **anteriori** alla lettura delle trascrizioni di Brad, e Claude conosceva già i titoli dei suoi video.
+
 **Mac:**
 - **Batteria guasta:** sempre collegato alla corrente. Assistenza dopo R17 e la copia finale dei dati (`piano/PROCEDURA-ASSISTENZA-MAC.md`).
 - **Spazio su disco con cali improvvisi** (14 → 10 → 5,8 GB). Sospetto: memoria di scambio. Da controllare con `sysctl vm.swapusage`.
