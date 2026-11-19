@@ -766,3 +766,4 @@ Nulla di questo tocca il candidato `8e51ce9` su cui lavora R15.
 - **Script dei mutanti** (`mutazioni_esecuzione`, `mutazioni_scarica_cache`, `mutazioni_controlla_cache`): ora **stampano ogni esito appena è pronto**. Prima accumulavano tutto e stampavano solo alla fine: in R17 la corsa di Gemini con un solo processo è andata in timeout senza stampare nulla, e l'ha dovuta dividere in quattro blocchi. Difetto pratico rilevato da Gemini.
 - **Scaricamento ASK:** fermato con codice 3 (molti 503 di Dukascopy sul 29/09/2013), a 4.290 file. Rilanciato con un ciclo che riprova ogni 30 minuti solo per il codice 3.
 - **Batteria:** nessun «Low Power Sleep» dopo l'aggiornamento (ultimo il 18/11 alle 13:37), con il registratore attivo.
+- **Verifica:** PR20–PR29 10/10 anche su 3.9. Gli script modificati funzionano: CT01–CT09 9/9 e W5x 3/3 su 3.13, con ogni esito stampato appena pronto.
