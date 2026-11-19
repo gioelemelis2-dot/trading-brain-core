@@ -407,3 +407,8 @@ DA-13 rulebook (Q-09) ──► DA-11 G0 minimo ──► DA-12 indicatori compo
 - `TRADING_BRAIN_UNRESOLVED_DECISIONS_V1.md` di Gemini (non archiviato nel Brain: vedi DA-01);
 - `CONTINUITA.md`;
 - `collaborazione/revisione-materiali-gemini/R-CLAUDE-20261112-08-REVISIONE-ESTERNA/REVISIONE_ESTERNA_TRADING_BRAIN_CHATGPT.md` §8.
+
+### DA-32 · Finestre orarie in cui il titolare può eseguire gli alert (19/11/2026) · **da comunicare dal titolare**
+- **Perché serve:** una strategia promossa si esegue con alert sul telefono. Il titolare inserisce l'ordine e il Guardian controlla le regole (D-14, D-16). Se gli alert cadono in ore in cui il titolare non è disponibile, i trade saltati rendono i risultati diversi da quelli collaudati.
+- **Uso:** vincolo della scheda H-003. Ogni ipotesi dichiara le sue ore operative; si candidano solo ipotesi compatibili con le finestre del titolare.
+- **Stato:** il titolare comunicherà giorni e ore entro circa 10 giorni (19/11/2026).
