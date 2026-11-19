@@ -412,3 +412,11 @@ DA-13 rulebook (Q-09) ──► DA-11 G0 minimo ──► DA-12 indicatori compo
 - **Perché serve:** una strategia promossa si esegue con alert sul telefono. Il titolare inserisce l'ordine e il Guardian controlla le regole (D-14, D-16). Se gli alert cadono in ore in cui il titolare non è disponibile, i trade saltati rendono i risultati diversi da quelli collaudati.
 - **Uso:** vincolo della scheda H-003. Ogni ipotesi dichiara le sue ore operative; si candidano solo ipotesi compatibili con le finestre del titolare.
 - **Stato:** il titolare comunicherà giorni e ore entro circa 10 giorni (19/11/2026).
+
+### DA-33 · Dove gira la prova in avanti quotidiana (20/11/2026) · **da decidere più avanti**
+- **Perché serve (D-46):** la prova in avanti simulata richiede che, ogni giorno, qualcosa scarichi i dati nuovi e faccia girare le strategie sigillate.
+- **Opzioni da preparare:**
+  - il Mac del titolare (oggi ha la batteria guasta ed è l'unico custode dei dati);
+  - un computer dedicato sempre acceso;
+  - un servizio nel cloud, con costi e custodia dei dati da valutare.
+- **Prerequisito:** il motore generico (fase 3 della visione). Non è urgente.
