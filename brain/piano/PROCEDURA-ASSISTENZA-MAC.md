@@ -57,3 +57,14 @@
 - **Per i tecnici:** mostrare le righe di `pmset -g log` citate sopra.
 - **18/11, pomeriggio:** aggiornato a macOS 14.8.9. Da controllare nei giorni seguenti: `pmset -g log | grep "Low Power Sleep" | tail -n 5`. Se compaiono stop nuovi, si passa all'assistenza.
 - **Precisazione del titolare (18/11):** alle 13:37 il Mac era **staccato** dalla corrente. È andato in ibernazione a batteria con la carica letta al 91%. Il caricatore è escluso; il sospetto è la **lettura della carica** (firmware o sensore). Prova prevista dopo l'aggiornamento e lo spegnimento completo: un'ora o due a batteria con il registratore `~/batteria.log` acceso (una riga al minuto con `pmset -g batt`). Se la carica salta ancora → assistenza, con le righe del registro come prova.
+
+## Diagnosi definitiva (19/11/2026, notte)
+
+- Registratore `~/batteria.log`, una riga al minuto:
+  - dalle 02:40 alle 02:46 «Battery Power», carica **91% → 90%**, discesa regolare, autonomia stimata circa 7 ore;
+  - **riga delle 02:47 assente** (ibernazione);
+  - alle 02:48 «AC Power, **12%**».
+- È la **terza volta** con lo stesso schema (93→10, 91→11, 90→12), la prima **dopo l'aggiornamento a macOS 14.8.9**. Esclusi il caricatore, che era staccato, e il software, che è aggiornato.
+- **Conclusione: guasto hardware della batteria**, quasi certamente una cella che cede sotto carico; oppure del suo sensore. «Condizione normale», 55 cicli.
+- **Per i tecnici:** chiedere la sostituzione della batteria in garanzia; mostrare `~/batteria.log` intorno alle 02:46–02:48 del 19/11 e le righe «Low Power Sleep» di `pmset -g log`.
+- **Fino all'assistenza:** sempre collegato alla corrente. Prima della consegna, la sezione «PRIMA dell'assistenza» qui sopra, con la copia finale dei dati e il controllo che R17 di Gemini sia pubblicato.
