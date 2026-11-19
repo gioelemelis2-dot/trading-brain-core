@@ -796,3 +796,17 @@ Nulla di questo tocca il candidato `8e51ce9` su cui lavora R15.
 - Questi rilievi **non sono ancora nel REGISTRO-DIFETTI**: si assegnano con le decisioni del titolare.
 - **Errore trovato nella seconda lettura:** avevo proposto la riconciliazione del G0 sulla demo senza dire che la demo è MT4, mentre le specifiche dei costi sono del conto MT5. Corretto nel rapporto.
 - **Messaggio 9 al DGS** (`direttore-sicurezza/12-MESSAGGIO-9-AUDIT-GLOBALE.md`): richiesta di controverifica dei sei punti, con ricalcolo autonomo della potenza e di 0,998^1000.
+
+## 2026-11-19 · v1.65 (documento unico delle decisioni)
+
+- **`governance/DECISIONI-DA-PRENDERE-20261119.md`:** otto decisioni aperte per finire la macchina, con le opzioni e il consiglio di Claude. **Nessuna è decisa:** spettano al titolare.
+  1. Definizione di fatto e collocazione del criterio D-31.
+  2. DA-31 e politica dei «non decidibili».
+  3. Screening.
+  4. Minimi e anni.
+  5. Regole di spesa.
+  6. Metro contro obiettivi.
+  7. Custodia dei dati.
+  8. Pilastri fermi.
+- **Omissione dell'audit, trovata da Claude preparando le decisioni:** il registro consuma le date per calendario e per tutti i mercati. Con 4.912 giorni feriali nella riserva e D = 1.000 sedute, **bastano circa 4 verifiche in tutto il progetto**. Con α_j = 5%/[j(j+1)], la potenza a +0,30 R scende da circa 72% (1ª apertura) a circa 39% (4ª), come stima. Le quote dalla 2ª apertura non sono collaudate. Aggiunta come punto 9 al messaggio 9 del DGS.
+- **Incoerenza segnalata:** con 1.000 sedute (circa 4 anni) il criterio «ultimi 5 anni positivi» non si può valutare senza anni parziali (già indicato in DGS-10 §6); le opzioni sono nella decisione 4.

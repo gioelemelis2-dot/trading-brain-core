@@ -27,6 +27,8 @@ Inoltre:
 7. **Prova generale a vuoto** (D1, §4.1): le condizioni di successo e di arresto proposte bastano? La tolleranza di ±10 punti sulla potenza attesa è adeguata al numero di repliche che servirebbe?
 8. **Seconda lettura.** Qual è, secondo voi, l'errore più importante dell'audit? Che cosa manca nella mappa o nel registro dei rischi?
 
-Formato della risposta: un paragrafo per ciascun punto (1–8). Ogni numero va contrassegnato come «ricalcolato» oppure «preso dall'audit».
+9. **Omissione dell'audit segnalata da Claude: la capienza della riserva.** Il registro consuma le date per calendario e per tutti i mercati insieme. La riserva 2005 → circa 31/10/2023 ha 4.912 giorni feriali; con D = 1.000 sedute bastano circa 4 verifiche in tutto il progetto. Inoltre, con α_j = 5%/[j(j+1)] e m = 1, le quote sono 2,5%, 0,83%, 0,42% e 0,25%. Nella stessa approssimazione del punto 4, la potenza a μ = +0,30 R scende da 72% (j = 1) a 55%, 46% e 39%. Verificate il conteggio e la potenza, e dite se le quote dalla seconda apertura richiedono un collaudo proprio (DGS-10 §6).
+
+Formato della risposta: un paragrafo per ciascun punto (1–9). Ogni numero va contrassegnato come «ricalcolato» oppure «preso dall'audit».
 
 ---
