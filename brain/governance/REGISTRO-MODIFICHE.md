@@ -877,3 +877,10 @@ Nulla di questo tocca il candidato `8e51ce9` su cui lavora R15.
   - la specifica del modulo del verdetto;
   - la proposta che i **casi a risposta esatta** della prova generale a vuoto li scriva il DGS, che non ha scritto l'esecutore (DGS-11 §7).
 - **Correzione di un mio errore di conteggio.** In v1.67 e in chat avevo scritto «32 test» per il modulo del verdetto. Erano 30 allora e sono **31** oggi, con il test di #119.
+
+## 2026-11-19 · v1.72 (copia di sicurezza della chat)
+
+- Su richiesta del titolare, Claude ha consegnato **due copie della chat** (12/11 → 19/11/2026, 22:35 UTC). Contengono dati personali, quindi stanno **fuori dal repository**: il titolare le custodisce nel suo cloud.
+  - **Copia leggibile:** 566 messaggi del titolare, 1.007 risposte di Claude e 2 riassunti automatici. SHA-256 `b0b6226f…5837`.
+  - **Copia completa grezza** (`.jsonl.gz`, 49 MB). SHA-256 `d07fef9a…ee`.
+- Le decisioni, i registri e i documenti restano comunque su GitHub, a ogni passo.
