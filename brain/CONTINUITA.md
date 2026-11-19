@@ -54,7 +54,7 @@ Ultimo aggiornamento: **2026-11-19 sera** (sezione in testa); prima: 2026-11-15,
 - **L'esempio avverso dell'11,7% era un artefatto** (riscontro §2).
 
 **Messaggi:**
-- **Messaggio 10 al DGS** preparato (`direttore-sicurezza/13-...`). Contiene la capienza della riserva, D-24…D-45, la specifica del verdetto e la richiesta dei casi a risposta esatta. Da verificare se il titolare l'ha mandato.
+- **Messaggio 10 al DGS** preparato (`direttore-sicurezza/13-...`). Contiene la capienza della riserva, D-24…D-45, la specifica del verdetto e la richiesta dei casi a risposta esatta. **ChatGPT ha esaurito l'uso fino al 21/11/2026:** si manda da quel giorno. Fino ad allora, nessun lavoro che dipende dal DGS.
 
 **Fonte P-001 (Brad Goh, D-41):**
 - Dossier, prima parte: `laboratorio/ipotesi/DOSSIER-FONTE-P001.md`. Elenchi dei 3 canali in `laboratorio/ipotesi/fonti/p001/`.
