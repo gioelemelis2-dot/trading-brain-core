@@ -858,3 +858,13 @@ Nulla di questo tocca il candidato `8e51ce9` su cui lavora R15.
 - **Sottotitoli bloccati dal controllo anti-bot di YouTube** sulle richieste dal cloud: non aggirato. Proposto un comando da lanciare sul Mac.
 - **`laboratorio/ipotesi/DOSSIER-FONTE-P001.md`:** canali, percorso dichiarato e incoerenze, conteggio delle 111 operazioni dichiarate di Brad Trades (perdite mostrate nel 29–34% dei casi, dimensioni cresciute di circa 10 volte, importi solo in dollari), modello di business e incentivi, stile del canale, metodo (concetti ICT/SMC), che cosa la fonte può dare e che cosa no.
 - **Nessuna scheda e nessuna prova.**
+
+## 2026-11-19 · v1.70 (decisioni D-42 … D-44; #119 corretto; linee guida della prova di utilità)
+
+- **Decisioni del titolare sul riscontro a DGS-11:**
+  - (a) **D-42:** obiettivo +0,25 R con potenza 50%, metro invariato;
+  - (b) **D-43:** clausola sulle code come esposizione verificabile in R; modifica il punto 3 di D-34;
+  - (c) **D-44:** delegata a Claude, intervalli sotto 1e-9 R invalidi;
+  - (d) il titolare chiede prima le linee guida: `piano/LINEE-GUIDA-PROVA-UTILITA.md`.
+- **#119 corretto** nel modulo del verdetto, in TDD. Mutanti VD01–VD48: **47/48 su 3.13 e 3.9**, VD13 equivalente dichiarato.
+- **Errore mio nello script dei mutanti:** VD05 non trovava più il testo dopo la modifica della riga. Corretto e ucciso.

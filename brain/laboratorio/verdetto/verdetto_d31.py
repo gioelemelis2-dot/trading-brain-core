@@ -5,7 +5,7 @@
   a blocchi da 10, B = 3.999, intervallo basic, quota 2,5% per coda. Il modulo si rifiuta di calcolare se l'impronta
   del pilota non è quella congelata nell'impegno del collaudo (IMPEGNO-PROTOCOLLO-IA02.md).
 - Segnale (D-31): favorevole se L > +0,20 R, sfavorevole se U < +0,10 R, altrimenti inconclusivo; un intervallo
-  mancante, non finito, invertito o di ampiezza nulla è invalido. L'uguaglianza non attraversa la soglia.
+  mancante, non finito, invertito o più stretto di 1e-9 R (#119, D-44) è invalido. L'uguaglianza non attraversa la soglia.
 - Esiti (D-35, DGS-10 §4 opzione 2), nell'ordine: veto accertato → bocciata; dati inidonei, minimi mancanti o intervallo
   invalido → non decidibile; U < +0,10 → bocciata; L > +0,20 e requisiti superati → promossa; altrimenti non decidibile.
 - Screening sullo sviluppo (D-36): media > +0,25 R, L > 0 e potenza stimata ≥ 50%.
@@ -28,13 +28,14 @@ SCREENING_POTENZA = 0.50
 B = 3999
 BLOCCO = 10
 VICINANZA = 1e-9
+AMPIEZZA_MINIMA = 1e-9           # #119, D-44: più stretto è un intervallo degenere (arrotondamento)
 ESITI = ("promossa", "bocciata", "non decidibile")
 ESITI_REQUISITO = ("superato", "fallito", "non valutabile")
 IMPRONTA_PILOTA = "717e55996b23a4954d69c97722458e30c2499000b5055fdcca4cba29f864b0ee"
 
 
 def segnale(iv) -> str:
-    if iv is None or P.intervallo_valido(iv[0], iv[1]) is None:
+    if iv is None or P.intervallo_valido(iv[0], iv[1]) is None or iv[1] - iv[0] < AMPIEZZA_MINIMA:
         return "invalido"
     if iv[0] > SOGLIA_PROMOZIONE:
         return "favorevole"
