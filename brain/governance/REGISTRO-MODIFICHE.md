@@ -767,3 +767,14 @@ Nulla di questo tocca il candidato `8e51ce9` su cui lavora R15.
 - **Scaricamento ASK:** fermato con codice 3 (molti 503 di Dukascopy sul 29/09/2013), a 4.290 file. Rilanciato con un ciclo che riprova ogni 30 minuti solo per il codice 3.
 - **Batteria:** nessun «Low Power Sleep» dopo l'aggiornamento (ultimo il 18/11 alle 13:37), con il registratore attivo.
 - **Verifica:** PR20–PR29 10/10 anche su 3.9. Gli script modificati funzionano: CT01–CT09 9/9 e W5x 3/3 su 3.13, con ogni esito stampato appena pronto.
+
+## 2026-11-19 · v1.63 (DGS-10: revisione del modello di scheda H-003)
+
+- **DGS-10** archiviato (`collaborazione/da-chatgpt/DGS-20261119-10-revisione-modello-h003.md`). Il modello A+B richiede correzioni prima del sigillo. **Incoerenza principale nel §8:** D, E e I potrebbero dare verdetti diversi alla stessa prova. Proposta: una sola definizione del metro (I) e una sola tabella dei verdetti (E). Testi sostitutivi pronti per A–J. Classificazione [DOC]/[METODO] clausola per clausola.
+- **Errore di Claude segnalato dal DGS:** nella bozza (sezione I) avevo scritto «la quota scende all'1,25% per una seconda variante **o una seconda apertura**». È sbagliato: con α = 5% e a = α/[j(j+1)m], l'1,25% corrisponde a j = 1 e m = 2 (due varianti nella prima apertura), mentre una seconda apertura (j = 2, m = 1) dà lo 0,8333%. Avevo confuso i due casi.
+- **Decisioni del titolare aperte** (DGS-10 §4 e §5):
+  - DA-31, due stati o tre stati, con la tabella delle priorità;
+  - politica di riesame del «non decidibile»;
+  - regola dello screening;
+  - minimi e anni valutabili (D).
+- **Ordine consigliato dal DGS:** subito G, H, F; prima del sigillo della prima scheda, I e le decisioni; dopo il sigillo, screening, poi compatibilità e prenotazione.
