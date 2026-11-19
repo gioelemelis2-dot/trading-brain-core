@@ -1,6 +1,83 @@
 # Documento di continuità
 
-Ultimo aggiornamento: **2026-11-15**, dopo il mandato notturno su H-002 (programma dei criteri, strumento di sigillo, quaderno delle ipotesi; ramo `feat/esecutore-h002`, **non unito a main**). Leggere questo file per primo (vale anche per Gemini, insieme a `collaborazione/HANDOFF-GEMINI.md`).
+Ultimo aggiornamento: **2026-11-19 sera** (sezione in testa); prima: 2026-11-15, dopo il mandato notturno su H-002 (programma dei criteri, strumento di sigillo, quaderno delle ipotesi; ramo `feat/esecutore-h002`, **non unito a main**). Leggere questo file per primo (vale anche per Gemini, insieme a `collaborazione/HANDOFF-GEMINI.md`).
+
+## Aggiornamento del 19/11/2026, sera (LEGGERE PER PRIMO: sostituisce le sezioni più vecchie dove sono in contrasto)
+
+**Priorità del titolare: prima la macchina, poi le strategie (D-33, D-34).**
+
+**Ramo e stato:**
+- Il ramo `feat/esecutore-h002` non è unito a `main` (`main` è indietro di oltre 140 file).
+- Ultimo commit di questa sessione: vedi `git log`. Il registro delle modifiche arriva a v1.72; i difetti a #119.
+
+**Contatore D-24 (sigillo):**
+- **1 su 2.** R16 è pulito; **R17 di Gemini è in corso** sul candidato `e476a9a`, nel worktree `~/Downloads/tb-r17`, HEAD `02c51c6`, ramo `rev/gemini-r17`.
+- Finora: suite 432 OK, collaudo IA-02 riprodotto, mutanti 165/165. Ne restano 136, poi Gemini consegna `G-20261118-R17.md`.
+- Da fare alla consegna:
+  - verificare che M-R17-02 e M-R17-03 coincidano con #117, già corretto;
+  - se il giro è pulito, contatore a 2 su 2;
+  - poi il giro su tutte le manomissioni (R18) e la decisione sulla protezione del ramo.
+
+**Decisioni del 19/11** (`governance/DECISIONI.md`):
+- **D-34 «definizione di fatto».** Elenco chiuso:
+  1. criterio D-31 in un modulo nuovo (**fatto**: `laboratorio/verdetto/verdetto_d31.py`, 31 test, mutanti VD 47/48 su 3.13 e 3.9, VD13 equivalente);
+  2. registro unico di N (**prossimo**);
+  3. clausola sulle code, ora D-43: esposizione in R dichiarata e verificabile;
+  4. tipi epistemici nei rapporti;
+  5. prova generale a vuoto (i casi a risposta esatta li scrive il DGS, se accetta il messaggio 10);
+  6. R17 più il giro sulle manomissioni;
+  7. unione in `main` con la protezione del ramo.
+
+  Il resto va a lotti e non riapre il contatore.
+- **D-35** tre esiti; i «non decidibili» si riprovano solo in demo.
+- **D-36** screening: media > +0,25 R, L > 0, potenza ≥ 50%.
+- **D-37** verdetto solo dal metro; veto per blocchi; minimi 1.000 sedute, 300 trade, 200 sedute attive.
+- **D-38** α 5%, nessuna parte protetta; date esatte dopo l'ASK.
+- **D-39** due copie dei dati.
+- **D-40** niente previsioni giornaliere.
+- **D-42** obiettivo +0,25 R con potenza 50%.
+- **D-43** clausola sulle code.
+- **D-44** intervalli < 1e-9 R invalidi (#119).
+- **D-41** dossier sulla fonte P-001, eccezione limitata a D-33.
+- **D-45** esecuzione con alert, poi conferma con un tocco; l'automatico non è autorizzato.
+
+**Aperte:**
+- **DA-32:** ore in cui il titolare può eseguire gli alert, da comunicare entro circa 10 giorni.
+- **Decisione (d):** prova «manuale contro assistito» (`piano/LINEE-GUIDA-PROVA-UTILITA.md`); consiglio d-2.
+
+**Fatti da ricordare:**
+- **La riserva basta per circa 4 verifiche in tutto il progetto** (consumo per calendario e per tutti i mercati). La potenza scende con le aperture successive.
+- **Audit globale e controverifica:**
+  - audit: `collaborazione/da-claude/AUDIT-GLOBALE-TRADING-BRAIN-E-ROADMAP.md`, con errata in testa;
+  - controverifica del DGS: DGS-11;
+  - riscontro di Claude: `collaborazione/da-claude/RISCONTRO-DGS-11.md`.
+- **L'esempio avverso dell'11,7% era un artefatto** (riscontro §2).
+
+**Messaggi:**
+- **Messaggio 10 al DGS** preparato (`direttore-sicurezza/13-...`). Contiene la capienza della riserva, D-24…D-45, la specifica del verdetto e la richiesta dei casi a risposta esatta. Da verificare se il titolare l'ha mandato.
+
+**Fonte P-001 (Brad Goh, D-41):**
+- Dossier, prima parte: `laboratorio/ipotesi/DOSSIER-FONTE-P001.md`. Elenchi dei 3 canali in `laboratorio/ipotesi/fonti/p001/`.
+- **Sottotitoli:**
+  - dal cloud sono bloccati da YouTube (anti-bot), e non si aggira;
+  - sul Mac il titolare li scarica con `~/Downloads/yt-dlp_macos` (2026.10.26) in `~/Downloads/p001_sottotitoli/`;
+  - non vanno nel repository.
+- **Compito per Gemini** (`collaborazione/da-claude/PROMPT-P001-GEMINI-TRASCRIZIONI.md`): da dare **dopo R17**, con una prova su 10 video. Aggiungere che le trascrizioni ci sono già.
+
+**Mac:**
+- **Batteria guasta:** sempre collegato alla corrente. Assistenza dopo R17 e la copia finale dei dati (`piano/PROCEDURA-ASSISTENZA-MAC.md`).
+- **Spazio su disco con cali improvvisi** (14 → 10 → 5,8 GB). Sospetto: memoria di scambio. Da controllare con `sysctl vm.swapusage`.
+- **ASK:** scaricamento in ciclo (circa 60%, aprile 2016 il 19/11 sera), log `~/scarica_ask.log`. Alla fine: controllo, intersezione BID/ASK, buchi per anno, date esatte della riserva (D-38), copia finale con due copie (D-39).
+
+**Ambiente cloud di Claude:**
+- Aggiunti `www.youtube.com` e `youtubei.googleapis.com` agli indirizzi permessi.
+- yt-dlp è autorizzato dal titolare solo per elenchi e sottotitoli di P-001.
+
+**Da fare quando c'è tempo:**
+- riconciliazione del G0 su demo MT4 (micro-operazioni con stop; la demo è MT4, le specifiche sono MT5);
+- commissione FP Markets per lato o andata e ritorno.
+
+**Copia della chat:** consegnata al titolare il 19/11, fuori dal repository (registro v1.72).
 
 ## Aggiornamento del 17/11/2026, notte (leggere prima della sezione seguente)
 - **Riserva di verifica: intatta, RICONFERMATA il 17/11** con lo strumento di riconteggio corretto (`governance/censimento/RICONTEGGIO-20261117.md`).
