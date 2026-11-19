@@ -162,3 +162,35 @@ python3 -m pip install --user -U yt-dlp && mkdir -p ~/Downloads/p001_sottotitoli
 - [SozAI, trascrizioni del canale](https://sozai.app/transcripts/channel/brad-goh-the-trading-geek/)
 - [Recapio, Risk Reward Radio ep. 11 (FundedNext)](https://recapio.com/digest/from-7-hour-to-millionaire-trader-the-trading-geek-risk-reward-radio-ep-11-by-fundednext)
 - [YouTubeSummary](https://youtubesummary.com/summary/UYnCQEHx7ZU)
+
+## 9. Seconda parte: lettura delle trascrizioni (dal 20/11/2026; in corso)
+
+**Fonte:** 138 trascrizioni automatiche scaricate dal titolare.
+- Brad Trades: 100 su 111, dal 02/01/2025 al 27/10/2026.
+- Market Mechanics e video collegati: 38 su 38.
+
+Le note dettagliate, con il minuto di riferimento, sono in `fonti/p001/NOTE-LETTURA-CLAUDE.md`.
+
+**Primi risultati:**
+1. **Esiste un «piano meccanico semplificato» pubblico** (Market Mechanics ep. 17 e 18). Ha regole parzialmente misurabili:
+   - trend a 4 ore, premium e discount al 50%;
+   - zona d'interesse, poi grafico inferiore;
+   - «sweep» e «market shift» confermato da una chiusura oltre l'ultimo massimo o minimo;
+   - ingresso al ritorno sulla zona;
+   - stop oltre la zona o il massimo protetto (il più vicino);
+   - target alla zona opposta o 2R;
+   - «set and forget».
+
+   **Lui stesso lo presenta come il più semplice di circa 10 modelli.**
+2. **Il metodo che usa davvero è discrezionale** (episodio bonus del 18/06/2026): più strati di struttura, modelli d'ingresso numerati 1–6, «no one-size-fits-all», «sound judgment».
+3. **Regole di rischio dichiarate** (ep. 21):
+   - massimo 1% a trade, −2/3% al giorno, massimo 3 trade al giorno;
+   - conto dichiarato di «circa 5 milioni».
+
+   Alcune dichiarazioni dal vivo del 2026 («risking 250,000», «risking 200k») superano l'1% di 5 milioni: **incoerenza da verificare**.
+4. **Filtri di calendario meccanizzabili** (ep. 19): niente lunedì e venerdì (salvo «A+»), niente dicembre, niente ultimo giorno del mese, ±15–30 minuti dalle notizie.
+5. **Una regola d'esecuzione non pubblica: «attaccare due volte la stessa idea»** (21/10/2026). Un titolo può contenere più operazioni.
+6. **Prima o dopo l'esito:** 70 video su 100 annunciano il risultato **nel primo minuto** (stima automatica). Il formato tipico è «risultato, poi riepilogo», quindi molte motivazioni sono date **dopo** l'esito. Altri video sono registrati durante l'operazione.
+7. **Qualità delle trascrizioni:** le 12 più recenti (dal 19/08/2026) sono **traduzioni automatiche**. Le loro cifre vanno verificate sull'audio.
+
+**Conseguenza provvisoria (IPOTESI di Claude):** il suo track record dal vivo usa la versione avanzata e discrezionale, con target a 9–10 R e rientri. **Non convalida** il modello meccanico pubblico, che va giudicato a sé. Il candidato naturale per il banco è **il piano dell'ep. 17 e 18 tradotto in regole**, con poche varianti dichiarate e i filtri di calendario dell'ep. 19.

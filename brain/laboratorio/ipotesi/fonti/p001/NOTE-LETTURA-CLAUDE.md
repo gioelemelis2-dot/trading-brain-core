@@ -152,3 +152,47 @@
 - **La lezione è stata registrata prima di essere pubblicata.** Brad dice «right now we are still in November… December 2022… 2 years ago», quindi circa novembre 2024, e «based on my 5 years of experience».
   - Market Mechanics del 2026 contiene quindi **materiale registrato in date diverse**.
   - Per la provenienza conta la data di pubblicazione (2026), ma le regole esistevano almeno dal 2024.
+
+## «How I Personally Trade (LIVE Breakdown) | Market Mechanics BONUS Ep» (iKRW0G6yPmM, 18/06/2026)
+
+**DICE:**
+- È una sessione dal vivo per gli iscritti al 1% Club, pubblicata come episodio bonus.
+- **Grafici:** giornaliero, poi 4 ore, poi 1 ora e 15 minuti, poi 5 minuti (02:07–19:16).
+- **Due o tre «strati» di struttura interna**, più la «fractal market shift», cioè una rottura vista sul grafico superiore come piccolo frattale (06:08–19:16).
+- **«Entry model number 1–6»** (14:14, 32:26): i modelli sono più dei 2 pubblici.
+- **Stop:** sotto l'ultima «liquidation candle» o sotto la zona.
+- **Target:** il prossimo massimo o la prossima zona; non si salta al «final boss» (47:41–49:42).
+- **Sul metodo:** «there is no one-size-fits-all approach… It depends on your trading style, your risk tolerance, your personality» (31:26). Ogni concetto è «a piece of the puzzle», da combinare in un «sound judgment» (51:42).
+- **C'è anche un'analisi sull'oro** (33:27–52:42). La data dei grafici non è indicata; la pubblicazione è del 2026.
+
+**[C] Commenti di Claude:**
+- Questa sessione mostra il metodo **vero**: fortemente **discrezionale**, con molte scelte («quale strato», «quale zona», «aggressivo o conservativo»).
+- **Contrasta con il «piano meccanico» dell'ep. 17.** Il piano meccanico è una semplificazione didattica, non il suo modo di operare.
+- **Conseguenza per il banco:** possiamo provare **la versione meccanica semplificata** (ep. 17 e 18) o nostre traduzioni. Non possiamo provare «il metodo di Brad» in quanto tale, perché dipende dal giudizio.
+
+## ATTENZIONE alla qualità: 12 trascrizioni sono traduzioni automatiche
+
+- **Le trascrizioni «inglesi» dei 12 video di Brad Trades dal 19/08/2026 in poi** hanno i segni di una **traduzione automatica di ritorno**: «TRUE?», «Exact.», «offer zone» per «supply zone», «on sale» per «sell», «TV» per «TP», «entry-level model» per «entry model».
+- È probabile che YouTube le abbia generate da una traccia doppiata o tradotta automaticamente.
+- **Il senso generale si conserva, ma termini e numeri sono meno affidabili.** Le cifre (rischio, risultato) di questi video vanno **verificate sull'audio originale** (compito di Gemini).
+- **Video interessati:** +1,1M (19/08), −251k (26/08), +96k (02/09), +168k (09/09), −79k (16/09), +97k (23/09), +274k oro (30/09), +131k (07/10), +190k (14/10), −172k (21/10), −84k (23/10), −60k (27/10).
+
+## Brad Trades «Losing $172K Live Trading (DID I F*CK UP??)» (gi60ri5MRb4, 21/10/2026). Trascrizione TRADOTTA, vedi sopra
+
+**DICE** (registrato durante l'operazione: le motivazioni sono dette **prima** dell'esito):
+- **Prima operazione** (00:02–05:08):
+  - vendita su EURUSD con l'**ingresso aggressivo**, cioè subito dopo la «sweep» e il tocco della zona;
+  - «this is honestly a gamble… a million things could go wrong» (03:06);
+  - stop preso in circa 15 minuti, **perdita di circa 80.000 $** (04:08);
+  - la sua lezione: «never try to stop a rocket… never go against the prevailing impulse» (04:08–05:08), cioè ha operato **contro la spinta in corso**.
+- **Seconda operazione sulla stessa idea** (09:11–24:20):
+  - rientro in vendita con lo stop sopra il nuovo massimo;
+  - «part of my trading system requires me to attack the same trade idea twice if I have a lot of conviction» (25:20);
+  - seconda perdita, totale −172.000 $ (24:20).
+- **Durante l'attesa** parla di «timeline parallele»: «I know I will win this trade because I have already shifted to the timeline» (13:11–14:12). Poi descrive la paura: «my palms are sweating» (18:16).
+- Sessione di Londra (08:10).
+
+**[C] Commenti di Claude:**
+- **Una regola d'esecuzione non dichiarata nel corso pubblico:** «attaccare due volte la stessa idea». Raddoppia il rischio sulla stessa ipotesi di mercato: due perdite di circa 80–90k, cioè due volte il rischio unitario. Va tenuta presente nel convertire in R: **un titolo («Losing $172k») può contenere più operazioni**.
+- **L'ingresso aggressivo, per sua stessa ammissione, è «una scommessa».** Nel modello pubblico (ep. 18) l'ingresso conservativo è indicato come quello «strict and mechanical».
+- **Video registrato dal vivo:** le motivazioni sono dette **prima** dell'esito. Utile per il catalogo (colonna «prima o dopo»).
