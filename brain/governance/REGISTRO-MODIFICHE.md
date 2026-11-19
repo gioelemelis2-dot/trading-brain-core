@@ -868,3 +868,12 @@ Nulla di questo tocca il candidato `8e51ce9` su cui lavora R15.
   - (d) il titolare chiede prima le linee guida: `piano/LINEE-GUIDA-PROVA-UTILITA.md`.
 - **#119 corretto** nel modulo del verdetto, in TDD. Mutanti VD01–VD48: **47/48 su 3.13 e 3.9**, VD13 equivalente dichiarato.
 - **Errore mio nello script dei mutanti:** VD05 non trovava più il testo dopo la modifica della riga. Corretto e ucciso.
+
+## 2026-11-19 · v1.71 (messaggio 10 al DGS; correzione di un conteggio)
+
+- **Messaggio 10 al DGS** (`direttore-sicurezza/13-MESSAGGIO-10-RISERVA-DECISIONI-VERDETTO.md`). Contiene:
+  - la capienza della riserva, cioè il punto 9 non arrivato;
+  - le decisioni D-24 … D-45;
+  - la specifica del modulo del verdetto;
+  - la proposta che i **casi a risposta esatta** della prova generale a vuoto li scriva il DGS, che non ha scritto l'esecutore (DGS-11 §7).
+- **Correzione di un mio errore di conteggio.** In v1.67 e in chat avevo scritto «32 test» per il modulo del verdetto. Erano 30 allora e sono **31** oggi, con il test di #119.
