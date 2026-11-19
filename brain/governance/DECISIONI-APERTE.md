@@ -389,6 +389,7 @@ DA-13 rulebook (Q-09) ──► DA-11 G0 minimo ──► DA-12 indicatori compo
 - **Soldi veri:** mai senza autorizzazione esplicita (D-14).
 
 ### DA-31 · Verdetto della verifica: due stati o tre (difetto #94 b, 17/11/2026) · **decisione del titolare, parere del DGS**
+- **CHIUSA il 19/11/2026 con D-35:** tre esiti (DGS-10 §4, opzione 2); i «non decidibili» si riprovano solo con dati nuovi (demo).
 - **Il problema:** oggi la verifica dà «promossa» o «bocciata». Con meno di 30 trade, o con risultati tutti uguali, il DSR non si può calcolare e la variante risulta «bocciata». Nel registro una strategia scarsa e una che non ha prodotto abbastanza trade sembrano la stessa cosa. Il registro della riserva prevede invece tre esiti: promossa, bocciata, non decidibile.
 - **Opzione A, lasciare due stati:** «non stimabile» resta «bocciata». È la scelta più severa. Si perde però l'informazione, e una strategia con pochi trade non può essere riprovata senza contare come prova nuova.
 - **Opzione B, tre stati** (promossa / bocciata / non decidibile): «non decidibile» quando il DSR non è calcolabile. In nessun caso promuove. Una riprova costa comunque una nuova prenotazione della riserva e conta in N.

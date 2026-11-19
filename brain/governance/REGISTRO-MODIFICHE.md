@@ -810,3 +810,9 @@ Nulla di questo tocca il candidato `8e51ce9` su cui lavora R15.
   8. Pilastri fermi.
 - **Omissione dell'audit, trovata da Claude preparando le decisioni:** il registro consuma le date per calendario e per tutti i mercati. Con 4.912 giorni feriali nella riserva e D = 1.000 sedute, **bastano circa 4 verifiche in tutto il progetto**. Con α_j = 5%/[j(j+1)], la potenza a +0,30 R scende da circa 72% (1ª apertura) a circa 39% (4ª), come stima. Le quote dalla 2ª apertura non sono collaudate. Aggiunta come punto 9 al messaggio 9 del DGS.
 - **Incoerenza segnalata:** con 1.000 sedute (circa 4 anni) il criterio «ultimi 5 anni positivi» non si può valutare senza anni parziali (già indicato in DGS-10 §6); le opzioni sono nella decisione 4.
+
+## 2026-11-19 · v1.66 (decisioni D-34 … D-40)
+
+- Il titolare ha deciso sul documento unico: **1-A** (D-34), **2-B-y** (D-35, chiude DA-31), **3-C con +0,25 R** (D-36), **4-A** (D-37), **5-A** (D-38), **7-A** (D-39), **no alla 8** e **la 6 dopo il DGS** (D-40).
+- Per la 2 e la 3, le precisazioni (riesame «y» e soglia +0,25 R) sono state chieste da Claude con una domanda esplicita: il titolare aveva risposto solo «2 b» e «3 c».
+- **Lavoro tecnico che ne segue (D-34):** modulo nuovo per il criterio D-31 con i tre esiti, lo screening D-36 e i minimi D-37, in TDD; registro unico di N; poi la prova generale a vuoto.

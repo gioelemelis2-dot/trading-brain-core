@@ -1,5 +1,7 @@
 # Decisioni da prendere per finire la macchina (19/11/2026)
 
+**ESITO (19/11/2026):** il titolare ha scelto 1-A, 2-B-y, 3-C con +0,25 R, 4-A, 5-A, 7-A e no alla 8. La 6 attende il DGS. Le scelte sono registrate come D-34 … D-40 in `DECISIONI.md`.
+
 **Per il titolare.**
 - Questo documento raccoglie in un posto solo le decisioni aperte che bloccano la macchina di valutazione.
 - Per ogni decisione trovi: la domanda, perché conta, le opzioni con i costi, il **consiglio di Claude** (dichiarato come tale) e che cosa si sblocca.
