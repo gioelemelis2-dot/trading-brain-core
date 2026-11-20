@@ -910,3 +910,16 @@ Nulla di questo tocca il candidato `8e51ce9` su cui lavora R15.
   - **prova in avanti simulata:** automatica, sui dati nuovi di ogni giorno, senza conto né ordini, per molte strategie;
   - **demo con ordini sul broker:** solo per le migliori, per la fedeltà d'esecuzione (DA-29).
 - **Le prove in avanti si contano in N** come le altre.
+
+## 2026-11-20 · v1.75 (D-34 punto 2: registro unico di N nel verdetto)
+
+- **Accertato.** Il percorso della verifica sigillata usa già il solo registro canonico `registro_prove.json` (sigillo ed esecutore). Il DSR di `criteri.verifica` riceve N come argomento. I registri di Binario B sono usati solo da `DSRCalculator` quando viene istanziato, cosa che la verifica non fa: sono inerti.
+- **Modulo del verdetto, in TDD** (test rossi `c5ee654`, poi il codice):
+  - `contesto_prove(registro)` legge N dal registro canonico, con l'impronta SHA-256 del file letto;
+  - rifiuta i registri ereditati di Binario B, un registro assente o malformato, e un registro cambiato durante la lettura;
+  - `verdetto` riporta `contesto_prove` e `quota`, e **rifiuta ogni quota diversa dal 2,5%** (D-31: un'altra richiede un collaudo);
+  - test statico: né il verdetto né il perimetro di esecuzione leggono `trial_registry` o istanziano `DSRCalculator`.
+- **Verifica:** 38 test verdi su 3.13 e 3.9; mutanti VD01–VD57 **56/57 su 3.13 e 3.9**, VD13 equivalente dichiarato.
+  - Durante la scelta dei mutanti ho aggiunto un caso di test (una sottoclasse di float) per VD55: dichiarato.
+- **DA-28:** i registri di Binario B sono dichiarati eredità; resta aperta la ratifica di N unico su tutti i mercati (D-46).
+- **Domanda aggiunta al messaggio 10 per il DGS** (punto 5): il ruolo di N nel verdetto di H-003, dopo che D-37 ha tolto il DSR dai requisiti.

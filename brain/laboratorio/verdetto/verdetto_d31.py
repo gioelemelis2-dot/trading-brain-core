@@ -13,9 +13,12 @@
 
 Vale solo per la prima apertura con una variante (quota 2,5%): una quota diversa richiede un collaudo (D-31).
 """
+import hashlib
 import math
 import random
+from pathlib import Path
 
+from ..esecuzione import sigillo as S
 from ..studi import pilota_ia02 as P
 
 SOGLIA_PROMOZIONE = 0.20
@@ -32,6 +35,8 @@ AMPIEZZA_MINIMA = 1e-9           # #119, D-44: più stretto è un intervallo deg
 ESITI = ("promossa", "bocciata", "non decidibile")
 ESITI_REQUISITO = ("superato", "fallito", "non valutabile")
 IMPRONTA_PILOTA = "717e55996b23a4954d69c97722458e30c2499000b5055fdcca4cba29f864b0ee"
+QUOTA = 0.025                   # D-31: la sola quota collaudata (prima apertura, una variante)
+REGISTRI_EREDITATI = ("trial_registry.json", "trial_registry_xauusd.json")   # Binario B: non valgono (D-34)
 
 
 def segnale(iv) -> str:
@@ -88,6 +93,20 @@ def intervallo(coppie, seme: int):
     return P.intervallo_bootstrap(coppie, random.Random(seme), B, BLOCCO)
 
 
+def contesto_prove(registro) -> dict:
+    """N dal registro canonico delle prove (D-34 punto 2), con l'impronta del file letto (DGS-11 §6)."""
+    registro = Path(registro)
+    if registro.name in REGISTRI_EREDITATI:
+        raise ValueError(f"{registro.name}: registro ereditato di Binario B, non vale per il verdetto (D-34, DA-28)")
+    if not registro.is_file():
+        raise ValueError(f"registro delle prove assente: {registro}")
+    prima = hashlib.sha256(registro.read_bytes()).hexdigest()
+    dati = S.leggi(registro)
+    if hashlib.sha256(registro.read_bytes()).hexdigest() != prima:
+        raise ValueError(f"{registro.name}: il registro è cambiato durante la lettura")
+    return {"registro": registro.name, "n_prove": S.n_prove(dati), "impronta": prima}
+
+
 def _requisiti(requisiti) -> list:
     out = []
     for r in requisiti:
@@ -98,10 +117,13 @@ def _requisiti(requisiti) -> list:
     return out
 
 
-def verdetto(coppie, seme: int, requisiti=()) -> dict:
+def verdetto(coppie, seme: int, requisiti=(), contesto=None, quota=QUOTA) -> dict:
+    if type(quota) is not float or quota != QUOTA:
+        raise ValueError(f"quota {quota!r}: solo {QUOTA} è collaudata; un'altra richiede un collaudo (D-31)")
     req = _requisiti(requisiti)
     v = {"esito": None, "causa": None, "L": None, "U": None, "media": None, "sedute": len(coppie), "trade": None,
-         "sedute_attive": None, "seme": seme, "impronta_pilota": IMPRONTA_PILOTA, "vicini_soglia": []}
+         "sedute_attive": None, "seme": seme, "impronta_pilota": IMPRONTA_PILOTA, "vicini_soglia": [],
+         "contesto_prove": contesto, "quota": quota}
 
     def fine(esito, causa):
         v["esito"], v["causa"] = esito, causa

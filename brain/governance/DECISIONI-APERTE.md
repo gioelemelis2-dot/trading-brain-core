@@ -316,6 +316,12 @@ DA-13 rulebook (Q-09) ──► DA-11 G0 minimo ──► DA-12 indicatori compo
   - ogni coppia ipotesi–mercato è una prova, in un unico conteggio che entra nel DSR (estende DA-19);
   - ogni ipotesi dichiara prima su quali mercati vale e con quali parametri, e non si ritocca da un mercato all'altro.
 - **Oggi:** il registro è per strumento (`dati/operativo/trial_registry_xauusd.json`).
+- **Aggiornamento del 20/11/2026 (D-34 punto 2, lavoro di Claude):**
+  - per il verdetto vale **solo** il registro canonico `laboratorio/registro_prove.json`, già usato dal sigillo e dall'esecutore;
+  - i registri di Binario B (`laboratorio/trial_registry.json`, `dati/operativo/trial_registry_xauusd.json`) sono **eredità**: il modulo del verdetto li rifiuta e un test statico vieta che il verdetto o il perimetro di esecuzione li leggano;
+  - il verdetto riporta N e l'impronta del registro letto.
+
+  **Resta aperta** la ratifica di N unico su tutti i mercati (D-46).
 
 ### DA-29 · Obiettivi in numeri e criteri di arresto (completa DA-20)
 **Deciso dall'utente il 13/11/2026:**

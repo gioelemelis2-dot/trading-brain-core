@@ -44,6 +44,11 @@ RICHIESTE
 
    Se il bootstrap rende impossibile il calcolo a mano, indicate i casi in cui il verdetto non dipende dal ricampionamento (per esempio dati inidonei, veto, minimi) e quelli per cui serve un riferimento indipendente.
 
+5. **Ruolo di N nel verdetto di H-003** (domanda nuova, 20/11).
+   - Con D-37 il verdetto lo dà solo il metro D-31; il DSR non è più un requisito. La molteplicità è governata dalla quota α_j/[j(j+1)]/m della riserva.
+   - Il modulo ora legge N **solo** dal registro canonico e lo riporta nel verdetto con l'impronta del file. Rifiuta i registri ereditati e ogni quota diversa dal 2,5%.
+   - Domanda: basta riportare N (con un DSR solo descrittivo), oppure N deve entrare in un requisito? In quel caso, quale, e come si raccorda con j e m?
+
 Formato della risposta: un paragrafo per richiesta. I numeri vanno marcati «ricalcolato» o «preso dal messaggio».
 
 ALLEGATO A — Decisioni D-24 … D-45 (testo del registro)

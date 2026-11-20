@@ -21,7 +21,7 @@ Ultimo aggiornamento: **2026-11-19 sera** (sezione in testa); prima: 2026-11-15,
 **Decisioni del 19/11** (`governance/DECISIONI.md`):
 - **D-34 «definizione di fatto».** Elenco chiuso:
   1. criterio D-31 in un modulo nuovo (**fatto**: `laboratorio/verdetto/verdetto_d31.py`, 31 test, mutanti VD 47/48 su 3.13 e 3.9, VD13 equivalente);
-  2. registro unico di N (**prossimo**);
+  2. registro unico di N (**fatto il 20/11**: il verdetto legge N solo dal registro canonico, lo riporta con l'impronta, rifiuta i registri ereditati e ogni quota diversa dal 2,5%; mutanti VD 56/57, VD13 equivalente);
   3. clausola sulle code, ora D-43: esposizione in R dichiarata e verificabile;
   4. tipi epistemici nei rapporti;
   5. prova generale a vuoto (i casi a risposta esatta li scrive il DGS, se accetta il messaggio 10);

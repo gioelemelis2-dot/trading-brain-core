@@ -333,7 +333,9 @@ class TestContestoProve(unittest.TestCase):
 
     def test_quota_fuori_collaudo_rifiutata(self):
         self.assertEqual(V.QUOTA, 0.025)
-        for q in (0.0125, 0.008333, 0.05, 0, "0.025", None):
+        class Q(float):
+            pass
+        for q in (0.0125, 0.008333, 0.05, 0, "0.025", None, Q(0.025)):   # Q: aggiunto per il mutante VD55
             with self.assertRaises(ValueError, msg=q):
                 V.verdetto(SU, 5, quota=q)
 
