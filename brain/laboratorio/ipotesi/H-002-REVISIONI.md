@@ -487,3 +487,29 @@ Rapporto: `collaborazione/da-gemini/G-20261116-R13.md` (commit `6e17782`, identi
 - **D-24:** nessun difetto critico o importante, tutti E a costo basso e minori. **R16 è il primo giro pulito: contatore 1 su 2.**
   - Caso da sottoporre al titolare: #112 (importante, errore di Claude) è stato trovato la stessa notte, ma nel pilota del collaudo, **fuori dal perimetro sigillato**. Per Claude non conta per D-24, perché riguarda gli strumenti di contorno e non il candidato. La decisione spetta al titolare.
 - **#114 nel perimetro:** correggerlo cambia il candidato. Opzioni per il titolare: (a) lasciarlo dichiarato (oggi nessun chiamante lo attiva) e fare R17 su `303890b`; (b) correggerlo in TDD (nuovo candidato), e R17 ripete le prove toccate.
+
+## R17 di Gemini (consegna del 20/11/2026)
+
+- **Consegna:** `collaborazione/da-gemini/G-20261118-R17.md`, più gli script `r17_compito_b_riproducibilita.py` e `r17_sonde_e_mutanti.py` (ramo `rev/gemini-r17`, commit `1b67ecf`; integrata solo la cartella di Gemini).
+- **Candidato:** `e476a9a`.
+  - Gemini: perimetro identico a `02c51c6`.
+  - **Verifica di Claude:** `git diff e476a9a 02c51c6 -- <perimetro>` = 0 byte, e **anche fino alla punta attuale del ramo** (0 byte). Il lavoro del 19–20/11 non ha toccato il perimetro.
+- **Ambiente:** Apple Python 3.9.6, macOS 14.5 e poi 14.8.9; rete bloccata.
+- **Compito A:**
+  - suite di 15 moduli: 432 test, OK, 1 saltato (#106, dichiarato);
+  - sonde #114, K15c e PI10: chiuse;
+  - `mutazioni_esecuzione`: **300/301**, solo N63 vivo (equivalente noto su Apple Python).
+  - **Verifica di Claude:** lo script alla versione `02c51c6` contiene esattamente **301 mutanti**, e i blocchi per prefisso di Gemini (81 + 84 + 39 + 29 + 16 + 25 + 19 + 8) li coprono senza sovrapposizioni.
+- **Compito B (riproducibilità del collaudo IA-02):**
+  - SHA-256 di `limiti_fase2` identico;
+  - `protocollo_ia02` rilanciato: 99/99 righe identiche, **CONFERMATO NEL DOMINIO DEL PILOTA**;
+  - repliche rigenerate su Apple Python 3.9: non coincidono bit per bit (scarti fino a 6,6e-15). È noto (#116) e non cambia il verdetto.
+- **Compito C:** 5 sonde superate; 6 mutanti nuovi, 4 uccisi.
+  - **M-R17-02 e M-R17-03 = #117**, già corretto il 19/11 con i mutanti PR28 e PR29.
+- **Rilievi di Gemini:**
+  - R17-01 = #117, corretto;
+  - R17-02 = equivalenti dichiarati (N63, PI10);
+  - **R17-03 = nuovo #121:** tre bordi su input anomali in `protocollo_ia02`, fuori dal perimetro, minori, di tipo E. Claude ha riprodotto il primo: `_intervallo_ammesso([False, True]) == True`.
+- **D-24:** nessun difetto critico o importante; tutti i rilievi sono minori e **fuori dal perimetro**. Non ci sono casi dubbi da sottoporre al titolare. **R17 è il secondo giro pulito consecutivo: contatore 2 su 2** sul candidato `e476a9a`.
+- **Prima della verifica sulla riserva (D-24 e D-34 punto 6) restano:** il giro dedicato a **tutte** le manomissioni (R18) e la decisione del titolare sulla protezione del ramo su GitHub.
+- **Nota di copertura:** la suite «ufficiale» del mandato R17 elencava 15 moduli e lasciava fuori, fra gli altri, `test_anti_frode_statico`, che il 20/11 ha trovato #120 (fuori dal perimetro). I prossimi mandati useranno `.github/scripts/esegui_test.py`, che esegue **tutte** le 25 suite.

@@ -11,7 +11,7 @@ Ultimo aggiornamento: **2026-11-19 sera** (sezione in testa); prima: 2026-11-15,
 - Ultimo commit di questa sessione: vedi `git log`. Il registro delle modifiche arriva a v1.72; i difetti a #119.
 
 **Contatore D-24 (sigillo):**
-- **1 su 2.** R16 è pulito; **R17 di Gemini è in corso** sul candidato `e476a9a`, nel worktree `~/Downloads/tb-r17`, HEAD `02c51c6`, ramo `rev/gemini-r17`.
+- **2 su 2 (20/11).** R16 e **R17** sono puliti (R17 verificato da Claude: perimetro identico, 301 mutanti, nessun difetto importante; nuovo #121 minore fuori dal perimetro). **Prossimo: R18, giro su tutte le manomissioni, e decisione sulla protezione del ramo.** Storia: R17 era sul candidato `e476a9a`, nel worktree `~/Downloads/tb-r17`, HEAD `02c51c6`, ramo `rev/gemini-r17`.
 - Finora: suite 432 OK, collaudo IA-02 riprodotto, mutanti 165/165. Ne restano 136, poi Gemini consegna `G-20261118-R17.md`.
 - Da fare alla consegna:
   - verificare che M-R17-02 e M-R17-03 coincidano con #117, già corretto;

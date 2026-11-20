@@ -983,3 +983,20 @@ Nulla di questo tocca il candidato `8e51ce9` su cui lavora R15.
 - **Rischio dichiarato dal vivo:** 6 operazioni in R; il rischio cresce di 20–50 volte in 20 mesi; violazioni ammesse della regola dell'1%; uscite decise dalla paura.
 - **Misura della selezione:** 7 perdite citate a voce su 9 hanno un video. **Il canale non nasconde sistematicamente le perdite che lui nomina**; lacuna nel giugno 2025.
 - **Compito di Gemini aggiornato:** campi per la dimensione, l'uscita manuale e le operazioni multiple; segnalazione delle 12 trascrizioni tradotte.
+
+## 2026-11-20 · v1.80 (R17 integrato: contatore 2 su 2; mandato R18 pronto)
+
+- **R17 di Gemini integrato:** `collaborazione/da-gemini/G-20261118-R17.md` e i due script, dal ramo `rev/gemini-r17` (`1b67ecf`).
+- **Verifiche di Claude:**
+  - perimetro identico a `e476a9a`, anche alla punta attuale del ramo;
+  - lo script dei mutanti alla versione `02c51c6` contiene esattamente 301 mutanti, coperti dai blocchi di Gemini senza sovrapposizioni;
+  - M-R17-02 e M-R17-03 = #117 (già corretto);
+  - R17-03: riprodotto il bordo (a).
+- **D-24:** nessun difetto critico o importante, nessun caso dubbio. **R17 è il secondo giro pulito consecutivo: contatore 2 su 2** sul candidato `e476a9a` (`H-002-REVISIONI.md`).
+- **Nuovo difetto #121** (minore, fuori dal perimetro, da correggere a lotti): tre bordi su input anomali in `protocollo_ia02`.
+- **Mandato R18 pronto** (`collaborazione/da-claude/PROMPT-R18-GEMINI.md`). Contiene:
+  - il giro su **tutte** le manomissioni, a qualunque costo, richiesto da D-24 prima della verifica;
+  - il **primo giro di revisione del modulo del verdetto** (D-34: due giri propri);
+  - le opzioni sulla protezione del ramo, da decidere dal titolare.
+
+  Priorità consigliata: R18 prima del compito su P-001.
