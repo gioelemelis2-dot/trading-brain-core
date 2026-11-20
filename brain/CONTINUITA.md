@@ -96,7 +96,7 @@ Il titolare ha deciso di **non registrarle ora**: prima Claude legge il material
 - A ogni push girano tutte le 25 suite, una per processo, con la rete bloccata, su 3.13 e 3.9.
 - I mutanti veloci si lanciano a mano.
 - Alla prima corsa in locale lo script ha trovato il difetto #120 (corretto).
-- Da verificare che GitHub Actions sia attivo sul repository: subito dopo il primo push non risultava nessuna esecuzione.
+- **Verificato il 20/11:** corse n. 3 e 4 verdi su 3.13 (ubuntu-latest) e 3.9 (ubuntu-24.04, perché 26.04 non ha più il 3.9). I push che toccano solo file `.md` non fanno partire i test (minuti gratuiti).
 
 **Copia della chat:** consegnata al titolare il 19/11, fuori dal repository (registro v1.72).
 

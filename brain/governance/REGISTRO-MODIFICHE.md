@@ -967,3 +967,19 @@ Nulla di questo tocca il candidato `8e51ce9` su cui lavora R15.
 - **Mutanti VD01–VD77: 76/77 su 3.13 e 3.9**, VD13 equivalente.
 - **Errore mio corretto:** la riga di formattazione era copiata due volte, e il mutante VD67 non era più univoco. Ora c'è una funzione comune `_riga`.
 - **Da verificare:** subito dopo il primo push GitHub non mostrava esecuzioni. Forse le Actions vanno abilitate nelle impostazioni del repository.
+
+## 2026-11-20 · v1.79 (test automatici verdi; lettura di P-001, notte)
+
+- **GitHub Actions:**
+  - prima corsa: il 3.9 non c'è più su Ubuntu 26.04 (`ubuntu-latest`). Ora il 3.9 gira su `ubuntu-24.04`;
+  - **corse n. 3 e 4 verdi su 3.13 e 3.9** (25 suite);
+  - i push che toccano solo file `.md` non fanno partire i test, per non consumare i minuti gratuiti con modifiche ai documenti.
+- **P-001 (D-41), note di lettura** (`laboratorio/ipotesi/fonti/p001/NOTE-LETTURA-CLAUDE.md`):
+  - ep. 7 (zone; **due definizioni diverse di «mitigazione»**: 50% della zona oppure primo contatto);
+  - ep. 12 (killzone; la **«Asia sweep»**, che coincide con la bozza B di Claude: provenienza condivisa);
+  - ep. 13 (liquidità; l'affermazione «ogni movimento è preceduto da una sweep» **non è falsificabile** così come è detta; pista accademica sugli stop ai numeri tondi, da verificare);
+  - ep. 27 (metodo di revisione: numeri troppo piccoli, rischio di sovradattamento);
+  - ep. 31 (prop firm: limiti compatibili con le nostre regole).
+- **Rischio dichiarato dal vivo:** 6 operazioni in R; il rischio cresce di 20–50 volte in 20 mesi; violazioni ammesse della regola dell'1%; uscite decise dalla paura.
+- **Misura della selezione:** 7 perdite citate a voce su 9 hanno un video. **Il canale non nasconde sistematicamente le perdite che lui nomina**; lacuna nel giugno 2025.
+- **Compito di Gemini aggiornato:** campi per la dimensione, l'uscita manuale e le operazioni multiple; segnalazione delle 12 trascrizioni tradotte.

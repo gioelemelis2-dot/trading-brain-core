@@ -6,6 +6,7 @@ name: test
 
 on:
   push:
+    paths-ignore: ["**/*.md"]      # i soli documenti non fanno ripartire i test (minuti gratuiti limitati)
   pull_request:
   workflow_dispatch:
 
