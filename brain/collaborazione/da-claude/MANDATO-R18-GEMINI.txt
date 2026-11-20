@@ -1,0 +1,67 @@
+MANDATO R18 PER GEMINI — giro su TUTTE le manomissioni, richiesto da D-24 prima della verifica sulla riserva
+
+CONTESTO
+- R16 e R17 sono puliti: contatore 2 su 2 sul candidato e476a9a (verifica di Claude in H-002-REVISIONI.md, «R17»).
+  R17-01 = #117 (già corretto), R17-02 = equivalenti dichiarati, R17-03 = #121 (minore, fuori perimetro, aperto).
+- D-24: prima della verifica sulla riserva serve un giro dedicato a TUTTE le manomissioni, A QUALUNQUE COSTO
+  (anche medio e alto), senza difetti critici o importanti, più la decisione del titolare sulla protezione del ramo.
+- Novità dal 19/11, fuori dal perimetro sigillato:
+  - modulo del verdetto D-31 (laboratorio/verdetto/verdetto_d31.py): tre esiti, minimi, screening, veto per
+    blocchi, N dal registro canonico con impronta, quota collaudata, rapporti con i tipi epistemici;
+  - test automatici su GitHub (.github/workflows/test.yml, .github/scripts/esegui_test.py);
+  - difetti #118–#121.
+- CANDIDATO: e476a9a. Perimetro: laboratorio/esecuzione/, simulatori/orb_londra.py, dati/pipeline/dukascopy.py,
+  dati/pipeline/calendario.py. Lavora sulla punta del ramo feat/esecutore-h002 e verifica che
+  git diff e476a9a HEAD -- <perimetro> sia vuoto. Dichiara commit, ambiente e perimetro (P6).
+
+REGOLE
+- Quelle di R17: nessun dato vero, rete bloccata (HTTPS_PROXY=http://127.0.0.1:9), worktree nuovo ../tb-r18 sulla
+  punta del ramo, scrivere solo in brain/collaborazione/da-gemini/, NON modificare il codice del progetto,
+  mai compiacente. Percorsi locali con ~ (D-28).
+- NON toccare ~/Downloads/tb-riconta, brain/dati/reali/, i processi scarica_cache, ~/Downloads/p001_sottotitoli.
+- Le prove di manomissione si fanno SOLO su copie temporanee (repository git clonati in cartelle temporanee,
+  registri finti, dati inventati), MAI sul repository di lavoro né su GitHub.
+- Mac: un solo processo per le corse lunghe; prima di ogni blocco controlla `df -h ~` e fermati sotto i 3 GB.
+
+MODELLO DI MINACCIA (D-24)
+Qualcuno (persona o agente IA, anche in buona fede ma sotto pressione) vuole che una strategia risulti promossa,
+o che un esito cambi, o che la riserva sembri non consumata. Ha accesso al repository locale e alla shell.
+Ogni attacco va classificato: E (errore in buona fede) o M (manomissione), costo basso / medio / alto,
+RILEVATO (da quale controllo) o NON RILEVATO.
+
+COMPITI
+A. Base (Apple Python 3.9):
+   - tutte le suite con `python3 -s -B .github/scripts/esegui_test.py` (atteso: TUTTO VERDE, 25 suite);
+   - mutazioni_esecuzione.py completa (a blocchi per prefisso come in R17): atteso 100% salvo N63 e PI10;
+   - mutazioni_verdetto.py: atteso tutto ucciso salvo VD13 (equivalente dichiarato).
+B. TUTTE le manomissioni sul perimetro, a qualunque costo. Almeno queste classi, più quelle che trovi:
+   1. Registro delle prove (registro_prove.json): N ridotto, esiti cambiati, prove cancellate o riordinate,
+      sigillo riscritto, file sostituito da uno coerente ma falso. Ricontrolla i limiti DICHIARATI #90 e #98
+      (registro locale riscrivibile; storia git parziale o riscritta) e di' che cosa li fermerebbe.
+   2. Storia git: rebase, amend, reset, riscrittura del riferimento remoto, clone parziale, reflog cancellato,
+      commit con data falsa; differenza fra ciò che vede il codice e ciò che vedrebbe GitHub.
+   3. Ambiente d'esecuzione: PYTHONPATH, sitecustomize/usercustomize, file .pth, .pyc estranei, moduli che
+      oscurano la libreria standard (#95, #96), variabili d'ambiente, PYTHONHASHSEED, orologio e fuso.
+   4. Dati: cache BID/ASK scambiati o mescolati, file della riserva nel periodo di sviluppo, date della
+      partizione ritoccate, buchi mascherati, collegamenti simbolici, percorsi con «..».
+   5. Registro della riserva (riserva.py): prenotazioni e autorizzazioni falsificate, j, m o quota alterati,
+      parte protetta aggirata, alias di mercato, consumo «dimenticato».
+   6. Concorrenza: due esecuzioni insieme, blocco (lock) aggirato, scrittura interrotta a metà.
+   7. Test automatici su GitHub: modifica di test.yml per saltare suite o versioni, uso di `paths-ignore`
+      per far passare codice senza test, test disattivati o resi sempre verdi.
+C. PRIMO GIRO DI REVISIONE del modulo nuovo verdetto_d31.py (D-34: ha 2 giri propri; fuori perimetro), errori E
+   e manomissioni M:
+   - contratto: D-31 (soglie +0,20 / +0,10, Δ, quota), D-35 (tabella dei tre esiti e priorità dei veti),
+     D-36 (screening), D-37 (minimi e veto per blocchi), D-44 (ampiezza < 1e-9 R invalida);
+   - contesto_prove: un registro ereditato rinominato, un registro canonico falso ma valido, un dizionario
+     «contesto» costruito a mano dal chiamante (dov'è il confine di fiducia?);
+   - rapporti tipizzati: un numero può arrivare al titolare senza tipo o con il tipo sbagliato?
+   Almeno 5 sonde e 5 mutanti NUOVI (non già in mutazioni_verdetto.py).
+D. Protezione del ramo su GitHub (decisione del titolare, D-24): elenca che cosa coprirebbe (push forzati,
+   cancellazione del ramo, controlli obbligatori = i test automatici, revisione richiesta) e che cosa NO
+   (repository locale, registro locale). Proponi 2–3 OPZIONI con pro e contro, SENZA scegliere.
+E. Tabella dei rilievi con gravità, tipo (E/M), costo e RILEVATO o NON RILEVATO; frase finale esplicita:
+   «R18: nessun difetto critico o importante, di qualunque costo, che conti per D-24» oppure l'elenco.
+
+CONSEGNA: brain/collaborazione/da-gemini/G-<data>-R18.md più gli script, commit con la tua identità,
+push su rev/gemini-r18.
