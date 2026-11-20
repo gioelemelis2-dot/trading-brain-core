@@ -252,3 +252,53 @@ Da verificare nel catalogo: quante di queste perdite hanno un video. È la misur
 - **Il suo track record dal vivo non è il risultato di un metodo fisso.** La dimensione cresce, l'uscita cambia con la paura o la fiducia, la regola dell'1% non è rispettata. **Anche se fosse tutto vero, non ci dice quanto vale una regola meccanica.**
 - **Le sue lezioni di rischio** (ep. 21: 1%, −3% al giorno, 3 trade) **restano sensate. Le prendiamo come regole nostre, non perché lui le rispetti.**
 - **Per il catalogo di Gemini:** in ogni operazione vanno annotati la dimensione e se l'uscita è avvenuta come pianificato o a mano. È un campo «uscita manuale sì/no».
+
+## Market Mechanics ep. 7 «Institutional Supply & Demand Zones» (52aKS7HN_jI, 22/05/2026)
+
+**DICE:**
+- **Zona** = l'**origine** di un movimento di forte squilibrio («big juicy candlesticks»). Più forte è il movimento che parte dalla zona, più la zona conta (08:05). Non lo quantifica.
+- **Metodo dell'intervallo** (10:08–14:13): dal massimo al minimo della **congestione** prima della rottura. Se non c'è congestione, dal massimo al minimo del **ritracciamento**.
+- **Metodo della candela pivot** (14:13–17:15): la sola candela che ha causato l'inversione, ombre comprese. Zona più stretta, quindi rapporto rischio/rendimento migliore, ma **ingressi persi più spesso**.
+  - «Try both of these method over the span of 100 trade… find out which one works for you» (17:15–18:16).
+- **Regola di «mitigazione» meccanica** (22:17–25:17): «it counts as a mitigation if price… pulled back… into the **50%** of this zone». Un semplice contatto **non** conta.
+  - Una zona già mitigata (prezzo arrivato al 50%) è «usata»: la volta dopo il prezzo «will most likely blast right through it» (26:17–27:17).
+  - Ma «not always»: le zone rispettate più volte sono forti (19:16–20:17; 27:17).
+- **Non si entra solo sulla zona:** serve la struttura (non vendere su massimi deboli), la «sweep» e lo shift della struttura interna, cioè l'ingresso «di conferma». L'ingresso «aggressivo» avviene al tocco (29:18–30:20).
+
+**[C] Commenti di Claude:**
+- **Due definizioni diverse di «mitigazione».** Qui (ep. 7) è il **prezzo al 50% della zona**. Nelle ep. 17 e 18 si scende sul grafico inferiore **al primo contatto** con la zona («the minute price touches the zone», ep. 18, 26:24). Sono due varianti: va scelta una prima del sigillo, oppure dichiarate entrambe e contate in N.
+- **Elementi meccanizzabili:** congestione o ritracciamento (con una definizione di «consolidamento» da fissare), candela pivot, 50% della zona, zona «usata» dopo una mitigazione.
+- **Non meccanizzabili senza una nostra scelta:** «big juicy candlesticks» (serve una soglia, per esempio corpo maggiore di k volte la media delle ultime n candele) e «forza» del movimento.
+- **La regola «zona usata dopo una mitigazione» e l'eccezione «zone rispettate più volte» si contraddicono.** Ne va scelta una.
+
+## Market Mechanics ep. 13 «Liquidity Concepts & Inducements» (TthzSVTzWoE, 28/05/2026)
+
+**DICE:**
+- **Liquidità** = ordini fermi: gli stop di chi è già in posizione e gli ordini stop di chi aspetta una rottura (02:02–03:03). Si trova:
+  - sopra i massimi e sotto i minimi di swing;
+  - sopra i massimi uguali e sotto i minimi uguali;
+  - oltre le trendline;
+  - oltre supporti e resistenze.
+
+  «Assume that there is resting liquidity behind any high or low that… price is not yet traded» (04:04).
+- **«Sweep»:** il prezzo supera un massimo o un minimo precedente, fa scattare gli ordini e torna indietro con una **reazione a V** (14:15–15:16). Una sweep **non** basta per dire che il trend si inverte: serve il «market shift» (15:16).
+- **Liquidity zone:** una zona d'interesse (domanda, offerta o order block) che **ha preso liquidità** mentre si formava. È considerata più forte (19:16–21:18).
+- **Inducement:** una figura «tentatrice» (doppio massimo, doppio minimo) vicino a una zona d'interesse, che spinge a entrare troppo presto e crea liquidità (23:20–29:30).
+- **Affermazioni forti:**
+  - «the market needs to sweep some liquidity before it move, always. Every single time» (46:39);
+  - «This is how I am able to… predict… with so much certainty» (47:41);
+  - quando una mossa non ha una sweep visibile, la cerca «a sinistra» o sul grafico a 5 minuti (33:32–34:32, 46:39).
+
+**[C] Commenti di Claude:**
+- **«Ogni movimento è preceduto da una sweep» non è falsificabile così com'è detto.** Se la sweep non si vede, la si cerca su un altro grafico o più indietro nel tempo: qualche massimo o minimo superato si trova sempre. Per renderla provabile vanno fissati **prima** il grafico, quanti massimi o minimi considerare e la finestra di tempo. Solo allora si può contare quante sweep sono seguite da un movimento e quante no.
+- **Il meccanismo ha una base accademica parziale, da verificare.** Gli studi di Carol Osler sul forex (inizio anni 2000, *Journal of Finance* e *Journal of International Money and Finance*) documentano che gli **ordini stop si concentrano appena oltre i numeri tondi** e che, scattando, possono innescare **cascate di prezzo**.
+  - È una versione misurabile della «liquidità oltre i livelli ovvi».
+  - **Ipotesi strutturale candidata:** il comportamento del prezzo oltre i numeri tondi e i massimi e minimi di sessione.
+  - Va letta la fonte originale prima di usarla.
+- **Elementi meccanizzabili:**
+  - massimi e minimi di swing (frattali di n barre);
+  - massimi e minimi «uguali» (con una tolleranza);
+  - la sweep come superamento del livello di almeno x seguito da una chiusura di nuovo all'interno entro k barre;
+  - la «liquidity zone» come zona la cui formazione include una sweep.
+- **Non meccanizzabili senza una nostra scelta:** trendline, livelli «ovvi per il pubblico», «fuel sufficiente».
+- **La narrazione** («le banche hanno bisogno degli stop dei retail per riempire ordini da miliardi») è una spiegazione, non una prova. La prova la può dare solo il banco, sulla versione meccanica.
