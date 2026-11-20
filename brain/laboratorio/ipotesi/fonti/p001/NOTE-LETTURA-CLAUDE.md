@@ -391,3 +391,32 @@ Da verificare nel catalogo: quante di queste perdite hanno un video. È la misur
 - **Unica lacuna chiara: giugno 2025.** Le perdite citate non hanno tutte un video.
 - **Limite della misura:** confronta solo le perdite che **lui stesso nomina**. Le perdite mai nominate restano invisibili. Il denominatore vero, cioè tutte le sue operazioni, rimane ignoto.
 - **Mercati:** a novembre 2025 opera anche **Nasdaq (NQ), Bitcoin e Dow (US30)**, non solo forex e oro. Il suo track record mescola strumenti diversi.
+
+## Market Mechanics ep. 25 «How I Find A+ Setups» (V4Unokfrqjw, 09/06/2026)
+
+**DICE: i «5 golden rules», da controllare tutti prima di ogni trade** (01:04–18:13):
+1. **Direzione allineata:** struttura interna e struttura del grafico superiore nello stesso verso. Se sono in disaccordo, i principianti non operano (02:07–05:07).
+2. **Zona d'interesse ad alta probabilità:** allineata al trend, con una sweep di liquidità o liquidità vicina. Il prezzo deve essere **dentro** la zona, non vicino (05:07–11:10).
+3. **Sweep di liquidità e «market shift»:** «No liquidity shift, no entry» (11:10–13:11).
+4. **Orario:** solo nella killzone di Londra, «3:00 p.m. Singapore time to around like 5:00 to 6:00 p.m.» (13:11–16:12).
+5. **Rapporto rischio/rendimento almeno 1:2.** Sotto 2, si passa «no matter how confident I am» (16:12–18:13). Per i principianti: target fisso a 2R.
+
+**Classificazione:**
+- **A+** = tutte e 5 le regole;
+- **A** = rispetta il piano ma non tutte e 5 (ammesso, «altrimenti opererei troppo poco»);
+- **B e C** = mai (21:14–22:15).
+
+Rischio variabile facoltativo: 0,5% sugli A e 1% sugli A+ (22:15–23:15).
+
+**Non negoziabili:** mai aumentare la dimensione per recuperare le perdite o perché ci si sente bene (23:15–24:16).
+
+**[C] Commenti di Claude:**
+- **Le 5 regole sono la miglior sintesi meccanica del suo metodo pubblico.** Quasi tutte sono traducibili:
+  - 1: struttura su due grafici;
+  - 2: zona con sweep, prezzo dentro la zona;
+  - 3: sweep e shift;
+  - 4: finestra oraria esatta;
+  - 5: target di almeno 2R sulla zona opposta.
+- **La categoria «A» lascia una porta discrezionale:** si opera anche senza tutte e 5 le regole. Per il banco conviene provare **solo la versione A+**, che è definita, ed eventualmente l'«A» come variante dichiarata.
+- **Il «mai aumentare la dimensione perché ci si sente bene» contrasta** con le sue dichiarazioni dal vivo sul rischio (vedi la sezione sul rischio dichiarato).
+- **Ancora un orario diverso:** 15:00–17/18:00 di Singapore, contro 14:00–17:00 (ep. 12) e 07:00–10:00 UTC (ep. 31). La finestra va fissata nella scheda, con l'ora legale.
