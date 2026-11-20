@@ -196,3 +196,59 @@
 - **Una regola d'esecuzione non dichiarata nel corso pubblico:** «attaccare due volte la stessa idea». Raddoppia il rischio sulla stessa ipotesi di mercato: due perdite di circa 80–90k, cioè due volte il rischio unitario. Va tenuta presente nel convertire in R: **un titolo («Losing $172k») può contenere più operazioni**.
 - **L'ingresso aggressivo, per sua stessa ammissione, è «una scommessa».** Nel modello pubblico (ep. 18) l'ingresso conservativo è indicato come quello «strict and mechanical».
 - **Video registrato dal vivo:** le motivazioni sono dette **prima** dell'esito. Utile per il catalogo (colonna «prima o dopo»).
+
+## Il rischio dichiarato nelle operazioni dal vivo (Brad Trades, 20/11/2026)
+
+**Metodo.** Ho estratto **tutti** i passaggi in cui Brad dichiara il rischio di un'operazione (19 video su 100 con trascrizione) e li ho letti uno per uno. La regola d'estrazione è nello script `rischio_contesti`, nella cartella di lavoro di Claude. Dove la trascrizione è tradotta (dal 19/08/2026) lo segnalo.
+
+### A. Operazioni con rischio in dollari dichiarato: il risultato in R si può calcolare
+
+| Data | Titolo | Rischio dichiarato (minuto) | Risultato | **R** | Note |
+|---|---|---|---|---|---|
+| 16/01/2025 | +46k «Best liquidity strategy» | «risking 5K» (06:26, 08:28) | +46.000 | **+9,2 R** | Lui dice «1 to 10 R… 9.5R» (06:19). Detto **dopo** la chiusura |
+| 18/02/2025 | +102k GBPUSD | «risking 10K a trade» (04:28) | +102.000 | **+10,2 R** | **Chiusura manuale anticipata per paura**: «I got scared… your boy is going to close» (04:25) |
+| 31/07/2025 | +30k «Imbalance» | «struggling to even risk like 10k a trade» (30:01) | +30.000 | **circa +3 R** (se 10k) | Rischio indicato in modo indiretto |
+| 25/11/2025 | +58k «Market crash» | «risking… 30 bands» (07:44), «1 is to 2» (07:39) | +58.000 | **circa +1,9 R** | Detto durante l'operazione |
+| 15/07/2026 | −212k «Worst month» | «usually we always risk about 100k… now we are risking 200k» (03:30) | −212.000 | **circa −1,06 R** (di 200k) | Trascrizione originale (non tradotta) |
+| 27/10/2026 | −60k «Exit liquidity» | «risking about 50,000» (00:47); «sometimes I risk 80, 70, 60» (00:52) | −60.000 | **circa −1,2 R** | Trascrizione **tradotta** |
+
+### B. Solo «1%» o «0,5%», senza importo: il risultato in R non si può calcolare
+
+- 11/03/2025 (+60k), 08/05/2025 (+30k), 20/05/2025 (+35k) e 19/06/2025 (+36k): «risk 1%».
+- 23/07/2025 (+52,8k): «0,5%».
+- 13/06/2025 (+22k): dopo le perdite di fila decide di **scendere allo 0,5%** e forse prendersi una settimana di pausa (22:07).
+- 10/12/2025 (+25k, EdgeFlo): «if I'm risking 1% on this trade, that's around 30k» (09:21), quindi **un conto di circa 3 milioni** a dicembre 2025.
+
+### C. Che cosa ne ricavo
+
+**1. Il rischio per operazione è cresciuto di circa 20–50 volte in 20 mesi.** Sono tutte sue parole:
+- 5k (gen. 2025), poi 10k (feb. 2025), poi 10–15k (set. 2025), poi 30k (nov.–dic. 2025);
+- «usually about 100k» (lug. 2026), poi 200k, poi «250.000» (set. 2026, tradotta), poi 50k «usual» con punte di 60–80k (ott. 2026, tradotta).
+
+**2. Viola la sua regola dell'1%, per sua ammissione.**
+- Nella lezione (ep. 21, giugno 2026) dice «un conto da 5 milioni, rischio l'1%», cioè circa 50k.
+- A luglio 2026 dice «di solito rischiamo circa 100k» (2% di 5 milioni) e poi 200k (4%). A settembre «250.000» (5%).
+- Il 26/09/2025: «This was not me risking 1%… This was me full porting the account with max leverage, max draw down» (06:06–06:20), cioè tutto il conto con la leva massima, su un'operazione da +45k.
+- L'08/07/2026 (+292k sull'oro): «I'm not risking 1% on this trade» (13:56).
+
+**3. La gestione dell'uscita dipende dalla dimensione e dall'emozione, non da una regola.**
+- «If I'm risking 1%… I'd hold to catch 1:4R… But I'm risking a lot of money… get the hell out ASAP» (08/07/2026, 13:45 e 27:08).
+- Il 18/02/2025 chiude in anticipo «per paura».
+- Questo contraddice il «set and forget» che insegna nell'ep. 17 (36:34).
+
+**4. I rapporti in R calcolabili sono pochi (6) e molto diversi:**
+- +9 / +10 R all'inizio del 2025 («sniper», piccole dimensioni);
+- poi circa +2 / +3 R e −1 R con dimensioni grandi.
+
+È coerente con il punto 3: le vincite lunghe si accorciano quando il rischio cresce.
+
+**5. Le perdite nel racconto.**
+- «I was down 15,000 two weeks ago» (11/03/2025).
+- «the first two weeks [of June] was not pleasant… lost a ton of money» (19/06/2025).
+
+Da verificare nel catalogo: quante di queste perdite hanno un video. È la misura della selezione.
+
+**[C] Conseguenze per il progetto:**
+- **Il suo track record dal vivo non è il risultato di un metodo fisso.** La dimensione cresce, l'uscita cambia con la paura o la fiducia, la regola dell'1% non è rispettata. **Anche se fosse tutto vero, non ci dice quanto vale una regola meccanica.**
+- **Le sue lezioni di rischio** (ep. 21: 1%, −3% al giorno, 3 trade) **restano sensate. Le prendiamo come regole nostre, non perché lui le rispetti.**
+- **Per il catalogo di Gemini:** in ogni operazione vanno annotati la dimensione e se l'uscita è avvenuta come pianificato o a mano. È un campo «uscita manuale sì/no».

@@ -194,3 +194,14 @@ Le note dettagliate, con il minuto di riferimento, sono in `fonti/p001/NOTE-LETT
 7. **Qualità delle trascrizioni:** le 12 più recenti (dal 19/08/2026) sono **traduzioni automatiche**. Le loro cifre vanno verificate sull'audio.
 
 **Conseguenza provvisoria (IPOTESI di Claude):** il suo track record dal vivo usa la versione avanzata e discrezionale, con target a 9–10 R e rientri. **Non convalida** il modello meccanico pubblico, che va giudicato a sé. Il candidato naturale per il banco è **il piano dell'ep. 17 e 18 tradotto in regole**, con poche varianti dichiarate e i filtri di calendario dell'ep. 19.
+
+**Aggiornamento del 20/11/2026: il rischio dichiarato nelle operazioni dal vivo** (dettagli in `fonti/p001/NOTE-LETTURA-CLAUDE.md`).
+8. **Il rischio per operazione è cresciuto di circa 20–50 volte in 20 mesi**, per sue parole: da 5k (gennaio 2025) a «circa 100k di solito», poi 200k e «250.000» (2026). A dicembre 2025 «l'1% è circa 30k», quindi un conto di circa 3 milioni.
+9. **Viola la sua regola dell'1%, per sua ammissione.**
+   - «usually about 100k» (2% di 5 milioni), poi 200k e 250k (fino al 5%);
+   - il 26/09/2025: «full porting the account with max leverage»;
+   - l'08/07/2026: «I'm not risking 1% on this trade».
+10. **L'uscita dipende dalla dimensione e dalla paura**, non da una regola: «se rischio l'1% tengo fino a 1:4R; se rischio molto, esco subito»; una chiusura anticipata «per paura» (18/02/2025). Contraddice il «set and forget» che insegna.
+11. **Risultati in R calcolabili: solo 6.** +9,2 e +10,2 R a inizio 2025 (piccole dimensioni), poi circa +1,9, +3, −1,06 e −1,2 R con dimensioni grandi.
+
+**Conclusione aggiornata (IPOTESI di Claude):** anche se tutte le cifre fossero vere, **il suo track record non misura una regola fissa**. Misura un trader discrezionale che cambia dimensione e uscita. Le sue **regole di rischio insegnate** restano buone come regole nostre. Il **piano meccanico pubblico** resta il solo candidato da provare sul banco, con le aspettative ridotte dal test indipendente sulla scuola ICT (`fonti/RICERCA-FONTI-20261120.md`).

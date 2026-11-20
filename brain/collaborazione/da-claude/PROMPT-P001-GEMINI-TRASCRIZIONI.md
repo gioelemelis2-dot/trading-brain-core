@@ -33,6 +33,12 @@ REGOLE (vincolanti)
 10. **Spazio sul disco:** controlla `df -h ~` prima di iniziare. Se sono liberi meno di 3 GB, fermati e avvisa.
 
 CHE COSA CONSEGNARE
+- **Campi aggiuntivi in ogni riga (20/11):**
+  - «Dimensione o rischio mostrato a schermo»;
+  - «Uscita come pianificata o a mano (e perché)»;
+  - «Più operazioni nello stesso video (sì/no, quante)».
+
+  Le trascrizioni ci sono già, in `~/Downloads/p001_sottotitoli/`: non riscaricarle. Le **12 trascrizioni dal 19/08/2026 sono traduzioni automatiche**: le cifre di quei video vanno verificate sull'audio originale.
 - Il file `P001-CATALOGO-GEMINI.md`, sul ramo `rev/gemini-p001`, nella cartella `brain/collaborazione/da-gemini/`.
   - Contenuto: una riga per operazione, con le colonne di `CATALOGO-OPERAZIONI-P001.md` più «Si vede nel video», «Rischio in R e fonte dei numeri», «Conto o broker mostrato».
 - **Prima una prova su 10 video**: i 10 più recenti di @bradgtrades. Consegnali e aspetta il via prima di fare gli altri 101.
