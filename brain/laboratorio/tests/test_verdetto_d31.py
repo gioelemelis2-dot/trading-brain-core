@@ -15,8 +15,11 @@ Che cosa deve fare `brain/laboratorio/verdetto/verdetto_d31.py`:
   la scheda (nessun valore predefinito).
 Uso: python3 -s -B -W error -m unittest brain.laboratorio.tests.test_verdetto_d31
 """
+import hashlib
+import json
 import random
 import sys
+import tempfile
 import unittest
 from pathlib import Path
 from unittest import mock
@@ -278,6 +281,72 @@ class TestVetoBlocchi(unittest.TestCase):
             with self.assertRaises(ValueError, msg=args[1:]):
                 V.veto_blocchi(*args)
         self.assertEqual(len(V.veto_blocchi(b[:500], -0.25, 50, ampiezza=100)["medie"]), 5)
+
+
+class TestContestoProve(unittest.TestCase):
+    """D-34 punto 2 (registro unico di N) e DGS-11 §6: N deve venire dal registro canonico e restare nel rapporto.
+    Scritti PRIMA del codice (20/11/2026)."""
+
+    def registro(self, nome="registro_prove.json", prove=None, schema="registro-prove/1"):
+        d = Path(tempfile.mkdtemp())
+        f = d / nome
+        prove = prove if prove is not None else [{"ruolo": "selezionabile"}] * 3 + [{"ruolo": "esplorazione"}]
+        f.write_text(json.dumps({"schema": schema, "prove": prove, "sigilli": [], "esecuzioni": []}))
+        return f
+
+    def test_legge_n_e_impronta(self):
+        f = self.registro()
+        c = V.contesto_prove(f)
+        self.assertEqual(c, {"registro": "registro_prove.json", "n_prove": 3,
+                             "impronta": hashlib.sha256(f.read_bytes()).hexdigest()})
+
+    def test_registri_ereditati_rifiutati(self):
+        self.assertEqual(V.REGISTRI_EREDITATI, ("trial_registry.json", "trial_registry_xauusd.json"))
+        for nome in V.REGISTRI_EREDITATI:
+            with self.assertRaises(ValueError, msg=nome):
+                V.contesto_prove(self.registro(nome))
+
+    def test_registro_assente_o_malformato(self):
+        with self.assertRaises(ValueError):
+            V.contesto_prove(Path(tempfile.mkdtemp()) / "registro_prove.json")
+        with self.assertRaises(ValueError):
+            V.contesto_prove(self.registro(schema="altro/9"))
+
+    def test_registro_cambiato_durante_la_lettura(self):
+        f = self.registro()
+        originale = V.S.leggi
+
+        def leggi_e_cambia(x):
+            dati = originale(x)
+            f.write_text(f.read_text() + " ")
+            return dati
+        with mock.patch.object(V.S, "leggi", side_effect=leggi_e_cambia):
+            with self.assertRaises(ValueError):
+                V.contesto_prove(f)
+
+    def test_contesto_e_quota_nel_verdetto(self):
+        c = V.contesto_prove(self.registro())
+        v = V.verdetto(SU, 5, contesto=c)
+        self.assertEqual((v["contesto_prove"], v["quota"]), (c, 0.025))
+        self.assertIsNone(V.verdetto(SU, 5)["contesto_prove"])
+        self.assertEqual(V.verdetto([(0.5, 0)] * 1000, 5, contesto=c)["contesto_prove"], c)  # anche se non decidibile
+
+    def test_quota_fuori_collaudo_rifiutata(self):
+        self.assertEqual(V.QUOTA, 0.025)
+        for q in (0.0125, 0.008333, 0.05, 0, "0.025", None):
+            with self.assertRaises(ValueError, msg=q):
+                V.verdetto(SU, 5, quota=q)
+
+    def test_nessun_uso_dei_registri_ereditati(self):
+        """Statico: il verdetto e il perimetro di esecuzione non leggono i registri di Binario B
+        e non istanziano il calcolatore del DSR (che li userebbe)."""
+        cartelle = [repo_root / "brain/laboratorio/verdetto", repo_root / "brain/laboratorio/esecuzione"]
+        for c in cartelle:
+            for f in sorted(c.glob("*.py")):
+                testo = f.read_text(encoding="utf-8")
+                if f.name != "verdetto_d31.py":
+                    self.assertNotIn("trial_registry", testo, f.name)
+                self.assertNotIn("DSRCalculator(", testo, f.name)
 
 
 if __name__ == "__main__":
