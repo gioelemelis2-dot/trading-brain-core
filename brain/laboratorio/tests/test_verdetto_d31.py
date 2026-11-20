@@ -432,5 +432,60 @@ class TestRapportoTipizzato(unittest.TestCase):
         self.assertIn("1e-9 R dalla soglia: L", V.rapporto(v))
 
 
+class TestRapportoScreening(unittest.TestCase):
+    """D-34 punto 4 per lo screening (D-36). Scritti PRIMA del codice (20/11/2026)."""
+
+    def setUp(self):
+        self.s = V.screening(costanti(0.6, 780), 9, 0.62)
+
+    def voce(self, voci, etichetta):
+        trovate = [x for x in voci if x["etichetta"] == etichetta]
+        self.assertEqual(len(trovate), 1, etichetta)
+        return trovate[0]
+
+    def test_potenza_riportata(self):
+        self.assertEqual(self.s["potenza"], 0.62)
+
+    def test_voci(self):
+        voci = V.voci_screening(self.s)
+        for x in voci:
+            self.assertIn(x["tipo"], V.TIPI)
+            self.assertTrue(x["incertezza"] and x["fonte"])
+        m = self.voce(voci, "media sullo sviluppo")
+        self.assertEqual(m["tipo"], "DERIVATO")
+        self.assertIn("selezione", m["incertezza"])
+        r = self.voce(voci, "soglie dello screening")
+        self.assertEqual((r["tipo"], r["valore"]), ("REGOLA", (0.25, 0.0, 0.50)))
+        self.assertIn("D-36", r["fonte"])
+        p = self.voce(voci, "potenza stimata della verifica")
+        self.assertEqual((p["tipo"], p["valore"]), ("STIMA", 0.62))
+        st = self.voce(voci, "intervallo sullo sviluppo")
+        self.assertEqual((st["tipo"], st["valore"]), ("STIMA", (self.s["L"], self.s["U"])))
+        tipi = [x["tipo"] for x in voci]
+        i = tipi.index("STIMA")
+        self.assertTrue(all(t == "STIMA" for t in tipi[i:]))
+        self.assertTrue(all(t != "STIMA" for t in tipi[:i]))
+
+    def test_non_stimabile(self):
+        s = V.screening([(0.5, 1)] * 780, 9, 0.9)
+        st = self.voce(V.voci_screening(s), "intervallo sullo sviluppo")
+        self.assertEqual((st["valore"], st["incertezza"]), (None, "NON STIMABILE"))
+        s = V.screening([(0.0, 0)] * 780, 9, 0.9)
+        m = self.voce(V.voci_screening(s), "media sullo sviluppo")
+        self.assertEqual((m["valore"], m["incertezza"]), (None, "NON DISPONIBILE"))
+
+    def test_testo(self):
+        testo = V.rapporto_screening(self.s)
+        righe = testo.splitlines()
+        self.assertIn("SCREENING D-36", righe[0])
+        self.assertIn("ammessa", righe[0])
+        no = V.rapporto_screening(V.screening(costanti(0.6, 780), 9, 0.3))
+        self.assertIn("NON ammessa", no.splitlines()[0])
+        self.assertIn("potenza", no.splitlines()[0])
+        self.assertIn("non è una prova", righe[-1])
+        for x in V.voci_screening(self.s):
+            self.assertIn(f"[{x['tipo']}]", testo)
+
+
 if __name__ == "__main__":
     unittest.main()
