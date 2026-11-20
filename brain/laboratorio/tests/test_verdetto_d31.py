@@ -424,6 +424,12 @@ class TestRapportoTipizzato(unittest.TestCase):
         for x in V.voci_rapporto(self.v):
             self.assertIn(f"[{x['tipo']}]", testo)
         self.assertIn("0.6000", testo)
+        self.assertNotIn("1e-9", testo)
+
+    def test_vicini_nel_testo(self):          # aggiunto per il mutante VD68 (dichiarato)
+        with mock.patch.object(P, "intervallo_bootstrap", return_value=(0.2 + 5e-10, 0.6)):
+            v = V.verdetto(SU, 5)
+        self.assertIn("1e-9 R dalla soglia: L", V.rapporto(v))
 
 
 if __name__ == "__main__":

@@ -923,3 +923,19 @@ Nulla di questo tocca il candidato `8e51ce9` su cui lavora R15.
   - Durante la scelta dei mutanti ho aggiunto un caso di test (una sottoclasse di float) per VD55: dichiarato.
 - **DA-28:** i registri di Binario B sono dichiarati eredità; resta aperta la ratifica di N unico su tutti i mercati (D-46).
 - **Domanda aggiunta al messaggio 10 per il DGS** (punto 5): il ruolo di N nel verdetto di H-003, dopo che D-37 ha tolto il DSR dai requisiti.
+
+## 2026-11-20 · v1.76 (D-34 punto 4: rapporto del verdetto tipizzato)
+
+- **Modulo del verdetto, in TDD** (test rossi `9f6f4c5`, poi il codice).
+  - `voci_rapporto(v)` dà ogni numero con **tipo** (MISURA, DERIVATO, STIMA, IPOTESI, REGOLA), **incertezza** e **fonte**:
+    - sedute, trade e sedute con trade: MISURA;
+    - media del campione: DERIVATO, esatto sul campione;
+    - N dal registro: MISURA, con l'impronta;
+    - soglie e quota: REGOLA (D-31, D-38);
+    - vantaggio della strategia: **STIMA** con l'intervallo e il metodo, oppure **NON STIMABILE**.
+  - **Misure, derivati e regole prima della stima** (MODELLO-EPISTEMICO §4).
+  - `rapporto(v)` dà il testo, chiuso da «Esito della regola, non una raccomandazione a operare: la decisione resta del titolare (D-14)».
+- **Risolve, per il verdetto, il rilievo I2 dell'audit:** un «R medio» stampato come fatto, mentre è una stima.
+- **Verifica:** 45 test verdi su 3.13 e 3.9; mutanti VD01–VD69 **68/69 su 3.13 e 3.9**, VD13 equivalente.
+  - Un test aggiunto per il mutante VD68 (riga dei casi a filo nel testo): dichiarato.
+- **Resta da fare:** i rapporti dello screening e degli altri strumenti; il collegamento all'esecutore.

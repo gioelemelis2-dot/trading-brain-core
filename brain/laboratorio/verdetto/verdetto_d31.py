@@ -204,3 +204,61 @@ def veto_blocchi(coppie, soglia, minimo_trade_blocco, ampiezza: int = 250) -> di
             fallito = True
     esito = "fallito" if fallito else "non valutabile" if sottile else "superato"
     return {"id": "blocchi", "veto": True, "esito": esito, "medie": medie}
+
+
+# --- Rapporto tipizzato (D-34 punto 4; MODELLO-EPISTEMICO §3-§4; audit I2) ---
+TIPI = ("MISURA", "DERIVATO", "STIMA", "IPOTESI", "REGOLA")
+
+
+def _voce(etichetta, valore, unita, tipo, incertezza, fonte) -> dict:
+    return {"etichetta": etichetta, "valore": valore, "unita": unita, "tipo": tipo, "incertezza": incertezza,
+            "fonte": fonte}
+
+
+def voci_rapporto(v: dict) -> list:
+    """Ogni numero del verdetto con tipo, incertezza e fonte. Misure, derivati e regole prima delle stime."""
+    def misura(x):
+        return "esatto" if x is not None else "NON DISPONIBILE"
+    c = v.get("contesto_prove")
+    voci = [
+        _voce("sedute", v["sedute"], "sedute", "MISURA", "esatto", "coppie giornaliere della prova"),
+        _voce("trade", v["trade"], "trade", "MISURA", misura(v["trade"]), "coppie giornaliere della prova"),
+        _voce("sedute con trade", v["sedute_attive"], "sedute", "MISURA", misura(v["sedute_attive"]),
+              "coppie giornaliere della prova"),
+        _voce("media del campione", v["media"], "R a trade", "DERIVATO",
+              "esatto (sul campione)" if v["media"] is not None else "NON DISPONIBILE", "somma di S / somma di K"),
+        _voce("prove nel registro (N)", c["n_prove"] if c else None, "prove", "MISURA",
+              "esatto" if c else "NON FORNITO",
+              f"{c['registro']}, sha256 {c['impronta'][:16]}…" if c else "nessun registro fornito"),
+        _voce("soglie del metro", (SOGLIA_PROMOZIONE, SOGLIA_BOCCIATURA), "R a trade", "REGOLA", "esatto",
+              "D-31 (Δ = 0,05 R attorno a +0,15 R)"),
+        _voce("quota", v["quota"], "per coda", "REGOLA", "esatto", "D-31, D-38"),
+    ]
+    stimabile = v["L"] is not None and v["U"] is not None
+    voci.append(_voce(
+        "vantaggio della strategia", (v["L"], v["U"]) if stimabile else None, "R a trade", "STIMA",
+        (f"intervallo bootstrap basic, 2,5% per coda, blocchi da {BLOCCO}, B = {B}, seme {v['seme']}; "
+         f"valido nel dominio del collaudo IA-02") if stimabile else "NON STIMABILE",
+        f"pilota_ia02 sha256 {IMPRONTA_PILOTA[:16]}…"))
+    return voci
+
+
+def _fmt(x) -> str:
+    if x is None:
+        return "—"
+    if isinstance(x, tuple):
+        return "[" + "; ".join(_fmt(y) for y in x) + "]"
+    if isinstance(x, float):
+        return f"{x:.4f}"
+    return str(x)
+
+
+def rapporto(v: dict) -> str:
+    righe = [f"VERDETTO D-31 · {v['esito']} · causa: {v['causa']}"]
+    for x in voci_rapporto(v):
+        righe.append(f"- {x['etichetta']}: {_fmt(x['valore'])} {x['unita']} [{x['tipo']}] · incertezza: "
+                     f"{x['incertezza']} · fonte: {x['fonte']}")
+    if v["vicini_soglia"]:
+        righe.append(f"- estremi a meno di 1e-9 R dalla soglia: {', '.join(v['vicini_soglia'])} (non cambia l'esito)")
+    righe.append("Esito della regola, non una raccomandazione a operare: la decisione resta del titolare (D-14).")
+    return "\n".join(righe)
