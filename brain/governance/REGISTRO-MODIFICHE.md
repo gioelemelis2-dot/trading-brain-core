@@ -939,3 +939,15 @@ Nulla di questo tocca il candidato `8e51ce9` su cui lavora R15.
 - **Verifica:** 45 test verdi su 3.13 e 3.9; mutanti VD01–VD69 **68/69 su 3.13 e 3.9**, VD13 equivalente.
   - Un test aggiunto per il mutante VD68 (riga dei casi a filo nel testo): dichiarato.
 - **Resta da fare:** i rapporti dello screening e degli altri strumenti; il collegamento all'esecutore.
+
+## 2026-11-20 · v1.77 (D-34 punto 3: clausola sulle code nel modello H-003)
+
+- **`MODELLO-SCHEDA-H-003.md` §5:** applicata la clausola **«Esposizione alle code»** (D-43). La scheda dichiara prima del sigillo:
+  - la distanza di stop prevista;
+  - il salto di prezzo peggiore plausibile, con fonte;
+  - l'esposizione massima per trade in R.
+
+  Uno stop non è un tetto garantito.
+- **Confronto con il dominio del collaudo:** perdite rare di circa −12,3 R con probabilità 1% (celle 11 e 12 del pilota). Fuori dal dominio serve un collaudo mirato.
+- **Testata del modello aggiornata:** D-35, D-36, D-37 e D-42 sono decise. Il loro testo si integra dopo la risposta del DGS al messaggio 10, per non scrivere due volte le stesse clausole.
+- **Nota di Claude:** anche le celle 11 e 12 del collaudo usano una distribuzione a **due soli valori**, come il generatore G1 dell'esempio avverso. Con q = 1% la probabilità di un campione senza perdite rare è trascurabile (0,99^1000 ≈ 4·10⁻⁵), quindi l'artefatto di #119 non tocca il collaudo. È già noto come fonte dei casi a filo (#116).

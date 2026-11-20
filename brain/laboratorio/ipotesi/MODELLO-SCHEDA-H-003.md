@@ -1,6 +1,6 @@
 # Modello di scheda per H-003 (e ipotesi successive)
 
-**Stato del modello:** bozza di Claude, 16/11/2026. **Non ancora approvato nel suo insieme.** Il 19/11/2026 il titolare ha approvato e fatto applicare tre parti, nel testo di DGS-10 §3 (D-32): §0 «Provenienza» (G), §2 «Stato della finestra» (H) e §11 «Tracciabilità dei giri» (F). Le altre modifiche proposte (A–E, I, J) restano in `MODELLO-SCHEDA-H-003-BOZZA-P3.md` e in DGS-10, in attesa delle decisioni del titolare. Non contiene nessuna idea: la parte «Ipotesi» la scrive l'utente.
+**Stato del modello:** bozza di Claude, 16/11/2026. **Non ancora approvato nel suo insieme.** Il 19/11/2026 il titolare ha approvato e fatto applicare tre parti, nel testo di DGS-10 §3 (D-32): §0 «Provenienza» (G), §2 «Stato della finestra» (H) e §11 «Tracciabilità dei giri» (F). Le altre modifiche proposte (A–E, I, J) restano in `MODELLO-SCHEDA-H-003-BOZZA-P3.md` e in DGS-10. Il 19–20/11 il titolare ha preso le decisioni che le riguardano (D-35 esiti, D-36 screening, D-37 minimi e anni, D-42 obiettivo, D-43 code). **Il 20/11 è stata applicata solo la clausola sulle code (D-43, §5);** il testo delle altre si integra dopo la risposta del DGS al messaggio 10. Non contiene nessuna idea: la parte «Ipotesi» la scrive l'utente.
 **Da dove viene:** struttura di H-002 v3.1, più le lezioni pagate con H-002:
 - la soglia IA-02 (`governance/IMPEGNI-ANTICIPATI.md`);
 - il difetto DGS-03 (uscita scelta guardando il futuro, #42);
@@ -74,6 +74,13 @@
 - Spread dai dati BID/ASK; commissione [DA COMPILARE]; slittamento [DA COMPILARE].
 - **Scenario di stress:** [DA COMPILARE, almeno costi +50%].
 - Rischio per trade: [DA COMPILARE]. Calcolo delle once con interi esatti (correzione D2 di H-002).
+- **Esposizione alle code (OBBLIGATORIO, D-43, applicata il 20/11/2026).** Prima del sigillo la scheda dichiara, in modo verificabile:
+  1. **la distanza di stop prevista:** statistica (per esempio la mediana) e periodo, calcolati con una procedura congelata prima del sigillo;
+  2. **il salto di prezzo peggiore plausibile** all'esecuzione dello stop, con fonte e periodo: per esempio il salto massimo alla riapertura o sulle notizie nello sviluppo autorizzato. Se non è misurabile, una stima dichiarata come IPOTESI;
+  3. **l'esposizione massima per trade in R** = 1 R + (salto peggiore plausibile ÷ distanza di stop): [DA COMPILARE].
+  - Uno stop **non garantisce** il prezzo d'esecuzione in un salto (DGS-11 §2): non si dichiara un tetto alla perdita che lo stop non può assicurare.
+  - **Confronto con il dominio collaudato:** il collaudo IA-02 contiene perdite rare di circa **−12,3 R con probabilità 1%** (celle 11 e 12 di `pilota_ia02.genera`, due soli valori). Se l'esposizione dichiarata o la frequenza delle perdite estreme escono da questo dominio, serve un **collaudo mirato** prima della verifica. Altrimenti si registra «applicazione motivata nel perimetro provato» (DGS-10 §6).
+  - Il riscontro a DGS-11 §2 mostra perché conta: con stop molto stretti un salto di prezzo vale molti R.
 
 ## 6. Metriche
 Come H-002 v3.1 §6: trade, vincite, R medio netto, Sharpe per trade, drawdown in R, serie di perdite, acquisti e vendite separati, anni solari, benchmark «compro sempre» e «vendo sempre», confronto casuale con 1.000 ripetizioni e seme fisso, resoconto dei giorni scartati. [DA COMPILARE se si aggiunge altro.]
