@@ -14,12 +14,14 @@ permissions:
 
 jobs:
   suite:
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.os }}
     timeout-minutes: 30
     strategy:
       fail-fast: false
       matrix:
-        python: ["3.13", "3.9"]
+        include:                  # Python 3.9 non c'è più su Ubuntu 26.04 (ubuntu-latest): si usa la 24.04
+          - {python: "3.13", os: ubuntu-latest}
+          - {python: "3.9", os: ubuntu-24.04}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -36,12 +38,14 @@ jobs:
 
   mutanti:
     if: github.event_name == 'workflow_dispatch'
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.os }}
     timeout-minutes: 60
     strategy:
       fail-fast: false
       matrix:
-        python: ["3.13", "3.9"]
+        include:
+          - {python: "3.13", os: ubuntu-latest}
+          - {python: "3.9", os: ubuntu-24.04}
     steps:
       - uses: actions/checkout@v4
         with:
