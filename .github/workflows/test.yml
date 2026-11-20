@@ -1,0 +1,59 @@
+# Test automatici del Brain (approvati dal titolare il 20/11/2026).
+# A ogni push: tutte le suite, una per processo, con la rete bloccata, su Python 3.13 e 3.9.
+# A mano («Run workflow»): anche i mutanti dei moduli veloci (verdetto D-31, controllo della cache e costi).
+# Nessun dato vero: i test usano solo dati inventati; la cartella brain/dati/reali non è nel repository.
+name: test
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  suite:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    strategy:
+      fail-fast: false
+      matrix:
+        python: ["3.13", "3.9"]
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0          # alcuni test leggono la storia git (#86)
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python }}
+      - name: Identità git generica per i repository temporanei dei test
+        run: |
+          git config --global user.name "ci-brain"
+          git config --global user.email "ci-brain@invalid"
+      - name: Tutte le suite (rete bloccata)
+        run: python -s -B .github/scripts/esegui_test.py
+
+  mutanti:
+    if: github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    strategy:
+      fail-fast: false
+      matrix:
+        python: ["3.13", "3.9"]
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python }}
+      - name: Identità git generica
+        run: |
+          git config --global user.name "ci-brain"
+          git config --global user.email "ci-brain@invalid"
+      - name: Mutanti del verdetto D-31
+        run: python -s -B brain/laboratorio/tests/mutazioni_verdetto.py "$RUNNER_TEMP/mv" 2
+      - name: Mutanti del controllo della cache e dei costi
+        run: python -s -B brain/dati/tests/mutazioni_controlla_cache.py "$RUNNER_TEMP/mc" 2

@@ -44,7 +44,8 @@ def leggi(percorso, fuso_server: float):
         if not r.strip():
             continue
         c = r.split("\t")
-        t = (_ora(c[0], c[1]) - timedelta(hours=fuso_server)).replace(tzinfo=timezone.utc)
+        n = _ora(c[0], c[1])                                            # ora del server dichiarata (#120)
+        t = datetime.combine(n.date(), n.time(), tzinfo=timezone(timedelta(hours=fuso_server))).astimezone(timezone.utc)
         if t < INIZIO_SVILUPPO:
             raise ValueError(f"tick del {t:%Y-%m-%d %H:%M} UTC, anteriore al 15/11/2023: periodo della riserva "
                              f"sigillata. File rifiutato per intero; esportare solo dal 15/11/2023 in poi")

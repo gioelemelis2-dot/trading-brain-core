@@ -22,7 +22,7 @@ CT = "dati/pipeline/costi_tick.py"
 M = {
     "CT01 costi: tick della riserva accettati": [(CT, '        if t < INIZIO_SVILUPPO:', '        if False:')],
     "CT02 costi: confine della riserva spostato": [(CT, '        if t < INIZIO_SVILUPPO:', '        if t <= INIZIO_SVILUPPO:')],
-    "CT03 costi: fuso del server col segno sbagliato": [(CT, 't = (_ora(c[0], c[1]) - timedelta(hours=fuso_server))', 't = (_ora(c[0], c[1]) + timedelta(hours=fuso_server))')],
+    "CT03 costi: fuso del server col segno sbagliato": [(CT, 'tzinfo=timezone(timedelta(hours=fuso_server))', 'tzinfo=timezone(timedelta(hours=-fuso_server))')],
     "CT04 costi: lato mancante non riusato": [(CT, '        if c[2].strip():\n            bid = float(c[2])', '        bid = float(c[2]) if c[2].strip() else None')],
     "CT05 costi: intestazione non controllata": [(CT, '    if not righe or righe[0].split("\\t")[:4] != TESTA:', '    if not righe:')],
     "CT06 costi: spread negativi inclusi": [(CT, '        if s < 0:', '        if False:')],
