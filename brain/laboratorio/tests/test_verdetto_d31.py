@@ -351,5 +351,80 @@ class TestContestoProve(unittest.TestCase):
                 self.assertNotIn("DSRCalculator(", testo, f.name)
 
 
+class TestRapportoTipizzato(unittest.TestCase):
+    """D-34 punto 4 (audit I2, MODELLO-EPISTEMICO §3-§4): ogni numero del rapporto ha tipo, incertezza e fonte;
+    misure, derivati e regole prima delle stime; la decisione resta del titolare. Scritti PRIMA del codice (20/11/2026)."""
+
+    def setUp(self):
+        self.c = {"registro": "registro_prove.json", "n_prove": 7, "impronta": "ab" * 32}
+        self.v = V.verdetto(SU, 5, contesto=self.c)
+
+    def voce(self, voci, etichetta):
+        trovate = [x for x in voci if x["etichetta"] == etichetta]
+        self.assertEqual(len(trovate), 1, etichetta)
+        return trovate[0]
+
+    def test_campi_obbligatori_e_tipi(self):
+        self.assertEqual(V.TIPI, ("MISURA", "DERIVATO", "STIMA", "IPOTESI", "REGOLA"))
+        voci = V.voci_rapporto(self.v)
+        self.assertGreaterEqual(len(voci), 8)
+        for x in voci:
+            self.assertEqual(set(x), {"etichetta", "valore", "unita", "tipo", "incertezza", "fonte"}, x)
+            self.assertIn(x["tipo"], V.TIPI)
+            self.assertTrue(x["incertezza"] and x["fonte"], x)
+
+    def test_misure_derivati_e_stima(self):
+        voci = V.voci_rapporto(self.v)
+        for e in ("sedute", "trade", "sedute con trade"):
+            self.assertEqual(self.voce(voci, e)["tipo"], "MISURA")
+        m = self.voce(voci, "media del campione")
+        self.assertEqual((m["tipo"], m["unita"]), ("DERIVATO", "R a trade"))
+        self.assertAlmostEqual(m["valore"], 0.6, places=12)
+        st = self.voce(voci, "vantaggio della strategia")
+        self.assertEqual(st["tipo"], "STIMA")
+        self.assertEqual(st["valore"], (self.v["L"], self.v["U"]))
+        for pezzo in ("bootstrap", "basic", "B = 3999", "blocchi da 10", "seme 5", "2,5%"):
+            self.assertIn(pezzo, st["incertezza"])
+
+    def test_regole_e_registro(self):
+        voci = V.voci_rapporto(self.v)
+        r = self.voce(voci, "soglie del metro")
+        self.assertEqual((r["tipo"], r["valore"]), ("REGOLA", (0.20, 0.10)))
+        self.assertIn("D-31", r["fonte"])
+        q = self.voce(voci, "quota")
+        self.assertEqual((q["tipo"], q["valore"]), ("REGOLA", 0.025))
+        n = self.voce(voci, "prove nel registro (N)")
+        self.assertEqual((n["tipo"], n["valore"]), ("MISURA", 7))
+        self.assertIn("abababab", n["fonte"])
+
+    def test_ordine_misure_prima_delle_stime(self):
+        voci = V.voci_rapporto(self.v)
+        tipi = [x["tipo"] for x in voci]
+        primo_stima = tipi.index("STIMA")
+        self.assertTrue(all(t != "STIMA" for t in tipi[:primo_stima]))
+        self.assertTrue(all(t == "STIMA" for t in tipi[primo_stima:]))
+
+    def test_non_stimabile_e_n_mancante(self):
+        v = V.verdetto(SU[:999], 5)
+        voci = V.voci_rapporto(v)
+        st = self.voce(voci, "vantaggio della strategia")
+        self.assertEqual((st["valore"], st["incertezza"]), (None, "NON STIMABILE"))
+        n = self.voce(voci, "prove nel registro (N)")
+        self.assertEqual((n["valore"], n["incertezza"]), (None, "NON FORNITO"))
+        testo = V.rapporto(v)
+        self.assertIn("NON STIMABILE", testo)
+        self.assertIn("NON FORNITO", testo)
+
+    def test_testo(self):
+        testo = V.rapporto(self.v)
+        righe = testo.splitlines()
+        self.assertIn("promossa", righe[0])
+        self.assertIn(self.v["causa"], righe[0])
+        self.assertIn("decisione resta del titolare", righe[-1])
+        for x in V.voci_rapporto(self.v):
+            self.assertIn(f"[{x['tipo']}]", testo)
+        self.assertIn("0.6000", testo)
+
+
 if __name__ == "__main__":
     unittest.main()
