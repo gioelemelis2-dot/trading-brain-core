@@ -302,3 +302,32 @@ Da verificare nel catalogo: quante di queste perdite hanno un video. È la misur
   - la «liquidity zone» come zona la cui formazione include una sweep.
 - **Non meccanizzabili senza una nostra scelta:** trendline, livelli «ovvi per il pubblico», «fuel sufficiente».
 - **La narrazione** («le banche hanno bisogno degli stop dei retail per riempire ordini da miliardi») è una spiegazione, non una prova. La prova la può dare solo il banco, sulla versione meccanica.
+
+## Market Mechanics ep. 12 «ICT Killzones» (uLw-qdpV3uk, 27/05/2026)
+
+**DICE:**
+- **Finestre orarie («killzone»),** in ora di New York (lui dice «UTC−4»):
+  - Asia 20:00–24:00;
+  - **Londra 02:00–05:00**;
+  - New York 07:00–10:00;
+  - chiusura di Londra 10:00–12:00 (02:03–09:08).
+- **«90% of… [the trades on] Brad Trades… during the London killzone»** (04:03). La sua finestra è «2:00 p.m. to 5:00 p.m. Singapore time» (20:13), cioè circa le 06:00–09:00 UTC.
+- **Mercati per sessione:**
+  - Asia: AUD, NZD, JPY;
+  - **Londra: coppie in EUR e GBP** (EURUSD, GBPUSD, GBPAUD; «GBPJPY if you're feeling adventurous»);
+  - New York: coppie in USD.
+
+  **L'oro non è citato fra i mercati di Londra.**
+- **«Asia sweep strategy»** (05:05–07:06), spiegata in un video separato:
+  - il range della sessione asiatica (massimo e minimo);
+  - a Londra il prezzo supera un estremo del range asiatico e poi inverte.
+  - La descrizione è **confusa**: dice «if the daily structure is bullish… price will sweep the Asia high… and then goes down», e il contrario per il ribasso. Probabilmente un lapsus.
+  - «Not always, but sometimes this Asia sweep strategy works really, really well».
+- **Le finestre non bastano:** servono analisi e modello d'ingresso (22:16–23:17).
+- **«I trade like less than a few hours a week, and I still make six figures a month consistently»** (25:19). Dichiarazione.
+
+**[C] Commenti di Claude:**
+- **È l'idea di Brad più facile da rendere meccanica.** Il range asiatico è esatto (massimo e minimo in una finestra oraria fissa). La sweep a Londra si definisce con superamento, rientro e tempo massimo. Il filtro della struttura giornaliera si definisce con le regole della struttura.
+- **Provenienza: coincide in larga parte con la bozza B di Claude** («falsa rottura del range asiatico a Londra», 19/11 sera). La bozza era stata scritta **prima** di leggere questa trascrizione, ma **dopo** aver visto i titoli dei video di Brad e conoscendo la scuola ICT dall'addestramento. Se si registra, va dichiarata come idea **condivisa** P-001/Claude, non indipendente.
+- **Prova contraria pertinente:** il test meccanico indipendente del «Silver Bullet» ICT (anche su GC, oro) ha trovato che **le ore delle killzone non hanno niente di speciale** (`fonti/RICERCA-FONTI-20261120.md`). Abbassa le aspettative sul valore delle finestre in sé. La sweep del range asiatico resta da provare.
+- **Mercato:** Brad opera soprattutto coppie in EUR e GBP a Londra, non l'oro. Per il nostro banco, che oggi ha solo l'oro, la trasferibilità all'oro è un'**ipotesi**. GBPJPY ed EURUSD sono già nel censimento e nel piano di diversificazione.
