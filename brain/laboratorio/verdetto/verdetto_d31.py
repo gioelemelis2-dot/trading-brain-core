@@ -164,7 +164,7 @@ def screening(coppie, seme: int, potenza_stimata) -> dict:
         raise ValueError(f"potenza stimata {potenza_stimata!r} fuori da [0, 1]")
     controlla_coppie(coppie)
     trade = sum(k for _, k in coppie)
-    s = {"ammessa": False, "cause": [], "media": None, "L": None, "U": None, "seme": seme}
+    s = {"ammessa": False, "cause": [], "media": None, "L": None, "U": None, "seme": seme, "potenza": potenza_stimata}
     if trade == 0:
         s["cause"].append("nessun trade")
         return s
@@ -253,12 +253,42 @@ def _fmt(x) -> str:
     return str(x)
 
 
+def _riga(x: dict) -> str:
+    return (f"- {x['etichetta']}: {_fmt(x['valore'])} {x['unita']} [{x['tipo']}] · incertezza: "
+            f"{x['incertezza']} · fonte: {x['fonte']}")
+
+
 def rapporto(v: dict) -> str:
     righe = [f"VERDETTO D-31 · {v['esito']} · causa: {v['causa']}"]
     for x in voci_rapporto(v):
-        righe.append(f"- {x['etichetta']}: {_fmt(x['valore'])} {x['unita']} [{x['tipo']}] · incertezza: "
-                     f"{x['incertezza']} · fonte: {x['fonte']}")
+        righe.append(_riga(x))
     if v["vicini_soglia"]:
         righe.append(f"- estremi a meno di 1e-9 R dalla soglia: {', '.join(v['vicini_soglia'])} (non cambia l'esito)")
     righe.append("Esito della regola, non una raccomandazione a operare: la decisione resta del titolare (D-14).")
+    return "\n".join(righe)
+
+
+def voci_screening(s: dict) -> list:
+    """Il rapporto dello screening (D-36) con i tipi. La media dello sviluppo è gonfiata dalla selezione."""
+    stimabile = s["L"] is not None and s["U"] is not None
+    return [
+        _voce("media sullo sviluppo", s["media"], "R a trade", "DERIVATO",
+              "esatto sul campione, ma gonfiata dalla selezione fra varianti" if s["media"] is not None
+              else "NON DISPONIBILE", "sviluppo dal 15/11/2023 (D-29)"),
+        _voce("soglie dello screening", (SCREENING_MEDIA, 0.0, SCREENING_POTENZA), "R, R, probabilità", "REGOLA",
+              "esatto", "D-36 (media > +0,25 R; L > 0; potenza ≥ 50%)"),
+        _voce("potenza stimata della verifica", s["potenza"], "probabilità", "STIMA",
+              "dalla procedura congelata nella scheda prima del sigillo", "scheda dell'ipotesi (D-36)"),
+        _voce("intervallo sullo sviluppo", (s["L"], s["U"]) if stimabile else None, "R a trade", "STIMA",
+              (f"intervallo bootstrap basic, 2,5% per coda, blocchi da {BLOCCO}, B = {B}, seme {s['seme']}")
+              if stimabile else "NON STIMABILE", f"pilota_ia02 sha256 {IMPRONTA_PILOTA[:16]}…"),
+    ]
+
+
+def rapporto_screening(s: dict) -> str:
+    esito = "ammessa alla verifica" if s["ammessa"] else "NON ammessa: " + "; ".join(s["cause"])
+    righe = [f"SCREENING D-36 · {esito}"]
+    for x in voci_screening(s):
+        righe.append(_riga(x))
+    righe.append("Lo screening non è una prova: decide solo se spendere la riserva; il giudizio è della verifica (D-36).")
     return "\n".join(righe)

@@ -23,7 +23,7 @@ Ultimo aggiornamento: **2026-11-19 sera** (sezione in testa); prima: 2026-11-15,
   1. criterio D-31 in un modulo nuovo (**fatto**: `laboratorio/verdetto/verdetto_d31.py`, 31 test, mutanti VD 47/48 su 3.13 e 3.9, VD13 equivalente);
   2. registro unico di N (**fatto il 20/11**: il verdetto legge N solo dal registro canonico, lo riporta con l'impronta, rifiuta i registri ereditati e ogni quota diversa dal 2,5%; mutanti VD 56/57, VD13 equivalente);
   3. clausola sulle code, ora D-43: esposizione in R dichiarata e verificabile (**applicata al modello il 20/11**, §5 «Esposizione alle code»);
-  4. tipi epistemici nei rapporti (**fatto il 20/11** per il rapporto del verdetto: `voci_rapporto` e `rapporto`, con misure, derivati e regole prima della stima, NON STIMABILE e NON FORNITO espliciti, decisione del titolare; mutanti VD 68/69);
+  4. tipi epistemici nei rapporti (**fatto il 20/11** per il rapporto del verdetto: `voci_rapporto` e `rapporto`, con misure, derivati e regole prima della stima, NON STIMABILE e NON FORNITO espliciti, decisione del titolare; mutanti VD 68/69). **Il 20/11 anche per lo screening** (`voci_screening`, `rapporto_screening`, con l'avvertenza «media gonfiata dalla selezione»; VD 76/77);
   5. prova generale a vuoto (i casi a risposta esatta li scrive il DGS, se accetta il messaggio 10);
   6. R17 più il giro sulle manomissioni;
   7. unione in `main` con la protezione del ramo.
@@ -91,6 +91,12 @@ Il titolare ha deciso di **non registrarle ora**: prima Claude legge il material
 **Da fare quando c'è tempo:**
 - riconciliazione del G0 su demo MT4 (micro-operazioni con stop; la demo è MT4, le specifiche sono MT5);
 - commissione FP Markets per lato o andata e ritorno.
+
+**Test automatici su GitHub (approvati il 20/11):** `.github/workflows/test.yml` più `.github/scripts/esegui_test.py`.
+- A ogni push girano tutte le 25 suite, una per processo, con la rete bloccata, su 3.13 e 3.9.
+- I mutanti veloci si lanciano a mano.
+- Alla prima corsa in locale lo script ha trovato il difetto #120 (corretto).
+- Da verificare che GitHub Actions sia attivo sul repository: subito dopo il primo push non risultava nessuna esecuzione.
 
 **Copia della chat:** consegnata al titolare il 19/11, fuori dal repository (registro v1.72).
 

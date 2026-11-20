@@ -951,3 +951,19 @@ Nulla di questo tocca il candidato `8e51ce9` su cui lavora R15.
 - **Confronto con il dominio del collaudo:** perdite rare di circa −12,3 R con probabilità 1% (celle 11 e 12 del pilota). Fuori dal dominio serve un collaudo mirato.
 - **Testata del modello aggiornata:** D-35, D-36, D-37 e D-42 sono decise. Il loro testo si integra dopo la risposta del DGS al messaggio 10, per non scrivere due volte le stesse clausole.
 - **Nota di Claude:** anche le celle 11 e 12 del collaudo usano una distribuzione a **due soli valori**, come il generatore G1 dell'esempio avverso. Con q = 1% la probabilità di un campione senza perdite rare è trascurabile (0,99^1000 ≈ 4·10⁻⁵), quindi l'artefatto di #119 non tocca il collaudo. È già noto come fonte dei casi a filo (#116).
+
+## 2026-11-20 · v1.78 (test automatici su GitHub; #120; rapporto tipizzato dello screening)
+
+- **Test automatici su GitHub**, approvati dal titolare (`.github/workflows/test.yml`):
+  - a ogni push e pull request, tutte le suite di test, su Python 3.13 e 3.9, con la rete bloccata;
+  - lo script `.github/scripts/esegui_test.py` **trova da solo** tutti i file `test_*.py` (fuori da `collaborazione/`) e li esegue uno per processo, più la suite del Guardian. Un test nuovo non può restare fuori;
+  - i mutanti veloci (verdetto D-31, controllo della cache e costi) si lanciano a mano («Run workflow»).
+- **Prima corsa locale dello script:** ha trovato il **difetto #120** (`costi_tick.py` usava `.replace(tzinfo=…)`, vietato dal controllo anti-frode). Corretto. Dopo la correzione: **25 suite verdi su 3.13 e 3.9**.
+- **Gli script dei mutanti del verdetto** ora escono con 0 quando gli unici vivi sono gli equivalenti dichiarati («atteso EQUIVALENTE» nel nome), che restano stampati.
+- **Rapporto tipizzato dello screening** (D-34 punto 4, test rossi `f67a7b2`):
+  - `voci_screening` e `rapporto_screening`: media sullo sviluppo come DERIVATO con l'avvertenza «gonfiata dalla selezione fra varianti»; soglie D-36 come REGOLA; potenza e intervallo come STIMA;
+  - lo screening ora riporta anche la potenza stimata;
+  - la riga finale dice che lo screening non è una prova.
+- **Mutanti VD01–VD77: 76/77 su 3.13 e 3.9**, VD13 equivalente.
+- **Errore mio corretto:** la riga di formattazione era copiata due volte, e il mutante VD67 non era più univoco. Ora c'è una funzione comune `_riga`.
+- **Da verificare:** subito dopo il primo push GitHub non mostrava esecuzioni. Forse le Actions vanno abilitate nelle impostazioni del repository.

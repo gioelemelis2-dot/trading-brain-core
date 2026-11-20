@@ -46,6 +46,14 @@ M = {
     "VD67 tipo assente nel testo": [(VD, "[{x['tipo']}] · incertezza: ", "· incertezza: ")],
     "VD68 vicini non riportati nel testo": [(VD, '    if v["vicini_soglia"]:', '    if False:')],
     "VD69 impronta del registro troncata": [(VD, "sha256 {c['impronta'][:16]}…", "sha256 {c['impronta'][:4]}…")],
+    "VD70 media dello sviluppo come STIMA": [(VD, '"media sullo sviluppo", s["media"], "R a trade", "DERIVATO",', '"media sullo sviluppo", s["media"], "R a trade", "STIMA",')],
+    "VD71 avvertenza sulla selezione tolta": [(VD, '"esatto sul campione, ma gonfiata dalla selezione fra varianti"', '"esatto sul campione"')],
+    "VD72 potenza non riportata": [(VD, '"potenza": potenza_stimata}', '"potenza": None}')],
+    "VD73 soglia del limite tolta dal rapporto": [(VD, "(SCREENING_MEDIA, 0.0, SCREENING_POTENZA)", "(SCREENING_MEDIA, SCREENING_POTENZA)")],
+    "VD74 non ammessa non dichiarata": [(VD, '"NON ammessa: "', '"ammessa: "')],
+    "VD75 stimabilità dello screening non controllata": [(VD, 'stimabile = s["L"] is not None and s["U"] is not None', 'stimabile = True')],
+    "VD76 screening presentato come prova": [(VD, "Lo screening non è una prova", "Lo screening è una prova")],
+    "VD77 media assente detta disponibile": [(VD, 'else "NON DISPONIBILE", "sviluppo dal 15/11/2023 (D-29)"),', 'else "esatto", "sviluppo dal 15/11/2023 (D-29)"),')],
     "VD06 vicinanza 1e-8": [(VD, "VICINANZA = 1e-9", "VICINANZA = 1e-8")],
     "VD07 vicinanza di U non riportata": [(VD, '        out.append("U")', "        pass")],
     "VD08 K booleano accettato": [(VD, "        if type(k) is not int or k < 0:", "        if not isinstance(k, int) or k < 0:")],
@@ -143,8 +151,10 @@ def main():
             esiti.append((nome, esito))                    # R17: ogni esito si stampa appena è pronto
             print(f"{esito:6} {nome}", flush=True)
     uccisi = sum(1 for _, e in esiti if e == "UCCISO")
-    print(f"\n{uccisi}/{len(esiti)} mutanti uccisi ({sys.version.split()[0]})")
-    return 0 if uccisi == len(esiti) else 1
+    equivalenti = [n for n, e in esiti if e == "VIVO" and "atteso EQUIVALENTE" in n]   # dichiarati, non nascosti
+    print(f"\n{uccisi}/{len(esiti)} mutanti uccisi ({sys.version.split()[0]}); "
+          f"equivalenti dichiarati vivi: {len(equivalenti)}")
+    return 0 if uccisi + len(equivalenti) == len(esiti) else 1
 
 
 if __name__ == "__main__":
