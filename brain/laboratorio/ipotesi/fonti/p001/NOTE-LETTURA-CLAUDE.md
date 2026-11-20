@@ -331,3 +331,63 @@ Da verificare nel catalogo: quante di queste perdite hanno un video. È la misur
 - **Provenienza: coincide in larga parte con la bozza B di Claude** («falsa rottura del range asiatico a Londra», 19/11 sera). La bozza era stata scritta **prima** di leggere questa trascrizione, ma **dopo** aver visto i titoli dei video di Brad e conoscendo la scuola ICT dall'addestramento. Se si registra, va dichiarata come idea **condivisa** P-001/Claude, non indipendente.
 - **Prova contraria pertinente:** il test meccanico indipendente del «Silver Bullet» ICT (anche su GC, oro) ha trovato che **le ore delle killzone non hanno niente di speciale** (`fonti/RICERCA-FONTI-20261120.md`). Abbassa le aspettative sul valore delle finestre in sé. La sweep del range asiatico resta da provare.
 - **Mercato:** Brad opera soprattutto coppie in EUR e GBP a Londra, non l'oro. Per il nostro banco, che oggi ha solo l'oro, la trasferibilità all'oro è un'**ipotesi**. GBPJPY ed EURUSD sono già nel censimento e nel piano di diversificazione.
+
+## Market Mechanics ep. 27 «How to Improve Your Strategy With Data» (IieXTRD15GU, 11/06/2026)
+
+**DICE:**
+- **Cambiare regole solo dopo «100 trade o almeno 3 mesi di dati».** Sotto i 30–50 trade «non è significativo» (01:02).
+- **Ogni variabile nuova richiede di riprovare tutto il piano:** «treat it like a science… hypothesis… test» (02:04–03:05).
+- **Revisione trimestrale.** Al massimo **1–3 cambi** per trimestre; poi si prova il trimestre successivo (14:08–16:09).
+- **Regole «if-then»** per gli errori ricorrenti (16:09–18:09). Le soluzioni si possono chiedere all'intelligenza artificiale (18:09–19:10).
+- **Uno schema ammesso come esempio:** «after I win three trades in a row, I always get overconfident. I always… start to size up, even though my trade plan tells me not to» (06:06). È coerente con la crescita del rischio vista dal vivo.
+
+**[C] Commenti di Claude:**
+- **L'impostazione è sana:** ipotesi, prova, un cambio alla volta, regole decise prima. È lo stesso spirito della nostra macchina.
+- **I numeri invece sono troppo piccoli.** Con 30–100 trade si riconoscono solo vantaggi molto grandi: con la nostra stima servono circa 100 trade per +0,30 R e centinaia per +0,10 R. Confrontare due varianti con 100 trade ciascuna è quasi sempre **rumore**.
+- **Il rischio di sovradattamento.** Ritoccare le regole ogni trimestre guardando il trimestre appena passato, senza dati tenuti da parte, è una forma continua di **adattamento al passato**. È esattamente ciò che la riserva sigillata e il conteggio di N (DA-19) servono a impedire.
+- **Le sue regole di revisione** (un cambio alla volta, regole scritte prima, minimo di dati) **sono compatibili** con le nostre, ma vanno completate con: potenza calcolata prima, prove contate, una verifica separata.
+
+## Market Mechanics ep. 31 «How to Pass Prop Firm Challenges» (kRYQFKysfis, 15/06/2026)
+
+**DICE:**
+- **«A prop firm challenge is a rule-based game»:** si fallisce per aver violato le regole, non per la strategia (00:02–02:04). «Stay small, stay consistent, stay alive» (04:04–05:04).
+- **Esempio con FTMO 200k** (10:10–15:13):
+  - fase 1: +10%; fase 2: +5%;
+  - perdita giornaliera massima 5%; perdita totale massima 10%;
+  - minimo 4 giorni di trading; nessun limite di tempo; quota dei profitti fino al 90%.
+- **Limiti consigliati** (15:13–24:22):
+  - al massimo 3–5 trade al giorno;
+  - stop giornaliero al **2%** (lui) o al 4%;
+  - obiettivo giornaliero dell'1%, poi stop;
+  - **rischio 0,5%**, oppure 1% sui setup «A+» (rischio variabile a giudizio);
+  - finestra di Londra «7:00 a.m. UTC to around 10:00 a.m. UTC», «based on my data».
+- **Niente operazioni da 15 minuti prima a 15 minuti dopo le notizie ad alto impatto** (24:22–25:22).
+
+**[C] Commenti di Claude:**
+- **Le regole FTMO che cita coincidono con quelle che abbiamo verificato il 12/11 (Q-09).** I limiti che consiglia (0,5%, stop giornaliero al 2%, 3 trade al giorno, niente notizie) sono **compatibili con le regole personali del titolare** e con D-30.
+- **Il «rischio variabile secondo il giudizio A o A+»** contrasta con il rischio fisso delle nostre regole (P-01) e rende i risultati dipendenti dal giudizio.
+- **Piccola incoerenza di orario:** qui la finestra di Londra è 07:00–10:00 UTC; nell'ep. 12 era «2–5 p.m. Singapore», cioè 06:00–09:00 UTC. Forse dipende dall'ora legale; va fissata nella scheda.
+
+## Selezione: le perdite citate a voce hanno un video? (Brad Trades, 20/11/2026)
+
+**Metodo.**
+- Ho cercato nelle 100 trascrizioni le frasi in cui Brad cita perdite non legate all'operazione del video («I was down…», «losing streak», «lost three trades in a row», «yesterday we were down…»).
+- Le ho confrontate con i video di perdita entro ±14 giorni, usando le **date reali** di pubblicazione.
+
+| Perdita citata (video e data) | Video di perdita vicini | Esito |
+|---|---|---|
+| «down 15k» (forse «155k», errore di trascrizione) circa 2 settimane prima dell'11/03/2025 | −15k (03/03/2025) | ✔ coincide con 15k |
+| «down 20K this week» (11/04/2025) | −10,5k (09/04) e −10k (11/04) | ✔ |
+| «back-to-back red days, down 10K every single day» (17/04/2025) | gli stessi due | ✔ |
+| «Yesterday we were down 20K» (17/05/2025) | −21k (15/05) | ✔ (un giorno di scarto) |
+| «down 10k at the start of the day» (22/05/2025) | recuperata nello stesso video | — |
+| «lost three trades in a row last week» (13/06/2025) | solo −10k (04/06) | ✖ **forse 2 perdite senza video** |
+| «the first two weeks [of June] … lost a ton of money» (19/06/2025) | solo −10k (04/06) | ✖ **perdite di giugno in gran parte senza video** |
+| «Yesterday we were down 20K» (19/09/2025) | −20k (18/09) | ✔ |
+| «three losses in a row: −16K NQ, −23K Bitcoin, now US30» (14/11/2025) | −16k (05/11), −23k (06/11), −32k (14/11) | ✔ tutte e tre |
+
+**[C] Che cosa ne ricavo:**
+- **Le perdite che Brad cita a voce hanno quasi sempre un video**, 7 casi su 9. Prova a suo favore: il canale **non nasconde sistematicamente** le perdite.
+- **Unica lacuna chiara: giugno 2025.** Le perdite citate non hanno tutte un video.
+- **Limite della misura:** confronta solo le perdite che **lui stesso nomina**. Le perdite mai nominate restano invisibili. Il denominatore vero, cioè tutte le sue operazioni, rimane ignoto.
+- **Mercati:** a novembre 2025 opera anche **Nasdaq (NQ), Bitcoin e Dow (US30)**, non solo forex e oro. Il suo track record mescola strumenti diversi.

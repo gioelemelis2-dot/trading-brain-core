@@ -205,3 +205,8 @@ Le note dettagliate, con il minuto di riferimento, sono in `fonti/p001/NOTE-LETT
 11. **Risultati in R calcolabili: solo 6.** +9,2 e +10,2 R a inizio 2025 (piccole dimensioni), poi circa +1,9, +3, −1,06 e −1,2 R con dimensioni grandi.
 
 **Conclusione aggiornata (IPOTESI di Claude):** anche se tutte le cifre fossero vere, **il suo track record non misura una regola fissa**. Misura un trader discrezionale che cambia dimensione e uscita. Le sue **regole di rischio insegnate** restano buone come regole nostre. Il **piano meccanico pubblico** resta il solo candidato da provare sul banco, con le aspettative ridotte dal test indipendente sulla scuola ICT (`fonti/RICERCA-FONTI-20261120.md`).
+
+12. **Selezione (misura del 20/11):** delle perdite che Brad cita a voce, **7 su 9 hanno un video** di perdita entro ±14 giorni. Unica lacuna chiara: giugno 2025. **Il canale non nasconde sistematicamente le perdite che lui stesso nomina.** È una prova a suo favore. Le perdite mai nominate restano invisibili.
+13. **Strumenti:** oltre a forex e oro opera Nasdaq, Bitcoin e Dow (novembre 2025). Il track record mescola mercati diversi.
+14. **Metodo di revisione (ep. 27):** un cambio alla volta, regole scritte prima, minimo di 30–100 trade. È nello spirito giusto, ma i numeri sono troppo piccoli e la revisione trimestrale sugli stessi dati rischia il sovradattamento.
+15. **L'idea più meccanizzabile è la «Asia sweep»** (ep. 12): range asiatico, poi superamento e rientro a Londra. **Coincide in larga parte con la bozza B di Claude**: provenienza condivisa, da dichiarare.
