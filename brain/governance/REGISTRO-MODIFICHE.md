@@ -1012,3 +1012,7 @@ Nulla di questo tocca il candidato `8e51ce9` su cui lavora R15.
   - la cache ASK pesa 81 MB, quindi lo spazio basta;
   - la causa del pieno è transitoria e non accertata.
 - **Correzione (errore di Claude):** il messaggio 10 era già stato incollato al DGS il 19/11 sera e aspetta risposta; non si rimanda. Claude aveva dimenticato l'invio, segnalato dal titolare. Al DGS va solo un sollecito con l'aggiornamento breve.
+- **Controllo del contesto del DGS** (`collaborazione/da-claude/direttore-sicurezza/14-CONTROLLO-CONTESTO-DGS.md`):
+  - prima della risposta al messaggio 10, il DGS dichiara che cosa vede ancora e risponde a 11 domande di controllo con etichetta [VISIBILE]/[RICORDO]/[NON SO];
+  - la chiave di correzione resta a Claude;
+  - la regola per decidere se proseguire o ripartire con un pacchetto nuovo è proposta, e la decide il titolare.
