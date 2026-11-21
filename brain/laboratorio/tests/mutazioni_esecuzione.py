@@ -206,7 +206,7 @@ M = {
     'V07 riserva: rilascio non libera': [(RV, '            for g in _giorni(a, b):\n                del self.giorni[g]\n', '')],
     'V08 riserva: autorizzazione dopo il rilascio': [(RV, '            if p["stato"] != "prenotato":\n                raise ValueError(f"autorizzazione', '            if p["stato"] == "autorizzato":\n                raise ValueError(f"autorizzazione')],
     'V09 riserva: j non controllato': [(RV, '            if type(e.get("j")) is not int or e.get("j") != self.j + 1:', '            if False:')],
-    'V10 riserva: quota non controllata': [(RV, '            if abs(float(e.get("alfa_j", -1)) - quota(self.alfa_tot, self.j + 1, m)) > 1e-15:', '            if False:')],
+    'V10 riserva: quota non controllata': [(RV, "abs(alfa - quota(self.alfa_tot, self.j + 1, m)) > 1e-15:", "False:")],
     'V11 riserva: quota senza m': [(RV, '    return alfa_tot / (j * (j + 1)) / m', '    return alfa_tot / (j * (j + 1))')],
     'V12 riserva: quota 1/j': [(RV, '    return alfa_tot / (j * (j + 1)) / m', '    return alfa_tot / j / m')],
     "V13 riserva: l'autorizzazione non consuma": [(RV, '                self.giorni[g] = "consumato"', '                self.giorni[g] = "prenotato"')],

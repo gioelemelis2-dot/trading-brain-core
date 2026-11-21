@@ -335,7 +335,8 @@ class TestCaricatore(Cartella):
         self.assertEqual((len(bid), len(ask)), (2, 2))
 
     def test_sviluppo_rifiuta_il_periodo_sigillato(self):
-        with self.assertRaises(ValueError):
+        # #136: il messaggio è controllato; con BID e ASK nella stessa cartella l'errore di #126 mascherava il mutante C01
+        with self.assertRaisesRegex(ValueError, "periodo sigillato"):
             C.carica(self.dir, self.dir, date(2023, 11, 14), date(2023, 12, 1), "sviluppo", *self.sigillo())
 
     def test_verifica_richiede_il_sigillo_e_il_periodo_vecchio(self):
@@ -570,10 +571,11 @@ class TestCasiAlLimite(Cartella):
 
     def test_periodi_del_caricatore(self):
         S.sigilla(self.registro, "H-999", self.scheda, ["V-T"], ORA)
-        with self.assertRaises(ValueError):
+        # #136: messaggi controllati (l'errore «stessa cartella» di #126 arriva dopo e mascherava C03/C08/C09)
+        with self.assertRaisesRegex(ValueError, "la verifica finisce"):
             C.carica(self.dir, self.dir, date(2023, 11, 1), date(2023, 11, 15), "verifica", self.registro, "H-999",
                      self.scheda)
-        with self.assertRaises(ValueError):
+        with self.assertRaisesRegex(ValueError, "periodo vuoto"):
             C.carica(self.dir, self.dir, date(2024, 2, 1), date(2024, 1, 1), "sviluppo", *self.sigillo())
 
 

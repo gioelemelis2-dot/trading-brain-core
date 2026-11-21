@@ -1102,3 +1102,11 @@ Nulla di questo tocca il candidato `8e51ce9` su cui lavora R15.
 - **#123:** la parte (b) è riclassificata importante per il modulo, su proposta del DGS.
 - **Modello di scheda H-003:** metodo di DGS-13 §B per la potenza con i veti.
 - **Messaggio 12 al DGS:** `collaborazione/da-claude/RISCONTRO-DGS-13.md`.
+
+## 2026-11-21 · v1.88 (corsa completa dei mutanti del perimetro dopo R18: #136)
+
+- **Corsa completa dei mutanti dell'esecuzione** su 3.13: 311/314 prima della correzione.
+  - C01 e C08 erano vivi perché due test del caricatore erano diventati ciechi dopo #126.
+  - V10 non si applicava più dopo #128.
+- **#136 (errore di Claude):** i test ora controllano il messaggio d'errore e V10 è riallineato. Solo test e script dei mutanti; il codice del perimetro non cambia.
+- **Regola di lavoro:** dopo ogni correzione del perimetro si riesegue la corsa completa dei mutanti, non solo quelli nuovi.
