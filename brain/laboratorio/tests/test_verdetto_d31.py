@@ -283,6 +283,84 @@ class TestVetoBlocchi(unittest.TestCase):
         self.assertEqual(len(V.veto_blocchi(b[:500], -0.25, 50, ampiezza=100)["medie"]), 5)
 
 
+class TestRuoliESegnale(unittest.TestCase):
+    """DGS-12 §3 e §4 (21/11/2026): ruoli dei requisiti tipizzati (veto, vincolante per promuovere, descrittivo) e
+    segnale del solo metro riportato a parte, anche quando l'esito è deciso da un veto."""
+
+    def test_descrittivo_non_cambia_l_esito(self):
+        for esito in ("superato", "fallito", "non valutabile"):
+            r = [{"id": "dd", "veto": False, "descrittivo": True, "esito": esito}]
+            self.assertEqual(V.verdetto(SU, 5, r)["esito"], "promossa", esito)
+            self.assertEqual(V.verdetto(GIU, 5, r)["esito"], "bocciata", esito)
+
+    def test_ruoli_registrati(self):
+        r = [{"id": "a", "veto": True, "esito": "superato"}, {"id": "b", "veto": False, "esito": "superato"},
+             {"id": "c", "veto": False, "descrittivo": True, "esito": "fallito"},
+             {"id": "d", "veto": False, "descrittivo": False, "esito": "superato"}]
+        v = V.verdetto(SU, 5, r)
+        self.assertEqual(v["requisiti"], [{"id": "a", "ruolo": "veto", "esito": "superato"},
+                                          {"id": "b", "ruolo": "promozione", "esito": "superato"},
+                                          {"id": "c", "ruolo": "descrittivo", "esito": "fallito"},
+                                          {"id": "d", "ruolo": "promozione", "esito": "superato"}])
+        self.assertEqual(v["esito"], "promossa")
+        self.assertEqual(V.verdetto(SU, 5)["requisiti"], [])
+
+    def test_ruoli_malformati(self):
+        for r in ([{"id": "a", "veto": True, "descrittivo": True, "esito": "fallito"}],
+                  [{"id": "a", "veto": False, "descrittivo": 1, "esito": "fallito"}],
+                  [{"id": "a", "veto": False, "descrittivo": None, "esito": "fallito"}]):
+            with self.assertRaises(ValueError, msg=r):
+                V.verdetto(SU, 5, r)
+
+    def test_segnale_riportato(self):
+        self.assertEqual(V.verdetto(SU, 5)["segnale"], "favorevole")
+        self.assertEqual(V.verdetto(GIU, 5)["segnale"], "sfavorevole")
+        self.assertEqual(V.verdetto(INC, 5)["segnale"], "inconclusivo")
+        self.assertEqual(V.verdetto([(0.5, 1)] * 1000, 5)["segnale"], "invalido")
+        self.assertIsNone(V.verdetto(SU[:999], 5)["segnale"])
+        self.assertIsNone(V.verdetto([(0.5, 0)] * 1000, 5)["segnale"])
+
+    def test_veto_con_segnale_e_media(self):
+        veto = [{"id": "blocchi", "veto": True, "esito": "fallito"}]
+        v = V.verdetto(SU, 5, veto)
+        self.assertEqual((v["esito"], v["causa"], v["segnale"]), ("bocciata", "veto: blocchi", "favorevole"))
+        self.assertAlmostEqual(v["media"], 0.6, places=12)
+        self.assertEqual((v["L"], v["U"]), P.intervallo_bootstrap(SU, random.Random(5), 3999, 10))
+        self.assertEqual((v["trade"], v["sedute_attive"]), (1000, 1000))
+        v = V.verdetto(SU[:999], 5, veto)
+        self.assertEqual((v["esito"], v["segnale"], v["trade"]), ("bocciata", None, 999))
+        v = V.verdetto([(0.5, 0)] * 1000, 5, veto)
+        self.assertEqual((v["esito"], v["segnale"], v["trade"], v["media"]), ("bocciata", None, None, None))
+
+    def test_rapporto_segnale_e_requisiti(self):
+        r = [{"id": "blocchi", "veto": True, "esito": "fallito"},
+             {"id": "dd", "veto": False, "descrittivo": True, "esito": "fallito"}]
+        testo = V.rapporto(V.verdetto(SU, 5, r))
+        self.assertIn("segnale del solo metro: favorevole", testo)
+        self.assertIn("requisito blocchi [veto]: fallito", testo)
+        self.assertIn("requisito dd [descrittivo, non cambia l'esito]: fallito", testo)
+        self.assertIn("segnale del solo metro: non calcolato", V.rapporto(V.verdetto(SU[:999], 5)))
+
+    def test_blocchi_con_esiti_ignoti(self):
+        base = [(0.3, 1)] * 1000
+        ignota = list(base)
+        ignota[600] = (None, 1)
+        r = V.veto_blocchi(ignota, -0.25, 50)
+        self.assertEqual((r["esito"], r["medie"][2]), ("non valutabile", None))
+        self.assertEqual(r["medie"][0], 0.3)
+        ignota[0:250] = [(-0.5, 1)] * 250                                     # un blocco completo e negativo
+        self.assertEqual(V.veto_blocchi(ignota, -0.25, 50)["esito"], "fallito")
+        negativo_ignoto = [(-0.5, 1)] * 249 + [(None, 1)] + base[250:]           # l'ignota è nel blocco decisivo
+        self.assertEqual(V.veto_blocchi(negativo_ignoto, -0.25, 50)["esito"], "non valutabile")
+        for cattiva in ((None, 0), (None, 1.5), (float("nan"), 1), (0.5, 0)):
+            c = list(base)
+            c[3] = cattiva
+            with self.assertRaises(ValueError, msg=cattiva):
+                V.veto_blocchi(c, -0.25, 50)
+        with self.assertRaises(ValueError):
+            V.controlla_coppie(base[:999] + [(None, 1)])               # il verdetto resta severo sui dati
+
+
 class TestContestoProve(unittest.TestCase):
     """D-34 punto 2 (registro unico di N) e DGS-11 §6: N deve venire dal registro canonico e restare nel rapporto.
     Scritti PRIMA del codice (20/11/2026)."""
