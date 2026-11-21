@@ -513,3 +513,43 @@ Rapporto: `collaborazione/da-gemini/G-20261116-R13.md` (commit `6e17782`, identi
 - **D-24:** nessun difetto critico o importante; tutti i rilievi sono minori e **fuori dal perimetro**. Non ci sono casi dubbi da sottoporre al titolare. **R17 è il secondo giro pulito consecutivo: contatore 2 su 2** sul candidato `e476a9a`.
 - **Prima della verifica sulla riserva (D-24 e D-34 punto 6) restano:** il giro dedicato a **tutte** le manomissioni (R18) e la decisione del titolare sulla protezione del ramo su GitHub.
 - **Nota di copertura:** la suite «ufficiale» del mandato R17 elencava 15 moduli e lasciava fuori, fra gli altri, `test_anti_frode_statico`, che il 20/11 ha trovato #120 (fuori dal perimetro). I prossimi mandati useranno `.github/scripts/esegui_test.py`, che esegue **tutte** le 25 suite.
+
+## R18 di Gemini: giro su tutte le manomissioni (consegna del 21/11/2026)
+
+- **Consegna:** `collaborazione/da-gemini/G-20261121-R18.md`, più gli script `r18_compito_b_manomissioni.py` e `r18_compito_c_verdetto.py` (ramo `rev/gemini-r18`, commit `ce7d51f`; integrati i soli due commit della cartella di Gemini).
+- **Punta del ramo usata:** `efcfcbc`. Perimetro identico al candidato `e476a9a` (0 byte).
+- **Ambiente:** Apple Python 3.9.6, macOS 14.8.9, rete bloccata; un solo processo, spazio controllato prima di ogni blocco.
+- **Compito A:**
+  - 25/25 suite verdi;
+  - `mutazioni_verdetto`: 76/77, con VD13 equivalente (versione prima delle correzioni di DGS-12 del 21/11);
+  - `mutazioni_esecuzione`: **302/303**, con N63 equivalente. Il file a `efcfcbc` ha 2 mutanti in più rispetto a `e476a9a` (PR28 e PR29 di #117), quindi 301 + 2 = 303, coerente con R17.
+- **Compito B:** 7 classi di manomissione su copie temporanee. Rilevate o protette:
+  - registro cambiato dopo il push;
+  - amend, rebase e reset;
+  - clone `--depth`;
+  - ambiente avvelenato (PYTHONPATH, `.pth`, `.pyc`, `statistics/`);
+  - BID e ASK scambiati;
+  - date della riserva nello sviluppo;
+  - buchi mascherati;
+  - alias di mercato;
+  - concorrenza su `registra_esecuzione`.
+- **Compito C:** primo giro del modulo del verdetto (D-34), 6 sonde e 7 mutanti nuovi (5 sopravvissuti).
+- **Compito D:** tre opzioni per la protezione del ramo, senza scelta.
+- **Verifica di Claude (21/11):**
+  - **R18-01 riprodotto** su un repository finto: clone `--filter=blob:none`, remoto irraggiungibile, `versioni_nella_storia` = [] con 2 versioni nella storia → #125;
+  - **R18-02 confermato** leggendo `caricatore.carica`: nessun confronto fra le cartelle BID e ASK, nessun controllo dei collegamenti simbolici → #126;
+  - **R18-03 confermato:** nessun riferimento a `riserva` in `esegui_h002.py`; `autorizza` lascia `controlla_ancora` al chiamante → #127;
+  - **R18-07, R18-08 e R18-09 riprodotti** sul codice attuale del modulo, dopo le correzioni di DGS-12 → #131, #132, #133;
+  - **R18-11 confermato** leggendo `esegui_test.py`: conta solo il codice d'uscita → #135;
+  - minori: #128 (NaN), #129 (limite della cache), #130 (limiti dichiarati), #134 (copertura dei test).
+- **D-24: R18 NON è pulito.** Tre difetti **importanti** nel perimetro sigillato, di tipo E/M e costo basso (#125, #126, #127), mai dichiarati prima. Vanno corretti: ne segue un **nuovo candidato**, e prima della verifica sulla riserva serve un nuovo giro sulle manomissioni.
+  - **Il trattamento del contatore (2 su 2 su `e476a9a`) è una decisione del titolare** (D-24, casi dubbi).
+  - Precedente: D-27 (#114), cioè nuovo candidato e giro successivo che rifà le prove toccate.
+- **Fuori dal perimetro:**
+  - #131, #132 e #133 sono importanti per il modulo del verdetto e cadono nel suo primo giro (D-34);
+  - #135 è importante per la governance dei test.
+  - Non contano per il contatore D-24, ma vanno corretti prima dell'uso.
+- **Spazio su disco:** Gemini documenta che le sue copie temporanee pesano al massimo 5,23 MiB e vengono cancellate.
+  - Il 21/11 il disco era pieno alle 01:26 (scaricamento ASK fermo) ma aveva 9,88 GiB liberi alle 02:08, poi 594 MiB alle 03:42, poi di nuovo 10 GiB al mattino.
+  - Quindi qualcosa occupa e libera circa 10 GB di notte, e non sono né Gemini né lo scaricamento.
+  - **Sospetto di Claude:** gli snapshot locali di Time Machine o un aggiornamento di macOS. Da controllare con `tmutil listlocalsnapshots /`.

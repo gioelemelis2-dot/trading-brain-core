@@ -1052,3 +1052,17 @@ Nulla di questo tocca il candidato `8e51ce9` su cui lavora R15.
   - la regola in vigore invece consuma la riserva per calendario, comune a tutti i mercati (confermato da DGS-12 §1);
   - le verifiche sono quindi circa 4 in tutto il progetto, salvo una decisione diversa del titolare;
   - corretti la pagina e il documento di visione.
+
+## 2026-11-21 · v1.85 (R18 integrato e verificato: non pulito; #125–#135)
+
+- **R18 di Gemini integrato** (`collaborazione/da-gemini/G-20261121-R18.md` e due script; solo la cartella di Gemini).
+- **Verifica di Claude:**
+  - R18-01 riprodotto (copia parziale senza blob);
+  - R18-02 e R18-03 confermati sul codice;
+  - R18-07, R18-08 e R18-09 riprodotti sul modulo del verdetto;
+  - R18-11 confermato.
+- **Registrati da #125 a #135.** Importanti nel perimetro: **#125, #126, #127**. Importanti fuori dal perimetro: #131, #132, #133 (modulo del verdetto) e #135 (CI).
+- **D-24: R18 non è pulito.**
+  - Servono le correzioni, un nuovo candidato e un nuovo giro sulle manomissioni.
+  - Il trattamento del contatore (oggi 2 su 2 su `e476a9a`) è una decisione del titolare.
+- **Disco pieno di notte:** non è Gemini (picco di 5,23 MiB) né lo scaricamento. Sospetto: gli snapshot locali di Time Machine o un aggiornamento di macOS.
