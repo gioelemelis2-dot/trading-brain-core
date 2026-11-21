@@ -1,6 +1,6 @@
 # Compito per Gemini/Antigravity: operazioni dichiarate della fonte P-001 (19/11/2026)
 
-**Da dare solo dopo la consegna di R17.** Base: D-41 (valutazione della fonte, nessuna scheda né prova sul banco). Il testo da incollare è fra le due righe di trattini.
+**Da dare dopo R18 (consegnato il 21/11).** Base: D-41 (valutazione della fonte, nessuna scheda né prova sul banco). Il testo da incollare è fra le due righe di trattini.
 
 ---
 
@@ -31,6 +31,8 @@ REGOLE (vincolanti)
    - R = risultato / (|ingresso − stop| × dimensione × valore del punto);
    - indica sempre da dove viene ciascun numero.
 10. **Spazio sul disco:** controlla `df -h ~` prima di iniziare. Se sono liberi meno di 3 GB, fermati e avvisa.
+11. **Non disturbare lo scaricamento dei dati:** non toccare `~/Downloads/tb-riconta`, `brain/dati/reali/` né i processi `scarica_cache` (lo scaricamento ASK è in corso). Lavora in un worktree nuovo `../tb-p001` dalla punta di `origin/feat/esecutore-h002`, un solo processo alla volta.
+12. **Gli 11 video di @bradgtrades senza trascrizione** (confronta l'elenco con i file in `~/Downloads/p001_sottotitoli/`): riprova a scaricarne solo i sottotitoli, con la regola 1. Se non ci riesci, segnali nella tabella «Lacune».
 
 CHE COSA CONSEGNARE
 - **Campi aggiuntivi in ogni riga (20/11):**
