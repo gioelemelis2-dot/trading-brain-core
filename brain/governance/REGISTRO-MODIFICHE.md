@@ -1110,3 +1110,4 @@ Nulla di questo tocca il candidato `8e51ce9` su cui lavora R15.
   - V10 non si applicava più dopo #128.
 - **#136 (errore di Claude):** i test ora controllano il messaggio d'errore e V10 è riallineato. Solo test e script dei mutanti; il codice del perimetro non cambia.
 - **Regola di lavoro:** dopo ogni correzione del perimetro si riesegue la corsa completa dei mutanti, non solo quelli nuovi.
+- **Esito dopo la correzione:** 314/314 mutanti uccisi su 3.13.18 e 314/314 su 3.9.25. Su 3.9 la corsa è stata divisa in due parti (169 + 145) per il limite di due ore; nessun equivalente dichiarato.
