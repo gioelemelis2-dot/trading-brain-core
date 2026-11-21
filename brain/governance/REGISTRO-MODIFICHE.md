@@ -1031,3 +1031,15 @@ Nulla di questo tocca il candidato `8e51ce9` su cui lavora R15.
 - **Modello di scheda H-003:** §5 con le precisazioni di DGS-12 su D-43; §8 riallineato a D-31, D-35, D-36, D-37, D-42 (la versione del 15/11 era superata); controlli del §12 aggiornati.
 - **Nuova decisione aperta DA-34:** uguaglianza della potenza al 50% nello screening. Consiglio di Claude: (a).
 - **Messaggio 11 al DGS:** `collaborazione/da-claude/RISCONTRO-DGS-12.md`.
+
+## 2026-11-21 · v1.83 (ricognizione su storici MetaTrader e strumenti per Claude)
+
+- **Richiesta del DGS archiviata:** `collaborazione/da-chatgpt/DGS-20261121-richiesta-ricerca-metatrader-claude.md`.
+- **Risposta di Claude:** `collaborazione/da-claude/RISPOSTA-RICERCA-METATRADER-20261121.md`.
+  - **Verdetto:** oggi bastano gli strumenti esistenti.
+  - **Tre prove piccole, con soglia di abbandono, dopo la fine della macchina:** spazio e seconda copia; osservatore programmato; coorte MQL5.
+- **Limite:**
+  - le pagine ufficiali di metatrader5.com e mql5.com non sono leggibili dall'ambiente di Claude;
+  - gli indirizzi sono stati aggiunti all'ambiente, ma la lettura è stata negata dal controllo dei permessi;
+  - le parti relative sono marcate «NON VERIFICATO»;
+  - azione proposta: il titolare passa le pagine in PDF.
