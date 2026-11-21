@@ -390,6 +390,16 @@ class TestRevisioneR18(unittest.TestCase):
             with self.assertRaises(ValueError, msg=seme):
                 V.intervallo(SU, seme)
 
+    def test_132_seme_controllato_anche_senza_bootstrap(self):        # per i mutanti VD96 e VD97
+        with self.assertRaises(ValueError):
+            V.verdetto(SU[:999], None)                                           # minimi mancanti: niente bootstrap
+        with self.assertRaises(ValueError):
+            V.screening([(0.0, 0)] * 1000, None, 0.6)                            # nessun trade: niente bootstrap
+
+    def test_134_sedute_non_misurabili_dette_tali(self):                  # per il mutante VD112
+        testo = V.rapporto(V.verdetto((x for x in SU), 5))
+        self.assertIn("- sedute: — sedute [MISURA] · incertezza: NON DISPONIBILE", testo)
+
     def test_133_contesto_controllato(self):
         for cattivo in ({"registro": "r.json", "n_prove": -5, "impronta": "ab" * 32},
                         {"registro": "r.json", "n_prove": True, "impronta": "ab" * 32},
@@ -436,6 +446,14 @@ class TestRevisioneR18(unittest.TestCase):
                 V.veto_blocchi(*args)
         with self.assertRaises(ValueError):
             V.verdetto(SU, 5, [{"id": 5, "veto": False, "esito": "superato"}])
+
+    def test_134_errore_indica_la_seduta(self):                           # per il mutante VD10
+        for cattivo in (float("nan"), float("inf")):
+            c = list(SU)
+            c[7] = (cattivo, 1)
+            with self.assertRaises(ValueError) as e:
+                V.controlla_coppie(c)
+            self.assertIn("seduta 7", str(e.exception))
 
     def test_134_coppie_non_in_lista_e_somme_enormi(self):
         with self.assertRaises(ValueError):

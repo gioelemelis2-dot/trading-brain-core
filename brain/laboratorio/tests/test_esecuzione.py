@@ -323,6 +323,17 @@ class TestCaricatore(Cartella):
         bid, ask, info = C.carica(b, a, *periodo)                  # senza il giorno sospetto si carica
         self.assertEqual(info["giorni_ask_mancanti"], 1)
 
+    def test_un_minuto_uguale_non_basta_a_scartare_il_giorno(self):     # per il mutante Q09
+        """#126: si scarta solo il giorno in cui TUTTI i minuti dell'ASK coincidono con il BID."""
+        b, a = self.dir / "bid", self.dir / "ask"
+        b.mkdir()
+        a.mkdir()
+        uguale = (480 * 60, 2650000, 2650010, 2649990, 2650020, 1.0)
+        (b / "2026-01-05.bi5").write_bytes(bi5([uguale, (481 * 60, 2650000, 2650010, 2649990, 2650020, 1.0)]))
+        (a / "2026-01-05.bi5").write_bytes(bi5([uguale, (481 * 60, 2650300, 2650310, 2650290, 2650320, 1.0)]))
+        bid, ask, _ = C.carica(b, a, date(2026, 1, 5), date(2026, 1, 5), "sviluppo", *self.sigillo())
+        self.assertEqual((len(bid), len(ask)), (2, 2))
+
     def test_sviluppo_rifiuta_il_periodo_sigillato(self):
         with self.assertRaises(ValueError):
             C.carica(self.dir, self.dir, date(2023, 11, 14), date(2023, 12, 1), "sviluppo", *self.sigillo())

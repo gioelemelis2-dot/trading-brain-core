@@ -433,3 +433,29 @@ DA-13 rulebook (Q-09) ──► DA-11 G0 minimo ──► DA-12 indicatori compo
   - **(a)** «≥ 50%»: il 50% esatto passa. «L'uguaglianza non passa» vale per le soglie in R (media e limite inferiore). Nessuna modifica al codice.
   - **(b)** «> 50%»: il 50% esatto non passa. Si cambia il confronto nel modulo, con test e mutanti.
 - **Consiglio di Claude: (a).** È la formula scritta e la lettura di D-42 («potenza del 50%»). Una potenza stimata esattamente al 50,00% è un caso quasi solo teorico, quindi la scelta conta soprattutto per la chiarezza del testo.
+
+### DA-35 · Contatore D-24 dopo R18 (21/11/2026) · **da decidere dal titolare**
+- **Il fatto:** R18 (il giro su tutte le manomissioni) ha trovato tre difetti **importanti** nel perimetro sigillato, di tipo E/M e costo basso:
+  - #125: copia parziale del repository non vista;
+  - #126: ASK uguale al BID accettato;
+  - #127: riserva non collegata all'esecutore.
+- Sono difetti che avrebbero contato anche in R16 e R17. Le correzioni cambiano il perimetro, quindi serve un **nuovo candidato**.
+- **Opzioni:**
+  - **(a) Rigorosa:** contatore a 0 su 2 sul nuovo candidato. Servono due giri ordinari puliti più un giro sulle manomissioni. Costa circa 3 giri (1–2 settimane).
+  - **(b) Come D-27 (#114):** il contatore resta 2 su 2. Il prossimo giro (R19) rifà sul nuovo candidato tutte le prove toccate dalle correzioni **e** l'intero giro sulle manomissioni (D-24); se è pulito, la condizione D-24 è soddisfatta. Costa 1 giro.
+  - **(c) Intermedia:** contatore a 1 su 2 (R17 resta valido, R16 no). R19 è un giro ordinario completo più le manomissioni, e se è pulito si arriva a 2 su 2. Costa 1 giro, ma più lungo di (b).
+- **Consiglio di Claude: (c).**
+  - I tre difetti sono di classe «facile» (E e M a costo basso), proprio quella che il contatore deve garantire. Quindi (b) sarebbe troppo indulgente: R16 e R17 non li hanno visti.
+  - (a) ripete lavoro già fatto bene sul resto del perimetro, che non cambia.
+  - Con (c) R19 rifà tutto il perimetro, non solo le prove toccate.
+
+### DA-36 · Protezione del ramo su GitHub (21/11/2026) · **da decidere dal titolare (D-24)**
+- **Opzioni preparate da Gemini** (R18, compito D; `collaborazione/da-gemini/G-20261121-R18.md`):
+  1. **Minima:** niente push forzati né cancellazioni; i test automatici obbligatori; scavalcamento possibile per il titolare.
+  2. **Con revisione:** come la 1, più modifiche solo tramite richiesta di unione (PR) e approvazione del titolare per i file della CI, il perimetro, il verdetto e i registri (CODEOWNERS).
+  3. **Rigida:** come la 2, senza scavalcamento nemmeno per il titolare, storia lineare ed etichette `sigillo-*` e `riserva-*` non modificabili.
+- **Che cosa NON copre nessuna opzione:** il repository e i registri **locali** prima del push (#90, #98), la cache dei dati (fuori da GitHub, #129), `avvio.py` modificato sul Mac.
+- **Consiglio di Claude: la 2, con le etichette `sigillo-*` e `riserva-*` protette della 3.**
+  - Ferma il caso più probabile: un agente che modifica test, CI o registri e li fa entrare senza che il titolare lo veda.
+  - Lascia al titolare lo scavalcamento per le urgenze, che resta comunque registrato.
+- **Limite da verificare:** in un repository personale l'approvazione richiesta non può venire dall'autore stesso. Va controllato se serve un secondo account o se bastano le regole dei Ruleset.

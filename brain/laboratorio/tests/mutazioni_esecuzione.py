@@ -35,6 +35,18 @@ CO = "laboratorio/studi/collaudo_ia02.py"
 PI = "laboratorio/studi/pilota_ia02.py"
 PR = "laboratorio/studi/protocollo_ia02.py"
 M = {
+    # --- R18 di Gemini (21/11/2026): #125 copia parziale, #126 ASK = BID, #128 NaN nella riserva ---
+    "Q01 copia parziale non controllata (#125)": [(SG, "    if promessa.stdout.strip():", "    if False:")],
+    "Q02 versione illeggibile saltata (#125)": [(SG, '            if _git(radice, "ls-tree", "--name-only", commit, "--", rel).stdout.strip():', "            if False:")],
+    "Q03 commit senza il file trattato come illeggibile (#125)": [(SG, '            if _git(radice, "ls-tree", "--name-only", commit, "--", rel).stdout.strip():', "            if True:")],
+    "Q04 configurazione della copia parziale non letta (#125)": [(SG, '"--get-regexp", r"^(remote', '"--get-regexp", r"^(nessuna')],
+    "Q05 giorno collegato accettato (#126)": [(C, "        if f.is_symlink():                                       # #126", "        if False:                                       # #126")],
+    "Q06 cartella collegata accettata (#126)": [(C, "        if c.is_symlink():\n", "        if False:\n")],
+    "Q07 stessa cartella accettata (#126)": [(C, "    if cartella_bid.resolve() == cartella_ask.resolve():", "    if False:")],
+    "Q08 ASK identico al BID non controllato (#126)": [(C, "    _ask_diverso_dal_bid(bid, ask)\n", "")],
+    "Q09 basta un minuto uguale per scartare il giorno (#126)": [(C, "            giorni[g] = giorni.get(g, True) and bid[t] == q", "            giorni[g] = giorni.get(g, False) or bid[t] == q")],
+    "Q10 quota non finita accettata (#128)": [(RV, " or not math.isfinite(alfa) or", " or")],
+    "Q11 quota di tipo qualsiasi accettata (#128)": [(RV, "            if type(alfa) is not float or not math.isfinite(alfa)", "            if not math.isfinite(float(alfa))")],
     "PR28 protocollo: cella 10 tolta dalla potenza (M-R17-02 di Gemini)": [(PR, 'CELLE_POTENZA = (3, 7, 10, 12)', 'CELLE_POTENZA = (3, 7, 12)')],
     "PR29 protocollo: potenza zero accettata in fase 2 (M-R17-03 di Gemini)": [(PR, '            if p < 1:\n', '            if p < 0:\n')],
     "IX19 intersezione: vigilie nei percentili annuali (M-R16-01 di Gemini)": [(IX, '        delle = [s for s in sedute if s["giorno"][:4] == anno]', '        delle = [s for s in sedute + vigilie if s["giorno"][:4] == anno]')],

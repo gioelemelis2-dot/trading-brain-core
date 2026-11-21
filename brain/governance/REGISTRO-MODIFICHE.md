@@ -1066,3 +1066,28 @@ Nulla di questo tocca il candidato `8e51ce9` su cui lavora R15.
   - Servono le correzioni, un nuovo candidato e un nuovo giro sulle manomissioni.
   - Il trattamento del contatore (oggi 2 su 2 su `e476a9a`) è una decisione del titolare.
 - **Disco pieno di notte:** non è Gemini (picco di 5,23 MiB) né lo scaricamento. Sospetto: gli snapshot locali di Time Machine o un aggiornamento di macOS.
+
+## 2026-11-21 · v1.86 (correzioni di R18; nuovo candidato in preparazione)
+
+- **Test scritti prima** (`e72af87`, rossi sul codice di allora), **poi il codice** (`f338381`):
+  - **#125:** `versioni_nella_storia` rifiuta la copia parziale (`remote.*.promisor`, `extensions.partialclone`) e ogni versione presente ma illeggibile; un commit in cui il file è stato cancellato si salta come prima;
+  - **#126:** `caricatore.carica` rifiuta BID e ASK nella stessa cartella, cartelle o file collegati simbolicamente e ogni giorno in cui tutti i minuti dell'ASK coincidono con il BID. Le fixture dei test esistenti, che usavano ASK identico al BID per comodità, sono state adattate;
+  - **#128:** la quota `alfa_j` deve essere un float finito;
+  - **#131–#134**, nel modulo del verdetto:
+    - intervallo invalido non presentato come stima;
+    - seme intero obbligatorio;
+    - contesto di N controllato e obbligatorio per promuovere;
+    - registro collegato rifiutato;
+    - coppie solo in lista e somme finite;
+    - banda dei «vicini» con il tipo;
+  - **#135:** `esegui_test.py` richiede almeno un test eseguito e non tutti saltati, e confronta le suite trovate con `.github/scripts/suite_attese.txt` (27 suite).
+- **Verifiche:**
+  - 27/27 suite verdi su 3.13 e 3.9;
+  - mutanti del verdetto **117/118** su entrambe (VD13 equivalente), con 24 mutanti nuovi (VD95–VD118, compresi i 5 sopravvissuti di Gemini);
+  - mutanti nuovi del perimetro **Q01–Q11: 11/11** su entrambe.
+  - La corsa completa di `mutazioni_esecuzione` è da fare (R19 e Claude).
+- **Aperti:**
+  - **#127**: collegamento fra esecutore e riserva. La verifica di H-002 usa oggi tutta la riserva, quindi serve una scelta di progetto;
+  - #129 e #130: limiti dichiarati;
+  - #124 e #121: minori, a lotti.
+- **Decisioni del titolare:** DA-34 (potenza al 50%), DA-35 (contatore D-24 dopo R18), DA-36 (protezione del ramo).
