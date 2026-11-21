@@ -1091,3 +1091,14 @@ Nulla di questo tocca il candidato `8e51ce9` su cui lavora R15.
   - #129 e #130: limiti dichiarati;
   - #124 e #121: minori, a lotti.
 - **Decisioni del titolare:** DA-34 (potenza al 50%), DA-35 (contatore D-24 dopo R18), DA-36 (protezione del ramo).
+
+## 2026-11-21 · v1.87 (DGS-13: rettifica su D-44, ricevuta della prova generale, attribuzione di R18)
+
+- **DGS-13 archiviato.** Numeri ricalcolati e confermati (limiti Beta al 99,9%: 1,1897%, 0,0935%, 0,1088%).
+- **Rettifica accolta (errore di Claude):** nel confronto D-44 mancava il secondo conteggio avverso. Le false bocciature più gli errori della cella 11 passano da 2 a 3 (limite da 0,0935% a 0,1088%). Il verdetto del collaudo non cambia.
+- **Ricevuta della prova generale:** `collaborazione/da-claude/RICEVUTA-PROVA-GENERALE-20261121.md`.
+  - Contiene commit, impronte, 17/17 test su 3.13 e 3.9 e i rapporti di M e N.
+  - **D-34 punto 5 resta aperto per il percorso intero** (scheda → sigillo → screening → prenotazione → verdetto → rapporto), che non esiste finché non si corregge #127.
+- **#123:** la parte (b) è riclassificata importante per il modulo, su proposta del DGS.
+- **Modello di scheda H-003:** metodo di DGS-13 §B per la potenza con i veti.
+- **Messaggio 12 al DGS:** `collaborazione/da-claude/RISCONTRO-DGS-13.md`.
