@@ -1043,3 +1043,12 @@ Nulla di questo tocca il candidato `8e51ce9` su cui lavora R15.
   - gli indirizzi sono stati aggiunti all'ambiente, ma la lettura è stata negata dal controllo dei permessi;
   - le parti relative sono marcate «NON VERIFICATO»;
   - azione proposta: il titolare passa le pagine in PDF.
+
+## 2026-11-21 · v1.84 (pagina per gli amici; correzione sulla riserva multimercato)
+
+- **Pagina «Trading Brain in breve» aggiornata**, con lo stesso link: la visione multimercato (mappa dei mercati, catena della fabbrica, storia e futuro, due percorsi nella roadmap) e lo stato al 21/11.
+- **Correzione (errore di Claude):**
+  - la pagina e `piano/VISIONE-FABBRICA-MULTIMERCATO.md` dicevano «circa 4 verifiche per ogni mercato»;
+  - la regola in vigore invece consuma la riserva per calendario, comune a tutti i mercati (confermato da DGS-12 §1);
+  - le verifiche sono quindi circa 4 in tutto il progetto, salvo una decisione diversa del titolare;
+  - corretti la pagina e il documento di visione.

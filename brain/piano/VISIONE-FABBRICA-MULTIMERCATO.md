@@ -6,6 +6,7 @@
 
 - L'oro è **solo il primo mercato**, scelto per cominciare. Il progetto sarà molto più ampio: tanti mercati, tante sessioni, tanti parametri.
 - Il limite delle «circa 4 verifiche» vale **per la riserva di un solo mercato**. Ogni mercato ha la sua riserva, quindi le verifiche storiche totali sono molte di più.
+  - **Correzione del 21/11/2026 (errore di Claude):** questa riga è una **proposta**, non la regola in vigore. Oggi il registro della riserva consuma **per calendario, comune a tutti i mercati**, e DGS-12 §1 lo conferma («il vincolo attraversa tutti i mercati del calendario comune»). Quindi le circa 4 verifiche valgono per tutto il progetto, finché il titolare non decide diversamente (decisione 2 del §7: una riserva per mercato o una condivisa).
 - **Lo sblocco vero non è scaricare più storico, è il futuro.** La demo in avanti è un campo di prova illimitato e sempre pulito: non si consuma mai. Lo storico diventa il primo filtro; la demo diventa il motore principale.
 - La visione giusta non è «trovare la strategia perfetta sull'oro», ma costruire una **fabbrica di ricerca**: un flusso che prova idea × mercato × sessione × parametri, scarta quasi tutto, tiene i pochi sopravvissuti e li combina in un **portafoglio** di tante strategie semplici (il metodo di Unger).
 - **La macchina che stiamo finendo è il controllo qualità di quella fabbrica.** Prima la finiamo e la collaudiamo su un caso; poi la trasformiamo in fabbrica.
