@@ -178,17 +178,25 @@ def versioni_nella_storia(radice: Path, rel: str) -> List[dict]:
     cancellato anche su GitHub va impedito con la protezione dei rami."""
     if _git(radice, "rev-parse", "--is-shallow-repository").stdout.strip() == "true":     # R14-03
         raise ValueError("storia git parziale (clone --depth): scaricare la storia completa (git fetch --unshallow)")
+    promessa = _git(radice, "config", "--get-regexp", r"^(remote\..*\.promisor|extensions\.partialclone)$")
+    if promessa.stdout.strip():                                                   # #125 (R18-01)
+        raise ValueError("copia parziale del repository (clone --filter): servono una copia completa e tutta la storia")
     elenco = _git(radice, "rev-list", "--all", "--reflog", "--", rel)          # R14-03: anche il reflog
     if elenco.returncode != 0:
         raise ValueError(f"storia git di {rel} non leggibile: {elenco.stderr.strip()}")
     versioni = []
     for commit in elenco.stdout.split():
         v = _git(radice, "show", f"{commit}:{rel}")
-        if v.returncode == 0:
-            try:
-                versioni.append(json.loads(v.stdout))
-            except ValueError:
-                continue
+        if v.returncode != 0:
+            # #125: si salta solo un commit in cui il file non c'è (cancellato); se c'è ma non si legge, ci si ferma
+            if _git(radice, "ls-tree", "--name-only", commit, "--", rel).stdout.strip():
+                raise ValueError(f"versione di {rel} nel commit {commit[:12]} illeggibile (oggetto mancante): "
+                                 "servono una copia completa e tutta la storia")
+            continue
+        try:
+            versioni.append(json.loads(v.stdout))
+        except ValueError:
+            continue
     return versioni
 
 

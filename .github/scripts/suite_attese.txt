@@ -1,0 +1,29 @@
+# Suite attese da esegui_test.py (#135). Un file di test rinominato, cancellato o nuovo va aggiornato qui,
+# in modo visibile nel diff: la corsa si ferma se l'elenco non coincide con le suite trovate.
+brain.dati.tests.test_controlla_cache
+brain.dati.tests.test_costi_tick
+brain.dati.tests.test_dukascopy
+brain.dati.tests.test_partizione_date
+brain.dati.tests.test_pipeline
+brain.dati.tests.test_scarica_cache
+brain.governance.censimento.test_riconta
+brain.governance.test_esporta_redatto
+brain.laboratorio.tests.test_anti_frode_statico
+brain.laboratorio.tests.test_backtester
+brain.laboratorio.tests.test_ci
+brain.laboratorio.tests.test_collaudo_ia02
+brain.laboratorio.tests.test_dsr_scala
+brain.laboratorio.tests.test_esecuzione
+brain.laboratorio.tests.test_esegui_h002
+brain.laboratorio.tests.test_intersezione_bid_ask
+brain.laboratorio.tests.test_orb_londra
+brain.laboratorio.tests.test_pilota_ia02
+brain.laboratorio.tests.test_potenza_soglia
+brain.laboratorio.tests.test_protocollo_ia02
+brain.laboratorio.tests.test_prova_generale_dgs12
+brain.laboratorio.tests.test_riserva
+brain.laboratorio.tests.test_studio_range
+brain.laboratorio.tests.test_studio_sessioni
+brain.laboratorio.tests.test_taratura_completezza
+brain.laboratorio.tests.test_verdetto_d31
+brain/guardian (discover)

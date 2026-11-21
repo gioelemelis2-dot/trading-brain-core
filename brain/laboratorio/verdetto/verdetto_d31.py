@@ -21,6 +21,7 @@ Vale solo per la prima apertura con una variante (quota 2,5%): una quota diversa
 import hashlib
 import math
 import random
+import re
 from pathlib import Path
 
 from ..esecuzione import sigillo as S
@@ -67,6 +68,8 @@ def vicini(lo: float, hi: float) -> list:
 
 def controlla_coppie(coppie, ignote: bool = False) -> None:
     """Con `ignote` (solo per il veto per blocchi) una seduta con trade può avere l'esito ignoto: S = None."""
+    if not isinstance(coppie, (list, tuple)):                                     # #134: niente generatori
+        raise ValueError(f"le coppie vanno date come lista, non come {type(coppie).__name__}")
     if not coppie:
         raise ValueError("nessuna seduta")
     for i, c in enumerate(coppie):
@@ -83,6 +86,8 @@ def controlla_coppie(coppie, ignote: bool = False) -> None:
             raise ValueError(f"seduta {i}: S = {s!r} non è un numero finito")
         if k == 0 and s != 0:
             raise ValueError(f"seduta {i}: risultato {s} senza trade")
+    if not math.isfinite(sum(s for s, _ in coppie if s is not None)):           # #134: somme enormi
+        raise ValueError("la somma dei risultati non è un numero finito")
 
 
 def minimi_mancanti(coppie) -> list:
@@ -98,7 +103,14 @@ def minimi_mancanti(coppie) -> list:
     return out
 
 
+def _seme(seme) -> None:
+    """#132 (Gemini R18-08): con seme None `random.Random` usa l'entropia del sistema: bootstrap non riproducibile."""
+    if type(seme) is not int:
+        raise ValueError(f"seme {seme!r}: serve un intero, registrato nel rapporto")
+
+
 def intervallo(coppie, seme: int):
+    _seme(seme)
     if P.impronta_modulo() != IMPRONTA_PILOTA:
         raise RuntimeError("il pilota non è la versione collaudata: impronta diversa da IMPEGNO-PROTOCOLLO-IA02")
     return P.intervallo_bootstrap(coppie, random.Random(seme), B, BLOCCO)
@@ -107,6 +119,8 @@ def intervallo(coppie, seme: int):
 def contesto_prove(registro) -> dict:
     """N dal registro canonico delle prove (D-34 punto 2), con l'impronta del file letto (DGS-11 §6)."""
     registro = Path(registro)
+    if registro.is_symlink():                                                     # #133 (Gemini R18-09)
+        raise ValueError(f"{registro}: collegamento simbolico, non il registro canonico")
     if registro.name in REGISTRI_EREDITATI:
         raise ValueError(f"{registro.name}: registro ereditato di Binario B, non vale per il verdetto (D-34, DA-28)")
     if not registro.is_file():
@@ -116,6 +130,20 @@ def contesto_prove(registro) -> dict:
     if hashlib.sha256(registro.read_bytes()).hexdigest() != prima:
         raise ValueError(f"{registro.name}: il registro è cambiato durante la lettura")
     return {"registro": registro.name, "n_prove": S.n_prove(dati), "impronta": prima}
+
+
+IMPRONTA_ESADECIMALE = re.compile(r"[0-9a-f]{64}")
+
+
+def _contesto(c) -> None:
+    """#133 (Gemini R18-09): il contesto di N è quello di `contesto_prove`, non un dizionario qualsiasi."""
+    if c is None:
+        return
+    if not isinstance(c, dict) or set(c) != {"registro", "n_prove", "impronta"} \
+            or not isinstance(c["registro"], str) or not c["registro"] \
+            or type(c["n_prove"]) is not int or c["n_prove"] < 0 \
+            or not isinstance(c["impronta"], str) or not IMPRONTA_ESADECIMALE.fullmatch(c["impronta"]):
+        raise ValueError(f"contesto delle prove malformato: {c!r} (usare contesto_prove)")
 
 
 def _requisiti(requisiti) -> list:
@@ -134,10 +162,13 @@ def _requisiti(requisiti) -> list:
 def verdetto(coppie, seme: int, requisiti=(), contesto=None, quota=QUOTA) -> dict:
     if type(quota) is not float or quota != QUOTA:
         raise ValueError(f"quota {quota!r}: solo {QUOTA} è collaudata; un'altra richiede un collaudo (D-31)")
+    _seme(seme)
+    _contesto(contesto)
     req = _requisiti(requisiti)
-    v = {"esito": None, "causa": None, "L": None, "U": None, "media": None, "sedute": len(coppie), "trade": None,
+    v = {"esito": None, "causa": None, "L": None, "U": None, "media": None,
+         "sedute": len(coppie) if isinstance(coppie, (list, tuple)) else None, "trade": None,
          "sedute_attive": None, "seme": seme, "impronta_pilota": IMPRONTA_PILOTA, "vicini_soglia": [],
-         "contesto_prove": contesto, "quota": quota, "segnale": None, "requisiti": req}
+         "contesto_prove": contesto, "quota": quota, "segnale": None, "requisiti": req, "intervallo_scartato": None}
 
     def fine(esito, causa):
         v["esito"], v["causa"] = esito, causa
@@ -157,10 +188,12 @@ def verdetto(coppie, seme: int, requisiti=(), contesto=None, quota=QUOTA) -> dic
         mancano = minimi_mancanti(coppie)
         if not mancano:
             iv = intervallo(coppie, seme)
-            if iv is not None:
+            v["segnale"] = segnale(iv)
+            if v["segnale"] == "invalido":                  # #131: un intervallo invalido non è una stima
+                v["intervallo_scartato"] = iv
+            else:
                 v["L"], v["U"] = iv
                 v["vicini_soglia"] = vicini(*iv)
-            v["segnale"] = segnale(iv)
     for r in req:
         if r["ruolo"] == "veto" and r["esito"] == "fallito":
             return fine("bocciata", f"veto: {r['id']}")
@@ -175,6 +208,8 @@ def verdetto(coppie, seme: int, requisiti=(), contesto=None, quota=QUOTA) -> dic
         return fine("bocciata", "statistica: U < +0,10 R")
     if sg == "favorevole":
         aperti = [r["id"] for r in req if r["ruolo"] != "descrittivo" and r["esito"] != "superato"]
+        if not aperti and contesto is None:                 # #133: si promuove solo con N dal registro canonico
+            return fine("non decidibile", "N non fornito: serve il contesto del registro canonico (D-34 punto 2)")
         if not aperti:
             return fine("promossa", "L > +0,20 R e requisiti superati")
         return fine("non decidibile", "requisito non superato o non valutabile: " + ", ".join(aperti))
@@ -182,6 +217,7 @@ def verdetto(coppie, seme: int, requisiti=(), contesto=None, quota=QUOTA) -> dic
 
 
 def screening(coppie, seme: int, potenza_stimata) -> dict:
+    _seme(seme)
     if type(potenza_stimata) not in (int, float) or not 0.0 <= potenza_stimata <= 1.0:
         raise ValueError(f"potenza stimata {potenza_stimata!r} fuori da [0, 1]")
     controlla_coppie(coppie)
@@ -247,7 +283,7 @@ def voci_rapporto(v: dict) -> list:
         return "esatto" if x is not None else "NON DISPONIBILE"
     c = v.get("contesto_prove")
     voci = [
-        _voce("sedute", v["sedute"], "sedute", "MISURA", "esatto", "coppie giornaliere della prova"),
+        _voce("sedute", v["sedute"], "sedute", "MISURA", misura(v["sedute"]), "coppie giornaliere della prova"),
         _voce("trade", v["trade"], "trade", "MISURA", misura(v["trade"]), "coppie giornaliere della prova"),
         _voce("sedute con trade", v["sedute_attive"], "sedute", "MISURA", misura(v["sedute_attive"]),
               "coppie giornaliere della prova"),
@@ -293,10 +329,13 @@ def rapporto(v: dict) -> str:
     for x in voci_rapporto(v):
         righe.append(_riga(x))
     righe.append(f"- segnale del solo metro: {v['segnale'] or 'non calcolato (dati inidonei o minimi mancanti)'}")
+    if v["intervallo_scartato"] is not None:
+        righe.append(f"- intervallo scartato perché invalido (D-44): {_fmt(tuple(v['intervallo_scartato']))} R, "
+                     "non è una stima")
     for r in v["requisiti"]:
         righe.append(f"- requisito {r['id']} [{RUOLO_NEL_RAPPORTO[r['ruolo']]}]: {r['esito']}")
     if v["vicini_soglia"]:
-        righe.append(f"- estremi a meno di 1e-9 R dalla soglia: {', '.join(v['vicini_soglia'])} (non cambia l'esito)")
+        righe.append(f"- estremi a meno di 1e-9 R [REGOLA] dalla soglia: {', '.join(v['vicini_soglia'])} (non cambia l'esito)")
     righe.append("Esito della regola, non una raccomandazione a operare: la decisione resta del titolare (D-14).")
     return "\n".join(righe)
 

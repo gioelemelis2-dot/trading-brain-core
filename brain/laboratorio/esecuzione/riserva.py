@@ -23,6 +23,7 @@ Regole (DGS-04 §6):
 - quarantena: date disponibili escluse per qualità o calendario, con motivo.
 """
 import json
+import math
 from datetime import date, timedelta
 from pathlib import Path
 from typing import Optional, Tuple
@@ -130,7 +131,9 @@ class _Stato:
                 raise ValueError("impronta dei dati vuota")
             if type(e.get("j")) is not int or e.get("j") != self.j + 1:          # #94: True == 1, 1.0 == 1
                 raise ValueError(f"contatore j = {e.get('j')!r}, atteso {self.j + 1}")
-            if abs(float(e.get("alfa_j", -1)) - quota(self.alfa_tot, self.j + 1, m)) > 1e-15:
+            alfa = e.get("alfa_j")                                               # #128: NaN, testo, booleano
+            if type(alfa) is not float or not math.isfinite(alfa) or \
+                    abs(alfa - quota(self.alfa_tot, self.j + 1, m)) > 1e-15:
                 raise ValueError(f"quota alfa_j = {e.get('alfa_j')!r} diversa da α_tot/[j(j+1)]/m")
             self.j += 1
             self.n_max = n

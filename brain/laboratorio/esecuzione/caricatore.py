@@ -73,6 +73,8 @@ def _leggi_cache(cartella: Path, inizio: date, fine: date, simbolo: str, impront
     giorno = inizio
     while giorno <= fine:
         f = Path(cartella) / f"{giorno.isoformat()}.bi5"
+        if f.is_symlink():                                       # #126: un giorno «prestato» da un'altra cartella
+            raise ValueError(f"{f}: collegamento simbolico nella cache, non un file scaricato")
         if not f.exists():
             mancanti += 1
         else:
@@ -88,6 +90,29 @@ def _leggi_cache(cartella: Path, inizio: date, fine: date, simbolo: str, impront
                     incompleti.append(giorno.isoformat())
         giorno += timedelta(days=1)
     return out, mancanti, feriali_vuoti, incompleti
+
+
+def _cartelle_distinte(cartella_bid: Path, cartella_ask: Path) -> None:
+    """#126 (Gemini R18-02): BID e ASK devono stare in due cartelle vere e diverse."""
+    for c in (cartella_bid, cartella_ask):
+        if c.is_symlink():
+            raise ValueError(f"{c}: la cartella della cache è un collegamento simbolico")
+    if cartella_bid.resolve() == cartella_ask.resolve():
+        raise ValueError(f"BID e ASK nella stessa cartella ({cartella_bid}): lo spread sarebbe zero")
+
+
+def _ask_diverso_dal_bid(bid: Dict[datetime, Quota], ask: Dict[datetime, Quota]) -> None:
+    """#126: un giorno in cui ogni minuto dell'ASK è identico al BID è una copia (sui dati veri lo spread non è mai
+    zero per un giorno intero): si ferma il caricamento e si indica il giorno."""
+    giorni: Dict[date, bool] = {}
+    for t, q in ask.items():
+        if t in bid:
+            g = t.date()
+            giorni[g] = giorni.get(g, True) and bid[t] == q
+    copiati = sorted(g.isoformat() for g, uguale in giorni.items() if uguale)
+    if copiati:
+        raise ValueError(f"ASK identico al BID in {len(copiati)} giorni ({', '.join(copiati[:5])}): "
+                         "copia o collegamento della cache BID")
 
 
 def carica(cartella_bid: Path, cartella_ask: Path, inizio: date, fine: date, modalita: str,
@@ -108,9 +133,11 @@ def carica(cartella_bid: Path, cartella_ask: Path, inizio: date, fine: date, mod
     else:
         if fine > FINE_VERIFICA:
             raise ValueError(f"la verifica finisce il {FINE_VERIFICA} (poi embargo e sviluppo): {fine} è oltre")
+    _cartelle_distinte(Path(cartella_bid), Path(cartella_ask))
     impronta = hashlib.sha256()
     bid, mb, vb, ib = _leggi_cache(cartella_bid, inizio, fine, simbolo, impronta)
     ask, ma, va, ia = _leggi_cache(cartella_ask, inizio, fine, simbolo, impronta)
+    _ask_diverso_dal_bid(bid, ask)
     info = {"modalita": modalita, "inizio": inizio.isoformat(), "fine": fine.isoformat(),
             "giorni_bid_mancanti": mb, "giorni_ask_mancanti": ma, "minuti_bid": len(bid), "minuti_ask": len(ask),
             "feriali_vuoti_bid": vb, "feriali_vuoti_ask": va, "feriali_incompleti_bid": ib,
