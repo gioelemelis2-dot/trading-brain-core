@@ -128,7 +128,7 @@ class TestIntervallo(unittest.TestCase):
 
 class TestVerdetto(unittest.TestCase):
     def test_promossa(self):
-        v = V.verdetto(SU, 5)
+        v = V.verdetto(SU, 5, contesto=CTX)                                   # #133: si promuove solo con N
         self.assertEqual(v["esito"], "promossa")
         self.assertEqual((v["L"], v["U"]), P.intervallo_bootstrap(SU, random.Random(5), 3999, 10))
         self.assertAlmostEqual(v["media"], 0.6, places=12)
@@ -168,7 +168,7 @@ class TestVerdetto(unittest.TestCase):
 
     def test_requisiti_superati(self):
         r = [{"id": "a", "veto": False, "esito": "superato"}, {"id": "b", "veto": True, "esito": "superato"}]
-        self.assertEqual(V.verdetto(SU, 5, r)["esito"], "promossa")
+        self.assertEqual(V.verdetto(SU, 5, r, contesto=CTX)["esito"], "promossa")
 
     def test_minimi_e_dati(self):
         v = V.verdetto(SU[:999], 5)
@@ -191,7 +191,7 @@ class TestVerdetto(unittest.TestCase):
 
     def test_vicini_riportati(self):
         with mock.patch.object(P, "intervallo_bootstrap", return_value=(0.2 + 5e-10, 0.6)):
-            v = V.verdetto(SU, 5)
+            v = V.verdetto(SU, 5, contesto=CTX)
         self.assertEqual((v["esito"], v["vicini_soglia"]), ("promossa", ["L"]))
 
 
@@ -290,14 +290,14 @@ class TestRuoliESegnale(unittest.TestCase):
     def test_descrittivo_non_cambia_l_esito(self):
         for esito in ("superato", "fallito", "non valutabile"):
             r = [{"id": "dd", "veto": False, "descrittivo": True, "esito": esito}]
-            self.assertEqual(V.verdetto(SU, 5, r)["esito"], "promossa", esito)
+            self.assertEqual(V.verdetto(SU, 5, r, contesto=CTX)["esito"], "promossa", esito)
             self.assertEqual(V.verdetto(GIU, 5, r)["esito"], "bocciata", esito)
 
     def test_ruoli_registrati(self):
         r = [{"id": "a", "veto": True, "esito": "superato"}, {"id": "b", "veto": False, "esito": "superato"},
              {"id": "c", "veto": False, "descrittivo": True, "esito": "fallito"},
              {"id": "d", "veto": False, "descrittivo": False, "esito": "superato"}]
-        v = V.verdetto(SU, 5, r)
+        v = V.verdetto(SU, 5, r, contesto=CTX)
         self.assertEqual(v["requisiti"], [{"id": "a", "ruolo": "veto", "esito": "superato"},
                                           {"id": "b", "ruolo": "promozione", "esito": "superato"},
                                           {"id": "c", "ruolo": "descrittivo", "esito": "fallito"},
@@ -359,6 +359,98 @@ class TestRuoliESegnale(unittest.TestCase):
                 V.veto_blocchi(c, -0.25, 50)
         with self.assertRaises(ValueError):
             V.controlla_coppie(base[:999] + [(None, 1)])               # il verdetto resta severo sui dati
+
+
+CTX = {"registro": "registro_prove.json", "n_prove": 3, "impronta": "ab" * 32}   # N valido per le promozioni
+
+
+class TestRevisioneR18(unittest.TestCase):
+    """Primo giro di revisione del modulo (Gemini R18, D-34): #131, #132, #133, #134."""
+
+    def test_131_intervallo_invalido_non_e_una_stima(self):
+        for iv in ((0.25, 0.25 + 1e-13), (0.2 + 5e-10, 0.2 + 9e-10)):
+            with mock.patch.object(P, "intervallo_bootstrap", return_value=iv):
+                v = V.verdetto(SU, 5, contesto=CTX)
+            self.assertEqual((v["esito"], v["causa"], v["segnale"]), ("non decidibile", "intervallo invalido",
+                                                                     "invalido"))
+            self.assertEqual((v["L"], v["U"], v["vicini_soglia"]), (None, None, []))
+            self.assertEqual(v["intervallo_scartato"], iv)
+            testo = V.rapporto(v)
+            self.assertIn("NON STIMABILE", testo)
+            self.assertNotIn("valido nel dominio", testo)
+            self.assertIn("intervallo scartato", testo)
+        self.assertIsNone(V.verdetto(SU, 5, contesto=CTX)["intervallo_scartato"])
+
+    def test_132_seme_intero_obbligatorio(self):
+        for seme in (None, 1.0, True, "5"):
+            with self.assertRaises(ValueError, msg=seme):
+                V.verdetto(SU, seme)
+            with self.assertRaises(ValueError, msg=seme):
+                V.screening(SU, seme, 0.6)
+            with self.assertRaises(ValueError, msg=seme):
+                V.intervallo(SU, seme)
+
+    def test_133_contesto_controllato(self):
+        for cattivo in ({"registro": "r.json", "n_prove": -5, "impronta": "ab" * 32},
+                        {"registro": "r.json", "n_prove": True, "impronta": "ab" * 32},
+                        {"registro": "r.json", "n_prove": 3, "impronta": "0"},
+                        {"registro": "r.json", "n_prove": 3, "impronta": "AB" * 32},
+                        {"registro": "", "n_prove": 3, "impronta": "ab" * 32},
+                        {"registro": "r.json", "n_prove": 3},
+                        dict(CTX, altro=1), "N=3", ["r", 3, "ab" * 32]):
+            with self.assertRaises(ValueError, msg=cattivo):
+                V.verdetto(SU, 5, contesto=cattivo)
+
+    def test_133_promossa_solo_con_n(self):
+        v = V.verdetto(SU, 5)
+        self.assertEqual(v["segnale"], "favorevole")
+        self.assertEqual(v["esito"], "non decidibile")
+        self.assertIn("N non fornito", v["causa"])
+        self.assertEqual(V.verdetto(SU, 5, contesto=CTX)["esito"], "promossa")
+        self.assertEqual(V.verdetto(GIU, 5)["esito"], "bocciata")                    # bocciare non richiede N
+
+    def test_133_registro_collegato_rifiutato(self):
+        with tempfile.TemporaryDirectory() as d:
+            vero = Path(d) / "vero.json"
+            vero.write_text("{}", encoding="utf-8")
+            link = Path(d) / "registro_prove.json"
+            link.symlink_to(vero)
+            with self.assertRaises(ValueError) as e:
+                V.contesto_prove(link)
+            self.assertIn("collegamento simbolico", str(e.exception))
+            ereditato = Path(d) / "trial_registry.json"
+            ereditato.write_text("{}", encoding="utf-8")
+            alias = Path(d) / "alias.json"
+            alias.symlink_to(ereditato)
+            with self.assertRaises(ValueError):
+                V.contesto_prove(alias)
+
+    def test_134_tipi_rifiutati(self):
+        with self.assertRaises(ValueError):
+            V.controlla_coppie([(True, 1)] + SU[1:])
+        with self.assertRaises(ValueError):
+            V.screening(SU, 5, True)
+        b = [(0.3, 1)] * 1000
+        for args in ((b, True, 50), (b, -0.25, 50, True)):
+            with self.assertRaises(ValueError, msg=args[1:]):
+                V.veto_blocchi(*args)
+        with self.assertRaises(ValueError):
+            V.verdetto(SU, 5, [{"id": 5, "veto": False, "esito": "superato"}])
+
+    def test_134_coppie_non_in_lista_e_somme_enormi(self):
+        with self.assertRaises(ValueError):
+            V.controlla_coppie(x for x in SU)
+        v = V.verdetto((x for x in SU), 5)
+        self.assertEqual(v["esito"], "non decidibile")
+        self.assertTrue(v["causa"].startswith("dati inidonei"))
+        v = V.verdetto([(1e308, 1)] * 1000, 5)
+        self.assertEqual((v["esito"], v["media"]), ("non decidibile", None))
+        self.assertTrue(v["causa"].startswith("dati inidonei"))
+
+    def test_134_banda_dei_vicini_con_tipo(self):
+        with mock.patch.object(P, "intervallo_bootstrap", return_value=(0.2 + 5e-10, 0.6)):
+            testo = V.rapporto(V.verdetto(SU, 5, contesto=CTX))
+        self.assertIn("estremi a meno di 1e-9 R [REGOLA] dalla soglia", testo)
 
 
 class TestContestoProve(unittest.TestCase):
@@ -507,7 +599,7 @@ class TestRapportoTipizzato(unittest.TestCase):
     def test_vicini_nel_testo(self):          # aggiunto per il mutante VD68 (dichiarato)
         with mock.patch.object(P, "intervallo_bootstrap", return_value=(0.2 + 5e-10, 0.6)):
             v = V.verdetto(SU, 5)
-        self.assertIn("1e-9 R dalla soglia: L", V.rapporto(v))
+        self.assertIn("1e-9 R [REGOLA] dalla soglia: L", V.rapporto(v))
 
 
 class TestRapportoScreening(unittest.TestCase):

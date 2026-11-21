@@ -218,7 +218,10 @@ class TestIntegrita(Base):
     def test_j_o_quota_falsificati_rifiutati(self):
         self.prenota("A", D(2005, 1, 1), D(2005, 1, 31))
         RV.autorizza(self.reg, "A", 12, "dati-A", ORA)
-        for campo, valore in (("j", 5), ("alfa_j", 0.05)):
+        # #128 (Gemini R18-04): NaN passava il confronto con la quota (ogni confronto con NaN è falso); anche un
+        # testo o un booleano convertibili in numero non sono una quota registrata.
+        for campo, valore in (("j", 5), ("alfa_j", 0.05), ("alfa_j", float("nan")), ("alfa_j", float("inf")),
+                              ("alfa_j", "0.025"), ("alfa_j", True)):
             dati = json.loads(self.reg.read_text())
             originale = dati["eventi"][-1][campo]
             dati["eventi"][-1][campo] = valore

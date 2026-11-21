@@ -192,7 +192,10 @@ class TestPercorsiCompleti(unittest.TestCase):
         3.999 repliche, ranghi 100 e 3.900): L = 0,47475 e U = 0,52450 R. Promossa; un indicatore descrittivo fallito
         resta visibile nel rapporto e non cambia l'esito."""
         descr = {"id": "drawdown descrittivo", "veto": False, "descrittivo": True, "esito": "fallito"}
-        v = V.verdetto(self.P, SEME, [descr])
+        # «tutti i vincoli soddisfatti» (legenda del DGS): fra questi N dal registro canonico, obbligatorio per
+        # promuovere dal 21/11 (#133, Gemini R18-09)
+        ctx = {"registro": "registro_prove.json", "n_prove": 1, "impronta": "cd" * 32}
+        v = V.verdetto(self.P, SEME, [descr], contesto=ctx)
         self.assertEqual(v["media"], 0.5)
         self.assertEqual((v["L"], v["U"]), (0.47475, 0.5245))
         self.assertEqual((v["esito"], v["segnale"]), ("promossa", "favorevole"))

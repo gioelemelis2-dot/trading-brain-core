@@ -609,8 +609,9 @@ class TestRigaDiComandoR12bis(BaseRiga):
             if g.weekday() < 5:
                 minuti[_dt(g.year, g.month, g.day, 0, 0, tzinfo=_tz.utc)] = (2000.0, 2000.0, 2000.0, 2000.0)
             g += timedelta(days=1)
-        for lato in ("XAUUSD", "XAUUSD_ASK"):
-            SN.scrivi_cache(minuti, self.cache / lato, inizio=date(2024, 1, 1), fine=date(2024, 2, 29))
+        ask = {t: (2000.3, 2000.3, 2000.3, 2000.3) for t in minuti}          # #126: ASK diverso dal BID
+        for lato, m in (("XAUUSD", minuti), ("XAUUSD_ASK", ask)):
+            SN.scrivi_cache(m, self.cache / lato, inizio=date(2024, 1, 1), fine=date(2024, 2, 29))
         self.sigilla()
         rc, err = self.lancia_errore("--modalita", "sviluppo")
         self.assertEqual(rc, 2)
@@ -859,6 +860,53 @@ class TestVerificaUnaVoltaNellaStoria(BaseRiga):
         with self.assertRaises(ValueError) as e:
             S.versioni_nella_storia(parziale, E.REL_REGISTRO)
         self.assertIn("parziale", str(e.exception))
+
+    def copia_senza_blob(self):
+        """Copia parziale (`git clone --filter=blob:none`) con il remoto poi irraggiungibile (rete assente)."""
+        remoto = self.dir / "remoto.git"
+        _sp.run(["git", "-C", str(remoto), "config", "uploadpack.allowFilter", "true"], check=True)
+        copia = self.dir / "senza_blob"
+        _sp.run(["git", "clone", "-q", "--filter=blob:none", "--no-checkout", "--branch", "principale",
+                 f"file://{remoto}", str(copia)], check=True, capture_output=True)
+        _sp.run(["git", "-C", str(copia), "remote", "set-url", "origin", f"file://{self.dir / 'non_esiste.git'}"],
+                check=True)
+        return copia
+
+    def test_copia_senza_blob_rifiutata(self):
+        """#125 (Gemini R18-01): con `--filter=blob:none` e la rete assente `git show` falliva e il commit veniva
+        saltato in silenzio: 0 versioni lette, verifica già fatta non vista."""
+        self.prepara()
+        self.assertEqual(self.lancia("--modalita", "verifica", "--varianti", "V-T,V-S"), 0)
+        self.spingi("verifica")
+        copia = self.copia_senza_blob()
+        with self.assertRaises(ValueError) as e:
+            S.versioni_nella_storia(copia, E.REL_REGISTRO)
+        self.assertIn("parziale", str(e.exception))
+
+    def test_versione_illeggibile_rifiutata(self):
+        """#125: anche senza la configurazione della copia parziale, un file presente in un commit ma illeggibile
+        (oggetto mancante) ferma la lettura invece di essere saltato."""
+        self.prepara()
+        S.sigilla(self.registro, "H-001", self.scheda, ["X0"], ORA)             # seconda versione del registro
+        self.spingi("seconda")
+        copia = self.copia_senza_blob()
+        for chiave in ("remote.origin.promisor", "remote.origin.partialclonefilter"):
+            _sp.run(["git", "-C", str(copia), "config", "--unset", chiave], capture_output=True)
+        _sp.run(["git", "-C", str(copia), "config", "--unset", "extensions.partialclone"], capture_output=True)
+        with self.assertRaises(ValueError) as e:
+            S.versioni_nella_storia(copia, E.REL_REGISTRO)
+        self.assertIn("illeggibile", str(e.exception))
+
+    def test_commit_che_cancella_il_registro_non_e_un_errore(self):
+        """#125: un commit in cui il file non c'è (cancellato) si salta, come prima: non è una versione illeggibile."""
+        self.prepara()
+        contenuto = self.registro.read_bytes()
+        self.registro.unlink()
+        self.spingi("tolto")
+        self.registro.write_bytes(contenuto)
+        self.spingi("rimesso")
+        versioni = S.versioni_nella_storia(self.repo, E.REL_REGISTRO)
+        self.assertEqual(len(versioni), 2)
 
     def test_ramo_cancellato_e_riferimento_remoto_riscritto_visti_nel_reflog(self):
         """R14-03 (Gemini): dopo `branch -D` e `update-ref` del riferimento remoto, la verifica restava solo nel

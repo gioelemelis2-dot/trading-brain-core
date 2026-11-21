@@ -280,6 +280,49 @@ class TestCaricatore(Cartella):
         self.assertEqual((info["giorni_bid_mancanti"], info["giorni_ask_mancanti"]), (1, 2))
         self.assertEqual((info["minuti_bid"], info["minuti_ask"]), (2, 1))
 
+    def test_bid_e_ask_devono_essere_cartelle_diverse_e_vere(self):
+        """#126 (Gemini R18-02): con `XAUUSD_ASK` uguale a `XAUUSD` (stessa cartella, collegamento simbolico o copia)
+        lo spread era zero ovunque e nessuno se ne accorgeva."""
+        import shutil
+        giorni = [date(2026, 1, 5), date(2026, 1, 6)]
+        b = self.cache("bid", giorni, 2650000)
+        periodo = (date(2026, 1, 5), date(2026, 1, 6), "sviluppo", *self.sigillo())
+        with self.assertRaises(ValueError) as e:
+            C.carica(b, b, *periodo)
+        self.assertIn("stessa cartella", str(e.exception))
+        collegata = self.dir / "ask_collegata"
+        collegata.symlink_to(b, target_is_directory=True)
+        with self.assertRaises(ValueError) as e:
+            C.carica(b, collegata, *periodo)
+        self.assertIn("collegamento simbolico", str(e.exception))
+        copia = self.dir / "ask_copia"
+        shutil.copytree(b, copia)
+        with self.assertRaises(ValueError) as e:
+            C.carica(b, copia, *periodo)
+        self.assertIn("ASK identico al BID", str(e.exception))
+        self.assertIn("2026-01-05", str(e.exception))
+
+    def test_un_solo_giorno_copiato_o_collegato_rifiutato(self):
+        """#126: basta un giorno con l'ASK identico al BID, o un file collegato, per fermare il caricamento."""
+        giorni = [date(2026, 1, 5), date(2026, 1, 6)]
+        b = self.cache("bid", giorni, 2650000)
+        a = self.cache("ask", giorni[:1], 2650300)
+        (a / "2026-01-06.bi5").write_bytes((b / "2026-01-06.bi5").read_bytes())
+        periodo = (date(2026, 1, 5), date(2026, 1, 6), "sviluppo", *self.sigillo())
+        with self.assertRaises(ValueError) as e:
+            C.carica(b, a, *periodo)
+        self.assertIn("ASK identico al BID", str(e.exception))
+        self.assertIn("2026-01-06", str(e.exception))
+        self.assertNotIn("2026-01-05", str(e.exception))
+        (a / "2026-01-06.bi5").unlink()
+        (a / "2026-01-06.bi5").symlink_to(b / "2026-01-06.bi5")
+        with self.assertRaises(ValueError) as e:
+            C.carica(b, a, *periodo)
+        self.assertIn("collegamento simbolico", str(e.exception))
+        (a / "2026-01-06.bi5").unlink()
+        bid, ask, info = C.carica(b, a, *periodo)                  # senza il giorno sospetto si carica
+        self.assertEqual(info["giorni_ask_mancanti"], 1)
+
     def test_sviluppo_rifiuta_il_periodo_sigillato(self):
         with self.assertRaises(ValueError):
             C.carica(self.dir, self.dir, date(2023, 11, 14), date(2023, 12, 1), "sviluppo", *self.sigillo())
@@ -345,10 +388,13 @@ class TestRevisioneR7GeminiCriteri(Cartella):
 
     def test_p7_embargo_chiuso_in_verifica(self):
         S.sigilla(self.registro, "H-999", self.scheda, ["V-T"], ORA)
+        b, a = self.dir / "b", self.dir / "a"                            # #126: due cartelle distinte
+        b.mkdir()
+        a.mkdir()
         with self.assertRaises(ValueError):
-            C.carica(self.dir, self.dir, date(2023, 10, 1), date(2023, 11, 1), "verifica", self.registro, "H-999",
+            C.carica(b, a, date(2023, 10, 1), date(2023, 11, 1), "verifica", self.registro, "H-999",
                      self.scheda)
-        C.carica(self.dir, self.dir, date(2023, 10, 1), date(2023, 10, 31), "verifica", self.registro, "H-999",
+        C.carica(b, a, date(2023, 10, 1), date(2023, 10, 31), "verifica", self.registro, "H-999",
                  self.scheda)
 
     def test_p8_scritture_concorrenti_non_si_perdono(self):
@@ -377,16 +423,17 @@ class TestBloccoDelloSviluppo(Cartella):
     caricatore lo controllava solo in verifica. Ora lo controlla in entrambe le modalità. Scritto PRIMA del codice."""
 
     def test_sviluppo_senza_sigillo_rifiutato(self):
-        d = self.dir / "c"
+        d, e = self.dir / "c", self.dir / "c_ask"                        # #126: due cartelle distinte
         d.mkdir()
+        e.mkdir()
         with self.assertRaises(S.NonSigillata):
-            C.carica(d, d, date(2026, 1, 5), date(2026, 1, 5), "sviluppo")
+            C.carica(d, e, date(2026, 1, 5), date(2026, 1, 5), "sviluppo")
         with self.assertRaises(S.NonSigillata):
-            C.carica(d, d, date(2026, 1, 5), date(2026, 1, 5), "sviluppo", self.registro, "H-999", self.scheda)
-        C.carica(d, d, date(2026, 1, 5), date(2026, 1, 5), "sviluppo", *self.sigillo())
+            C.carica(d, e, date(2026, 1, 5), date(2026, 1, 5), "sviluppo", self.registro, "H-999", self.scheda)
+        C.carica(d, e, date(2026, 1, 5), date(2026, 1, 5), "sviluppo", *self.sigillo())
         self.scheda.write_text("# H-999 cambiata\n", encoding="utf-8")
         with self.assertRaises(ValueError):
-            C.carica(d, d, date(2026, 1, 5), date(2026, 1, 5), "sviluppo", self.registro, "H-999", self.scheda)
+            C.carica(d, e, date(2026, 1, 5), date(2026, 1, 5), "sviluppo", self.registro, "H-999", self.scheda)
 
 
 class TestRevisioneR11GeminiCriteri(Cartella):
@@ -425,12 +472,13 @@ class TestRevisioneR11GeminiCriteri(Cartella):
             S.controlla_sigillo(self.registro, "H-999", self.scheda, codice={"a.py": "2" * 64})
 
     def test_s2_giorni_feriali_vuoti_e_chiusure_note(self):
-        for nome in ("bid", "ask"):
+        for nome, spread in (("bid", 0), ("ask", 300)):                  # #126: ASK diverso dal BID
             d = self.dir / nome
             d.mkdir()
             for g in (date(2026, 1, 1), date(2026, 1, 2), date(2026, 1, 3), date(2026, 4, 3)):   # gio, ven, sab, Ven. Santo
                 (d / f"{g.isoformat()}.bi5").write_bytes(b"")
-            (d / "2026-01-05.bi5").write_bytes(bi5([(480 * 60, 2650000, 2650010, 2649990, 2650020, 1.0)]))
+            (d / "2026-01-05.bi5").write_bytes(bi5([(480 * 60, 2650000 + spread, 2650010 + spread,
+                                                     2649990 + spread, 2650020 + spread, 1.0)]))
         _, _, info = C.carica(self.dir / "bid", self.dir / "ask", date(2026, 1, 1), date(2026, 1, 5), "sviluppo", *self.sigillo())
         self.assertEqual(info["feriali_vuoti_bid"], ["2026-01-02"])               # il 1/1 è chiusura nota
         self.assertEqual(info["feriali_vuoti_ask"], ["2026-01-02"])
@@ -438,10 +486,11 @@ class TestRevisioneR11GeminiCriteri(Cartella):
         self.assertEqual(info["feriali_vuoti_bid"], [])                           # Venerdì Santo
 
     def test_s6_impronta_dei_dati_letti(self):
-        for nome in ("bid", "ask"):
+        for nome, spread in (("bid", 0), ("ask", 200)):                  # #126: ASK diverso dal BID
             d = self.dir / nome
             d.mkdir()
-            (d / "2026-01-05.bi5").write_bytes(bi5([(480 * 60, 2650000, 2650010, 2649990, 2650020, 1.0)]))
+            (d / "2026-01-05.bi5").write_bytes(bi5([(480 * 60, 2650000 + spread, 2650010 + spread,
+                                                     2649990 + spread, 2650020 + spread, 1.0)]))
         a = C.carica(self.dir / "bid", self.dir / "ask", date(2026, 1, 5), date(2026, 1, 5), "sviluppo", *self.sigillo())[2]
         self.assertEqual(len(a["dati_sha256"]), 64)
         self.assertEqual(a["dati_sha256"],
@@ -536,8 +585,9 @@ class TestCompletezzaDeiGiorni(Cartella):
     """#49 (R12bis-A3-02): un giorno feriale con un solo minuto non è un giorno con i dati."""
 
     def carica(self, minuti, inizio, fine):
-        for lato in ("XAUUSD", "XAUUSD_ASK"):
-            _SN.scrivi_cache(minuti, self.dir / lato, inizio=inizio, fine=fine)
+        ask = {t: tuple(round(x + 0.3, 2) for x in q) for t, q in minuti.items()}   # #126: ASK diverso dal BID
+        for lato, m in (("XAUUSD", minuti), ("XAUUSD_ASK", ask)):
+            _SN.scrivi_cache(m, self.dir / lato, inizio=inizio, fine=fine)
         return C.carica(self.dir / "XAUUSD", self.dir / "XAUUSD_ASK", inizio, fine, "sviluppo", *self.sigillo())
 
     def test_un_minuto_a_mezzanotte_non_basta(self):
