@@ -19,7 +19,7 @@ Ultimo aggiornamento: **2026-11-21** (sezione in testa); prima: 2026-11-15, dopo
   - la mattina del 21/11 era al 15/11/2019;
   - la cache ASK pesa solo 81 MB (fino al 2019), quindi lo spazio basta;
   - nessun residuo in `$TMPDIR` né in `/private/tmp`, quindi la causa del pieno è transitoria e non accertata (sospetto: le copie dei mutanti di Gemini).
-- Il messaggio 10 al DGS ha in testa l'aggiornamento del 21/11; si manda oggi.
+- **Correzione del 21/11 (errore di Claude):** il DGS ha ancora da rispondere al messaggio che il titolare gli aveva incollato il 19/11 sera, quasi certamente il messaggio 10, rimasto senza risposta per il limite d'uso. Il messaggio 10 **non si rimanda**: al DGS si chiede di rispondere e gli si dà solo un aggiornamento breve.
 
 **Prossimi passi:**
 - risposta del DGS al messaggio 10, poi la prova generale a vuoto (D-34 punto 5);

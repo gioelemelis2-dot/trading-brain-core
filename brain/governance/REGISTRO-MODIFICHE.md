@@ -1011,3 +1011,4 @@ Nulla di questo tocca il candidato `8e51ce9` su cui lavora R15.
   - lo scaricamento è ripartito in ciclo ed era al 15/11/2019;
   - la cache ASK pesa 81 MB, quindi lo spazio basta;
   - la causa del pieno è transitoria e non accertata.
+- **Correzione (errore di Claude):** il messaggio 10 era già stato incollato al DGS il 19/11 sera e aspetta risposta; non si rimanda. Claude aveva dimenticato l'invio, segnalato dal titolare. Al DGS va solo un sollecito con l'aggiornamento breve.
