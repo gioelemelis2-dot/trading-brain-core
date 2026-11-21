@@ -347,7 +347,7 @@ class TestRuoliESegnale(unittest.TestCase):
         ignota[600] = (None, 1)
         r = V.veto_blocchi(ignota, -0.25, 50)
         self.assertEqual((r["esito"], r["medie"][2]), ("non valutabile", None))
-        self.assertEqual(r["medie"][0], 0.3)
+        self.assertEqual(round(r["medie"][0], 12), 0.3)    # (errore di Claude: senza arrotondamento falliva su 3.9, #124)
         ignota[0:250] = [(-0.5, 1)] * 250                                     # un blocco completo e negativo
         self.assertEqual(V.veto_blocchi(ignota, -0.25, 50)["esito"], "fallito")
         negativo_ignoto = [(-0.5, 1)] * 249 + [(None, 1)] + base[250:]           # l'ignota è nel blocco decisivo

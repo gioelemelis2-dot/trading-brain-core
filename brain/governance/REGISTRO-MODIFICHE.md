@@ -1016,3 +1016,18 @@ Nulla di questo tocca il candidato `8e51ce9` su cui lavora R15.
   - prima della risposta al messaggio 10, il DGS dichiara che cosa vede ancora e risponde a 11 domande di controllo con etichetta [VISIBILE]/[RICORDO]/[NON SO];
   - la chiave di correzione resta a Claude;
   - la regola per decidere se proseguire o ripartire con un pacchetto nuovo è proposta, e la decide il titolare.
+
+## 2026-11-21 · v1.82 (DGS-12: prova generale sui casi del DGS; #122–#124; modello H-003 riallineato)
+
+- **DGS-12 archiviato** (`collaborazione/da-chatgpt/DGS-20261121-12-riserva-e-verdetto.md`).
+  - Controllo del contesto: 11 su 11, allegati del messaggio 10 visibili.
+  - Tutti i numeri ricalcolati da Claude e confermati.
+- **Prova generale a vuoto (D-34 punto 5) sui 15 casi del DGS** (`laboratorio/tests/test_prova_generale_dgs12.py`, test scritti prima):
+  - M e N coincidono esattamente con il riferimento indipendente del DGS: stesso flusso di indici, L e U uguali alla quinta cifra;
+  - A e B sul simulatore: +0,40 R e −2,50 R (stop scavalcato).
+- **Difetti trovati dalla prova e corretti:** #122 (veto per blocchi con esiti ignoti, importante per il modulo) e #123 (segnale del metro, ruoli dei requisiti e rapporto). **#124 aperto:** `sum()` fra 3.9 e 3.12+.
+- **Verifiche:** 73 test verdi su 3.13 e 3.9; mutanti del verdetto 93/94 su entrambe (VD13 equivalente), con 17 mutanti nuovi (VD78–VD94); la suite di mutanti ora comprende anche la prova generale.
+- **D-44 sul collaudo, confronto appaiato:** cambia 1 intervallo su 180.000 (fase 2, cella 11, replica 1.904, da falsa promozione a errore). Il conteggio avverso e il verdetto del collaudo non cambiano.
+- **Modello di scheda H-003:** §5 con le precisazioni di DGS-12 su D-43; §8 riallineato a D-31, D-35, D-36, D-37, D-42 (la versione del 15/11 era superata); controlli del §12 aggiornati.
+- **Nuova decisione aperta DA-34:** uguaglianza della potenza al 50% nello screening. Consiglio di Claude: (a).
+- **Messaggio 11 al DGS:** `collaborazione/da-claude/RISCONTRO-DGS-12.md`.

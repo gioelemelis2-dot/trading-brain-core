@@ -21,8 +21,16 @@ Ultimo aggiornamento: **2026-11-21** (sezione in testa); prima: 2026-11-15, dopo
   - nessun residuo in `$TMPDIR` né in `/private/tmp`, quindi la causa del pieno è transitoria e non accertata (sospetto: le copie dei mutanti di Gemini).
 - **Correzione del 21/11 (errore di Claude):** il DGS ha ancora da rispondere al messaggio che il titolare gli aveva incollato il 19/11 sera, quasi certamente il messaggio 10, rimasto senza risposta per il limite d'uso. Il messaggio 10 **non si rimanda**: al DGS si chiede di rispondere e gli si dà solo un aggiornamento breve.
 
+**DGS-12 (21/11) ricevuto e verificato.** Il contesto del DGS è integro (11 su 11).
+- Prova generale sui suoi 15 casi: fatta. M e N sono esatti rispetto al suo riferimento indipendente.
+- Difetti #122 e #123 corretti, #124 aperto.
+- Modello H-003 riallineato.
+- Messaggio 11 pronto: `collaborazione/da-claude/RISCONTRO-DGS-12.md`.
+- **DA-34** è aperta per il titolare.
+- D-34 punto 5: superato sui casi del DGS. Il DGS può ancora rispondere alle domande del messaggio 11.
+
 **Prossimi passi:**
-- risposta del DGS al messaggio 10, poi la prova generale a vuoto (D-34 punto 5);
+- messaggio 11 al DGS e decisione del titolare su DA-34;
 - consegna di R18, poi la verifica di Claude e la decisione sulla protezione del ramo;
 - fine dello scaricamento ASK, poi il consuntivo e le date della riserva;
 - #121 a lotti.

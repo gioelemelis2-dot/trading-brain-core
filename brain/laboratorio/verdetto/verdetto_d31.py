@@ -8,6 +8,11 @@
   mancante, non finito, invertito o più stretto di 1e-9 R (#119, D-44) è invalido. L'uguaglianza non attraversa la soglia.
 - Esiti (D-35, DGS-10 §4 opzione 2), nell'ordine: veto accertato → bocciata; dati inidonei, minimi mancanti o intervallo
   invalido → non decidibile; U < +0,10 → bocciata; L > +0,20 e requisiti superati → promossa; altrimenti non decidibile.
+  Prima di applicare le priorità si misura tutto il possibile: media, minimi e segnale del solo metro si riportano anche
+  quando decide un veto (DGS-12 §4).
+- Requisiti con ruolo (DGS-12 §3): veto, vincolante per promuovere, descrittivo (riportato, non cambia l'esito).
+- Veto per blocchi: un blocco con un esito ignoto (S = None) non può dare il veto; un blocco completo sì, anche se
+  manca un esito altrove (DGS-12 §3, caso J).
 - Screening sullo sviluppo (D-36): media > +0,25 R, L > 0 e potenza stimata ≥ 50%.
 - Veto per blocchi (D-37): soglia e minimo di trade per blocco li fissa la scheda prima del sigillo.
 
@@ -34,6 +39,7 @@ VICINANZA = 1e-9
 AMPIEZZA_MINIMA = 1e-9           # #119, D-44: più stretto è un intervallo degenere (arrotondamento)
 ESITI = ("promossa", "bocciata", "non decidibile")
 ESITI_REQUISITO = ("superato", "fallito", "non valutabile")
+RUOLI = ("veto", "promozione", "descrittivo")   # DGS-12 §3: il descrittivo si riporta e non cambia l'esito
 IMPRONTA_PILOTA = "717e55996b23a4954d69c97722458e30c2499000b5055fdcca4cba29f864b0ee"
 QUOTA = 0.025                   # D-31: la sola quota collaudata (prima apertura, una variante)
 REGISTRI_EREDITATI = ("trial_registry.json", "trial_registry_xauusd.json")   # Binario B: non valgono (D-34)
@@ -59,7 +65,8 @@ def vicini(lo: float, hi: float) -> list:
     return out
 
 
-def controlla_coppie(coppie) -> None:
+def controlla_coppie(coppie, ignote: bool = False) -> None:
+    """Con `ignote` (solo per il veto per blocchi) una seduta con trade può avere l'esito ignoto: S = None."""
     if not coppie:
         raise ValueError("nessuna seduta")
     for i, c in enumerate(coppie):
@@ -68,6 +75,10 @@ def controlla_coppie(coppie) -> None:
         s, k = c
         if type(k) is not int or k < 0:
             raise ValueError(f"seduta {i}: K = {k!r} non è un intero ≥ 0")
+        if ignote and s is None:
+            if k == 0:
+                raise ValueError(f"seduta {i}: esito ignoto senza trade")
+            continue
         if type(s) not in (int, float) or not math.isfinite(s):
             raise ValueError(f"seduta {i}: S = {s!r} non è un numero finito")
         if k == 0 and s != 0:
@@ -108,12 +119,15 @@ def contesto_prove(registro) -> dict:
 
 
 def _requisiti(requisiti) -> list:
+    """Ogni requisito con il suo ruolo: veto, vincolante per promuovere («promozione») o descrittivo."""
     out = []
     for r in requisiti:
         if not isinstance(r, dict) or not isinstance(r.get("id"), str) or type(r.get("veto")) is not bool \
-                or r.get("esito") not in ESITI_REQUISITO:
+                or r.get("esito") not in ESITI_REQUISITO or type(r.get("descrittivo", False)) is not bool \
+                or (r["veto"] and r.get("descrittivo", False)):
             raise ValueError(f"requisito malformato: {r!r}")
-        out.append(r)
+        ruolo = "veto" if r["veto"] else "descrittivo" if r.get("descrittivo", False) else "promozione"
+        out.append({"id": r["id"], "ruolo": ruolo, "esito": r["esito"]})
     return out
 
 
@@ -123,36 +137,44 @@ def verdetto(coppie, seme: int, requisiti=(), contesto=None, quota=QUOTA) -> dic
     req = _requisiti(requisiti)
     v = {"esito": None, "causa": None, "L": None, "U": None, "media": None, "sedute": len(coppie), "trade": None,
          "sedute_attive": None, "seme": seme, "impronta_pilota": IMPRONTA_PILOTA, "vicini_soglia": [],
-         "contesto_prove": contesto, "quota": quota}
+         "contesto_prove": contesto, "quota": quota, "segnale": None, "requisiti": req}
 
     def fine(esito, causa):
         v["esito"], v["causa"] = esito, causa
         return v
 
-    for r in req:
-        if r["veto"] and r["esito"] == "fallito":
-            return fine("bocciata", f"veto: {r['id']}")
+    # Prima si misura tutto quello che si può (DGS-12 §4: esito contabile, segnale del metro, veto e verdetto
+    # restano distinti nel rapporto), poi si applicano le priorità di D-35.
+    inidonei, mancano = None, []
     try:
         controlla_coppie(coppie)
     except ValueError as e:
-        return fine("non decidibile", f"dati inidonei: {e}")
-    v["trade"] = sum(k for _, k in coppie)
-    v["sedute_attive"] = sum(1 for _, k in coppie if k > 0)
-    v["media"] = sum(s for s, _ in coppie) / v["trade"] if v["trade"] else None
-    mancano = minimi_mancanti(coppie)
+        inidonei = str(e)
+    if inidonei is None:
+        v["trade"] = sum(k for _, k in coppie)
+        v["sedute_attive"] = sum(1 for _, k in coppie if k > 0)
+        v["media"] = sum(s for s, _ in coppie) / v["trade"] if v["trade"] else None
+        mancano = minimi_mancanti(coppie)
+        if not mancano:
+            iv = intervallo(coppie, seme)
+            if iv is not None:
+                v["L"], v["U"] = iv
+                v["vicini_soglia"] = vicini(*iv)
+            v["segnale"] = segnale(iv)
+    for r in req:
+        if r["ruolo"] == "veto" and r["esito"] == "fallito":
+            return fine("bocciata", f"veto: {r['id']}")
+    if inidonei is not None:
+        return fine("non decidibile", f"dati inidonei: {inidonei}")
     if mancano:
         return fine("non decidibile", "minimi: " + "; ".join(mancano))
-    iv = intervallo(coppie, seme)
-    if iv is not None:
-        v["L"], v["U"] = iv
-        v["vicini_soglia"] = vicini(*iv)
-    sg = segnale(iv)
+    sg = v["segnale"]
     if sg == "invalido":
         return fine("non decidibile", "intervallo invalido")
     if sg == "sfavorevole":
         return fine("bocciata", "statistica: U < +0,10 R")
     if sg == "favorevole":
-        aperti = [r["id"] for r in req if r["esito"] != "superato"]
+        aperti = [r["id"] for r in req if r["ruolo"] != "descrittivo" and r["esito"] != "superato"]
         if not aperti:
             return fine("promossa", "L > +0,20 R e requisiti superati")
         return fine("non decidibile", "requisito non superato o non valutabile: " + ", ".join(aperti))
@@ -191,10 +213,14 @@ def veto_blocchi(coppie, soglia, minimo_trade_blocco, ampiezza: int = 250) -> di
         raise ValueError(f"minimo di trade per blocco {minimo_trade_blocco!r} non valido")
     if type(ampiezza) is not int or ampiezza < 1 or not coppie or len(coppie) % ampiezza:
         raise ValueError(f"{len(coppie)} sedute non divisibili in blocchi da {ampiezza}")
-    controlla_coppie(coppie)
+    controlla_coppie(coppie, ignote=True)
     medie, fallito, sottile = [], False, False
     for i in range(0, len(coppie), ampiezza):
         blocco = coppie[i:i + ampiezza]
+        if any(x is None for x, _ in blocco):          # DGS-12 §3: l'esito ignoto può cambiare il blocco: non accertato
+            medie.append(None)
+            sottile = True
+            continue
         k = sum(x for _, x in blocco)
         m = sum(x for x, _ in blocco) / k if k else None
         medie.append(m)
@@ -258,10 +284,17 @@ def _riga(x: dict) -> str:
             f"{x['incertezza']} · fonte: {x['fonte']}")
 
 
+RUOLO_NEL_RAPPORTO = {"veto": "veto", "promozione": "vincolante per promuovere",
+                      "descrittivo": "descrittivo, non cambia l'esito"}
+
+
 def rapporto(v: dict) -> str:
     righe = [f"VERDETTO D-31 · {v['esito']} · causa: {v['causa']}"]
     for x in voci_rapporto(v):
         righe.append(_riga(x))
+    righe.append(f"- segnale del solo metro: {v['segnale'] or 'non calcolato (dati inidonei o minimi mancanti)'}")
+    for r in v["requisiti"]:
+        righe.append(f"- requisito {r['id']} [{RUOLO_NEL_RAPPORTO[r['ruolo']]}]: {r['esito']}")
     if v["vicini_soglia"]:
         righe.append(f"- estremi a meno di 1e-9 R dalla soglia: {', '.join(v['vicini_soglia'])} (non cambia l'esito)")
     righe.append("Esito della regola, non una raccomandazione a operare: la decisione resta del titolare (D-14).")

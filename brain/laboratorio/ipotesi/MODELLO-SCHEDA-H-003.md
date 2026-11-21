@@ -81,6 +81,11 @@
   - Uno stop **non garantisce** il prezzo d'esecuzione in un salto (DGS-11 §2): non si dichiara un tetto alla perdita che lo stop non può assicurare.
   - **Confronto con il dominio collaudato:** il collaudo IA-02 contiene perdite rare di circa **−12,3 R con probabilità 1%** (celle 11 e 12 di `pilota_ia02.genera`, due soli valori). Se l'esposizione dichiarata o la frequenza delle perdite estreme escono da questo dominio, serve un **collaudo mirato** prima della verifica. Altrimenti si registra «applicazione motivata nel perimetro provato» (DGS-10 §6).
   - Il riscontro a DGS-11 §2 mostra perché conta: con stop molto stretti un salto di prezzo vale molti R.
+  - **Precisazioni di DGS-12 §2 (21/11/2026):**
+    - il salto peggiore plausibile descrive uno **scenario di stress**, non una perdita massima garantita: una garanzia richiede un vincolo dimostrabile;
+    - distinguere il salto misurato **dall'ingresso** e il salto **oltre lo stop**;
+    - per una posizione **senza stop**: esposizione = perdita monetaria di scenario ÷ budget monetario di rischio fissato all'ingresso, esplicitando lato eseguibile, costi, salto e slittamento;
+    - senza un'esposizione stimabile, o senza prove su frequenza, gravità e dipendenza delle code, il trasferimento del collaudo resta **indimostrato**.
 
 ## 6. Metriche
 Come H-002 v3.1 §6: trade, vincite, R medio netto, Sharpe per trade, drawdown in R, serie di perdite, acquisti e vendite separati, anni solari, benchmark «compro sempre» e «vendo sempre», confronto casuale con 1.000 ripetizioni e seme fisso, resoconto dei giorni scartati. [DA COMPILARE se si aggiunge altro.]
@@ -91,29 +96,27 @@ Come H-002 v3.1 §6: trade, vincite, R medio netto, Sharpe per trade, drawdown i
 - **Robustezza:** [DA COMPILARE: un parametro alla volta]. Resta fuori da N **solo** come veto fisso. Se orienta una scelta, entra in N (emendamento dell'utente).
 - **Nessun taglio nuovo dopo il sigillo:** niente anni, direzioni o fasce scelti guardando i risultati.
 
-## 8. Criteri scritti prima (OBBLIGATORIO)
-**Screening sullo sviluppo (per variante, tutti insieme):**
-1. **R medio netto ≥ +0,15 R (IA-02)**, regola: [DA SCEGLIERE: «sulla stima» (proposta di Claude) / «sul limite inferiore al 95%»];
-2. Sharpe per trade ≥ [DA COMPILARE; coerente con 0,15 R: circa 0,15 / deviazione standard per trade];
-3. almeno [DA COMPILARE] trade (vedi `potenza_IA-02.md`);
-4. R medio sopra il 95° percentile del confronto casuale;
-5. R medio maggiore di «compro sempre» e di «vendo sempre»;
-6. [DA COMPILARE: vincolo sul lato debole, es. vendite ≥ −0,05 R];
-7. drawdown massimo < [DA COMPILARE] R;
-8. nessun veto di robustezza;
-9. R medio netto > 0 nello scenario di stress.
+## 8. Criteri scritti prima (OBBLIGATORIO; riallineato il 21/11/2026 a D-31, D-35, D-36, D-37, D-42 e DGS-12)
+Il verdetto lo calcola il modulo `laboratorio/verdetto/verdetto_d31.py`. La scheda fissa solo quello che il modulo lascia alla scheda. La versione precedente di questa sezione (15/11: +0,15 R, DSR, anni positivi, «stima» o «limite», due o tre esiti) è superata dalle decisioni citate.
 
-**Verifica sulla riserva (una volta, solo varianti promosse):**
-1. DSR ≥ 0,95 con N = registro intero in quel momento;
-2. **R medio netto ≥ +0,15 R (IA-02)**, regola: [DA SCEGLIERE: «sul limite inferiore al 95%» (proposta di Claude) / «sulla stima»];
-3. almeno il 60% degli anni solari positivi;
-4. risultato cumulato degli ultimi 5 anni solari della finestra > 0;
-5. drawdown massimo < [DA COMPILARE] R.
+**Screening sullo sviluppo (D-36), per variante, tutte le condizioni insieme:**
+1. R medio netto **> +0,25 R**;
+2. limite inferiore dello stesso bootstrap **> 0**;
+3. potenza stimata della verifica **≥ 50%** (la lettura dell'uguaglianza esatta al 50% è da confermare dal titolare: DGS-12 §2). La potenza si calcola:
+   - alla **media vera obiettivo +0,25 R** (D-42), **mai** alla media osservata sullo sviluppo, che è gonfiata dalla selezione (DGS-12 §2);
+   - alla quota della candidata (prima apertura con una variante: 2,5% per coda);
+   - con una procedura congelata qui prima del sigillo, che tenga conto di concentrazione dei trade, dipendenza fra sedute e incertezza sulla dispersione: [DA COMPILARE];
+   - dichiarando se riguarda il solo segnale del metro o la verifica intera con i veti, e misurandole entrambe sugli stessi percorsi.
+4. **Controllo di fattibilità (DGS-12 §2, ricalcolato da Claude):** con un trade indipendente per seduta e 1.000 sedute, il 50% di potenza a +0,25 R richiede una deviazione standard per trade **σ ≤ 0,807 R** (errore standard ≤ 0,0255 R). Con σ = 1,25 R la potenza è circa il 24%. Dichiarare σ stimata e trade per seduta: [DA COMPILARE].
+5. L'ammissione allo screening non è un verdetto: decide solo se spendere la riserva.
 
-**Esiti:** [DA SCEGLIERE prima dei dati: due esiti (promossa / bocciata), oppure tre esiti con «non decidibile»]. Se tre esiti:
-- «non decidibile» va **definito qui** in numeri, ad esempio «l'intervallo contiene la soglia»;
-- **si risolve solo con dati nuovi** (successivi all'ultima data già vista), mai rieseguendo sugli stessi dati;
-- non dà accesso alla riserva. La lezione è la patch di `tb-proposte`, archiviata e non applicata.
+**Verifica sulla riserva (D-31, D-35, D-37):**
+- **Metro:** bootstrap circolare a blocchi da 10 sedute, B = 3.999, intervallo basic, quota 2,5% per coda. Vale solo alla prima apertura con una variante; un'altra quota richiede un collaudo preregistrato (D-31, DGS-12 §1).
+- **Esiti:** promossa se L > +0,20 R e requisiti vincolanti superati; bocciata se U < +0,10 R o per veto accertato; altrimenti non decidibile. Uguaglianza: non attraversa la soglia.
+- **Minimi:** D = 1.000 sedute scelte per calendario prima dell'apertura, almeno 300 trade, almeno 200 sedute con trade.
+- **Veto per blocchi da 250 sedute:** soglia [DA COMPILARE; proposta −0,25 R]; minimo di trade con esito noto per blocco [DA COMPILARE]. Un blocco con un esito ignoto non dà veto; un blocco completo sì, anche se manca un esito altrove (DGS-12 §3).
+- **Requisiti con ruolo dichiarato (DGS-12 §3):** per ciascuno «veto», «vincolante per promuovere» o «descrittivo» (riportato, non cambia l'esito): [DA COMPILARE]. Gli anni civili sono descrittivi (D-37).
+- **Non decidibile:** si riprova solo con dati nuovi (la demo futura), come prova nuova contata in N; la verifica avviata consuma comunque date e quota (D-35).
 
 Se nessuna variante passa, **H-003 è chiusa** e non si ritocca. Un'idea simile è un'ipotesi nuova, con N che cresce.
 
@@ -153,8 +156,8 @@ Il sigillo si fa solo quando **tutte** queste condizioni sono vere, ognuna con u
 - [ ] §0 compilato, con il periodo esatto guardato e chi ha guardato
 - [ ] meccanismo e falsificazione scritti (§1)
 - [ ] nessuna regola guarda il futuro, nemmeno l'assenza di quotazioni (§4)
-- [ ] scelte «stima» / «limite» e due / tre esiti fatte e motivate (§8)
-- [ ] numero minimo di trade coerente con `potenza_IA-02.md`
+- [ ] potenza stimata a +0,25 R con procedura congelata e controllo di fattibilità su σ (§8)
+- [ ] ruoli dei requisiti e parametri del veto per blocchi fissati (§8)
 - [ ] N calcolato, con i tagli esplorativi usati
 - [ ] casi d'oro scritti e calcolati a mano (§10)
 - [ ] condizioni del §11 tutte vere, con le prove nel registro delle revisioni

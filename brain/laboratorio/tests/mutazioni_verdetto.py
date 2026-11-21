@@ -15,7 +15,7 @@ if len(sys.argv) not in (2, 3, 4):
 BRAIN, OUT = Path(__file__).resolve().parents[2], Path(sys.argv[1]).resolve()
 PROCESSI = int(sys.argv[2]) if len(sys.argv) >= 3 else 2
 PREFISSI = tuple(sys.argv[3].split(",")) if len(sys.argv) == 4 else ("",)
-SUITE = ["brain.laboratorio.tests.test_verdetto_d31"]
+SUITE = ["brain.laboratorio.tests.test_verdetto_d31", "brain.laboratorio.tests.test_prova_generale_dgs12"]
 VD = "laboratorio/verdetto/verdetto_d31.py"
 M = {
     "VD01 soglia di promozione 0,15": [(VD, "SOGLIA_PROMOZIONE = 0.20", "SOGLIA_PROMOZIONE = 0.15")],
@@ -32,7 +32,7 @@ M = {
     "VD53 N contato su tutte le prove": [(VD, '"n_prove": S.n_prove(dati)', '"n_prove": len(dati["prove"])')],
     "VD54 quota non controllata": [(VD, "    if type(quota) is not float or quota != QUOTA:", "    if False:")],
     "VD55 tipo della quota non controllato": [(VD, "    if type(quota) is not float or quota != QUOTA:", "    if quota != QUOTA:")],
-    "VD56 contesto non riportato": [(VD, '"contesto_prove": contesto, "quota": quota}', '"contesto_prove": None, "quota": quota}')],
+    "VD56 contesto non riportato": [(VD, '"contesto_prove": contesto, "quota": quota,', '"contesto_prove": None, "quota": quota,')],
     "VD57 quota collaudata 5%": [(VD, "QUOTA = 0.025 ", "QUOTA = 0.05 ")],
     "VD58 media del campione come STIMA": [(VD, '"media del campione", v["media"], "R a trade", "DERIVATO",', '"media del campione", v["media"], "R a trade", "STIMA",')],
     "VD59 vantaggio come MISURA": [(VD, '"vantaggio della strategia", (v["L"], v["U"]) if stimabile else None, "R a trade", "STIMA",', '"vantaggio della strategia", (v["L"], v["U"]) if stimabile else None, "R a trade", "MISURA",')],
@@ -68,10 +68,10 @@ M = {
     "VD17 impronta del pilota non controllata": [(VD, "    if P.impronta_modulo() != IMPRONTA_PILOTA:", "    if False:")],
     "VD18 seme ignorato": [(VD, "    return P.intervallo_bootstrap(coppie, random.Random(seme), B, BLOCCO)", "    return P.intervallo_bootstrap(coppie, random.Random(0), B, BLOCCO)")],
     "VD19 B = 999": [(VD, "    return P.intervallo_bootstrap(coppie, random.Random(seme), B, BLOCCO)", "    return P.intervallo_bootstrap(coppie, random.Random(seme), 999, BLOCCO)")],
-    "VD20 requisito fallito senza veto boccia": [(VD, '        if r["veto"] and r["esito"] == "fallito":', '        if r["esito"] == "fallito":')],
-    "VD21 veto non valutabile boccia": [(VD, '        if r["veto"] and r["esito"] == "fallito":', '        if r["veto"]:')],
+    "VD20 requisito fallito senza veto boccia": [(VD, '        if r["ruolo"] == "veto" and r["esito"] == "fallito":', '        if r["esito"] == "fallito":')],
+    "VD21 veto non valutabile boccia": [(VD, '        if r["ruolo"] == "veto" and r["esito"] == "fallito":', '        if r["ruolo"] == "veto":')],
     "VD22 sfavorevole non boccia": [(VD, '        return fine("bocciata", "statistica: U < +0,10 R")', '        return fine("non decidibile", "statistica: U < +0,10 R")')],
-    "VD23 requisito non valutabile non blocca la promozione": [(VD, '        aperti = [r["id"] for r in req if r["esito"] != "superato"]', '        aperti = [r["id"] for r in req if r["esito"] == "fallito"]')],
+    "VD23 requisito non valutabile non blocca la promozione": [(VD, 'r["ruolo"] != "descrittivo" and r["esito"] != "superato"]', 'r["ruolo"] != "descrittivo" and r["esito"] == "fallito"]')],
     "VD24 promossa con requisiti aperti": [(VD, "        if not aperti:", "        if True:")],
     "VD25 vicini non riportati nel verdetto": [(VD, "        v[\"vicini_soglia\"] = vicini(*iv)", "        pass")],
     "VD26 media divisa per le sedute": [(VD, '    v["media"] = sum(s for s, _ in coppie) / v["trade"] if v["trade"] else None', '    v["media"] = sum(s for s, _ in coppie) / len(coppie) if v["trade"] else None')],
@@ -94,7 +94,25 @@ M = {
     "VD43 blocchi: minimo zero accettato": [(VD, "    if type(minimo_trade_blocco) is not int or minimo_trade_blocco < 1:", "    if type(minimo_trade_blocco) is not int or minimo_trade_blocco < 0:")],
     "VD44 blocchi: soglia non finita accettata": [(VD, "    if type(soglia) not in (int, float) or not math.isfinite(soglia):", "    if type(soglia) not in (int, float):")],
     "VD45 blocchi: minimo non intero accettato": [(VD, "    if type(minimo_trade_blocco) is not int or minimo_trade_blocco < 1:", "    if minimo_trade_blocco < 1:")],
-    "VD46 verdetto: veto dopo il controllo dei dati": [(VD, "    for r in req:\n        if r[\"veto\"] and r[\"esito\"] == \"fallito\":\n            return fine(\"bocciata\", f\"veto: {r['id']}\")\n    try:\n        controlla_coppie(coppie)\n    except ValueError as e:\n        return fine(\"non decidibile\", f\"dati inidonei: {e}\")", "    try:\n        controlla_coppie(coppie)\n    except ValueError as e:\n        return fine(\"non decidibile\", f\"dati inidonei: {e}\")\n    for r in req:\n        if r[\"veto\"] and r[\"esito\"] == \"fallito\":\n            return fine(\"bocciata\", f\"veto: {r['id']}\")")],
+    "VD46 verdetto: veto dopo il controllo dei dati": [(VD, "    for r in req:\n        if r[\"ruolo\"] == \"veto\" and r[\"esito\"] == \"fallito\":\n            return fine(\"bocciata\", f\"veto: {r['id']}\")\n    if inidonei is not None:\n        return fine(\"non decidibile\", f\"dati inidonei: {inidonei}\")", "    if inidonei is not None:\n        return fine(\"non decidibile\", f\"dati inidonei: {inidonei}\")\n    for r in req:\n        if r[\"ruolo\"] == \"veto\" and r[\"esito\"] == \"fallito\":\n            return fine(\"bocciata\", f\"veto: {r['id']}\")")],
+    # --- DGS-12 (21/11/2026): ruoli dei requisiti, segnale del metro riportato, esiti ignoti nei blocchi ---
+    "VD78 descrittivo blocca la promozione": [(VD, 'if r["ruolo"] != "descrittivo" and r["esito"] != "superato"]', 'if r["esito"] != "superato"]')],
+    "VD79 veto e descrittivo insieme accettati": [(VD, '                or (r["veto"] and r.get("descrittivo", False)):', '                or False:')],
+    "VD80 descrittivo non booleano accettato": [(VD, 'or type(r.get("descrittivo", False)) is not bool', 'or False')],
+    "VD81 ruolo descrittivo perso": [(VD, 'ruolo = "veto" if r["veto"] else "descrittivo" if r.get("descrittivo", False) else "promozione"', 'ruolo = "veto" if r["veto"] else "promozione"')],
+    "VD82 segnale non riportato": [(VD, '            v["segnale"] = segnale(iv)', '            pass')],
+    "VD83 intervallo calcolato senza i minimi": [(VD, "        if not mancano:\n            iv", "        if True:\n            iv")],
+    "VD84 misure saltate in presenza di requisiti": [(VD, "    if inidonei is None:\n        v[", "    if inidonei is None and not req:\n        v[")],
+    "VD85 esiti ignoti accettati nel verdetto": [(VD, "        controlla_coppie(coppie)\n    except ValueError as e:\n        inidonei", "        controlla_coppie(coppie, ignote=True)\n    except ValueError as e:\n        inidonei")],
+    "VD86 esiti ignoti rifiutati nei blocchi": [(VD, "    controlla_coppie(coppie, ignote=True)\n    medie", "    controlla_coppie(coppie)\n    medie")],
+    "VD87 esito ignoto senza trade accettato": [(VD, "            if k == 0:\n                raise ValueError(f\"seduta {i}: esito ignoto", "            if False:\n                raise ValueError(f\"seduta {i}: esito ignoto")],
+    "VD88 blocco con esiti ignoti valutato": [(VD, "        if any(x is None for x, _ in blocco):", "        if False:")],
+    "VD89 blocco con esiti ignoti non segnato": [(VD, "            medie.append(None)\n            sottile = True\n            continue", "            medie.append(None)\n            continue")],
+    "VD90 segnale tolto dal rapporto": [(VD, 'righe.append(f"- segnale del solo metro: ', 'righe.append(f"- segnale: ')],
+    "VD91 segnale mancante detto calcolato": [(VD, "'non calcolato (dati inidonei o minimi mancanti)'", "'calcolato'")],
+    "VD92 requisiti tolti dal rapporto": [(VD, '    for r in v["requisiti"]:', '    for r in []:')],
+    "VD93 descrittivo detto vincolante nel rapporto": [(VD, '"descrittivo": "descrittivo, non cambia l\'esito"}', '"descrittivo": "vincolante per promuovere"}')],
+    "VD94 requisiti non registrati nel verdetto": [(VD, '"segnale": None, "requisiti": req}', '"segnale": None, "requisiti": []}')],
 }
 
 

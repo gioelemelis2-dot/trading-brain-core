@@ -426,3 +426,10 @@ DA-13 rulebook (Q-09) ──► DA-11 G0 minimo ──► DA-12 indicatori compo
   - un computer dedicato sempre acceso;
   - un servizio nel cloud, con costi e custodia dei dati da valutare.
 - **Prerequisito:** il motore generico (fase 3 della visione). Non è urgente.
+
+### DA-34 · Potenza esattamente al 50% nello screening (21/11/2026) · **da decidere dal titolare**
+- **Il problema (DGS-12 §2):** D-36 scrive «potenza stimata ≥ 50%», ma nella stessa riga dice «confronti stretti: l'uguaglianza non passa». Il codice, D-42 e la specifica del verdetto usano «≥»: con potenza esattamente 50% la variante passa.
+- **Opzioni:**
+  - **(a)** «≥ 50%»: il 50% esatto passa. «L'uguaglianza non passa» vale per le soglie in R (media e limite inferiore). Nessuna modifica al codice.
+  - **(b)** «> 50%»: il 50% esatto non passa. Si cambia il confronto nel modulo, con test e mutanti.
+- **Consiglio di Claude: (a).** È la formula scritta e la lettura di D-42 («potenza del 50%»). Una potenza stimata esattamente al 50,00% è un caso quasi solo teorico, quindi la scelta conta soprattutto per la chiarezza del testo.
