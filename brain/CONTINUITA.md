@@ -29,6 +29,14 @@ Ultimo aggiornamento: **2026-11-21** (sezione in testa); prima: 2026-11-15, dopo
 - **DA-34** è aperta per il titolare.
 - D-34 punto 5: superato sui casi del DGS. Il DGS può ancora rispondere alle domande del messaggio 11.
 
+**R18 (21/11) consegnato, verificato e NON pulito.**
+- Tre importanti nel perimetro: #125, #126, #127.
+- Corretti #125, #126, #128 e, nel verdetto, #131–#134, più #135 nella CI. Test prima, poi codice, poi mutanti: Q 11/11 e VD 117/118 su 3.13 e 3.9.
+- **#127 aperto:** collegamento fra esecutore e riserva. La verifica di H-002 oggi prenderebbe tutta la riserva, quindi serve una scelta di progetto prima di qualunque verifica.
+- Decisioni del titolare: **DA-35** (contatore; Claude consiglia c, cioè 1 su 2) e **DA-36** (protezione del ramo; Claude consiglia la 2 con le etichette della 3).
+- Dopo: nuovo candidato e mandato R19.
+- Disco pieno di notte: sospetti Time Machine o un aggiornamento di macOS; da controllare con `tmutil listlocalsnapshots /`.
+
 **Prossimi passi:**
 - messaggio 11 al DGS e decisione del titolare su DA-34;
 - consegna di R18, poi la verifica di Claude e la decisione sulla protezione del ramo;
