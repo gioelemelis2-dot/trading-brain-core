@@ -1000,3 +1000,14 @@ Nulla di questo tocca il candidato `8e51ce9` su cui lavora R15.
   - le opzioni sulla protezione del ramo, da decidere dal titolare.
 
   Priorità consigliata: R18 prima del compito su P-001.
+
+## 2026-11-21 · v1.81 (messaggio 10 aggiornato; regola sui modelli; stato dell'ASK)
+
+- **Messaggio 10 al DGS:** in testa al contesto c'è l'aggiornamento del 21/11 (R17 pulito e contatore 2 su 2, R18 in corso, D-34 punti 1–4 fatti, test su GitHub). Si manda oggi.
+- **Regola del titolare:** a ogni compito Claude indica quale modello usare (Claude Code, ChatGPT, Gemini), per non sprecare token (`CONTINUITA.md`, sezione del 21/11).
+- **ASK:**
+  - il disco del Mac si è riempito per la seconda volta (21/11, 01:26, fermo al 08/04/2017);
+  - nessun dato perso (scrittura atomica);
+  - lo scaricamento è ripartito in ciclo ed era al 15/11/2019;
+  - la cache ASK pesa 81 MB, quindi lo spazio basta;
+  - la causa del pieno è transitoria e non accertata.

@@ -7,6 +7,13 @@
 MESSAGGIO 10 AL DGS — solo metodo; nessuna decisione riservata al titolare.
 
 CONTESTO
+- AGGIORNAMENTO DEL 21/11 (il messaggio è stato scritto il 19–20/11 e si manda oggi):
+  - R17 consegnato da Gemini e verificato da Claude: pulito, contatore D-24 a 2 su 2 sul candidato e476a9a;
+    un solo rilievo nuovo, minore e fuori dal perimetro (#121, bordi su input anomali di protocollo_ia02.py).
+  - R18 (giro su tutte le manomissioni, più il primo giro di revisione del modulo del verdetto) è in corso con Gemini.
+  - D-34 punti 1–4 fatti nel codice (verdetto D-31, N dal registro canonico, clausola sulle code nel modello,
+    rapporti con i tipi epistemici); manca il punto 5, la prova generale a vuoto, per cui servono i tuoi casi.
+  - Test automatici su GitHub attivi a ogni push (25 suite, Python 3.13 e 3.9, rete bloccata); hanno trovato #120.
 - DGS-11 ricevuto, archiviato e verificato: tutti i numeri sono confermati da Claude.
 - **Esempio avverso rifatto** come chiesto (B = 3.999, conteggi incrociati), su dati inventati, 300 repliche, media vera +0,15 R:
   - G1 dell'audit: 35/300 promosse, tutte nelle 35 repliche senza perdita rara.

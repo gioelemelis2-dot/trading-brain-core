@@ -1,6 +1,31 @@
 # Documento di continuità
 
-Ultimo aggiornamento: **2026-11-19 sera** (sezione in testa); prima: 2026-11-15, dopo il mandato notturno su H-002 (programma dei criteri, strumento di sigillo, quaderno delle ipotesi; ramo `feat/esecutore-h002`, **non unito a main**). Leggere questo file per primo (vale anche per Gemini, insieme a `collaborazione/HANDOFF-GEMINI.md`).
+Ultimo aggiornamento: **2026-11-21** (sezione in testa); prima: 2026-11-15, dopo il mandato notturno su H-002 (programma dei criteri, strumento di sigillo, quaderno delle ipotesi; ramo `feat/esecutore-h002`, **non unito a main**). Leggere questo file per primo (vale anche per Gemini, insieme a `collaborazione/HANDOFF-GEMINI.md`).
+
+## Aggiornamento del 21/11/2026 (LEGGERE PER PRIMO)
+
+**Regola del titolare (21/11): a ogni compito, indicare quale modello usare, per non sprecare token.**
+- Claude Code:
+  - **Sonnet** per i lavori meccanici: leggere log e screenshot, dare comandi per il terminale, inoltrare testi, aggiornare documenti;
+  - **Opus** per scrivere codice in TDD, verificare le consegne di Gemini e del DGS, statistica e decisioni di metodo.
+  - Si cambia con `/model`.
+- ChatGPT (DGS): la modalità con ragionamento esteso per i messaggi di metodo e statistica (come il messaggio 10); quella veloce per domande brevi.
+- Gemini: il modello più capace per le revisioni (R18) e per la prova su 10 video di P-001; quello veloce solo per lavori ripetitivi già collaudati.
+
+**Stato:**
+- R18 è in corso con Gemini (sul Mac c'è `/private/tmp/r18_mut_p2_…`).
+- ASK:
+  - lo scaricamento è ripartito in ciclo dopo il disco pieno del 21/11 alle 01:26 (secondo episodio);
+  - la mattina del 21/11 era al 15/11/2019;
+  - la cache ASK pesa solo 81 MB (fino al 2019), quindi lo spazio basta;
+  - nessun residuo in `$TMPDIR` né in `/private/tmp`, quindi la causa del pieno è transitoria e non accertata (sospetto: le copie dei mutanti di Gemini).
+- Il messaggio 10 al DGS ha in testa l'aggiornamento del 21/11; si manda oggi.
+
+**Prossimi passi:**
+- risposta del DGS al messaggio 10, poi la prova generale a vuoto (D-34 punto 5);
+- consegna di R18, poi la verifica di Claude e la decisione sulla protezione del ramo;
+- fine dello scaricamento ASK, poi il consuntivo e le date della riserva;
+- #121 a lotti.
 
 ## Aggiornamento del 19/11/2026, sera (LEGGERE PER PRIMO: sostituisce le sezioni più vecchie dove sono in contrasto)
 
