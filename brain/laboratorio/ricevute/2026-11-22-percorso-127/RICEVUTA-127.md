@@ -75,8 +75,30 @@ Questo è il caso concreto della domanda Q1 del messaggio 14: congelare una sola
   - il lanciatore isolato per il nuovo esecutore.
   Vanno aggiunti prima di qualunque uso reale: sono nel candidato di R19.
 
-## Punto 5 · Controlli aperti
-*(sezione completata dopo la corsa `controlli_aperti.py`, vedi sotto)*
+## Punto 5 · Controlli aperti [ESEGUITO]
+
+- **Script:** `controlli_aperti.py`, SHA-256 `e706794f…5bbc` (uguale a quello nel commit `7c90c90`).
+- **Dove è girato:** worktree bloccato su `8d59885`; il modulo del verdetto è lo stesso di `36d533a`.
+- **Ambienti e risultati:** 3.13.18 e 3.9.25; risultati **identici** sulle due versioni. Log: `log/controlli_aperti_8d59885_py313.json` e `..._py39.json`.
+
+| Controllo | Esito |
+|---|---|
+| **D-47** | Potenza stimata 0,50: **ammessa**. Potenza 0,4999999999999999 (un ulp sotto): **non ammessa**. |
+| **#123** | Lo stesso requisito «costi» fallito, sulle stesse coppie (segnale del metro favorevole). Come **descrittivo**: esito **promossa**, e il rapporto lo riporta come «requisito costi [descrittivo, non cambia l'esito]: fallito». È l'omissione informativa, ora corretta. Come **vincolante per promuovere**: esito **non decidibile**. È la parte che poteva cambiare il verdetto, classificata importante. |
+| **#124** | 9 casi su 3 confronti (screening 125×0,3 + 125×0,2 contro 0,25; blocco 250×0,3 contro 0,3; blocco 125×(−0,3) + 125×(−0,2) contro −0,25), ciascuno all'uguaglianza, a +1 ulp e a −1 ulp: la decisione del modulo **coincide** con quella in frazioni esatte in tutti i 9 casi, su entrambe le versioni. |
+| **D-44** | Limiti superiori esatti unilaterali al 99,9% su 12.000: **1,1897%** (107), **0,0935%** (2), **0,1088%** (3). Entrambi i conteggi avversi corretti sono sotto il 2,5%. |
+
+**Potenza replica per replica** alla media vera +0,25 R: 1.000 sedute, un trade per seduta, veto per blocchi a −0,25 R con minimo 50 trade, N fornito. M = 2.000 repliche per scenario.
+
+| Scenario | M | F (segnale favorevole) | P (promosse) | promosse senza segnale favorevole | invalide | inconclusive | F/M (IC 95%) | P/M (IC 95%) | (F−P)/M (IC 95%) |
+|---|---:|---:|---:|---:|---:|---:|---|---|---|
+| σ = 1,25 R | 2.000 | 495 | 495 | **0** | 0 | 1.505 | 24,75% (22,87–26,70) | 24,75% (22,87–26,70) | 0 (0–0,18%) |
+| σ = 0,80 R | 2.000 | 1.023 | 1.023 | **0** | 0 | 977 | 51,15% (48,93–53,36) | 51,15% (48,93–53,36) | 0 (0–0,18%) |
+
+- **Implicazione «promossa ⇒ segnale favorevole»:** controllata su ogni replica, non solo sul totale. 0 discordanze su 4.000.
+- **Intervalli:** esatti (Clopper-Pearson). Le repliche invalide e inconclusive restano nel denominatore.
+- **Cause fra i percorsi favorevoli:** veto 0, minimi 0, requisito 0. In questi scenari il veto non scatta mai: con media +0,25 R e 250 trade per blocco, la media di un blocco sotto −0,25 R è rarissima. Quindi la perdita di potenza dovuta ai veti **non è messa alla prova** da questi scenari. Serve uno scenario con blocchi deboli, o con meno trade, quando ci sarà una scheda candidata.
+- **Confronto con DGS-14:** il riferimento normale di DGS-14 era 24,35% con σ = 1,25 R. Il valore simulato, 24,75%, cade nel suo intervallo. Con σ = 0,80 R la potenza è circa 50%, come previsto (σ ≤ 0,81 R).
 
 ## Punto 6 · Scelta futura delle date: che cosa manca
 
