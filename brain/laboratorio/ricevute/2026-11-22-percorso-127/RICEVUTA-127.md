@@ -7,6 +7,16 @@
 
 ## Candidato
 
+> **Candidato finale: `aca694f`.** Comprende la seconda revisione (#137, manifesto letto una volta) e la seconda parte di #124, cioè le decisioni a filo in frazioni esatte nel modulo del verdetto.
+> - **Rieseguito su `aca694f`**, in un worktree bloccato, su 3.13.18 e 3.9.25:
+>   - suite complete verdi (`log/finale_suite_aca694f_*.log`);
+>   - prove A–G (`log/finale_ricevuta_aca694f_*.json`): **esiti identici** a quelli di `7c90c90` e fra le due versioni. L'impronta dell'impegno ora è `6b09ce67…`, diversa perché il codice è cambiato ed è legato all'impegno. L e U differiscono ancora di 5,7e-15 R fra le versioni (pilota congelato);
+>   - mutanti del verdetto 127/132 (`log/finale_mutanti_verdetto_aca694f_*.log`). VD30, VD39 e VD111 non si applicavano dopo #124 e VD44 era vivo: riallineati, con un test nuovo per VD44, in `db3c85f`; poi 4/4 uccisi su entrambe le versioni. **Totale 131/132**, VD13 equivalente;
+>   - mutanti del percorso: vedi sotto.
+> - **Controllo nuovo nella suite** (`test_mutanti_applicabili`, `db3c85f`): ogni mutante dei tre script deve applicarsi una volta sola. Ha trovato subito anche V07, V17 e V18 del perimetro, rotti da `riserva/2`, e li ha fatti riallineare prima della corsa completa.
+>
+> Le righe sotto descrivono la prima corsa (`7c90c90`), rimasta come storia.
+
 | Elemento | Valore |
 |---|---|
 | Commit delle prove | `7c90c90` (ramo `feat/esecutore-h002`), eseguito in una copia bloccata sul commit (worktree separato) |
