@@ -480,3 +480,11 @@ DA-13 rulebook (Q-09) ──► DA-11 G0 minimo ──► DA-12 indicatori compo
   - **(b) Collegarla alla riserva:** la verifica di H-002 resta con i suoi criteri annuali, ma passa da prenotazione, quota e autorizzazione come il percorso nuovo. Costo alto: due percorsi di verifica da mantenere e da rivedere, e due regole di decisione diverse.
   - **(c) Lasciarla com'è:** sconsigliato. È il difetto #127: un comando legge tutta la riserva senza lasciare traccia nel registro.
 - **Consiglio di Claude: (a).** Un solo percorso, che è quello collaudato (D-31), e nessuna lettura della riserva fuori dal registro. H-002 non è oggi una candidata: lo sviluppo ne resta come riferimento.
+
+### DA-39 · D-49 con il piano GitHub Free (22/11/2026) · **da decidere dal titolare**
+- **Il fatto:** il titolare ha il piano **GitHub Free** (22/11). Su un repository **privato** personale con Free non ci sono né rulesets, né protezione dei rami, né CODEOWNERS (verificato da Gemini sulla documentazione di GitHub, notte del 22/11). Quindi **D-49 oggi non si può applicare**: nessuna protezione è attiva.
+- **Opzioni:**
+  - **(a) Passare a GitHub Pro**, circa 4 USD al mese, e applicare D-49 con le istruzioni di Gemini (`G-20261122-NOTTE.md`, §B.5).
+  - **(b) Rendere pubblico il repository:** sconsigliato. Contiene la storia delle decisioni, i registri e il lavoro sulle fonti; i dati veri restano comunque fuori da GitHub.
+  - **(c) Restare su Free senza protezione lato server**, con le difese che ci sono già: registri ancorati a GitHub, impronte del codice sigillato, test automatici che segnalano (senza bloccare), riproduzione indipendente di Gemini e del DGS.
+- **Consiglio di Claude:** (c) **finché il lavoro è sintetico**, poi (a) **prima del primo accesso reale alla riserva**. La protezione serve quando c'è qualcosa di irreversibile da proteggere, cioè le date della riserva e i sigilli veri. Il costo, intorno ai 50 USD l'anno, è piccolo rispetto al rischio di una verifica non attribuibile.
