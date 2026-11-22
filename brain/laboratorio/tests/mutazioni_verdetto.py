@@ -138,6 +138,13 @@ M = {
     "VD116 soglia booleana accettata (M-VD-04 di Gemini)": [(VD, "if type(soglia) not in (int, float)", "if not isinstance(soglia, (int, float))")],
     "VD117 ampiezza booleana accettata (M-VD-05 di Gemini)": [(VD, "if type(ampiezza) is not int", "if not isinstance(ampiezza, int)")],
     "VD118 id del requisito non stringa accettato (M-VD-06 di Gemini)": [(VD, 'not isinstance(r.get("id"), str)', 'r.get("id") is None')],
+    "VD119 media del verdetto con sum (#124)": [(VD, 'v["media"] = math.fsum(s for s, _ in coppie)', 'v["media"] = sum(s for s, _ in coppie)')],
+    "VD120 media dello screening con sum (#124)": [(VD, 's["media"] = math.fsum(x for x, _ in coppie)', 's["media"] = sum(x for x, _ in coppie)')],
+    "VD121 media di blocco con sum (#124)": [(VD, "m = math.fsum(x for x, _ in blocco)", "m = sum(x for x, _ in blocco)")],
+    "VD122 L vicino a zero mai segnalato (#124)": [(VD, "abs(iv[0]) < VICINANZA", "False")],
+    "VD123 L vicino a zero solo se positivo (#124)": [(VD, "abs(iv[0]) < VICINANZA", "0 <= iv[0] < VICINANZA")],
+    "VD124 L vicino a zero con banda 1e-8 (#124)": [(VD, "abs(iv[0]) < VICINANZA", "abs(iv[0]) < 1e-8")],
+    "VD125 segnalazione assente dal rapporto (#124)": [(VD, '    if s.get("L_vicino_a_zero"):\n', '    if False:\n')],
 }
 
 

@@ -1139,3 +1139,15 @@ Nulla di questo tocca il candidato `8e51ce9` su cui lavora R15.
 - **#136, rifinito su indicazione del DGS:** i test del periodo ora partono da un caso valido (cartelle distinte, ASK ≠ BID, sigillo) e cambiano solo il periodo; ogni rifiuto ha il suo controllo positivo.
 - **Modello di scheda H-003:** controllo «promossa ⇒ segnale favorevole» replica per replica, e riferimento di potenza di DGS-14.
 - **Da segnalare al titolare:** con D = 1.000 sedute, un trade per seduta e σ = 1,25 R, il metro ha solo il 24% di potenza alla prima apertura. Per lo screening D-36 (potenza ≥ 50%) servono circa 2.400 trade, oppure una dispersione ≤ 0,81 R.
+
+## 2026-11-22 · v1.92 (consegna notturna di Gemini; #124 corretto nel modulo del verdetto)
+
+- **Consegna di Gemini** (`rev/gemini-notte22`, `6fb7949`, base `128e8ba`) archiviata in `collaborazione/da-gemini/G-20261122-NOTTE.md` con lo script `notte22_somme_esatte.py`. Il compito C (P-001) non è stato eseguito: il mandato non era nella sua sessione.
+- **#124, compito A:** 9 divergenze su 23 casi a filo di soglia, su Apple Python 3.9.6 (sul Mac non c'è Python ≥ 3.12).
+  - **6 nel modulo del verdetto** (N22-A1), riprodotte da Claude su 3.9.25. **Corrette** con `math.fsum` nelle medie di verdetto, screening e blocchi; test rossi in `eb411c2`, poi il codice. Mutanti VD119–VD125.
+  - **3 nel pilota congelato** (N22-A2): non si tocca. L vicino a 0 nello screening ora si segnala nel rapporto, come già L e U vicini alle soglie.
+- **D-49, compito B:**
+  - **[VERIFICATO da Gemini]** Su GitHub Free un repository privato personale non ha né rulesets, né protezione dei rami, né CODEOWNERS: serve GitHub Pro.
+  - L'autore di una richiesta di unione non può approvarla da solo. Gemini propone tre alternative: un secondo account per gli agenti; approvazioni a 0 con richiesta di unione e test obbligatori; approvazione a 1 con scavalcamento.
+  - **Limite nuovo:** gli agenti che usano le credenziali del titolare ne ereditano lo scavalcamento.
+  - Istruzioni clic per clic nel rapporto.

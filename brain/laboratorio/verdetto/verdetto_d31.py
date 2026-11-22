@@ -184,7 +184,7 @@ def verdetto(coppie, seme: int, requisiti=(), contesto=None, quota=QUOTA) -> dic
     if inidonei is None:
         v["trade"] = sum(k for _, k in coppie)
         v["sedute_attive"] = sum(1 for _, k in coppie if k > 0)
-        v["media"] = sum(s for s, _ in coppie) / v["trade"] if v["trade"] else None
+        v["media"] = math.fsum(s for s, _ in coppie) / v["trade"] if v["trade"] else None   # #124
         mancano = minimi_mancanti(coppie)
         if not mancano:
             iv = intervallo(coppie, seme)
@@ -222,11 +222,12 @@ def screening(coppie, seme: int, potenza_stimata) -> dict:
         raise ValueError(f"potenza stimata {potenza_stimata!r} fuori da [0, 1]")
     controlla_coppie(coppie)
     trade = sum(k for _, k in coppie)
-    s = {"ammessa": False, "cause": [], "media": None, "L": None, "U": None, "seme": seme, "potenza": potenza_stimata}
+    s = {"ammessa": False, "cause": [], "media": None, "L": None, "U": None, "seme": seme, "potenza": potenza_stimata,
+         "L_vicino_a_zero": False}
     if trade == 0:
         s["cause"].append("nessun trade")
         return s
-    s["media"] = sum(x for x, _ in coppie) / trade
+    s["media"] = math.fsum(x for x, _ in coppie) / trade          # #124: somma esatta, uguale su ogni Python
     if not s["media"] > SCREENING_MEDIA:
         s["cause"].append(f"media {s['media']:.4f} non > +0,25 R")
     iv = intervallo(coppie, seme)
@@ -234,6 +235,7 @@ def screening(coppie, seme: int, potenza_stimata) -> dict:
         s["cause"].append("intervallo invalido")
     else:
         s["L"], s["U"] = iv
+        s["L_vicino_a_zero"] = abs(iv[0]) < VICINANZA                # #124 (N22-A2): si riporta, non cambia l'esito
         if not iv[0] > 0:
             s["cause"].append("limite inferiore non > 0")
     if not potenza_stimata >= SCREENING_POTENZA:
@@ -258,7 +260,7 @@ def veto_blocchi(coppie, soglia, minimo_trade_blocco, ampiezza: int = 250) -> di
             sottile = True
             continue
         k = sum(x for _, x in blocco)
-        m = sum(x for x, _ in blocco) / k if k else None
+        m = math.fsum(x for x, _ in blocco) / k if k else None      # #124
         medie.append(m)
         if k < minimo_trade_blocco:
             sottile = True
@@ -362,5 +364,7 @@ def rapporto_screening(s: dict) -> str:
     righe = [f"SCREENING D-36 · {esito}"]
     for x in voci_screening(s):
         righe.append(_riga(x))
+    if s.get("L_vicino_a_zero"):
+        righe.append("- limite inferiore a meno di 1e-9 R [REGOLA] da 0 (non cambia l'esito; arrotondamento possibile, #124)")
     righe.append("Lo screening non è una prova: decide solo se spendere la riserva; il giudizio è della verifica (D-36).")
     return "\n".join(righe)
