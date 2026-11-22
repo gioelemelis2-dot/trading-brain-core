@@ -44,3 +44,19 @@ Ogni punto si prova attraverso `esegui_verifica.main`, con il caso valido e il c
 2. Test rossi per §3, punti 1–5, poi il codice.
 3. Corsa completa dei mutanti del perimetro (`mutazioni_esecuzione`), del percorso e del verdetto, su 3.13 e 3.9, in un worktree bloccato. Questo è il **candidato di R19**.
 4. Ricevuta delle protezioni sul percorso ordinario, per il DGS e per Gemini (R19).
+
+## Stato al 23/11/2026, notte (Claude)
+
+- **§1 fatto** (`c6813a0`): rifiuto immediato del vecchio comando, ramo morto tolto, protezioni comuni spostate sullo sviluppo.
+- **§3.1 fatto** (test rossi, poi `c737f12` e `0d2e432`):
+  - registri canonici e ancorati a GitHub; storia completa;
+  - prenotazione consumata in un'altra versione rifiutata; j e N che non scendono;
+  - prove in un repository git temporaneo, attraverso l'ingresso ordinario.
+- **§3.2 fatto** (`b75b5cf`): sviluppo letto con il manifesto e i byte verificati; impronta nell'impegno e nello screening registrato; una registrazione con un'altra impronta è rifiutata.
+- **§3.3 fatto** (`1080da8`):
+  - il lanciatore `avvio.py verifica` legge l'ipotesi dal contratto H-003 e controlla il codice sigillato di quell'ipotesi **prima degli import**;
+  - l'esecutore si ferma se chiamato senza lanciatore e ricontrolla l'ambiente prima di leggere;
+  - prove in una copia di `brain`, in un processo separato.
+- **§3.4 fatto** (`716f00a`): una sola verifica per ipotesi e variante, rifiutata prima di ogni lettura e della quota. Ha trovato il difetto **#138**: oggi la ferma solo la quota.
+- **§3.5:** date di sviluppo rifiutate dal registro della riserva con i confini di D-29 (test; il comportamento c'era già).
+- **Corsa completa dei tre script di mutanti e delle suite su `1080da8`:** in corso. Sarà il candidato proposto per R19.

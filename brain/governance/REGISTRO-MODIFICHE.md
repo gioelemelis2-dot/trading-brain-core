@@ -1281,3 +1281,11 @@ Nulla di questo tocca il candidato `8e51ce9` su cui lavora R15.
   - `ANCORA_GIT` acceso nel codice (con un test);
   - mutanti EV20–EV28.
 - **`CONTINUITA.md`** aggiornata con lo stato e i passi mancanti.
+
+## 2026-11-23 · v2.00 (PIANO-D51 §3 completato nel percorso ordinario; candidato per R19)
+
+- **§3.4:** una sola verifica per ipotesi e variante, prima di ogni lettura. Difetto **#138**, corretto.
+- **§3.5:** test sui confini di D-29 nel registro della riserva.
+- **§3.3:** lanciatore `avvio.py verifica`; esecutore fermo senza lanciatore; ambiente ricontrollato prima di leggere.
+- Mutanti del percorso fino a EV32 più AV01 e AV02; N60 riallineato, segnalato da `test_mutanti_applicabili` prima della corsa.
+- **Candidato `1080da8`:** suite e mutanti completi su 3.13 e 3.9 in un worktree bloccato, in corso.

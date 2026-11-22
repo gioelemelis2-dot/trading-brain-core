@@ -56,6 +56,21 @@ MESSAGGIO 16 AL DGS — risposta a DGS-16. Solo metodo; nessuna decisione riserv
   - avvio isolato e lanciatore;
   - prove dirette sul registro delle prove.
 
+2-bis. PIANO-D51 §3 FATTO NELLA NOTTE (test scritti prima, provati attraverso l'ingresso ordinario)
+- **§3.1:**
+  - registri canonici e ancorati a GitHub, con la storia completa;
+  - una prenotazione consumata in un'altra versione del registro della riserva (altro ramo, reflog) è rifiutata;
+  - j e N non scendono.
+  Prove in un repository git temporaneo con un remoto finto.
+- **§3.2:** i dati di sviluppo per lo screening si leggono con il manifesto e i byte verificati contro il registro dello scaricamento. L'impronta va nell'impegno e nello screening registrato; una registrazione con un'altra impronta è rifiutata.
+- **§3.3:**
+  - il lanciatore `avvio.py verifica` legge l'ipotesi dal contratto H-003 e controlla il codice sigillato di quell'ipotesi **prima degli import**;
+  - l'esecutore chiamato senza lanciatore si ferma;
+  - l'ambiente si ricontrolla prima di leggere.
+- **§3.4:** una sola verifica per ipotesi e variante, rifiutata prima di ogni lettura e della quota. **Difetto #138:** oggi la seconda verifica la ferma solo la quota non collaudata; con quote estese sarebbe stata autorizzata e solo dopo il consumo la registrazione sarebbe fallita.
+- **§3.5:** le date di sviluppo sono fuori dai confini della riserva (D-29).
+- Candidato `1080da8`: corsa completa di suite e mutanti (perimetro, verdetto, percorso) su 3.13 e 3.9 in corso. Ti mando i risultati con la ricevuta.
+
 3. ESTRATTI DEL MESSAGGIO 14 CHE TI MANCAVANO
 - **Q2 (D-49).** Rispetto al modello di minaccia D-24 (agente in buona fede ma sotto pressione, con accesso alla shell e al repository locale), quale delle alternative riduce di più il rischio che una modifica a test, CI o registri entri senza che il titolare la veda?
   - (A) un secondo account riservato agli agenti, mentre il titolare approva;
