@@ -1,0 +1,253 @@
+{
+ "python": "3.9.25",
+ "D-47": {
+  "potenza 0.50": true,
+  "potenza 0.4999999999999999": false
+ },
+ "#123": {
+  "descrittivo fallito": [
+   "promossa",
+   "favorevole"
+  ],
+  "vincolante per promuovere fallito": [
+   "non decidibile",
+   "favorevole"
+  ],
+  "riga nel rapporto (descrittivo)": [
+   "- requisito costi [descrittivo, non cambia l'esito]: fallito"
+  ]
+ },
+ "#124": {
+  "screening 125×0,3+125×0,2 contro 0,25 · uguale": {
+   "media del modulo": "0.25",
+   "decisione del modulo": false,
+   "decisione esatta": false,
+   "coincide": true
+  },
+  "screening 125×0,3+125×0,2 contro 0,25 · +1 ulp": {
+   "media del modulo": "0.25000000000000006",
+   "decisione del modulo": true,
+   "decisione esatta": true,
+   "coincide": true
+  },
+  "screening 125×0,3+125×0,2 contro 0,25 · −1 ulp": {
+   "media del modulo": "0.24999999999999994",
+   "decisione del modulo": false,
+   "decisione esatta": false,
+   "coincide": true
+  },
+  "blocco 250×0,3 contro 0,3 · uguale": {
+   "media del modulo": "0.3",
+   "decisione del modulo": false,
+   "decisione esatta": false,
+   "coincide": true
+  },
+  "blocco 250×0,3 contro 0,3 · +1 ulp": {
+   "media del modulo": "0.30000000000000004",
+   "decisione del modulo": false,
+   "decisione esatta": false,
+   "coincide": true
+  },
+  "blocco 250×0,3 contro 0,3 · −1 ulp": {
+   "media del modulo": "0.29999999999999993",
+   "decisione del modulo": true,
+   "decisione esatta": true,
+   "coincide": true
+  },
+  "blocco 125×(−0,3)+125×(−0,2) contro −0,25 · uguale": {
+   "media del modulo": "-0.25",
+   "decisione del modulo": false,
+   "decisione esatta": false,
+   "coincide": true
+  },
+  "blocco 125×(−0,3)+125×(−0,2) contro −0,25 · +1 ulp": {
+   "media del modulo": "-0.24999999999999994",
+   "decisione del modulo": false,
+   "decisione esatta": false,
+   "coincide": true
+  },
+  "blocco 125×(−0,3)+125×(−0,2) contro −0,25 · −1 ulp": {
+   "media del modulo": "-0.25000000000000006",
+   "decisione del modulo": true,
+   "decisione esatta": true,
+   "coincide": true
+  }
+ },
+ "potenza": {
+  "media +0,25 R, σ 1,25 R, un trade per seduta, 1.000 sedute": {
+   "M": 2000,
+   "F": 495,
+   "P": 495,
+   "promosse senza segnale favorevole": 0,
+   "invalide": 0,
+   "inconclusive": 1505,
+   "fermate fra le favorevoli": {
+    "veto": 0,
+    "minimi": 0,
+    "requisito": 0
+   },
+   "F/M": 0.2475,
+   "P/M": 0.2475,
+   "(F−P)/M": 0.0,
+   "IC95 F/M": [
+    0.22872,
+    0.26703
+   ],
+   "IC95 P/M": [
+    0.22872,
+    0.26703
+   ],
+   "IC95 (F−P)/M": [
+    0.0,
+    0.00184
+   ]
+  },
+  "media +0,25 R, σ 0,80 R, un trade per seduta, 1.000 sedute": {
+   "M": 2000,
+   "F": 1023,
+   "P": 1023,
+   "promosse senza segnale favorevole": 0,
+   "invalide": 0,
+   "inconclusive": 977,
+   "fermate fra le favorevoli": {
+    "veto": 0,
+    "minimi": 0,
+    "requisito": 0
+   },
+   "F/M": 0.5115,
+   "P/M": 0.5115,
+   "(F−P)/M": 0.0,
+   "IC95 F/M": [
+    0.48934,
+    0.53363
+   ],
+   "IC95 P/M": [
+    0.48934,
+    0.53363
+   ],
+   "IC95 (F−P)/M": [
+    0.0,
+    0.00184
+   ]
+  }
+ },
+ "veti (prova logica)": {
+  "debole in posizione 1": {
+   "segnale del metro": "favorevole",
+   "veto": "fallito",
+   "veto atteso": "fallito",
+   "coincide": true,
+   "esito": "bocciata",
+   "causa": "veto: blocchi",
+   "medie dei blocchi": [
+    -0.359647,
+    0.719808,
+    0.687799,
+    0.668856
+   ]
+  },
+  "debole in posizione 2": {
+   "segnale del metro": "favorevole",
+   "veto": "fallito",
+   "veto atteso": "fallito",
+   "coincide": true,
+   "esito": "bocciata",
+   "causa": "veto: blocchi",
+   "medie dei blocchi": [
+    0.659011,
+    -0.319481,
+    0.727524,
+    0.740481
+   ]
+  },
+  "debole in posizione 3": {
+   "segnale del metro": "favorevole",
+   "veto": "fallito",
+   "veto atteso": "fallito",
+   "coincide": true,
+   "esito": "bocciata",
+   "causa": "veto: blocchi",
+   "medie dei blocchi": [
+    0.716076,
+    0.695605,
+    -0.342958,
+    0.688036
+   ]
+  },
+  "debole in posizione 4": {
+   "segnale del metro": "favorevole",
+   "veto": "fallito",
+   "veto atteso": "fallito",
+   "coincide": true,
+   "esito": "bocciata",
+   "causa": "veto: blocchi",
+   "medie dei blocchi": [
+    0.696127,
+    0.705789,
+    0.702425,
+    -0.34455
+   ]
+  },
+  "controllo omogeneo (stessa media)": {
+   "segnale del metro": "favorevole",
+   "veto": "superato",
+   "veto atteso": "superato",
+   "coincide": true,
+   "esito": "promossa",
+   "causa": "L > +0,20 R e requisiti superati",
+   "medie dei blocchi": [
+    0.462141,
+    0.444563,
+    0.467309,
+    0.43134
+   ]
+  },
+  "debole con 49 trade (minimo 50)": {
+   "segnale del metro": "favorevole",
+   "veto": "non valutabile",
+   "veto atteso": "non valutabile",
+   "coincide": true,
+   "esito": "non decidibile",
+   "causa": "requisito non superato o non valutabile: blocchi",
+   "medie dei blocchi": [
+    -0.375955,
+    0.717243,
+    0.683871,
+    0.693118
+   ]
+  },
+  "debole con 50 trade (minimo 50)": {
+   "segnale del metro": "favorevole",
+   "veto": "fallito",
+   "veto atteso": "fallito",
+   "coincide": true,
+   "esito": "bocciata",
+   "causa": "veto: blocchi",
+   "medie dei blocchi": [
+    -0.361638,
+    0.717243,
+    0.683871,
+    0.693118
+   ]
+  },
+  "debole con 51 trade (minimo 50)": {
+   "segnale del metro": "favorevole",
+   "veto": "fallito",
+   "veto atteso": "fallito",
+   "coincide": true,
+   "esito": "bocciata",
+   "causa": "veto: blocchi",
+   "medie dei blocchi": [
+    -0.273809,
+    0.717243,
+    0.683871,
+    0.693118
+   ]
+  }
+ },
+ "D-44": {
+  "107 su 12.000": "1.1897%",
+  "2 su 12.000": "0.0935%",
+  "3 su 12.000": "0.1088%"
+ }
+}

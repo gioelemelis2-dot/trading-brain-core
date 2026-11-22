@@ -1,0 +1,46 @@
+M00 copia non mutata: suite verde
+UCCISO PR01 rifiuto che non libera le date
+UCCISO PR02 rifiuto con j previsto non controllato
+UCCISO PR03 rifiuto con quota calcolata non controllata
+UCCISO PR04 rifiuto senza motivo ammesso
+UCCISO PR05 rifiuto dopo l'autorizzazione
+UCCISO PR06 quota attesa non ricontrollata
+UCCISO PR07 impegno non legato all'impronta
+UCCISO PR08 ripetizione tecnica senza l'impegno
+UCCISO PR09 record incoerente con l'esito
+UCCISO PR10 impronta dell'impegno senza ordine delle chiavi
+UCCISO PR11 vecchio schema accettato
+UCCISO MF01 date accessorie ignorate
+UCCISO MF02 voce doppia non vista
+UCCISO MF03 giorno omesso non visto
+UCCISO MF04 riga dell'altro lato accettata
+UCCISO MF05 indirizzo dell'altro lato accettato
+UCCISO MF06 altro mercato accettato
+UCCISO MF07 esiti http accettati come dati
+UCCISO MF08 quarantena ignorata
+VIVO   MF09 insieme atteso senza ordinamento (atteso EQUIVALENTE: lati e giorni sono già generati in ordine)
+UCCISO CB01 byte non confrontati
+UCCISO CB02 giorno fuori dal manifesto letto
+UCCISO CB03 file sparito contato come mancante
+UCCISO CB04 lato scambiato nel controllo
+UCCISO EV01 contratto senza modello H-003
+UCCISO EV02 metro non controllato
+UCCISO EV03 prenotazione di un'altra scheda
+UCCISO EV04 ripresa senza controllo d'identità
+UCCISO EV05 sigillo non controllato
+UCCISO EV17 variante non controllata prima di leggere
+UCCISO EV18 sedute fuori dall'impegno
+UCCISO EV19 coppie del record senza le sedute in ordine
+UCCISO EV06 sedute non controllate
+UCCISO EV07 quota non controllata prima della lettura
+UCCISO EV08 manifesto con anomalie accettato
+UCCISO EV09 autorizzazione senza quota attesa
+UCCISO EV10 lettura senza i byte attesi
+UCCISO EV11 date accessorie dentro le coppie
+UCCISO EV12 verdetto senza veto per blocchi
+UCCISO EV13 esito senza record
+UCCISO EV14 screening non bloccante
+UCCISO EV15 rifiuto non scritto al ricontrollo
+UCCISO EV16 file difforme non registrato
+
+42/43 mutanti uccisi (3.13.18); equivalenti dichiarati vivi: 1

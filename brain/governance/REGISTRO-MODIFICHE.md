@@ -1263,3 +1263,21 @@ Nulla di questo tocca il candidato `8e51ce9` su cui lavora R15.
   - provate le transizioni di G (ripresa della stessa prenotazione dopo la correzione) e di B (rilascio);
   - lo script della ricevuta produce record, rapporto originale e rapporto rigenerato confrontabili, i valori in esadecimale e la provenienza: sigillo e prenotazione li prepara il collaudo, la potenza è un valore dichiarato nel contratto;
   - prova logica dei veti: blocco debole in 4 posizioni, controllo omogeneo, 49, 50 e 51 trade; risultato atteso indipendente, in frazioni.
+
+## 2026-11-23 · v1.99 (notte: DGS-16 completato; PIANO-D51 §3.1 e §3.2 nel percorso ordinario)
+
+- **DGS-16, ricevute rieseguite su `4659dc8`** (worktree bloccato, 3.13.18 e 3.9.25), log `dgs16_*`:
+  - rapporto originale uguale byte per byte a quello rigenerato dal record, su entrambe le versioni; il rapporto rigenerato nella ripresa F ha la stessa impronta;
+  - impronta dell'impegno identica fra le versioni; media identica bit per bit; L e U diversi di 102 ulp;
+  - prova logica dei veti uguale all'atteso indipendente in tutti gli 8 casi;
+  - mutanti del percorso 42/43 su entrambe (MF09 equivalente).
+- **PIANO-D51 §3.2** (test rossi, poi codice):
+  - lo sviluppo si legge con il manifesto e i byte verificati contro il registro dello scaricamento;
+  - l'impronta dello sviluppo è nell'impegno e nello screening registrato;
+  - uno screening già registrato con un'altra impronta è rifiutato.
+- **PIANO-D51 §3.1** (test rossi, poi codice):
+  - registri canonici e ancorati a GitHub; storia completa;
+  - prenotazione consumata in un'altra versione rifiutata; j e N che non scendono;
+  - `ANCORA_GIT` acceso nel codice (con un test);
+  - mutanti EV20–EV28.
+- **`CONTINUITA.md`** aggiornata con lo stato e i passi mancanti.

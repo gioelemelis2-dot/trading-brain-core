@@ -1,8 +1,32 @@
 # Documento di continuità
 
-Ultimo aggiornamento: **2026-11-21** (sezione in testa); prima: 2026-11-15, dopo il mandato notturno su H-002 (programma dei criteri, strumento di sigillo, quaderno delle ipotesi; ramo `feat/esecutore-h002`, **non unito a main**). Leggere questo file per primo (vale anche per Gemini, insieme a `collaborazione/HANDOFF-GEMINI.md`).
+Ultimo aggiornamento: **2026-11-23** (sezione in testa); prima: 2026-11-15, dopo il mandato notturno su H-002 (programma dei criteri, strumento di sigillo, quaderno delle ipotesi; ramo `feat/esecutore-h002`, **non unito a main**). Leggere questo file per primo (vale anche per Gemini, insieme a `collaborazione/HANDOFF-GEMINI.md`).
 
-## Aggiornamento del 21/11/2026 (LEGGERE PER PRIMO)
+## Aggiornamento del 22–23/11/2026 (LEGGERE PER PRIMO)
+
+**Stato alla notte fra il 22 e il 23/11** (il titolare dorme; Claude ha lavorato su DGS-16 e D-51):
+- **ASK finito** (21/11, 23:50, zero errori). Consuntivo archiviato in `laboratorio/ricevute/2026-11-22-consuntivo-ask/`:
+  - cache pulite e allineate su 6.889 giorni;
+  - 4.823 sedute, di cui 4.400–4.800 ammissibili secondo la soglia di qualità.
+  **Da fare dal titolare:** la copia finale con impronta (D-39), con il comando già dato in chat. Poi Claude propone le date della riserva (D-38).
+- **Percorso ordinario di verifica (#127)** in `esecuzione/esegui_verifica.py`:
+  - scheda H-003, prenotazione, quota prima di ogni lettura, rifiuto durevole (D-50, schema `riserva/2`);
+  - screening sullo sviluppo con i byte verificati;
+  - manifesto, impegno (con le 1.000 sedute), autorizzazione con il ricontrollo;
+  - lettura con i byte verificati, verdetto D-31, record, rapporto rigenerabile;
+  - registri canonici e ancorati a GitHub; prenotazione consumata altrove rifiutata; j e N che non scendono.
+  Ricevute in `laboratorio/ricevute/2026-11-22-percorso-127/` (RICEVUTA-127.md, PIANO-D51.md, log).
+- **#124 corretto in due parti** (decisioni in frazioni esatte); **#137** corretto. Test `test_mutanti_applicabili` nella suite: ogni mutante si applica una volta sola.
+- **D-51, verifica di `esegui_h002` disattivata: in parte fatto.**
+  - Fatto: rifiuto immediato, ramo morto tolto, protezioni comuni spostate sullo sviluppo; mutanti del perimetro 299.
+  - Fatto nel percorso nuovo: PIANO-D51 §3.1 (ancora e storia) e §3.2 (identità dei dati di sviluppo).
+  - **Mancano:** §3.3 (avvio isolato e lanciatore per `esegui_verifica`), §3.4 (prove dirette sul registro delle prove), §3.5 (date di sviluppo rifiutate dalla riserva). Poi la corsa completa dei mutanti dei tre script su 3.13 e 3.9, in un worktree bloccato: sarà il **candidato di R19**.
+- **DGS:** il messaggio 16 (`collaborazione/da-claude/MESSAGGIO-16-DGS.md`) è pronto, da mandare con RICEVUTA-127 e PIANO-D51.
+- **Gemini:** nessun mandato in corso. P-001 è in pausa (D-52).
+- **Decisioni del titolare del 22/11:** D-47–D-52.
+- **Aperte:** DA-39 (GitHub Free: proposta «c, poi a» prima del primo accesso reale) e le date della riserva (D-38, dopo la copia D-39).
+
+## Aggiornamento del 21/11/2026
 
 **Regola del titolare (21/11): a ogni compito, indicare quale modello usare, per non sprecare token.**
 - Claude Code:
