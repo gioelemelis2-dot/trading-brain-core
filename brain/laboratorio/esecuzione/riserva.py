@@ -21,7 +21,18 @@ Regole (DGS-04 §6):
   stessa identità, gli stessi byte e lo stesso N restituisce la stessa autorizzazione, senza nuovo j;
 - esito: uno solo, dopo l'autorizzazione (promossa, bocciata, non decidibile);
 - quarantena: date disponibili escluse per qualità o calendario, con motivo.
+
+Schema `riserva/2` (22/11/2026; D-50, DGS-14 Q1-Q2, DGS-15 punto 4):
+- rifiuto: una prenotazione aperta si chiude con un rifiuto durevole (per esempio una quota non collaudata),
+  PRIMA di qualunque autorizzazione o lettura dei dati. Registra j previsto, m, quota calcolata e collaudata,
+  motivo, fase e impronta della scheda. Le date tornano disponibili; j, N e α non cambiano. Una nuova richiesta
+  vuole una prenotazione nuova (proposta (b) del messaggio 14, in attesa del parere del DGS);
+- autorizzazione: con `quota_attesa` la quota si ricontrolla sotto il blocco (due richieste che avevano visto la
+  stessa quota non la spendono due volte); con `impegno` (scheda, codice, metro, finestra, registro dello
+  scaricamento, elenco ordinato con le impronte, N, quota) l'impronta dei dati deve essere quella dell'impegno;
+- esito: può portare il record del verdetto, da cui il rapporto si rigenera senza rileggere la finestra.
 """
+import hashlib
 import json
 import math
 from datetime import date, timedelta
@@ -30,9 +41,9 @@ from typing import Optional, Tuple
 
 from .sigillo import _bloccato, _scrivi, ancora_git
 
-SCHEMA = "riserva/1"
+SCHEMA = "riserva/2"
 ESITI = ("promossa", "bocciata", "non decidibile")
-TIPI = ("prenotazione", "rilascio", "autorizzazione", "quarantena", "esito")
+TIPI = ("prenotazione", "rilascio", "autorizzazione", "quarantena", "esito", "rifiuto")
 
 
 def _d(x) -> date:
@@ -48,6 +59,12 @@ def _giorni(a: date, b: date):
 
 def quota(alfa_tot: float, j: int, m: int = 1) -> float:
     return alfa_tot / (j * (j + 1)) / m
+
+
+def impronta_impegno(impegno: dict) -> str:
+    """SHA-256 della forma canonica dell'impegno (chiavi ordinate, nessuno spazio): la stessa su ogni macchina."""
+    testo = json.dumps(impegno, sort_keys=True, separators=(",", ":"), ensure_ascii=True, allow_nan=False)
+    return hashlib.sha256(testo.encode("ascii")).hexdigest()
 
 
 def _controlla_testa(inizio: date, fine: date, alfa_tot, protetta) -> None:
@@ -121,7 +138,7 @@ class _Stato:
             p["stato"] = "rilasciato"
         elif tipo == "autorizzazione":
             if p["stato"] != "prenotato":
-                raise ValueError(f"autorizzazione di {id_!r} impossibile: è {p['stato']}")
+                raise ValueError(f"autorizzazione di {id_!r} impossibile: è {p['stato']}")   # anche «rifiutato»
             m, n, h = e.get("m"), e.get("n_globale"), e.get("hash_dati")
             if type(m) is not int or m < 1:                                    # #65: True non è un intero valido
                 raise ValueError(f"m = {m!r}: serve un intero ≥ 1")
@@ -129,6 +146,8 @@ class _Stato:
                 raise ValueError(f"N globale = {n!r}: serve un intero ≥ 1 e non minore di {self.n_max}")
             if not isinstance(h, str) or not h:
                 raise ValueError("impronta dei dati vuota")
+            if "impegno" in e and (not isinstance(e["impegno"], dict) or impronta_impegno(e["impegno"]) != h):
+                raise ValueError("l'impronta dei dati non è quella dell'impegno registrato")
             if type(e.get("j")) is not int or e.get("j") != self.j + 1:          # #94: True == 1, 1.0 == 1
                 raise ValueError(f"contatore j = {e.get('j')!r}, atteso {self.j + 1}")
             alfa = e.get("alfa_j")                                               # #128: NaN, testo, booleano
@@ -140,6 +159,25 @@ class _Stato:
             for g in _giorni(a, b):
                 self.giorni[g] = "consumato"
             p["stato"], p["autorizzazione"] = "autorizzato", e
+        elif tipo == "rifiuto":
+            if p["stato"] != "prenotato":
+                raise ValueError(f"rifiuto di {id_!r} impossibile: è {p['stato']}")
+            m = e.get("m")
+            if type(m) is not int or m < 1:
+                raise ValueError(f"m = {m!r}: serve un intero ≥ 1")
+            if type(e.get("j_previsto")) is not int or e.get("j_previsto") != self.j + 1:
+                raise ValueError(f"j previsto = {e.get('j_previsto')!r}, atteso {self.j + 1}")
+            qc, qs = e.get("quota_calcolata"), e.get("quota_collaudata")
+            if type(qc) is not float or not math.isfinite(qc) or abs(qc - quota(self.alfa_tot, self.j + 1, m)) > 1e-15:
+                raise ValueError(f"quota calcolata {qc!r} diversa da α_tot/[j(j+1)]/m")
+            if type(qs) is not float or not math.isfinite(qs):
+                raise ValueError(f"quota collaudata {qs!r} non valida")
+            for campo in ("motivo", "fase", "impronta_scheda"):
+                if not isinstance(e.get(campo), str) or not e[campo]:
+                    raise ValueError(f"rifiuto senza {campo}")
+            for g in _giorni(a, b):
+                del self.giorni[g]
+            p["stato"], p["rifiuto"] = "rifiutato", e
         else:                                                          # esito
             if p["stato"] != "autorizzato":
                 raise ValueError(f"esito di {id_!r} impossibile: è {p['stato']}")
@@ -147,7 +185,10 @@ class _Stato:
                 raise ValueError(f"esito di {id_!r} già registrato")
             if e.get("esito") not in ESITI:
                 raise ValueError(f"esito {e.get('esito')!r} non in {ESITI}")
-            p["esito"] = e["esito"]
+            r = e.get("record")
+            if r is not None and (not isinstance(r, dict) or r.get("esito") != e["esito"]):
+                raise ValueError(f"record del verdetto incoerente con l'esito {e['esito']!r}")
+            p["esito"], p["record"] = e["esito"], r
 
 
 def _leggi(registro: Path) -> dict:
@@ -198,7 +239,8 @@ def rilascia(registro: Path, id_: str, ora: str) -> dict:
     return _aggiungi(registro, {"tipo": "rilascio", "id": id_, "ora": ora})
 
 
-def autorizza(registro: Path, id_: str, n_globale: int, hash_dati: str, ora: str, m: int = 1) -> dict:
+def autorizza(registro: Path, id_: str, n_globale: int, hash_dati: str, ora: str, m: int = 1,
+              impegno: Optional[dict] = None, quota_attesa: Optional[float] = None) -> dict:
     """Da chiamare SUBITO PRIMA della prima lettura dei dati della finestra."""
     with _bloccato(registro):
         dati = _leggi(registro)
@@ -208,21 +250,62 @@ def autorizza(registro: Path, id_: str, n_globale: int, hash_dati: str, ora: str
             if p["esito"] is not None:                                         # #65: dopo l'esito non si ripete
                 raise ValueError(f"{id_!r} ha già l'esito {p['esito']!r}: nessuna ripetizione tecnica")
             a = p["autorizzazione"]
-            if (a["hash_dati"], a["n_globale"], a["m"]) == (hash_dati, n_globale, m):
+            if (a["hash_dati"], a["n_globale"], a["m"], a.get("impegno")) == (hash_dati, n_globale, m, impegno):
                 return a                                               # ripetizione tecnica: stessa autorizzazione
-            raise ValueError(f"{id_!r} già autorizzata con dati, N o m diversi: non è una ripetizione tecnica")
+            raise ValueError(f"{id_!r} già autorizzata con dati, N, m o impegno diversi: non è una ripetizione tecnica")
         if type(m) is not int or m < 1:
             raise ValueError(f"m = {m!r}: serve un intero ≥ 1")
+        alfa = quota(s.alfa_tot, s.j + 1, m)
+        if quota_attesa is not None and alfa != quota_attesa:          # DGS-15 punto 4: ricontrollo sotto il blocco
+            raise ValueError(f"quota cambiata: {alfa!r} invece di {quota_attesa!r} (un'altra apertura è arrivata prima)")
         e = {"tipo": "autorizzazione", "id": id_, "j": s.j + 1, "n_globale": n_globale, "hash_dati": hash_dati,
-             "m": m, "alfa_j": quota(s.alfa_tot, s.j + 1, m), "ora": ora}
+             "m": m, "alfa_j": alfa, "ora": ora}
+        if impegno is not None:
+            e["impegno"] = impegno
         s.applica(e)
         dati["eventi"].append(e)
         _scrivi(registro, dati)
     return e
 
 
-def rendiconta(registro: Path, id_: str, esito: str, ora: str) -> dict:
-    return _aggiungi(registro, {"tipo": "esito", "id": id_, "esito": esito, "ora": ora})
+def rendiconta(registro: Path, id_: str, esito: str, ora: str, record: Optional[dict] = None) -> dict:
+    e = {"tipo": "esito", "id": id_, "esito": esito, "ora": ora}
+    if record is not None:
+        e["record"] = record
+    return _aggiungi(registro, e)
+
+
+def quota_prevista(registro: Path, m: int) -> Tuple[int, float]:
+    """j e quota della prossima apertura, senza scrivere nulla (controllo prima di autorizzare)."""
+    if type(m) is not int or m < 1:
+        raise ValueError(f"m = {m!r}: serve un intero ≥ 1")
+    s = _ricostruisci(_leggi(registro))
+    return s.j + 1, quota(s.alfa_tot, s.j + 1, m)
+
+
+def rifiuta(registro: Path, id_: str, m: int, quota_collaudata: float, motivo: str, fase: str,
+            impronta_scheda: str, ora: str) -> dict:
+    """Rifiuto durevole di una prenotazione aperta, PRIMA di autorizzare e di leggere i dati (D-50)."""
+    with _bloccato(registro):
+        dati = _leggi(registro)
+        s = _ricostruisci(dati)
+        if type(m) is not int or m < 1:
+            raise ValueError(f"m = {m!r}: serve un intero ≥ 1")
+        e = {"tipo": "rifiuto", "id": id_, "j_previsto": s.j + 1, "m": m,
+             "quota_calcolata": quota(s.alfa_tot, s.j + 1, m), "quota_collaudata": quota_collaudata,
+             "motivo": motivo, "fase": fase, "impronta_scheda": impronta_scheda, "ora": ora}
+        s.applica(e)
+        dati["eventi"].append(e)
+        _scrivi(registro, dati)
+    return e
+
+
+def record_esito(registro: Path, id_: str) -> Optional[dict]:
+    """Il record del verdetto scritto con l'esito (None se l'esito non c'è ancora): rapporto senza rileggere i dati."""
+    p = _ricostruisci(_leggi(registro)).prenotazioni.get(id_)
+    if p is None or p["stato"] != "autorizzato":
+        raise ValueError(f"{id_!r}: nessuna apertura autorizzata con questa identità")
+    return p.get("record")
 
 
 def quarantena(registro: Path, inizio: date, fine: date, motivo: str, ora: str, usa_protetta: bool = False) -> dict:
@@ -257,6 +340,7 @@ def stato(registro: Path) -> dict:
                         "esito": p["esito"]} for i, p in s.prenotazioni.items() if p["stato"] == "autorizzato"),
                       key=lambda x: x["j"])
     protetti = (s.protetta[1] - s.protetta[0]).days + 1 if s.protetta else 0
-    return {"giorni": conta, "giorni_protetti": protetti, "aperture": aperture, "alfa_tot": s.alfa_tot,
+    rifiuti = [dict(p["rifiuto"]) for i, p in s.prenotazioni.items() if p["stato"] == "rifiutato"]
+    return {"giorni": conta, "giorni_protetti": protetti, "aperture": aperture, "alfa_tot": s.alfa_tot, "rifiuti": rifiuti,
             "alfa_speso": sum(a["quota_famiglia"] for a in aperture),
             "prenotazioni_attive": sorted(i for i, p in s.prenotazioni.items() if p["stato"] == "prenotato")}
