@@ -130,3 +130,62 @@ Con questi dati, ogni riga riporterà: confini e date accessorie, sedute con BID
 
 - La chiusura del punto 5 di D-34 (prova del percorso intero) e qualunque accesso reale alla riserva.
 - DA-38 (vecchio esecutore di H-002), le date e le regole di D-38, il piano GitHub per D-49.
+
+## Aggiornamento per DGS-16 (candidato `4659dc8`, worktree bloccato, 3.13.18 e 3.9.25)
+
+Log: `log/dgs16_ricevuta_4659dc8_py313.json` e `..._py39.json`. File della prova A in `log/dgs16_A_*`.
+
+**1. Provenienza nella corsa A**
+- **Sigillo:** lo prepara il collaudo (`S.sigilla` nello script), con le impronte dei 31 file di codice.
+- **Prenotazione:** la prepara il collaudo (`RV.prenota`), con l'impronta della scheda.
+- **Potenza stimata (0,6):** è un **valore dichiarato nel contratto** della scheda di test. È un input: **non è calcolato** e non viene da una procedura congelata. Per una scheda vera, D-36 chiede la procedura congelata prima del sigillo: va aggiunta al contratto H-003.
+- **Generato dall'esecutore ordinario:** screening sullo sviluppo, quota, manifesto, impegno, autorizzazione, lettura, coppie, verdetto, record e rapporto.
+
+**2. Sedute fissate prima dell'apertura e coppie usate**
+- L'impegno, scritto **prima** dell'autorizzazione, contiene l'elenco delle 1.000 sedute: il calendario di H-002, cioè i feriali senza `orb_londra.esclusi`.
+- Il record contiene le coppie **[data, S, K]** nello stesso ordine, comprese le sedute senza operazioni, e i 40 feriali esclusi.
+- Verificato su entrambe le versioni: le date delle coppie coincidono con quelle dell'impegno; 1.040 feriali − 40 esclusi = 1.000.
+- Elenchi completi in `log/dgs16_A_sedute_e_coppie_py313.json`.
+- I 40 esclusi sono festività inglesi, vigilie e 31 dicembre, per esempio 02/04/2010, 05/04/2010, 03/05/2010, 31/05/2010, 30/08/2010, 24/12/2010 …
+
+**3. Rapporto originale, record e rapporto rigenerato** (stesso ambiente)
+
+| | 3.13.18 | 3.9.25 |
+|---|---|---|
+| Rapporto originale uguale al rigenerato dal record, byte per byte | **sì** | **sì** |
+| SHA-256 del rapporto originale di A | `6a80b0b93f0a…` | `ee589ad4f7ee…` |
+| SHA-256 del rapporto rigenerato nella ripresa F (corsa separata, stessi ingressi) | `6a80b0b93f0a…` (uguale ad A) | `ee589ad4f7ee…` (uguale ad A) |
+| Impronta dell'impegno | `e8d69883f27f…` | `e8d69883f27f…` (uguale) |
+
+**Comandi per rigenerare** (dalla radice, sul commit `4659dc8`):
+```
+python3 -s -B brain/laboratorio/ricevute/2026-11-22-percorso-127/ricevuta_127.py <cartella>
+python3 -c "import json,sys; sys.path.insert(0,'.'); from brain.laboratorio.esecuzione import esegui_verifica as EV; print(EV.rapporto_da_record(json.load(open('<cartella>/A_corsa_completa/record_P1.json'))), end='')"
+```
+Il secondo comando ristampa il rapporto dal solo record, senza leggere dati.
+
+**4. Le due versioni di Python: verdetto e numeri separati**
+- **Verdetto:** identico, promossa, con lo stesso segnale e la stessa causa.
+- **Media:** identica, bit per bit: `0x1.88dd3fe19743fp-2` = 0,3836565 R.
+- **L e U:** diversi nelle ultime cifre binarie.
+  - L: `0x1.3bf9a49c2bffbp-2` (3.13) contro `0x1.3bf9a49c2c061p-2` (3.9);
+  - U: `0x1.d850f9ed97262p-2` contro `0x1.d850f9ed972c8p-2`;
+  - circa 102 ulp, cioè 5,7e-15 R. La causa è la somma del pilota congelato.
+- **Byte dei rapporti:** diversi fra le due versioni. Il motivo sono queste cifre e le impronte dei registri che le contengono.
+
+**5. Transizioni di B e G** (test: `test_dopo_l_anomalia_corretta_la_stessa_prenotazione_riprende`, `test_prenotazione_abbandonata_si_rilascia`)
+- **G**, manifesto con anomalie: nessuna autorizzazione, prenotazione ancora aperta. Corretto il registro dello scaricamento, la **stessa** richiesta, con scheda e identità invariate, si esegue fino alla promozione.
+- **B**, scheda non conforme: la prenotazione si chiude con un **rilascio registrato** (`RV.rilascia`) prima di qualunque autorizzazione, e le date tornano disponibili.
+- **Rifiuto per quota:** chiude la prenotazione (D-50), come concorda il DGS (Q3).
+- **Dopo l'autorizzazione:** il consumo resta anche se il processo cade (D, E).
+
+**6. Prova logica dei veti (Q6)**, in `controlli_aperti.py`, sezione 6. Quattro blocchi da 250 sedute, rumore con seme fisso, blocco debole a −0,35 R e gli altri a +0,70 R; veto a −0,25 R con minimo di 50 trade. Il risultato atteso del veto è calcolato indipendentemente, in frazioni. Risultati su `4659dc8`:
+
+| Caso | Segnale del metro | Veto (atteso = osservato) | Esito |
+|---|---|---|---|
+| Blocco debole in posizione 1, 2, 3 o 4 | favorevole | fallito | **bocciata** (veto) |
+| Controllo omogeneo, stessa media | favorevole | superato | **promossa** |
+| Blocco debole con 49 trade | favorevole | **non valutabile** | non decidibile |
+| Blocco debole con 50 o 51 trade | favorevole | fallito | bocciata |
+
+Un veto **non valutabile** resta distinguibile da uno valutato senza violazione.
