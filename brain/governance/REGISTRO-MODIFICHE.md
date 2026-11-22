@@ -1243,3 +1243,23 @@ Nulla di questo tocca il candidato `8e51ce9` su cui lavora R15.
   - verdetto e valori numerici separati fra le due versioni (anche in esadecimale);
   - allegare gli estratti Q2 e Q4 del messaggio 14;
   - per R19, la versione con D-51 e le protezioni provate sull'ingresso ordinario.
+
+## 2026-11-22 · v1.98 (D-51 applicato, prima parte; DGS-16: sedute nell'impegno, ricevute)
+
+- **D-51, prima parte** (test rosso `TestD51VerificaDisattivata`, poi il codice):
+  - `esegui_h002 --modalita verifica` si ferma **subito**, prima di sigillo, registri, ambiente e caricatore: codice 2, messaggio che rimanda al percorso ordinario;
+  - tolto il ramo di verifica ormai irraggiungibile, con la funzione `esegui_verifica` di `esegui_h002`, `_esiti_sviluppo` e la parte di verifica del rapporto;
+  - le protezioni comuni restano sullo sviluppo: registro canonico, registro non committato, storia parziale, copia senza blob (per le ultime due la seconda versione del registro si crea con un sigillo invece che con una verifica); il rapporto viene scritto prima degli esiti, ora provato sullo sviluppo;
+  - tolti 16 test e 15 mutanti propri della vecchia verifica; N38 e N42 riallineati. Mutanti del perimetro ora **299**;
+  - suite su 3.13 e 3.9 verdi.
+- **Ancora da fare per D-51** (`PIANO-D51.md` §3), con test scritti prima, nel percorso ordinario:
+  - ancora e storia per il registro delle prove e quello della riserva (verifica già fatta su un altro ramo, reflog, N che non scende);
+  - identità dei dati di sviluppo nello screening;
+  - avvio isolato e lanciatore;
+  - prove dirette sul registro delle prove.
+  **Fino ad allora queste protezioni mancano nel percorso nuovo:** è dichiarato e serve prima di R19.
+- **DGS-16:**
+  - l'elenco delle 1.000 sedute è nell'impegno prima dell'autorizzazione; il record ha le coppie datate in ordine e i 40 feriali esclusi (test rossi in `abbdde2`);
+  - provate le transizioni di G (ripresa della stessa prenotazione dopo la correzione) e di B (rilascio);
+  - lo script della ricevuta produce record, rapporto originale e rapporto rigenerato confrontabili, i valori in esadecimale e la provenienza: sigillo e prenotazione li prepara il collaudo, la potenza è un valore dichiarato nel contratto;
+  - prova logica dei veti: blocco debole in 4 posizioni, controllo omogeneo, 49, 50 e 51 trade; risultato atteso indipendente, in frazioni.

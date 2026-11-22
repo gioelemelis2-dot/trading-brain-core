@@ -181,18 +181,14 @@ M = {
     'N63 lanciatore: -B non richiesto (R14-09)': [(AV, 'sys.flags.no_site and sys.flags.dont_write_bytecode)', 'sys.flags.no_site)')],
     'N64 storia parziale accettata (R14-03)': [(SG, '    if _git(radice, "rev-parse", "--is-shallow-repository").stdout.strip() == "true":', '    if False:')],
     'N65 reflog non letto (R14-03)': [(SG, '"rev-list", "--all", "--reflog", "--", rel)', '"rev-list", "--all", "--", rel)')],
-    'N66 rapporto della verifica dopo gli esiti (R14-09)': [(E, '            impronta = hashlib.sha256(testo.encode("utf-8")).hexdigest()\n            x.rapporto.write_text(testo, encoding="utf-8")                     # R14-09: prima degli esiti\n            for v, r in ris["varianti"].items():                                  # R11-S4', '            impronta = hashlib.sha256(testo.encode("utf-8")).hexdigest()\n            for v, r in ris["varianti"].items():                                  # R11-S4')],
     'N67 cartella esterna del bytecode fuori dalla lista (R14-02)': [(E, '        problemi.append("eseguire senza -X pycache_prefix: il bytecode verrebbe letto da un\'altra cartella")', '        raise ValueError("eseguire senza -X pycache_prefix: il bytecode verrebbe letto da un\'altra cartella")')],
     'P16 potenza: sigma non controllata sotto la soglia (R14-06)': [(PS, '    if sigma <= 0:                                                     # R14-06: anche sotto la soglia\n', '    if False:                                                     # R14-06: anche sotto la soglia\n')],
     'N68 lanciatore: archivi nella radice ammessi (M-R14-01 di Gemini)': [(AV, 'IMPORTABILI = (".py", ".pyc", ".pyo", ".so", ".pyd", ".pth", ".zip", ".egg", ".whl")', 'IMPORTABILI = (".py", ".pyc", ".pyo", ".so", ".pyd", ".pth")')],
     'N69 lanciatore: cartella esterna del bytecode ammessa (M-R14-02 di Gemini)': [(AV, '    if getattr(sys, "pycache_prefix", None):\n        problemi.append("eseguire senza -X pycache_prefix")', '    if False:\n        problemi.append("eseguire senza -X pycache_prefix")')],
-    'N35 ambiente non ricontrollato prima dell\'esito (#91)': [(E, '            ris = esegui_verifica(bid, ask, promosse, n, range(inizio.year, fine.year + 1))\n            if CONTROLLO_AMBIENTE:', '            ris = esegui_verifica(bid, ask, promosse, n, range(inizio.year, fine.year + 1))\n            if False:')],
     'N37 registro non canonico accettato (#86)': [(E, '            if x.registro.resolve() != (RADICE / REL_REGISTRO).resolve():', '            if False:')],
-    'N38 storia git ignorata (#86)': [(E, '            storia = S.versioni_nella_storia(RADICE, REL_REGISTRO)', '            storia = []')],
-    'N39 verifica su un altro ramo ignorata (#86)': [(E, '            if altrove:  ', '            if False:  ')],
-    'N40 N della sola versione corrente (#86)': [(E, 'n = max([S.n_prove(S.leggi(x.registro))] + [S.n_prove(d) for d in storia])', 'n = S.n_prove(S.leggi(x.registro))')],
+    'N38 storia git non controllata (#86, #125)': [(E, '            S.versioni_nella_storia(RADICE, REL_REGISTRO)                      # #125: storia completa e leggibile', '            pass')],
     'N41 storia del solo ramo corrente (#86)': [(SG, '_git(radice, "rev-list", "--all", "--reflog", "--", rel)', '_git(radice, "rev-list", "HEAD", "--", rel)')],
-    'N42 ambiente non ricontrollato prima degli esiti dello sviluppo (#91)': [(E, '            ris = esegui_sviluppo(bid, ask)\n            if CONTROLLO_AMBIENTE:', '            ris = esegui_sviluppo(bid, ask)\n            if False:')],
+    'N42 ambiente non ricontrollato prima degli esiti dello sviluppo (#91)': [(E, '        ris = esegui_sviluppo(bid, ask)\n        if CONTROLLO_AMBIENTE:', '        ris = esegui_sviluppo(bid, ask)\n        if False:')],
     'N43 bytecode in __pycache__ accettato (#87)': [(E, '            elif Path(importlib.util.cache_from_source(str(p))).exists():', '            elif False:')],
     'N44 pycache_prefix accettato (#87)': [(E, '    if getattr(sys, "pycache_prefix", None):', '    if False:')],
     'N45 libreria standard troppo larga (#88)': [(E, '    return Path(sys.modules["encodings"].__file__).resolve().parent.parent', '    return Path("/")')],
@@ -255,7 +251,6 @@ M = {
     'N08 registro fuori dal repository accettato': [(SG, '    except ValueError:\n        raise ValueError(f"il file {file} è fuori dal repository', '    except ValueError:\n        return\n        raise ValueError(f"il file {file} è fuori dal repository')],
     'N09 ancora git ignorata': [(E, '            S.controlla_ancora(x.registro, RADICE)\n', '')],
     'N10 --ora non controllata': [(E, '        if not _ORA_ISO.fullmatch(ora):                                       # #51: orario nel formato del registro\n            raise ValueError(f"--ora {ora!r} non è nel formato AAAA-MM-GGThh:mm:ssZ")\n        datetime.strptime(ora, "%Y-%m-%dT%H:%M:%SZ")\n', '')],
-    'N11 dati dello sviluppo non ricontrollati': [(E, '            if impronte_sviluppo != {adesso}:', '            if False:')],
     'N12 robustezza senza nome della prova': [(SG, '        valida = base in dichiarate and bool(prova.strip())', '        valida = base in dichiarate')],
     'N13 suffissi liberi nello sviluppo': [(SG, '        valida = variante in dichiarate', '        valida = variante.split(" ")[0] in dichiarate')],
     'N14 completezza non controllata': [(C, '                elif not _completo(', '                elif False and not _completo(')],
@@ -340,23 +335,8 @@ M = {
     "E09 target nella robustezza di V-S": [(E, "\"V-S\": dict(_RANGE_TETTO)}",
                                             "\"V-S\": dict(_RANGE_TETTO, **{\"target 1,2\": {\"target_r\": 1.2}})}")],
     "E10 stress a 0,10": [(E, "STRESS = 0.20", "STRESS = 0.10")],
-    "E11 verifica di varianti non promosse": [(E, "trade = {v: sim.trade(prep(varianti[v]), varianti[v]) for v in promosse}\n"
-                                                  "    metriche = {v: sim.metriche(trade[v]) for v in promosse}\n"
-                                                  "    sharpe = {v: metriche[v].get(\"sharpe\") for v in promosse}",
-                                               "trade = {v: sim.trade(prep(varianti[v]), varianti[v]) for v in varianti}\n"
-                                               "    metriche = {v: sim.metriche(trade[v]) for v in varianti}\n"
-                                               "    sharpe = {v: metriche[v].get(\"sharpe\") for v in varianti}")],
-    "E12 verifica senza --varianti ammessa": [(E, "if not promosse or ignote:\n                raise",
-                                               "if ignote:\n                raise")],
-    "E13 basta una promozione (P1 di Gemini)": [(E, "and all(bool(e.get(\"promossa\")) for e in esiti_sviluppo[v])",
-                                                 "and any(bool(e.get(\"promossa\")) for e in esiti_sviluppo[v])")],
-    "E14 verifica di una parte delle promosse (P2 di Gemini)": [
-        (E, "if sorted(promosse) != sorted(da_verificare):", "if not set(promosse) <= set(da_verificare):")],
     "E15 sigillo con varianti diverse ammesso (P3 di Gemini)": [
         (E, "if sorted(sigillo[\"varianti\"]) != sorted(VARIANTI):", "if False:")],
-    "E16 anni del periodo non passati (P4 di Gemini)": [
-        (E, "esegui_verifica(bid, ask, promosse, n, range(inizio.year, fine.year + 1))",
-         "esegui_verifica(bid, ask, promosse, n, None)")],
     "E17 casuale contro l'R di tutti i trade (P5 di Gemini)": [
         (E, "r_comuni = mean(strategia[d] for d in comuni)", "r_comuni = m[\"r_medio\"]")],
     "E18 dati incompleti ammessi (P6 di Gemini)": [
@@ -367,8 +347,6 @@ M = {
          "ultimo = max(x[\"data\"].year for x in tr)")],
     "S10 registro senza blocco (P8 di Gemini)": [
         (SG, "    with _bloccato(registro):\n        return _registra(", "    if True:\n        return _registra(")],
-    "MG01 V senza gli Sharpe delle altre promosse (Gemini)": [
-        (E, "        altri = [s for k, s in sharpe.items() if k != v and s is not None]", "        altri = []")],
     "MG03 R medio della verifica con >= (Gemini)": [(K, "r is not None and r > 0),", "r is not None and r >= 0),")],
     "MG04 drawdown della verifica con <= (Gemini)": [
         (K, "cumulato is not None and cumulato > 0),\n        _criterio(\"drawdown massimo (R)\", dd, f\"< {dd_max}\", dd is not None and dd < dd_max),",
@@ -385,16 +363,11 @@ M = {
     "R04 chiusure note ignorate (R11-S2)": [
         (CAL, "    return {d for d in g if d.year == anno}", "    return set()")],
     "R05 rapporto non controllato prima di registrare (R11-S4)": [(E, "if x.rapporto.is_dir():", "if False:")],
-    "R06 esito della verifica non registrato (R11-S4)": [
-        (E, "for v, r in ris[\"varianti\"].items():                                  # R11-S4: esito nel registro",
-         "for v, r in []:                                  # R11-S4: esito nel registro")],
     "R07 copertura del casuale ignorata (R11-S5)": [
         (K, "casuale.get(\"sopra\", False) and cop_casuale >= copertura_min),", "casuale.get(\"sopra\", False)),")],
     "R08 copertura dei benchmark ignorata (R11-S5)": [
         (K, "benchmark.get(\"batte_entrambi\", False) and cop_bench >= copertura_min),",
          "benchmark.get(\"batte_entrambi\", False)),")],
-    "R09 cache della verifica diversa da quella dello sviluppo (R11-S6)": [
-        (E, "if cache_sviluppo != {str(cache)}:", "if False:")],
     "R10 variante fuori dal sigillo (R11-S7)": [
         (SG, "    if not valida:\n        raise ValueError(f\"variante", "    if False:\n        raise ValueError(f\"variante")],
     "R11 codice non controllato": [(SG, "if codice is not None and s.get(\"codice\") != codice:", "if False:")],
@@ -407,11 +380,6 @@ M = {
          "info[\"giorni_bid_mancanti\"] or not info[\"minuti_bid\"]")],
     "MR02 zero minuti ASK ammessi (Gemini R11)": [
         (E, "or not info[\"minuti_ask\"] or info[\"feriali_vuoti_bid\"]", "or info[\"feriali_vuoti_bid\"]")],
-    "MR03 sviluppo di un'altra ipotesi (Gemini R11)": [
-        (E, "if e[\"ipotesi\"] == IPOTESI and e[\"ruolo\"] == \"sviluppo\":", "if e[\"ruolo\"] == \"sviluppo\":")],
-    "MR04 verifica di un'altra ipotesi (Gemini R11)": [
-        (E, "if e[\"ipotesi\"] == IPOTESI\n                     and e[\"ruolo\"] == \"verifica\"",
-         "if True\n                     and e[\"ruolo\"] == \"verifica\"")],
     "MR06 DSR con > (Gemini R11)": [(K, "_ge(dsr, dsr_min)", "dsr is not None and dsr > dsr_min")],
     "MR07 promossa sempre vera nel registro (Gemini R11)": [
         (E, "promossa=r[\"screening\"][\"promossa\"],", "promossa=True,")],

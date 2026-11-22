@@ -3,7 +3,7 @@
 Sviluppo (screening): per ogni variante dichiarata (V-T, V-S) calcola metriche, confronto casuale (1.000
 ripetizioni, seme fisso, 95° percentile), benchmark «compro sempre» e «vendo sempre» sui giorni comuni, scenario di
 stress, robustezza (SEMPRE eseguita) con il veto, e il verdetto sui 9 criteri.
-Verifica sigillata: solo le varianti indicate (le promosse), una volta sola, con il DSR e N = prove nel registro.
+Verifica: DISATTIVATA (D-51, 22/11/2026). Passa solo dal percorso ordinario D-31 (esecuzione/esegui_verifica.py).
 
 Riga di comando: si rifiuta di partire se la scheda non è sigillata con la stessa impronta (§10: il sigillo viene
 prima di qualunque esecuzione); ogni esecuzione viene registrata nel registro delle prove.
@@ -160,25 +160,6 @@ def esegui_sviluppo(bid, ask, varianti=None, robustezza=None, stress: float = ST
                          for v, par in varianti.items()}}
 
 
-def esegui_verifica(bid, ask, promosse: List[str], n_prove: int, anni, varianti=None, sim=O) -> dict:
-    """Solo le varianti `promosse` girano sul periodo di verifica. V del DSR: Sharpe delle altre promosse.
-    `anni`: tutti gli anni solari del periodo (anni senza trade = non positivi; ultimi 5 anni dalla fine)."""
-    varianti = VARIANTI if varianti is None else varianti
-    ignote = [v for v in promosse if v not in varianti]
-    if not promosse or ignote:
-        raise ValueError(f"varianti da verificare non valide: {promosse!r} (dichiarate: {list(varianti)})")
-    prep = _Giorni(sim, bid, ask)
-    trade = {v: sim.trade(prep(varianti[v]), varianti[v]) for v in promosse}
-    metriche = {v: sim.metriche(trade[v]) for v in promosse}
-    sharpe = {v: metriche[v].get("sharpe") for v in promosse}
-    out = {}
-    for v in promosse:
-        altri = [s for k, s in sharpe.items() if k != v and s is not None]
-        out[v] = {"metriche": metriche[v], "verifica": K.verifica(trade[v], n_prove, anni=anni, sharpe_prove=altri)}
-    return {"modalita": "verifica", "n_prove": n_prove, "sharpe_prove": sharpe,
-            "resoconto": sim.resoconto(bid, ask, varianti[promosse[0]]), "varianti": out}
-
-
 # ---------------------------------------------------------------------------------------------------------------
 # Rapporto in Markdown
 # ---------------------------------------------------------------------------------------------------------------
@@ -211,9 +192,6 @@ def rapporto(ris: dict, titolo: str, info: dict) -> str:
     righe += ["", f"Minuti con spread negativo nelle sessioni di base: {ris['resoconto']['minuti_spread_negativo']}."]
     for v, x in ris["varianti"].items():
         righe += ["", f"## Variante {v}", ""] + _metriche(x["metriche"])
-        if ris["modalita"] == "verifica":
-            righe += ["", K.rapporto_verifica(f"{v}, verifica sigillata", x["verifica"])]
-            continue
         c, b = x["casuale"], x["benchmark"]
         righe += ["", "**Confronto casuale:** " + (
             "nessun giorno." if c is None else
@@ -322,26 +300,23 @@ def impronte_codice(radice: Path = RADICE) -> Dict[str, str]:
     return {f: hashlib.sha256((radice / f).read_bytes()).hexdigest() for f in file}
 
 
-def _esiti_sviluppo(dati: dict) -> Dict[str, list]:
-    esiti: Dict[str, list] = {}
-    for e in dati["esecuzioni"]:
-        if e["ipotesi"] == IPOTESI and e["ruolo"] == "sviluppo":
-            esiti.setdefault(e.get("variante"), []).append(e)
-    return esiti
-
-
 def main(argv=None) -> int:
     """Riga di comando. Nessuna scelta libera (R11 di Gemini): periodi, ripetizioni, seme e varianti sono nel codice,
-    che è sigillato; si sceglie solo la modalità (e in verifica si conferma l'elenco delle promosse)."""
+    che è sigillato; si sceglie solo la modalità. La verifica è disattivata (D-51)."""
     a = argparse.ArgumentParser(description=__doc__.split("\n\n")[0])
     a.add_argument("--modalita", required=True, choices=C.MODALITA)
-    a.add_argument("--varianti", default="", help="verifica: conferma delle varianti promosse, separate da virgole")
+    a.add_argument("--varianti", default="", help="non più usato: la verifica è disattivata (D-51)")
     a.add_argument("--rapporto", required=True, type=Path)
     a.add_argument("--registro", type=Path, default=REGISTRO)
     a.add_argument("--scheda", type=Path, default=SCHEDA)
     a.add_argument("--cache", type=Path, default=CACHE)
     a.add_argument("--ora", default=None, help="orario della registrazione (predefinito: adesso, UTC)")
     x = a.parse_args(argv)
+    if x.modalita == "verifica":                                               # D-51: prima di qualunque cosa
+        print("ERRORE: la verifica di esegui_h002 è disattivata (D-51). La verifica passa solo dal percorso "
+              "ordinario D-31 (esecuzione/esegui_verifica.py) con una scheda H-003, prenotazione e autorizzazione "
+              "nel registro della riserva.", file=sys.stderr)
+        return 2
     ora = x.ora or datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
     cache = x.cache.resolve()
     try:
@@ -349,13 +324,12 @@ def main(argv=None) -> int:
             raise ValueError(f"--ora {ora!r} non è nel formato AAAA-MM-GGThh:mm:ssZ")
         datetime.strptime(ora, "%Y-%m-%dT%H:%M:%SZ")
         controlla_fuso()                                                       # #94 (d)
-        storia: List[dict] = []
         if ANCORA_GIT:
             if x.registro.resolve() != (RADICE / REL_REGISTRO).resolve():     # #86: niente registri alternativi
                 raise ValueError(f"il registro deve essere quello canonico del repository ({REL_REGISTRO}), non "
                                  f"{x.registro}")
             S.controlla_ancora(x.registro, RADICE)
-            storia = S.versioni_nella_storia(RADICE, REL_REGISTRO)
+            S.versioni_nella_storia(RADICE, REL_REGISTRO)                      # #125: storia completa e leggibile
         sigillo = S.controlla_sigillo(x.registro, IPOTESI, x.scheda, codice=impronte_codice())   # §10 e codice
         if sorted(sigillo["varianti"]) != sorted(VARIANTI):                    # N giusto (P3 di Gemini)
             raise ValueError(f"il sigillo dichiara {sigillo['varianti']}, l'esecutore esegue {list(VARIANTI)}")
@@ -372,36 +346,7 @@ def main(argv=None) -> int:
         x.rapporto.parent.mkdir(parents=True, exist_ok=True)
         if not os.access(x.rapporto.parent, os.W_OK):
             raise ValueError(f"cartella del rapporto non scrivibile: {x.rapporto.parent}")
-        promosse = [v.strip() for v in x.varianti.split(",") if v.strip()]
-        if x.modalita == "verifica":
-            ignote = [v for v in promosse if v not in VARIANTI]
-            if not promosse or ignote:
-                raise ValueError(f"la verifica richiede --varianti fra {list(VARIANTI)} (ricevute: {x.varianti!r})")
-            fatte = [e for e in S.leggi(x.registro)["esecuzioni"] if e["ipotesi"] == IPOTESI
-                     and e["ruolo"] == "verifica" and e.get("variante") in promosse]
-            if fatte:
-                raise ValueError(f"verifica già eseguita per {[e['variante'] for e in fatte]}: si fa una volta sola")
-            altrove = sorted({e.get("variante") for d in storia for e in d.get("esecuzioni", [])
-                              if e.get("ipotesi") == IPOTESI and e.get("ruolo") == "verifica"} & set(promosse))
-            if altrove:                                                       # #86: su un altro ramo o commit
-                raise ValueError(f"verifica già eseguita per {altrove} in un'altra versione del registro (storia "
-                                 f"git, tutti i rami): si fa una volta sola")
-            esiti_sviluppo = _esiti_sviluppo(S.leggi(x.registro))
-            da_verificare = [v for v in VARIANTI if esiti_sviluppo.get(v)
-                             and all(bool(e.get("promossa")) for e in esiti_sviluppo[v])]          # P1
-            if not da_verificare:
-                raise ValueError("nessuna variante promossa nello screening registrato: la verifica non si fa")
-            if sorted(promosse) != sorted(da_verificare):                         # P2: insieme, una volta
-                raise ValueError(f"la verifica si fa una volta sola, con tutte e sole le promosse: {da_verificare}")
-            cache_sviluppo = {e.get("cache") for v in da_verificare for e in esiti_sviluppo[v]}
-            if cache_sviluppo != {str(cache)}:                                    # R11-S6: stessi dati
-                raise ValueError(f"la verifica usa la cache {cache}, lo sviluppo {sorted(map(str, cache_sviluppo))}")
-            impronte_sviluppo = {e.get("dati_sha256") for v in da_verificare for e in esiti_sviluppo[v]}
-            adesso = C.impronta_cache(cache / SIMBOLO, cache / f"{SIMBOLO}_ASK", *PERIODO_SVILUPPO)
-            if impronte_sviluppo != {adesso}:                                     # #51: stessa cartella, stessi dati
-                raise ValueError(f"i dati dello sviluppo in {cache} non sono più quelli registrati: la cartella è la "
-                                 f"stessa ma il contenuto è cambiato")
-        inizio, fine = PERIODO_SVILUPPO if x.modalita == "sviluppo" else PERIODO_VERIFICA     # R11-S1
+        inizio, fine = PERIODO_SVILUPPO                                       # R11-S1; verifica: D-51
         bid, ask, info = C.carica(cache / SIMBOLO, cache / f"{SIMBOLO}_ASK", inizio, fine, x.modalita,
                                   x.registro, IPOTESI, x.scheda)
         if info["giorni_bid_mancanti"] or info["giorni_ask_mancanti"] or not info["minuti_bid"] \
@@ -421,39 +366,21 @@ def main(argv=None) -> int:
                         "dati": f"cache Dukascopy {cache} (BID e ASK al minuto), SHA-256 {info['dati_sha256']}",
                         "minuti BID / ASK": f"{info['minuti_bid']} / {info['minuti_ask']}",
                         "registrato": ora}
-        if x.modalita == "verifica":
-            n = max([S.n_prove(S.leggi(x.registro))] + [S.n_prove(d) for d in storia])   # #86: N non scende
-            S.registra_esecuzioni(x.registro, IPOTESI, [dict(traccia, ruolo="verifica", variante=v, n_prove=n)
-                                                        for v in promosse], ora)   # prima del calcolo, tutte (#94)
-            ris = esegui_verifica(bid, ask, promosse, n, range(inizio.year, fine.year + 1))
-            if CONTROLLO_AMBIENTE:                                             # #61, #91: prima dell'esito
-                controlla_ambiente(sigillo["codice"])
-            intestazione["N (prove nel registro)"] = n
-            testo = rapporto(ris, f"{IPOTESI}: verifica sigillata", intestazione)
-            impronta = hashlib.sha256(testo.encode("utf-8")).hexdigest()
-            x.rapporto.write_text(testo, encoding="utf-8")                     # R14-09: prima degli esiti
-            for v, r in ris["varianti"].items():                                  # R11-S4: esito nel registro
-                ver = r["verifica"]
-                quota = [c["valore"] for c in ver["criteri"] if c["nome"].startswith("quota")][0]
-                S.registra_esecuzione(x.registro, IPOTESI, {
-                    "ruolo": "esito", "variante": v, "promossa": ver["promossa"], "dsr": ver["dsr"],
-                    "r_medio": r["metriche"].get("r_medio"), "quota_anni": quota, "rapporto_sha256": impronta}, ora)
-        else:
-            ris = esegui_sviluppo(bid, ask)
-            if CONTROLLO_AMBIENTE:                                             # #61, #91: prima degli esiti
-                controlla_ambiente(sigillo["codice"])
-            testo = rapporto(ris, f"{IPOTESI}: screening sullo sviluppo", intestazione)
-            impronta = hashlib.sha256(testo.encode("utf-8")).hexdigest()
-            x.rapporto.write_text(testo, encoding="utf-8")                     # R14-09: prima degli esiti
-            for v, r in ris["varianti"].items():
-                m = r["metriche"]
-                S.registra_esecuzione(x.registro, IPOTESI, dict(
-                    traccia, ruolo="sviluppo", variante=v, n=m["n"], r_medio=m.get("r_medio"), sharpe=m.get("sharpe"),
-                    promossa=r["screening"]["promossa"], ripetizioni=K.RIPETIZIONI, seme=K.SEME,
-                    rapporto_sha256=impronta), ora)
-                for nome, rm in r["robustezza"].items():
-                    S.registra_esecuzione(x.registro, IPOTESI, {"ruolo": "robustezza", "variante": f"{v} {nome}",
-                                                                "periodo": periodo, "r_medio": rm}, ora)
+        ris = esegui_sviluppo(bid, ask)
+        if CONTROLLO_AMBIENTE:                                             # #61, #91: prima degli esiti
+            controlla_ambiente(sigillo["codice"])
+        testo = rapporto(ris, f"{IPOTESI}: screening sullo sviluppo", intestazione)
+        impronta = hashlib.sha256(testo.encode("utf-8")).hexdigest()
+        x.rapporto.write_text(testo, encoding="utf-8")                     # R14-09: prima degli esiti
+        for v, r in ris["varianti"].items():
+            m = r["metriche"]
+            S.registra_esecuzione(x.registro, IPOTESI, dict(
+                traccia, ruolo="sviluppo", variante=v, n=m["n"], r_medio=m.get("r_medio"), sharpe=m.get("sharpe"),
+                promossa=r["screening"]["promossa"], ripetizioni=K.RIPETIZIONI, seme=K.SEME,
+                rapporto_sha256=impronta), ora)
+            for nome, rm in r["robustezza"].items():
+                S.registra_esecuzione(x.registro, IPOTESI, {"ruolo": "robustezza", "variante": f"{v} {nome}",
+                                                            "periodo": periodo, "r_medio": rm}, ora)
     except (S.NonSigillata, ValueError, OSError) as e:
         print(f"FERMO: {e}", file=sys.stderr)
         return 2

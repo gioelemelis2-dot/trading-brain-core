@@ -127,18 +127,6 @@ class TestCasiLimite(unittest.TestCase):
         self.assertEqual(a["varianti"]["V-T"]["casuale"], b["varianti"]["V-T"]["casuale"])
         self.assertEqual(a["varianti"]["V-S"]["metriche"], b["varianti"]["V-S"]["metriche"])
 
-    def test_verifica(self):
-        bid, ask = SN.mercato(date(2008, 1, 1), 800, seme=4, sd=0.7, spinta=0.01)
-        r = E.esegui_verifica(bid, ask, ["V-T"], n_prove=2, anni=range(2008, 2011))
-        self.assertTrue(r["varianti"]["V-T"]["verifica"]["promossa"], r["varianti"]["V-T"]["verifica"])
-        self.assertNotIn("V-S", r["varianti"])
-        self.assertEqual(list(r["sharpe_prove"]), ["V-T"])                  # solo le promosse girano in verifica
-        bid, ask = SN.mercato(date(2008, 1, 1), 800, seme=4, sd=0.7)
-        self.assertFalse(E.esegui_verifica(bid, ask, ["V-T", "V-S"], n_prove=2, anni=range(2008, 2011))["varianti"]["V-S"]["verifica"]["promossa"])
-        with self.assertRaises(ValueError):
-            E.esegui_verifica(bid, ask, ["V-X"], n_prove=2, anni=range(2008, 2011))
-
-
 class TestVarianzaDelleProve(unittest.TestCase):
     def test_sharpe_dispersi_alzano_la_soglia(self):
         import random
@@ -250,27 +238,6 @@ class TestRigaDiComando(BaseRiga):
         self.assertEqual(self.lancia("--modalita", "sviluppo"), 2)
         self.assertEqual([e for e in S.leggi(self.registro)["esecuzioni"] if "periodo" in e], [])
 
-    def test_verifica_una_volta_sola(self):
-        self.cache_di(date(2010, 1, 1), 59)
-        self.sigilla(["V-T", "V-S"])
-        self.sviluppo_finto(V_T=True, V_S=False)
-        argomenti = ("--modalita", "verifica", "--varianti", "V-T")
-        self.assertEqual(self.lancia(*argomenti), 0)
-        self.assertIn("verifica", self.uscita.read_text(encoding="utf-8"))
-        self.assertEqual(self.lancia(*argomenti), 2)
-        self.assertEqual(self.lancia("--modalita", "verifica"), 2)
-
-    def test_verifica_senza_varianti_fermata_prima_dei_dati(self):
-        """Senza --varianti la verifica si ferma PRIMA di leggere i dati sigillati (mutante E12)."""
-        self.sigilla(["V-T", "V-S"])
-        errore = io.StringIO()
-        with contextlib.redirect_stdout(io.StringIO()), contextlib.redirect_stderr(errore):
-            rc = E.main(["--registro", str(self.registro), "--scheda", str(self.scheda), "--cache", str(self.cache),
-                         "--rapporto", str(self.uscita), "--ora", ORA, "--modalita", "verifica"])
-        self.assertEqual(rc, 2)
-        self.assertIn("--varianti", errore.getvalue())
-
-
 class SimFinto:
     """Simulatore finto con i trade già decisi per variante (V-T ha il target, V-S no): serve a provare
     l'esecutore su casi costruiti a mano, senza mercati."""
@@ -323,48 +290,11 @@ class TestRevisioneR7Gemini(BaseRiga):
         self.assertEqual(self.verifica("V-T"), 2)                       # bocciata in sviluppo
         self.assertEqual(self.verifiche(), [])
 
-    def test_p1_basta_una_bocciatura(self):
-        """Uno screening ripetuto non cancella una bocciatura (niente «riprova finché passa»)."""
-        self.cache_di(date(2010, 1, 1), 59)
-        self.sigilla(["V-T", "V-S"])
-        self.sviluppo_finto(V_T=False)
-        self.sviluppo_finto(V_T=True, V_S=True)
-        self.assertEqual(self.verifica("V-T"), 2)
-        self.assertEqual(self.verifica("V-S"), 0)
-
-    def test_p2_tutte_e_sole_le_promosse_in_una_chiamata(self):
-        self.cache_di(date(2010, 1, 1), 59)
-        self.sigilla(["V-T", "V-S"])
-        self.sviluppo_finto(V_T=True, V_S=True)
-        self.assertEqual(self.verifica("V-T"), 2)                       # chiamate separate: V del DSR aggirata
-        self.assertEqual(self.verifica("V-S"), 2)
-        self.assertEqual(self.verifiche(), [])
-        self.assertEqual(self.verifica("V-T,V-S"), 0)
-        self.assertEqual(sorted(e["variante"] for e in self.verifiche()), ["V-S", "V-T"])
-
     def test_p3_sigillo_con_varianti_diverse_da_quelle_dell_esecutore(self):
         self.cache_di(date(2024, 1, 1), 60)
         self.sigilla(["V-T"])                 # N = 1 invece di 2
         self.assertEqual(self.lancia("--modalita", "sviluppo"), 2)
         self.assertEqual(S.leggi(self.registro)["esecuzioni"], [])
-
-    def test_p4_anni_del_periodo_nella_riga_di_comando(self):
-        """Verifica dal 2008: nel 2008 e nel 2009 ci sono i dati ma nessun trade (mercato piatto, range sotto il minimo
-        dei costi); nel 2010 25 trade con R medio +0,27 (anno positivo). Il 2008 e il 2009 contano come anni non
-        positivi: quota 1/3, non 1 (mutante E16). Prima stesura: 2010 negativo, non distingueva i casi. Seconda: 2008–2009
-        senza dati, che dopo R11-S2 sono un buco dei dati, non «anni senza trade»."""
-        piatto_b, piatto_a = SN.mercato(date(2008, 1, 1), 731, seme=2, sd=0.001)
-        bid, ask = SN.mercato(date(2010, 1, 1), 59, seme=2, sd=0.7, spinta=0.03)
-        piatto_b.update(bid)
-        piatto_a.update(ask)
-        SN.scrivi_cache(piatto_b, self.cache / "XAUUSD", inizio=date(2008, 1, 1), fine=date(2010, 2, 28))
-        SN.scrivi_cache(piatto_a, self.cache / "XAUUSD_ASK", inizio=date(2008, 1, 1), fine=date(2010, 2, 28))
-        self.sigilla(["V-T", "V-S"])
-        self.sviluppo_finto(V_T=True, V_S=False)
-        self.periodi(verifica=(date(2008, 1, 1), date(2010, 2, 28)))
-        self.assertEqual(self.verifica("V-T"), 0)
-        riga = [r for r in self.uscita.read_text(encoding="utf-8").splitlines() if "quota di anni solari" in r][0]
-        self.assertEqual(riga.split("|")[3].strip(), "0.3333")
 
     def test_p6_dati_mancanti_non_bruciano_la_verifica(self):
         self.sigilla(["V-T", "V-S"])
@@ -389,18 +319,6 @@ class TestRevisioneR7Gemini(BaseRiga):
         self.assertAlmostEqual(x["casuale"]["r_strategia"], 0.02)
         self.assertAlmostEqual(x["casuale"]["copertura"], 100 / 150)
         self.assertFalse(x["casuale"]["sopra"])
-
-    def test_mg01_la_verifica_usa_gli_sharpe_delle_altre_promosse(self):
-        import random
-        rng = random.Random(5)
-        d = [date(2005, 1, 3) + timedelta(days=k) for k in range(1000)]
-        sim = SimFinto({"V-T": [tr(x, rng.gauss(0.2, 1.0)) for x in d], "V-S": [tr(x, rng.gauss(-0.3, 1.0)) for x in d]})
-        r = E.esegui_verifica({}, {}, ["V-T", "V-S"], 2, sim=sim, anni=range(2005, 2008))
-        vs = sim.metriche(sim.strategia["V-S"])["sharpe"]
-        atteso = K.verifica(sim.strategia["V-T"], 2, anni=range(2005, 2008), sharpe_prove=[vs])["dsr"]
-        self.assertEqual(r["varianti"]["V-T"]["verifica"]["dsr"], atteso)
-        self.assertNotEqual(atteso, K.verifica(sim.strategia["V-T"], 2, anni=range(2005, 2008))["dsr"])
-
 
 class TestRevisioneR11Gemini(BaseRiga):
     """Rilievi R11-S1…S7 e mutanti MR01–MR07 del secondo attacco di Gemini (G-20261115-R11, ramo rev/gemini-r11),
@@ -487,19 +405,6 @@ class TestRevisioneR11Gemini(BaseRiga):
         self.assertEqual(self.lancia("--modalita", "verifica", "--varianti", "V-T"), 2)
         self.assertEqual(self.esecuzioni("verifica"), [])
 
-    def test_s4_la_verifica_registra_l_esito(self):
-        self.cache_di(date(2010, 1, 1), 59)
-        self.sigilla()
-        self.sviluppo_finto(V_T=True, V_S=False)
-        self.assertEqual(self.lancia("--modalita", "verifica", "--varianti", "V-T"), 0)
-        esito = self.esecuzioni("esito")
-        self.assertEqual(len(esito), 1)
-        for chiave in ("variante", "promossa", "dsr", "r_medio", "quota_anni", "rapporto_sha256"):
-            self.assertIn(chiave, esito[0])
-        import hashlib
-        self.assertEqual(esito[0]["rapporto_sha256"], hashlib.sha256(self.uscita.read_bytes()).hexdigest())
-        self.assertEqual(self.esecuzioni("verifica")[0]["cache"], str(self.cache.resolve()))
-
     def test_s5_copertura_minima_dei_confronti(self):
         """350 giorni della strategia, benchmark e casuale solo su 20 (5,7%): criteri 4 e 5 non passano."""
         d = [date(2025, 1, 1) + timedelta(days=k) for k in range(350)]
@@ -518,22 +423,6 @@ class TestRevisioneR11Gemini(BaseRiga):
         self.sviluppo_finto(V_T=True, V_S=False, cache=self.dir / "altra_cache")
         self.assertEqual(self.lancia("--modalita", "verifica", "--varianti", "V-T"), 2)
         self.assertEqual(self.esecuzioni("verifica"), [])
-
-    def test_s6_anni_obbligatori_nella_funzione(self):
-        with self.assertRaises(TypeError):
-            E.esegui_verifica({}, {}, ["V-T"], 2)
-
-    def test_mr03_mr04_ipotesi_diverse_nello_stesso_registro(self):
-        self.cache_di(date(2010, 1, 1), 59)
-        altra = self.dir / "H-999.md"
-        altra.write_text("# H-999\n", encoding="utf-8")
-        self.sigilla()
-        self.sigilla(ipotesi="H-999", scheda=altra)
-        self.sviluppo_finto(ipotesi="H-999", V_T=True)                           # promossa in UN'ALTRA ipotesi
-        self.assertEqual(self.lancia("--modalita", "verifica", "--varianti", "V-T"), 2)     # MR03
-        S.registra_esecuzione(self.registro, "H-999", {"ruolo": "verifica", "variante": "V-T"}, ORA)
-        self.sviluppo_finto(V_T=True, V_S=False)
-        self.assertEqual(self.lancia("--modalita", "verifica", "--varianti", "V-T"), 0)     # MR04
 
     def test_codice_sigillato(self):
         """Il sigillo registra l'impronta del codice che esegue la scheda: se il codice cambia, niente esecuzioni."""
@@ -653,18 +542,6 @@ class TestRigaDiComandoR12bis(BaseRiga):
                          "--rapporto", str(self.uscita), "--ora", "ieri sera", "--modalita", "sviluppo"])
         self.assertEqual(rc, 2)
         self.assertEqual(self.esecuzioni("sviluppo"), [])
-
-    def test_verifica_rifiutata_se_i_dati_dello_sviluppo_sono_cambiati(self):
-        self.cache_di(date(2010, 1, 1), 59)
-        self.cache_di(date(2024, 1, 1), 60)
-        self.sigilla()
-        self.sviluppo_finto(V_T=True, V_S=True)
-        f = self.cache / "XAUUSD" / "2024-01-10.bi5"
-        f.write_bytes(f.read_bytes()[:-1] + bytes([f.read_bytes()[-1] ^ 1]))      # un byte cambiato nello sviluppo
-        rc, err = self.lancia_errore("--modalita", "verifica", "--varianti", "V-T,V-S")
-        self.assertEqual(rc, 2)
-        self.assertIn("sviluppo", err)
-        self.assertEqual(self.esecuzioni("verifica"), [])
 
     def test_ancora_git_attiva_rifiuta_un_registro_fuori_dal_repository(self):
         from unittest import mock
@@ -852,34 +729,24 @@ class TestVerificaUnaVoltaNellaStoria(BaseRiga):
         bis = self.repo / "registro_bis.json"
         canonico, self.registro = self.registro, bis
         self.prepara()
-        rc, err = self.lancia_errore("--modalita", "verifica", "--varianti", "V-T,V-S")
+        rc, err = self.lancia_errore("--modalita", "sviluppo")                 # D-51: protezione comune, sullo sviluppo
         self.assertEqual(rc, 2, err)
         self.assertIn("canonico", err)
-
-    def test_verifica_gia_fatta_su_un_altro_ramo_rifiutata(self):
-        prima = self.prepara()
-        self.assertEqual(self.lancia("--modalita", "verifica", "--varianti", "V-T,V-S"), 0)
-        self.spingi("verifica")
-        self.ramo_nuovo("rifaccio", prima)
-        self.assertEqual(self.esecuzioni("verifica"), [])                      # su questo ramo non c'è
-        rc, err = self.lancia_errore("--modalita", "verifica", "--varianti", "V-T,V-S")
-        self.assertEqual(rc, 2, err)
-        self.assertIn("storia", err)
 
     def test_registro_canonico_non_committato_rifiutato(self):
         """Copertura (N09, staccato da #86): con il registro canonico, l'ancora deve ancora pretendere che sia
         identico a quello committato e spinto."""
         self.prepara()
         S.sigilla(self.registro, "H-001", self.scheda, ["X0"], ORA)             # modifica non committata
-        rc, err = self.lancia_errore("--modalita", "verifica", "--varianti", "V-T,V-S")
+        rc, err = self.lancia_errore("--modalita", "sviluppo")                 # D-51: protezione comune
         self.assertEqual(rc, 2, err)
         self.assertIn("committ", err)
 
     def test_storia_parziale_rifiutata(self):
         """R14-03 (Gemini): in un clone parziale (--depth 1) la storia non c'è e la verifica si rifaceva."""
         self.prepara()
-        self.assertEqual(self.lancia("--modalita", "verifica", "--varianti", "V-T,V-S"), 0)
-        self.spingi("verifica")
+        S.sigilla(self.registro, "H-001", self.scheda, ["X0"], ORA)             # D-51: seconda versione del registro
+        self.spingi("seconda versione")
         parziale = self.dir / "parziale"
         _sp.run(["git", "clone", "-q", "--depth", "1", "--branch", "principale", f"file://{self.dir / 'remoto.git'}",
                  str(parziale)],
@@ -903,8 +770,8 @@ class TestVerificaUnaVoltaNellaStoria(BaseRiga):
         """#125 (Gemini R18-01): con `--filter=blob:none` e la rete assente `git show` falliva e il commit veniva
         saltato in silenzio: 0 versioni lette, verifica già fatta non vista."""
         self.prepara()
-        self.assertEqual(self.lancia("--modalita", "verifica", "--varianti", "V-T,V-S"), 0)
-        self.spingi("verifica")
+        S.sigilla(self.registro, "H-001", self.scheda, ["X0"], ORA)             # D-51: seconda versione del registro
+        self.spingi("seconda versione")
         copia = self.copia_senza_blob()
         with self.assertRaises(ValueError) as e:
             S.versioni_nella_storia(copia, E.REL_REGISTRO)
@@ -935,29 +802,6 @@ class TestVerificaUnaVoltaNellaStoria(BaseRiga):
         versioni = S.versioni_nella_storia(self.repo, E.REL_REGISTRO)
         self.assertEqual(len(versioni), 2)
 
-    def test_ramo_cancellato_e_riferimento_remoto_riscritto_visti_nel_reflog(self):
-        """R14-03 (Gemini): dopo `branch -D` e `update-ref` del riferimento remoto, la verifica restava solo nel
-        reflog, che `rev-list --all` non legge."""
-        prima = self.prepara()
-        self.assertEqual(self.lancia("--modalita", "verifica", "--varianti", "V-T,V-S"), 0)
-        self.spingi("verifica")
-        _sp.run(self.g + ["checkout", "-q", "-b", "rifaccio", prima], check=True)
-        _sp.run(self.g + ["branch", "-q", "-D", "principale"], check=True)
-        _sp.run(self.g + ["update-ref", "refs/remotes/origin/principale", prima], check=True)
-        _sp.run(self.g + ["push", "-q", "-u", "origin", "rifaccio"], check=True, capture_output=True)
-        rc, err = self.lancia_errore("--modalita", "verifica", "--varianti", "V-T,V-S")
-        self.assertEqual(rc, 2, err)
-        self.assertIn("storia", err)
-
-    def test_n_non_scende_su_un_ramo_piu_vecchio(self):
-        prima = self.prepara()                                                  # N = 2
-        S.sigilla(self.registro, "H-001", self.scheda, [f"X{k}" for k in range(8)], ORA)
-        self.spingi("altre 8 prove")                                            # N = 10
-        self.ramo_nuovo("vecchio", prima)
-        self.assertEqual(self.lancia("--modalita", "verifica", "--varianti", "V-T,V-S"), 0)
-        self.assertEqual({e["n_prove"] for e in self.esecuzioni("verifica")}, {10})
-
-
 class TestEsitoDopoIlControlloFinale(BaseRiga):
     """#91: l'esito (verifica) e gli esiti dello screening (sviluppo) si scrivono DOPO il secondo controllo
     dell'ambiente: se quel controllo ferma, nel registro non resta un risultato contaminato."""
@@ -977,16 +821,6 @@ class TestEsitoDopoIlControlloFinale(BaseRiga):
         cerotto = mock.patch.object(sys, "_tb_avvio_controllato", True, create=True)       # #95: come dal lanciatore
         cerotto.start()
         self.addCleanup(cerotto.stop)
-
-    def test_verifica_senza_esito(self):
-        self.cache_di(date(2024, 1, 1), 60)
-        self.cache_di(date(2010, 1, 1), 59)
-        self.sigilla()
-        self.sviluppo_finto(V_T=True, V_S=True)
-        self.ambiente_che_cade_alla_fine()
-        self.assertEqual(self.lancia("--modalita", "verifica", "--varianti", "V-T,V-S"), 2)
-        self.assertEqual(len(self.esecuzioni("verifica")), 2)                  # la verifica resta bruciata
-        self.assertEqual(self.esecuzioni("esito"), [])
 
     def test_sviluppo_senza_esiti(self):
         self.cache_di(date(2024, 1, 1), 60)
@@ -1197,14 +1031,12 @@ class TestPortabilitaPythonApple(unittest.TestCase):
 
 
 class TestRapportoPrimaDegliEsiti(BaseRiga):
-    def test_rapporto_non_scrivibile_niente_esito(self):
-        """R14-09 (Gemini): gli esiti si scrivevano prima del rapporto; se il rapporto non si scrive, nel registro
-        restava un esito senza rapporto."""
+    def test_rapporto_non_scrivibile_niente_esito_dello_sviluppo(self):
+        """R14-09 (Gemini), portato sullo sviluppo con D-51: se il rapporto non si scrive, nel registro non resta
+        nessun esito senza rapporto."""
         from unittest import mock
         self.cache_di(date(2024, 1, 1), 60)
-        self.cache_di(date(2010, 1, 1), 59)
         self.sigilla()
-        self.sviluppo_finto(V_T=True, V_S=True)
         originale = Path.write_text
 
         def scrivi(percorso, *a, **k):
@@ -1212,9 +1044,9 @@ class TestRapportoPrimaDegliEsiti(BaseRiga):
                 raise OSError("disco pieno (simulato)")
             return originale(percorso, *a, **k)
         with mock.patch.object(Path, "write_text", scrivi):
-            self.assertEqual(self.lancia("--modalita", "verifica", "--varianti", "V-T,V-S"), 2)
-        self.assertEqual(len(self.esecuzioni("verifica")), 2)                  # bruciata
-        self.assertEqual(self.esecuzioni("esito"), [])
+            self.assertEqual(self.lancia("--modalita", "sviluppo"), 2)
+        self.assertEqual(self.esecuzioni("sviluppo"), [])
+        self.assertEqual(self.esecuzioni("robustezza"), [])
 
 
 class TestSoloDalLanciatore(BaseRiga):
