@@ -1,0 +1,8 @@
+M00 copia non mutata: suite verde
+VIVO   VD13 coppia senza controllo di lunghezza (atteso EQUIVALENTE: l'assegnazione s, k = c solleva comunque ValueError)
+
+117/118 mutanti uccisi (3.13.18); equivalenti dichiarati vivi: 1
+M00 copia non mutata: suite verde
+VIVO   VD13 coppia senza controllo di lunghezza (atteso EQUIVALENTE: l'assegnazione s, k = c solleva comunque ValueError)
+
+117/118 mutanti uccisi (3.9.25); equivalenti dichiarati vivi: 1

@@ -1,0 +1,16 @@
+Python 3.13.18
+Precondizioni: cartelle BID e ASK distinte, ASK diverso dal BID, sigillo valido.
+A1 sviluppo 15/11/2023 (valido): ACCETTATO · minuti BID 1, ASK 1
+A2 sviluppo 14/11/2023 (solo l'inizio cambiato): RIFIUTATO · ValueError: sviluppo dal 2023-11-15 in poi: 2023-11-14 è nel periodo sigillato (DA-26)
+B1 verifica 31/10/2023 (valido): ACCETTATO · minuti BID 1, ASK 1
+B2 verifica fino al 01/11/2023 (solo la fine cambiata): RIFIUTATO · ValueError: la verifica finisce il 2023-10-31 (poi embargo e sviluppo): 2023-11-01 è oltre
+C1 sviluppo 02/01/2024 (valido): ACCETTATO · minuti BID 1, ASK 1
+C2 sviluppo 03/01 → 02/01/2024 (solo l'ordine rovesciato): RIFIUTATO · ValueError: periodo vuoto: 2024-01-03 → 2024-01-02
+Python 3.9.25
+Precondizioni: cartelle BID e ASK distinte, ASK diverso dal BID, sigillo valido.
+A1 sviluppo 15/11/2023 (valido): ACCETTATO · minuti BID 1, ASK 1
+A2 sviluppo 14/11/2023 (solo l'inizio cambiato): RIFIUTATO · ValueError: sviluppo dal 2023-11-15 in poi: 2023-11-14 è nel periodo sigillato (DA-26)
+B1 verifica 31/10/2023 (valido): ACCETTATO · minuti BID 1, ASK 1
+B2 verifica fino al 01/11/2023 (solo la fine cambiata): RIFIUTATO · ValueError: la verifica finisce il 2023-10-31 (poi embargo e sviluppo): 2023-11-01 è oltre
+C1 sviluppo 02/01/2024 (valido): ACCETTATO · minuti BID 1, ASK 1
+C2 sviluppo 03/01 → 02/01/2024 (solo l'ordine rovesciato): RIFIUTATO · ValueError: periodo vuoto: 2024-01-03 → 2024-01-02

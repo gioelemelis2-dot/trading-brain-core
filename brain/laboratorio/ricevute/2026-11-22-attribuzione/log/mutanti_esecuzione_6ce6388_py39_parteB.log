@@ -1,0 +1,148 @@
+M00 copia non mutata: suite verde
+UCCISO Q01 copia parziale non controllata (#125)
+UCCISO Q02 versione illeggibile saltata (#125)
+UCCISO Q03 commit senza il file trattato come illeggibile (#125)
+UCCISO Q04 configurazione della copia parziale non letta (#125)
+UCCISO Q05 giorno collegato accettato (#126)
+UCCISO Q06 cartella collegata accettata (#126)
+UCCISO Q07 stessa cartella accettata (#126)
+UCCISO Q08 ASK identico al BID non controllato (#126)
+UCCISO Q09 basta un minuto uguale per scartare il giorno (#126)
+UCCISO Q10 quota non finita accettata (#128)
+UCCISO Q11 quota di tipo qualsiasi accettata (#128)
+UCCISO PR28 protocollo: cella 10 tolta dalla potenza (M-R17-02 di Gemini)
+UCCISO PR29 protocollo: potenza zero accettata in fase 2 (M-R17-03 di Gemini)
+UCCISO IX19 intersezione: vigilie nei percentili annuali (M-R16-01 di Gemini)
+UCCISO CO12 collaudo: media del bootstrap divisa per n (M-R16-03 di Gemini)
+UCCISO PI26 pilota: distorsione senza - μ (M-R16-06 di Gemini)
+UCCISO PI21 pilota: ampiezza nulla accettata (#112)
+UCCISO PI22 pilota: limiti non finiti accettati (#112)
+UCCISO PI23 pilota: HAC fuori dal contratto
+UCCISO PI24 pilota: limiti grezzi non salvati per l'errore
+UCCISO PI25 pilota: file dei limiti senza versione
+UCCISO PR01 protocollo: Clopper–Pearson con la disuguaglianza rovesciata
+UCCISO PR02 protocollo: soglia k con un evento in più
+UCCISO PR03 protocollo: uguaglianza alla soglia come promozione
+UCCISO PR04 protocollo: uguaglianza alla soglia come bocciatura
+UCCISO PR05 protocollo: margine non simmetrico
+UCCISO PR06 protocollo: errori fuori da k⁺
+UCCISO PR07 protocollo: errori fuori da k⁻
+UCCISO PR08 protocollo: celle sotto soglia non controllate
+UCCISO PR09 protocollo: falsa bocciatura non controllata
+UCCISO PR10 protocollo: cella 11 senza veto
+UCCISO PR11 protocollo: potenza non richiesta
+UCCISO PR12 protocollo: completezza non controllata
+UCCISO PR13 protocollo: lunghezza delle liste non controllata
+UCCISO PR14 protocollo: intervalli del file non controllati
+UCCISO PR15 protocollo: classifica per somma prima del minimo
+UCCISO PR16 protocollo: margine più grande a parità
+UCCISO PR17 protocollo: bootstrap prima di HAC a parità
+UCCISO PR18 protocollo: fase 2 senza 12.000 repliche
+UCCISO PR19 protocollo: diagnostica ignorata nel verdetto
+UCCISO PR20 protocollo: banda dei flussi allargata
+UCCISO PR21 protocollo: ritardo non applicato
+UCCISO PR22 protocollo: confronti di gruppo B solo in fase 1
+UCCISO PR23 protocollo: semi duplicati non visti
+UCCISO PR24 protocollo: fase del file non controllata
+UCCISO PR25 protocollo: p-value senza il fattore 2
+UCCISO PR26 protocollo: δ della fase 2 come la fase 1
+UCCISO PR27 protocollo: inventario senza la componente
+UCCISO PI01 pilota: componente fuori dal seme
+UCCISO PI02 pilota: AR(1) che parte da zero
+UCCISO PI03 pilota: innovazioni AR(1) non scalate
+UCCISO PI04 pilota: probabilità di K = 0 sbagliata
+UCCISO PI05 pilota: conteggi senza componente comune
+UCCISO PI06 pilota: perdite rare col segno invertito
+UCCISO PI07 pilota: HAC senza pesi di Bartlett
+UCCISO PI08 pilota: HAC con un ritardo in meno
+UCCISO PI09 pilota: HAC con K medio non al quadrato
+UCCISO PI11 pilota: ritardi predefiniti sbagliati
+UCCISO PI12 pilota: bootstrap non circolare
+UCCISO PI13 pilota: ricampionamento con ΣK = 0 saltato
+UCCISO PI14 pilota: rango del quantile spostato
+UCCISO PI15 pilota: intervallo percentile al posto del basic
+UCCISO PI16 pilota: promozione con limite vicino alla soglia
+UCCISO PI17 pilota: copertura solo dal basso
+UCCISO PI18 pilota: bootstrap sul flusso dei dati
+UCCISO PI19 pilota: avviso del pilota ridotto tolto
+UCCISO PI20 pilota: z del 95% unilaterale
+UCCISO CO01 collaudo: F senza il peso (1 - k/n)
+UCCISO CO02 collaudo: AR(1) non stazionario
+UCCISO CO03 collaudo: innovazioni non scalate
+UCCISO CO04 collaudo: ingenuo con varianza su n
+UCCISO CO05 collaudo: HAC senza pesi di Bartlett
+UCCISO CO06 collaudo: HAC con un ritardo in meno
+UCCISO CO07 collaudo: bootstrap senza blocchi
+UCCISO CO08 collaudo: quantile del bootstrap spostato
+UCCISO CO09 collaudo: Clopper–Pearson su una coda intera
+UCCISO CO10 collaudo: promozione con limite uguale alla soglia
+UCCISO CO11 collaudo: avviso delle poche repliche tolto
+UCCISO IX17 intersezione: estremi incrociati non contati (#108)
+UCCISO IX18 intersezione: estremi incrociati non sommati per anno (#108)
+UCCISO IX01 intersezione: ASK sotto BID valido
+UCCISO IX02 intersezione: solo la chiusura confrontata
+UCCISO IX03 intersezione: buco non azzerato
+UCCISO IX04 intersezione: buco dai bordi escluso
+UCCISO IX05 intersezione: solo BID come comune
+UCCISO IX06 intersezione: vigilie piene
+UCCISO IX07 intersezione: chiusure note contate
+UCCISO IX08 intersezione: fine settimana contati
+UCCISO IX09 intersezione: file vuoto come mancante
+UCCISO IX10 intersezione: file rotto fa crollare
+UCCISO IX11 intersezione: soglia per terzo ignorata
+UCCISO IX12 intersezione: buco massimo ignorato
+UCCISO IX13 intersezione: quota della seduta ignorata
+UCCISO IX14 intersezione: prezzi nel rendiconto
+UCCISO IX15 intersezione: ASK mancante non controllato
+UCCISO IX16 intersezione: stati non contati per anno
+UCCISO P16 potenza: sigma non controllata sotto la soglia (R14-06)
+UCCISO P01 potenza: limite senza 1,96
+UCCISO P02 potenza: stima con 1,96
+UCCISO P03 potenza: radice di n mancante
+UCCISO P04 potenza: sigma degli esiti sbagliata
+UCCISO P05 potenza: simulazione con la varianza vera
+UCCISO P06 potenza: senza ricerca del minimo
+UCCISO P07 potenza: None non restituito
+UCCISO P08 potenza: regola sconosciuta accettata
+UCCISO P14 potenza: regola non controllata con mu sotto soglia (#94)
+UCCISO P15 potenza: dominio di simula non controllato (#94)
+UCCISO P09 potenza: varianza divisa per n (MPS04 di Gemini)
+UCCISO P10 potenza: media fuori dominio
+UCCISO P11 potenza: sigma o n fuori dominio
+UCCISO P12 potenza: potenza fuori dominio
+UCCISO P13 potenza: simulazione con un trade
+UCCISO C01 sviluppo nel periodo sigillato
+UCCISO C02 dati senza sigillo, in sviluppo e in verifica (difetto #41)
+UCCISO C03 verifica senza il 31/10 compreso
+UCCISO C09 embargo aperto (P7 di Gemini)
+UCCISO C04 high e low scambiati
+UCCISO C05 giorni mancanti non contati
+UCCISO C06 ASK letti dalla cartella BID
+UCCISO C07 modalità non controllata
+UCCISO C08 periodo rovesciato ammesso
+UCCISO MG01 V senza gli Sharpe delle altre promosse (Gemini)
+UCCISO MG03 R medio della verifica con >= (Gemini)
+UCCISO MG04 drawdown della verifica con <= (Gemini)
+UCCISO MG06 varianza nulla 1/T (Gemini)
+UCCISO MG07 ultimi 5 anni con >= (Gemini)
+UCCISO R01 DSR anche con 2 trade (R11-S1 di Gemini)
+UCCISO R02 giorni feriali vuoti ammessi (R11-S2)
+UCCISO R03 feriali vuoti non contati (R11-S2)
+UCCISO R04 chiusure note ignorate (R11-S2)
+UCCISO R05 rapporto non controllato prima di registrare (R11-S4)
+UCCISO R06 esito della verifica non registrato (R11-S4)
+UCCISO R07 copertura del casuale ignorata (R11-S5)
+UCCISO R08 copertura dei benchmark ignorata (R11-S5)
+UCCISO R09 cache della verifica diversa da quella dello sviluppo (R11-S6)
+UCCISO R10 variante fuori dal sigillo (R11-S7)
+UCCISO R11 codice non controllato
+UCCISO R12 ripetizioni e seme non registrati (R11-S3)
+UCCISO R13 impronta dei dati vuota (R11-S6)
+UCCISO MR01 ASK mancanti non controllati (Gemini R11)
+UCCISO MR02 zero minuti ASK ammessi (Gemini R11)
+UCCISO MR03 sviluppo di un'altra ipotesi (Gemini R11)
+UCCISO MR04 verifica di un'altra ipotesi (Gemini R11)
+UCCISO MR06 DSR con > (Gemini R11)
+UCCISO MR07 promossa sempre vera nel registro (Gemini R11)
+
+145/145 mutanti uccisi (3.9.25)

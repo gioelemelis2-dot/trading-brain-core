@@ -1,0 +1,24 @@
+M00 copia non mutata: suite verde
+UCCISO C01 sviluppo nel periodo sigillato
+UCCISO C02 dati senza sigillo, in sviluppo e in verifica (difetto #41)
+UCCISO C03 verifica senza il 31/10 compreso
+UCCISO C09 embargo aperto (P7 di Gemini)
+UCCISO C04 high e low scambiati
+UCCISO C05 giorni mancanti non contati
+UCCISO C06 ASK letti dalla cartella BID
+UCCISO C07 modalità non controllata
+UCCISO C08 periodo rovesciato ammesso
+
+9/9 mutanti uccisi (3.13.18)
+M00 copia non mutata: suite verde
+UCCISO C01 sviluppo nel periodo sigillato
+UCCISO C02 dati senza sigillo, in sviluppo e in verifica (difetto #41)
+UCCISO C03 verifica senza il 31/10 compreso
+UCCISO C09 embargo aperto (P7 di Gemini)
+UCCISO C04 high e low scambiati
+UCCISO C05 giorni mancanti non contati
+UCCISO C06 ASK letti dalla cartella BID
+UCCISO C07 modalità non controllata
+UCCISO C08 periodo rovesciato ammesso
+
+9/9 mutanti uccisi (3.9.25)
