@@ -20,6 +20,7 @@ Il manifesto legge solo i registri (nomi, date, impronte), mai i file dei dati n
 """
 import csv
 import hashlib
+import io
 import json
 from datetime import date, timedelta
 from pathlib import Path
@@ -50,9 +51,8 @@ def _lato_dell_indirizzo(url: str) -> Optional[str]:
     return None
 
 
-def _righe(registro: Path) -> List[dict]:
-    with open(registro, newline="", encoding="utf-8") as f:
-        return list(csv.DictReader(f))
+def _righe(corpo: bytes) -> List[dict]:
+    return list(csv.DictReader(io.StringIO(corpo.decode("utf-8"), newline="")))
 
 
 def impronta_elenco(elenco: list) -> str:
@@ -71,8 +71,9 @@ def manifesto(cache: Path, simbolo: str, inizio: date, fine: date, accessorie: i
         reg = Path(cache) / f"registro_scaricamento_{simbolo}_{lato}.csv"
         if not reg.is_file() or reg.is_symlink():
             raise ValueError(f"registro dello scaricamento mancante o non regolare: {reg.name}")
-        registri.append([reg.name, hashlib.sha256(reg.read_bytes()).hexdigest()])
-        for r in _righe(reg):
+        corpo = reg.read_bytes()                     # una sola lettura: l'impronta è di ciò che si analizza
+        registri.append([reg.name, hashlib.sha256(corpo).hexdigest()])
+        for r in _righe(corpo):
             if r.get("esito") not in VALIDI:
                 continue
             giorno, url = r.get("giorno") or "", r.get("url") or ""
