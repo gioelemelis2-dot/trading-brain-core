@@ -727,5 +727,59 @@ class TestSommeEsatte124(unittest.TestCase):
         self.assertFalse(V.screening(costanti(0.6, 780), 9, 0.9)["L_vicino_a_zero"])
 
 
+class TestConfrontiEsatti124(unittest.TestCase):
+    """#124, seconda parte (Gemini, verifica del 22/11, V124-01..06 e M-124-01..04): anche con la somma esatta, il
+    quoziente arrotondato può invertire una decisione a filo. Le decisioni si prendono in frazioni esatte; le medie
+    riportate sono il quoziente esatto arrotondato una volta sola."""
+
+    def test_d1_screening_media_appena_sopra_la_soglia(self):
+        v = [0.25] * 299 + [0.25 + 2 ** -48]                            # media esatta 0,25 + 2^-48/300
+        with mock.patch.object(P, "intervallo_bootstrap", return_value=(0.1, 0.4)):
+            s = V.screening([(x, 1) for x in v], 9, 0.9)
+        self.assertNotIn("media 0.2500 non > +0,25 R", s["cause"])
+        self.assertTrue(s["ammessa"])
+
+    def test_d2_veto_media_appena_sotto_la_soglia(self):
+        w = [-0.25] * 249 + [-0.25 - 2 ** -49]
+        self.assertEqual(V.veto_blocchi([(x, 1) for x in w], -0.25, 1)["esito"], "fallito")
+
+    def test_d3_serie_costante_uguale_alla_soglia(self):
+        for x, k in ((-0.4, 3), (-0.3, 7), (0.1, 3)):
+            self.assertEqual(V.veto_blocchi([(x, 1)] * k, x, 1, ampiezza=k)["esito"], "superato", (x, k))
+
+    def test_d4_media_riportata_arrotondata_una_volta(self):
+        from fractions import Fraction
+        v = [0.25] * 999 + [0.25 + 2 ** -46]
+        atteso = float(sum(Fraction(x) for x in v) / 1000)
+        self.assertEqual(V.verdetto([(x, 1) for x in v], 5)["media"], atteso)
+        with mock.patch.object(P, "intervallo_bootstrap", return_value=(0.1, 0.4)):
+            self.assertEqual(V.screening([(x, 1) for x in v], 9, 0.9)["media"], atteso)
+        self.assertEqual(V.veto_blocchi([(x, 1) for x in v], 0.0, 1, ampiezza=1000)["medie"], [atteso])
+
+    def test_d6_finitezza_indipendente_dall_ordine(self):
+        # il pilota congelato somma in qualunque ordine (ricampionamenti): conta la somma dei valori assoluti
+        for ordine in ([1.5e308, 1.5e308, -1.5e308], [1.5e308, -1.5e308, 1.5e308], [-1.5e308, 1.5e308, 1.5e308]):
+            with self.assertRaisesRegex(ValueError, "non è un numero finito"):
+                V.controlla_coppie([(x, 1) for x in ordine])
+        V.controlla_coppie([(1e307, 1)] * 3)                             # 3e307: finito in ogni ordine
+
+    def test_banda_di_vicinanza_a_zero_dello_screening(self):           # M-124-01, M-124-02
+        coppie = costanti(0.6, 780)
+        for L, atteso in ((5e-10, True), (-5e-10, True), (1e-9, False), (-1e-9, False), (2e-9, False)):
+            with mock.patch.object(P, "intervallo_bootstrap", return_value=(L, 0.9)):
+                self.assertEqual(V.screening(coppie, 9, 0.9)["L_vicino_a_zero"], atteso, L)
+
+    def test_vicinanza_falsa_senza_trade_o_con_intervallo_invalido(self):   # M-124-03
+        self.assertFalse(V.screening([(0.0, 0)] * 10, 9, 0.9)["L_vicino_a_zero"])
+        with mock.patch.object(P, "intervallo_bootstrap", return_value=(0.0, 0.0)):
+            self.assertFalse(V.screening(costanti(0.6, 780), 9, 0.9)["L_vicino_a_zero"])
+
+    def test_riga_del_rapporto_completa(self):                         # M-124-04
+        with mock.patch.object(P, "intervallo_bootstrap", return_value=(4e-16, 0.9)):
+            s = V.screening(costanti(0.6, 780), 9, 0.9)
+        self.assertIn("- limite inferiore a meno di 1e-9 R [REGOLA] da 0 (non cambia l'esito; arrotondamento "
+                      "possibile, #124)", V.rapporto_screening(s))
+
+
 if __name__ == "__main__":
     unittest.main()
