@@ -488,6 +488,19 @@ class TestAncoraEStoria(Percorso):
             self.esegui(scheda)
         self.assertEqual(self.chiamate, [])
 
+    def test_aperture_perse_rispetto_a_un_altra_versione(self):
+        # un'ALTRA prenotazione consumata altrove: su questo ramo j è più basso, quindi la quota sarebbe sbagliata
+        scheda = self.scheda_nel_repo()
+        RV.prenota(self.riserva, "P2", "H-ALTRA", date(2015, 1, 5), date(2015, 3, 31), "d" * 64, ORA)
+        prima = self.spingi("due prenotazioni")
+        RV.autorizza(self.riserva, "P2", 1, "h" * 64, ORA)
+        self.spingi("P2 autorizzata")
+        self.sp.run(self.g + ["checkout", "-q", "-b", "rifaccio", prima], check=True)
+        self.sp.run(self.g + ["push", "-q", "-u", "origin", "rifaccio"], check=True, capture_output=True)
+        with self.assertRaisesRegex(ValueError, "j non scende"):
+            self.esegui(scheda)
+        self.assertEqual(self.chiamate, [])
+
     def test_n_non_scende(self):
         scheda = self.scheda_nel_repo()
         prima = self.spingi("sigillo e prenotazione")                     # N = 1
