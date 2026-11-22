@@ -233,6 +233,113 @@ class TestIntegrita(Base):
         RV.stato(self.reg)
 
 
+# --- Schema riserva/2 (D-50, DGS-14 Q1-Q2, DGS-15 punto 4), 22/11/2026: test scritti PRIMA del codice ---
+SCHEDA = "ab" * 32
+
+
+class TestRiserva2(Base):
+    def test_schema_2_e_registri_vecchi_rifiutati(self):
+        self.assertEqual(json.loads(self.reg.read_text(encoding="utf-8"))["schema"], "riserva/2")
+        dati = json.loads(self.reg.read_text(encoding="utf-8"))
+        dati["schema"] = "riserva/1"
+        self.reg.write_text(json.dumps(dati), encoding="utf-8")
+        with self.assertRaisesRegex(ValueError, "riserva/2"):
+            RV.stato(self.reg)
+
+    def test_quota_prevista_non_scrive(self):
+        self.prenota("A", D(2005, 1, 1), D(2005, 1, 31))
+        prima = self.reg.read_bytes()
+        self.assertEqual(RV.quota_prevista(self.reg, 1), (1, 0.025))
+        self.assertEqual(RV.quota_prevista(self.reg, 2), (1, 0.0125))
+        self.assertEqual(self.reg.read_bytes(), prima)
+
+    def test_rifiuto_per_quota_durevole_senza_consumo(self):
+        self.prenota("A", D(2005, 1, 1), D(2005, 1, 31))
+        e = RV.rifiuta(self.reg, "A", 2, 0.025, "quota 1,25% non collaudata (D-31)", "prima dell'autorizzazione",
+                       SCHEDA, ORA)
+        self.assertEqual((e["tipo"], e["j_previsto"], e["m"], e["quota_calcolata"], e["quota_collaudata"]),
+                         ("rifiuto", 1, 2, 0.0125, 0.025))
+        s = RV.stato(self.reg)                                          # riletto dal file: durevole
+        self.assertEqual(s["giorni"]["prenotato"] + s["giorni"]["consumato"], 0)
+        self.assertEqual((s["aperture"], s["alfa_speso"], s["prenotazioni_attive"]), ([], 0, []))
+        self.assertEqual([(r["id"], r["j_previsto"], r["motivo"]) for r in s["rifiuti"]],
+                         [("A", 1, "quota 1,25% non collaudata (D-31)")])
+        with self.assertRaisesRegex(ValueError, "rifiutat"):            # (b): la prenotazione è chiusa
+            RV.autorizza(self.reg, "A", 1, "h", ORA)
+        with self.assertRaisesRegex(ValueError, "già usata"):
+            self.prenota("A", D(2005, 1, 1), D(2005, 1, 31))
+        self.prenota("A2", D(2005, 1, 1), D(2005, 1, 31))              # le date sono di nuovo disponibili
+        self.assertEqual(RV.autorizza(self.reg, "A2", 1, "h", ORA)["j"], 1)   # j non è avanzato
+
+    def test_rifiuto_solo_su_prenotazione_aperta_e_completo(self):
+        with self.assertRaises(ValueError):
+            RV.rifiuta(self.reg, "X", 2, 0.025, "m", "f", SCHEDA, ORA)
+        self.prenota("A", D(2005, 1, 1), D(2005, 1, 31))
+        for args in ((2, 0.025, "", "f", SCHEDA), (2, 0.025, "m", "", SCHEDA), (2, 0.025, "m", "f", ""),
+                     (True, 0.025, "m", "f", SCHEDA), (0, 0.025, "m", "f", SCHEDA)):
+            with self.assertRaises(ValueError):
+                RV.rifiuta(self.reg, "A", *args, ORA)
+        RV.autorizza(self.reg, "A", 1, "h", ORA)
+        with self.assertRaises(ValueError):                             # dopo l'autorizzazione non si rifiuta
+            RV.rifiuta(self.reg, "A", 2, 0.025, "m", "f", SCHEDA, ORA)
+
+    def test_rifiuto_manomesso_rifiutato_alla_ricostruzione(self):
+        self.prenota("A", D(2005, 1, 1), D(2005, 1, 31))
+        RV.rifiuta(self.reg, "A", 2, 0.025, "m", "f", SCHEDA, ORA)
+        buono = self.reg.read_text(encoding="utf-8")
+        for campo, valore in (("j_previsto", 2), ("quota_calcolata", 0.025), ("motivo", ""), ("m", 1.0)):
+            dati = json.loads(buono)
+            dati["eventi"][-1][campo] = valore
+            self.reg.write_text(json.dumps(dati), encoding="utf-8")
+            with self.assertRaises(ValueError, msg=campo):
+                RV.stato(self.reg)
+
+    def test_autorizzazione_ricontrolla_la_quota_attesa(self):
+        self.prenota("A", D(2005, 1, 1), D(2005, 1, 31))
+        self.prenota("B", D(2005, 2, 1), D(2005, 2, 28))
+        RV.autorizza(self.reg, "A", 1, "h", ORA, quota_attesa=0.025)
+        prima = self.reg.read_bytes()
+        with self.assertRaisesRegex(ValueError, "quota"):              # B aveva controllato 2,5% prima di A
+            RV.autorizza(self.reg, "B", 1, "h", ORA, quota_attesa=0.025)
+        self.assertEqual(self.reg.read_bytes(), prima)                  # niente scritto, j resta 1
+        self.assertEqual(RV.stato(self.reg)["prenotazioni_attive"], ["B"])
+
+    def test_impegno_legato_all_impronta(self):
+        imp = {"scheda": SCHEDA, "codice": "c" * 64, "finestra": ["2005-01-01", "2005-01-31"],
+               "elenco": [["XAUUSD", "ASK", "2005-01-03", "d" * 64], ["XAUUSD", "BID", "2005-01-03", "e" * 64]]}
+        h = RV.impronta_impegno(imp)
+        self.assertEqual(h, RV.impronta_impegno(json.loads(json.dumps(imp))))
+        self.assertNotEqual(h, RV.impronta_impegno(dict(imp, codice="f" * 64)))
+        self.prenota("A", D(2005, 1, 1), D(2005, 1, 31))
+        with self.assertRaisesRegex(ValueError, "impegno"):
+            RV.autorizza(self.reg, "A", 1, "0" * 64, ORA, impegno=imp)
+        a = RV.autorizza(self.reg, "A", 1, h, ORA, impegno=imp)
+        self.assertEqual(a["impegno"], imp)
+        self.assertEqual(RV.autorizza(self.reg, "A", 1, h, ORA, impegno=imp), a)   # ripetizione tecnica
+        altro = dict(imp, finestra=["2005-01-01", "2005-01-30"])
+        with self.assertRaises(ValueError):
+            RV.autorizza(self.reg, "A", 1, RV.impronta_impegno(altro), ORA, impegno=altro)
+        dati = json.loads(self.reg.read_text(encoding="utf-8"))
+        dati["eventi"][-1]["impegno"]["codice"] = "f" * 64              # impegno ritoccato dopo
+        self.reg.write_text(json.dumps(dati), encoding="utf-8")
+        with self.assertRaisesRegex(ValueError, "impegno"):
+            RV.stato(self.reg)
+
+    def test_esito_con_il_record_del_verdetto(self):
+        self.prenota("A", D(2005, 1, 1), D(2005, 1, 31))
+        RV.autorizza(self.reg, "A", 1, "h", ORA)
+        rec = {"esito": "bocciata", "L": -0.1, "U": 0.05}
+        RV.rendiconta(self.reg, "A", "bocciata", ORA, record=rec)
+        self.assertEqual(RV.record_esito(self.reg, "A"), rec)
+        with self.assertRaises(ValueError):
+            RV.record_esito(self.reg, "B")
+        self.prenota("C", D(2005, 3, 1), D(2005, 3, 31))
+        RV.autorizza(self.reg, "C", 2, "h", ORA)
+        with self.assertRaisesRegex(ValueError, "esito"):
+            RV.rendiconta(self.reg, "C", "promossa", ORA, record={"esito": "bocciata"})   # record incoerente
+        self.assertIsNone(RV.record_esito(self.reg, "C"))               # autorizzata, esito non ancora scritto
+
+
 if __name__ == "__main__":
     unittest.main()
 
