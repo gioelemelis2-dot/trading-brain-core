@@ -163,8 +163,9 @@ def _registra_una_volta(registro: Path, ipotesi: str, voce: dict, ora: str) -> N
     gia = [e for e in S.leggi(registro)["esecuzioni"] if e["ipotesi"] == ipotesi and e["ruolo"] == voce["ruolo"]
            and e.get("variante") == voce["variante"]]
     if gia:
-        if any(e.get("impronta_impegno") != voce.get("impronta_impegno") for e in gia):
-            raise ValueError(f"{voce['ruolo']} di {ipotesi} già registrata con un altro impegno")
+        for chiave in ("impronta_impegno", "impronta_sviluppo"):             # PIANO-D51 §3.2: stessi dati
+            if any(e.get(chiave) != voce.get(chiave) for e in gia):
+                raise ValueError(f"{voce['ruolo']} di {ipotesi} già registrata con un altro {chiave.split('_')[1]}")
         return
     S.registra_esecuzioni(registro, ipotesi, [voce], ora)
 
@@ -219,14 +220,18 @@ def esegui(scheda: Path, registro: Path, riserva: Path, id_: str, cache: Path, c
         j, q = p["autorizzazione"]["j"], p["autorizzazione"]["alfa_j"]
     par = VARIANTI[c["variante"]]                                                         # 6
     sv = [date.fromisoformat(x) for x in c["sviluppo"]]
-    bid, ask, _ = leggi(cache_sviluppo, sv[0], sv[1], "sviluppo")
+    man_sv = MF.manifesto(cache_sviluppo, c["mercato"], sv[0], sv[1])                  # PIANO-D51 §3.2
+    if man_sv["anomalie"]:
+        raise ValueError(f"manifesto dello sviluppo con anomalie: {'; '.join(man_sv['anomalie'][:10])}")
+    bid, ask, _ = leggi(cache_sviluppo, sv[0], sv[1], "sviluppo", MF.attese(man_sv))   # byte verificati
     giorni_sv = sedute(sv[0] + timedelta(days=c["date_accessorie"]), sv[1])
     scr = V.screening(coppie(O.trade(O.prepara(bid, ask, par), par), giorni_sv), c["screening_seme"],
                       c["potenza_stimata"])
     if not scr["ammessa"]:
         raise ValueError(f"screening non superato: {'; '.join(scr['cause'])}")
     _registra_una_volta(registro, c["ipotesi"], {"ruolo": "sviluppo", "variante": c["variante"],
-                                                "screening": _json(scr)}, ora)
+                                                "screening": _json(scr),
+                                                "impronta_sviluppo": man_sv["impronta_elenco"]}, ora)
     man = MF.manifesto(cache, c["mercato"], lettura[0], lettura[1])                       # 7
     if man["anomalie"]:
         raise ValueError(f"manifesto con anomalie: {'; '.join(man['anomalie'][:10])}")
@@ -236,7 +241,9 @@ def esegui(scheda: Path, registro: Path, riserva: Path, id_: str, cache: Path, c
                "finestra": identita["finestra"], "registri": man["registri"], "elenco": man["elenco"],
                "impronta_elenco": man["impronta_elenco"], "n_globale": ctx["n_prove"], "quota": q, "j": j,
                "variante": c["variante"], "seme": c["seme"], "contratto": c,
-               "sedute": [g.isoformat() for g in giorni_verifica]}             # DGS-16: fissate prima di aprire
+               "sedute": [g.isoformat() for g in giorni_verifica],             # DGS-16: fissate prima di aprire
+               "sviluppo": {"finestra": c["sviluppo"], "registri": man_sv["registri"],
+                            "impronta_elenco": man_sv["impronta_elenco"]}}
     h = RV.impronta_impegno(impegno)
     try:
         RV.autorizza(riserva, id_, ctx["n_prove"], h, ora, c["m"], impegno=impegno, quota_attesa=q)

@@ -299,6 +299,16 @@ class TestRifiutiPrimaDellaLettura(Percorso):
         self.assertEqual((self.chiamate, self.riserva.read_bytes()), (["sviluppo"], prima))
         self.assertEqual(S.leggi(self.registro)["esecuzioni"], [])
 
+    def test_screening_gia_registrato_con_altri_dati_di_sviluppo(self):
+        # PIANO-D51 §3.2: uno screening registrato con un'altra impronta dello sviluppo non si sostituisce in silenzio
+        scheda = self.prepara()
+        S.registra_esecuzioni(self.registro, "H-T127", [{"ruolo": "sviluppo", "variante": "V-T",
+                                                         "impronta_sviluppo": "0" * 64}], ORA)
+        prima = self.riserva.read_bytes()
+        with self.assertRaisesRegex(ValueError, "già registrata con un altro sviluppo"):
+            self.esegui(scheda)
+        self.assertEqual(self.riserva.read_bytes(), prima)
+
     def test_registro_dello_scaricamento_dello_sviluppo_con_anomalie(self):
         scheda = self.prepara()
         reg = self.cache_sv / "registro_scaricamento_XAUUSD_BID.csv"
@@ -323,10 +333,10 @@ class TestRifiutiPrimaDellaLettura(Percorso):
     def test_screening_non_superato_ferma_prima_del_manifesto(self):
         scheda = self.prepara(potenza_stimata=0.4)
         prima = self.riserva.read_bytes()
-        with mock.patch.object(MF, "manifesto") as man:
+        with mock.patch.object(MF, "manifesto", wraps=MF.manifesto) as man:
             with self.assertRaisesRegex(ValueError, "screening non superato"):
                 self.esegui(scheda)
-        man.assert_not_called()
+        self.assertEqual([c.args[2] for c in man.call_args_list], [SVILUPPO[0]])   # solo il manifesto dello sviluppo
         self.assertEqual((self.chiamate, self.riserva.read_bytes()), (["sviluppo"], prima))
 
     def test_quota_non_collaudata_rifiuto_durevole_e_zero_letture(self):
