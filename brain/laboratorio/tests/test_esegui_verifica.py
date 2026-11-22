@@ -223,6 +223,20 @@ class TestRifiutiPrimaDellaLettura(Percorso):
             self.esegui(scheda, "P9")
         self.assertEqual(self.chiamate, [])
 
+    def test_giorno_omesso_nel_registro_dello_scaricamento(self):
+        scheda = self.prepara()
+        reg = self.cache / "registro_scaricamento_XAUUSD_ASK.csv"
+        originale = reg.read_bytes()
+        righe = originale.decode("utf-8").splitlines(keepends=True)
+        reg.write_text("".join(x for x in righe if not x.split(",")[1:2] == [INIZIO.isoformat()]), encoding="utf-8")
+        prima = self.riserva.read_bytes()
+        try:
+            with self.assertRaisesRegex(ValueError, f"manifesto con anomalie: omesso: XAUUSD ASK {INIZIO.isoformat()}"):
+                self.esegui(scheda)
+        finally:
+            reg.write_bytes(originale)
+        self.assertEqual((self.chiamate, self.riserva.read_bytes()), (["sviluppo"], prima))   # nessuna autorizzazione
+
     def test_finestra_diversa_da_1000_sedute(self):
         scheda = self.prepara(fine=FINE - timedelta(days=1))
         prima = self.riserva.read_bytes()
