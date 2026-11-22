@@ -142,6 +142,18 @@ class TestCorsaCompleta(Percorso):
         vinte = sum(1 for g, x in self.vere.items() if INIZIO <= g <= FINE and x)
         self.assertAlmostEqual(v["media"], (vinte * M.R_VINTA + (1000 - vinte) * M.R_PERSA) / 1000, places=6)
         self.assertEqual(rec["impronta_impegno"], RV.impronta_impegno(imp))
+        # DGS-16: l'elenco delle sedute è fissato nell'impegno PRIMA dell'autorizzazione (calendario di H-002: feriali
+        # senza le chiusure inglesi), e le coppie del record sono proprio quelle sedute, in ordine, comprese le
+        # sedute senza operazioni
+        attese = [g.isoformat() for g in M.sedute(INIZIO, FINE)]
+        self.assertEqual(imp["sedute"], attese)
+        self.assertEqual(len(attese), 1000)
+        self.assertEqual([x[0] for x in rec["coppie"]], attese)
+        self.assertEqual(sum(x[2] for x in rec["coppie"]), 1000)
+        esclusi = [g.isoformat() for g in (INIZIO + timedelta(days=i) for i in range((FINE - INIZIO).days + 1))
+                   if g.weekday() < 5 and g.isoformat() not in attese]
+        self.assertEqual(len(esclusi), 40)                              # le chiusure del calendario (DGS-16)
+        self.assertEqual(rec["feriali_esclusi"], esclusi)
         self.assertTrue(rec["screening"]["ammessa"])
         self.assertEqual(rec["descrizione_h002"]["n"], 1000)          # le date accessorie sono solo storia
         # registro delle prove: screening, verifica ed esito, una volta sola
@@ -236,6 +248,36 @@ class TestRifiutiPrimaDellaLettura(Percorso):
         finally:
             reg.write_bytes(originale)
         self.assertEqual((self.chiamate, self.riserva.read_bytes()), (["sviluppo"], prima))   # nessuna autorizzazione
+
+    def test_dopo_l_anomalia_corretta_la_stessa_prenotazione_riprende(self):
+        # DGS-16 Q3: G lascia la prenotazione aperta (nessuna autorizzazione); corretto il registro dello scaricamento,
+        # la STESSA richiesta, con scheda e identità invariate, si esegue
+        scheda = self.prepara()
+        reg = self.cache / "registro_scaricamento_XAUUSD_ASK.csv"
+        originale = reg.read_bytes()
+        righe = originale.decode("utf-8").splitlines(keepends=True)
+        reg.write_text("".join(x for x in righe if not x.split(",")[1:2] == [INIZIO.isoformat()]), encoding="utf-8")
+        try:
+            with self.assertRaisesRegex(ValueError, "manifesto con anomalie"):
+                self.esegui(scheda)
+        finally:
+            reg.write_bytes(originale)
+        self.assertEqual(RV.prenotazione(self.riserva, "P1")["stato"], "prenotato")
+        r = self.esegui(scheda)
+        self.assertEqual((r["esito_tecnico"], r["esito"]), ("completata", "promossa"))
+
+    def test_prenotazione_abbandonata_si_rilascia(self):
+        # DGS-16 Q3, transizione di B: una prenotazione che non si può eseguire (scheda non conforme) si libera
+        # con un rilascio registrato, prima di qualunque autorizzazione; le date tornano disponibili
+        vecchia = self.d / "H-002-ORB-v3.md"
+        shutil.copy(repo_root / "brain" / "laboratorio" / "ipotesi" / "H-002-ORB-v3.md", vecchia)
+        RV.prenota(self.riserva, "P1", "H-002", LETTURA, FINE, S.impronta(vecchia), ORA)
+        with self.assertRaises(EV.SchedaNonConforme):
+            self.esegui(vecchia)
+        RV.rilascia(self.riserva, "P1", ORA)
+        s = RV.stato(self.riserva)
+        self.assertEqual((s["giorni"]["prenotato"], s["prenotazioni_attive"]), (0, []))
+        self.assertEqual(RV.prenotazione(self.riserva, "P1")["stato"], "rilasciato")
 
     def test_finestra_diversa_da_1000_sedute(self):
         scheda = self.prepara(fine=FINE - timedelta(days=1))
