@@ -122,6 +122,51 @@ out["potenza"] = {"media +0,25 R, σ 1,25 R, un trade per seduta, 1.000 sedute":
                   "media +0,25 R, σ 0,80 R, un trade per seduta, 1.000 sedute": scenario(0.80, 202)}
 
 
+# 6. Veti: prova LOGICA deterministica (DGS-16 Q6). Quattro blocchi da 250 sedute, un trade per seduta, rumore
+#    gaussiano σ = 0,30 R con seme fisso; blocco debole a media −0,35 R, gli altri a +0,70 R, così il segnale del metro
+#    è favorevole e il solo veto può fermare la promozione. Veto a −0,25 R, minimo 50 trade per blocco. Il risultato
+#    atteso del veto è calcolato qui sotto in modo indipendente dal modulo (frazioni esatte sui valori generati).
+FORTE = 0.70
+
+
+def blocco(media, seme, n=250, trade=None):
+    trade = n if trade is None else trade
+    r = random.Random(seme)
+    return [(media + r.gauss(0, 0.30), 1) for _ in range(trade)] + [(0.0, 0)] * (n - trade)
+
+
+def atteso_veto(coppie, soglia, minimo, ampiezza=250):
+    esito = "superato"
+    sottile = False
+    for i in range(0, len(coppie), ampiezza):
+        b = coppie[i:i + ampiezza]
+        k = sum(x for _, x in b)
+        if k < minimo:
+            sottile = True
+        elif Fraction(sum(Fraction(s) for s, _ in b), k) < Fraction(soglia):
+            esito = "fallito"
+    return esito if esito == "fallito" else ("non valutabile" if sottile else "superato")
+
+
+veti = {}
+casi = [(f"debole in posizione {pos + 1}", [blocco(-0.35 if j == pos else FORTE, 10 * pos + j) for j in range(4)])
+        for pos in range(4)]
+media_omogenea = (-0.35 + 3 * FORTE) / 4                                   # stessa media complessiva (+0,4375 R)
+casi.append(("controllo omogeneo (stessa media)", [blocco(media_omogenea, 40 + j) for j in range(4)]))
+for k in (49, 50, 51):
+    casi.append((f"debole con {k} trade (minimo 50)", [blocco(-0.35, 50 + k, trade=k)] +
+                 [blocco(FORTE, 60 + j) for j in range(3)]))
+for nome, blocchi in casi:
+    cp = [x for b in blocchi for x in b]
+    veto = V.veto_blocchi(cp, -0.25, 50)
+    v = V.verdetto(cp, 7, [veto], contesto=CTX)
+    atteso = atteso_veto(cp, -0.25, 50)
+    veti[nome] = {"segnale del metro": v["segnale"], "veto": veto["esito"], "veto atteso": atteso,
+                  "coincide": veto["esito"] == atteso, "esito": v["esito"], "causa": v["causa"],
+                  "medie dei blocchi": [None if m is None else round(m, 6) for m in veto["medie"]]}
+out["veti (prova logica)"] = veti
+
+
 # 5. D-44
 def limite_alto(k, n=12000, a=0.001):
     return clopper(k, n, 2 * a)[1]

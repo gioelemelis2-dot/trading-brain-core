@@ -98,12 +98,39 @@ def prova(nome, atteso, fn):
     return voce
 
 
+def _sha(x):
+    return hashlib.sha256(x if isinstance(x, bytes) else x.encode("utf-8")).hexdigest()
+
+
 def a_corsa(p):
     sch = p.scheda("H-T127", LETTURA, FINE, "P1")
     prima = stato_riserva(p.riserva)
     r = p.esegui(sch, "P1")
     rec = RV.record_esito(p.riserva, "P1")
+    imp = RV.prenotazione(p.riserva, "P1")["autorizzazione"]["impegno"]
+    # DGS-16: rapporto originale, record e rapporto rigenerato confrontabili nello stesso ambiente
+    originale = Path(r["rapporto"]).read_bytes()
+    rigenerato = EV.rapporto_da_record(rec).encode("utf-8")
+    (p.d / "record_P1.json").write_text(json.dumps(rec, ensure_ascii=False, indent=1, sort_keys=True), encoding="utf-8")
+    (p.d / "rapporto_rigenerato_P1.txt").write_bytes(rigenerato)
+    (p.d / "sedute_e_coppie_P1.json").write_text(json.dumps(
+        {"sedute_nell_impegno": imp["sedute"], "coppie_del_record": rec["coppie"],
+         "feriali_esclusi": rec["feriali_esclusi"]}, ensure_ascii=False, indent=1), encoding="utf-8")
+    v = rec["verdetto"]
     return prima, {"esito_tecnico": r["esito_tecnico"], "esito": r["esito"], "impronta_impegno": r["impronta_impegno"],
+                   "provenienza": {
+                       "sigillo": "preparato dal collaudo (S.sigilla nello script), con le impronte del codice",
+                       "prenotazione": "preparata dal collaudo (RV.prenota), con l'impronta della scheda",
+                       "potenza_stimata": "valore DICHIARATO nel contratto della scheda di test (0,6): input, non calcolato",
+                       "screening": "calcolato dall'esecutore sullo sviluppo sintetico",
+                       "quota, manifesto, impegno, autorizzazione, lettura, coppie, verdetto, record, rapporto":
+                           "generati dall'esecutore ordinario"},
+                   "sedute_nell_impegno": len(imp["sedute"]), "coppie_uguali_alle_sedute":
+                       [x[0] for x in rec["coppie"]] == imp["sedute"], "feriali_esclusi": len(rec["feriali_esclusi"]),
+                   "valori_esadecimali": {"L": float.hex(v["L"]), "U": float.hex(v["U"]), "media": float.hex(v["media"])},
+                   "sha256": {"rapporto_originale": _sha(originale), "rapporto_rigenerato": _sha(rigenerato),
+                              "record": _sha(json.dumps(rec, sort_keys=True, ensure_ascii=False))},
+                   "rapporto_originale_uguale_al_rigenerato": originale == rigenerato,
                    "L_U": [rec["verdetto"]["L"], rec["verdetto"]["U"]], "media": rec["verdetto"]["media"],
                    "sedute_trade_attive": [rec["verdetto"][k] for k in ("sedute", "trade", "sedute_attive")],
                    "screening_ammessa": rec["screening"]["ammessa"],
@@ -202,6 +229,7 @@ def f_ripresa(p):
         except ValueError as e:
             diversa = f"rifiutata: {e}"
     return prima, {"letture_della_prima_corsa_caduta": letture_prima, "ripresa": r["esito_tecnico"],
+                   "sha256_rapporto_rigenerato": _sha(Path(r["rapporto"]).read_bytes()),
                    "esito": r["esito"], "ripresa_con_codice_diverso": diversa}
 
 
