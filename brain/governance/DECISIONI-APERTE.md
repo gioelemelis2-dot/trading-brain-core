@@ -462,3 +462,11 @@ DA-13 rulebook (Q-09) ──► DA-11 G0 minimo ──► DA-12 indicatori compo
   - Ferma il caso più probabile: un agente che modifica test, CI o registri e li fa entrare senza che il titolare lo veda.
   - Lascia al titolare lo scavalcamento per le urgenze, che resta comunque registrato.
 - **Limite da verificare:** in un repository personale l'approvazione richiesta non può venire dall'autore stesso. Va controllato se serve un secondo account o se bastano le regole dei Ruleset.
+
+### DA-37 · Dove si registra il rifiuto per quota non collaudata (22/11/2026) · **da decidere dal titolare**
+- **Il caso:** la prima verifica usa la quota 2,5% (una variante, prima apertura), l'unica collaudata. Se una richiesta arriva a una quota diversa (per esempio 1,25% con due varianti, o 0,83% alla seconda apertura), il percorso si ferma **prima** di autorizzare e di leggere i dati (DGS-13 §A). Serve una traccia verificabile del rifiuto.
+- **Opzioni (DGS-14, Q2):**
+  - **(i)** un evento nuovo «rifiutata per quota» nel registro della riserva, legato alla prenotazione. Contiene: identità della richiesta, impronta della scheda, finestra, j previsto, m, quota calcolata e quota collaudata, motivo. Non spende date né quota e non crea una prova N. Cambia lo schema del registro (`riserva/1` → `riserva/2`) e quindi il perimetro.
+  - **(ii)** una riga nel registro delle prove. Quel registro però conta N, e il rifiuto non è una prova.
+  - **(iii)** solo nel rapporto. Il rapporto può mancare proprio quando il percorso si ferma.
+- **Consiglio del DGS e di Claude: (i).** È l'unica traccia che resta legata alla prenotazione e che un revisore può ricostruire anche dopo un riavvio. Il costo è un cambio di schema, con test e mutanti, che entra comunque nel nuovo candidato di R19.

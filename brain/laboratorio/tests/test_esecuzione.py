@@ -335,9 +335,14 @@ class TestCaricatore(Cartella):
         self.assertEqual((len(bid), len(ask)), (2, 2))
 
     def test_sviluppo_rifiuta_il_periodo_sigillato(self):
-        # #136: il messaggio è controllato; con BID e ASK nella stessa cartella l'errore di #126 mascherava il mutante C01
+        # #136 e DGS-14: il test parte da un caso valido (cartelle distinte, ASK ≠ BID, sigillo) e fallisce solo per
+        # il periodo; il controllo positivo con l'inizio spostato di un giorno passa.
+        giorni = [date(2023, 11, 14), date(2023, 11, 15)]
+        b, a = self.cache("bid", giorni, 1980000), self.cache("ask", giorni, 1980300)
         with self.assertRaisesRegex(ValueError, "periodo sigillato"):
-            C.carica(self.dir, self.dir, date(2023, 11, 14), date(2023, 12, 1), "sviluppo", *self.sigillo())
+            C.carica(b, a, date(2023, 11, 14), date(2023, 11, 15), "sviluppo", *self.sigillo())
+        bid, ask, _ = C.carica(b, a, date(2023, 11, 15), date(2023, 11, 15), "sviluppo", *self.sigillo())
+        self.assertEqual((len(bid), len(ask)), (1, 1))
 
     def test_verifica_richiede_il_sigillo_e_il_periodo_vecchio(self):
         b = self.cache("bid", [date(2010, 3, 1)], 1100000)
@@ -348,7 +353,7 @@ class TestCaricatore(Cartella):
         bid, ask, info = C.carica(b, a, date(2010, 3, 1), date(2010, 3, 1), "verifica", self.registro, "H-999",
                                   self.scheda)
         self.assertEqual(len(bid), 1)
-        with self.assertRaises(ValueError):                          # la verifica non tocca lo sviluppo
+        with self.assertRaisesRegex(ValueError, "la verifica finisce"):  # la verifica non tocca lo sviluppo
             C.carica(b, a, date(2023, 11, 1), date(2023, 11, 20), "verifica", self.registro, "H-999", self.scheda)
         with self.assertRaises(ValueError):
             C.carica(b, a, date(2010, 3, 1), date(2010, 3, 1), "boh")
@@ -571,12 +576,21 @@ class TestCasiAlLimite(Cartella):
 
     def test_periodi_del_caricatore(self):
         S.sigilla(self.registro, "H-999", self.scheda, ["V-T"], ORA)
-        # #136: messaggi controllati (l'errore «stessa cartella» di #126 arriva dopo e mascherava C03/C08/C09)
+        # #136 e DGS-14: si parte da un caso valido (cartelle distinte, ASK ≠ BID) e si cambia solo il periodo;
+        # ogni rifiuto ha il suo controllo positivo.
+        b, a = self.dir / "bid", self.dir / "ask"
+        b.mkdir()
+        a.mkdir()
+        for g in (date(2023, 10, 31), date(2024, 1, 2)):
+            (b / f"{g.isoformat()}.bi5").write_bytes(bi5([(480 * 60, 2000000, 2000010, 1999990, 2000020, 1.0)]))
+            (a / f"{g.isoformat()}.bi5").write_bytes(bi5([(480 * 60, 2000300, 2000310, 2000290, 2000320, 1.0)]))
         with self.assertRaisesRegex(ValueError, "la verifica finisce"):
-            C.carica(self.dir, self.dir, date(2023, 11, 1), date(2023, 11, 15), "verifica", self.registro, "H-999",
-                     self.scheda)
+            C.carica(b, a, date(2023, 10, 31), date(2023, 11, 1), "verifica", self.registro, "H-999", self.scheda)
+        self.assertEqual(len(C.carica(b, a, date(2023, 10, 31), date(2023, 10, 31), "verifica", self.registro,
+                                      "H-999", self.scheda)[0]), 1)
         with self.assertRaisesRegex(ValueError, "periodo vuoto"):
-            C.carica(self.dir, self.dir, date(2024, 2, 1), date(2024, 1, 1), "sviluppo", *self.sigillo())
+            C.carica(b, a, date(2024, 1, 3), date(2024, 1, 2), "sviluppo", *self.sigillo())
+        self.assertEqual(len(C.carica(b, a, date(2024, 1, 2), date(2024, 1, 2), "sviluppo", *self.sigillo())[0]), 1)
 
 
 # ---------------------------------------------------------------------------------------------------------------

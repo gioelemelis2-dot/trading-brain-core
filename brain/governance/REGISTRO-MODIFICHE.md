@@ -1124,3 +1124,18 @@ Nulla di questo tocca il candidato `8e51ce9` su cui lavora R15.
 - **Scaricamento ASK finito** il 21/11 alle 23:50: «FINITO ASK 2005-01-01 → 2023-11-11: in cache 5.337, scaricati 1.552, 404 0, vuoti 0, HTTP 0, rovinati 0» (riga del log letta dal titolare). Il consuntivo (controllo della cache, intersezione BID/ASK, buchi per anno: soli conteggi e date) gira sul Mac.
 - **Messaggio 13 al DGS** (`collaborazione/da-claude/MESSAGGIO-13-DGS.md`): decisioni D-47–D-49, #136, fine dell'ASK e progetto di #127 per la sua critica prima dei test (prenotazione → controllo della quota → autorizzazione con l'impronta presa dal registro dello scaricamento → verdetto D-31 → rendiconto).
 - **Mandato notturno a Gemini** (`MANDATO-NOTTE-20261122-GEMINI.txt`): #124 con un riferimento in aritmetica esatta; ricerca su come applicare D-49 in un repository personale; P-001 solo se avanza tempo.
+
+## 2026-11-22 · v1.91 (DGS-14: riscontro alla prova generale e parere sul progetto di #127)
+
+- **DGS-14 archiviato** (`collaborazione/da-chatgpt/DGS-20261122-14-riscontro-e-progetto-127.md`). Numeri ricalcolati da Claude e confermati: potenze 24,35%, 12,94%, 8,48%, 6,15%; errori standard massimi 0,02551, 0,02089, 0,01895, 0,01781 R; 4.912 feriali dal 01/01/2005 al 31/10/2023.
+- **La ricevuta della prova generale non è arrivata al DGS** (non era fra gli allegati): andrà allegata al prossimo messaggio.
+- **D-34 punto 5 resta aperto**, come atteso: si chiude con la prova sintetica del percorso intero dopo #127.
+- **Progetto di #127, accolto con queste precisazioni:**
+  - **Q1:** l'impronta dal registro dello scaricamento è accettata come impegno ai byte attesi. Va costruita sull'insieme atteso (mercato, lato, data, comprese le date accessorie) e confrontata con il registro, così che emergano anche voci mancanti, doppie o sul lato sbagliato. Va congelata nell'autorizzazione, insieme a scheda, codice, finestra, N e quota. Alla lettura si controllano i byte effettivamente decodificati; un file difforme dopo l'autorizzazione dà un esito tecnico registrato e il consumo resta.
+  - **Q2:** il DGS raccomanda un evento «rifiutata per quota» nel registro della riserva. Va al titolare come **DA-37**.
+  - **Q3:** H-002 si usa solo come oggetto sintetico, confezionato in una scheda conforme al modello H-003 e senza deroghe nel percorso. Una prenotazione vera richiede una scheda H-003 sigillata; la vecchia scheda H-002 si rifiuta prima dell'autorizzazione.
+  - **Q4:** criteri per scegliere la finestra (calendario utilizzabile, potenza ottenibile, capienza residua, pertinenza e regola di spareggio). Si presentano al titolare con il consuntivo, una riga per finestra candidata.
+  - **Criterio di accettazione:** una prova sintetica collega tutti i passaggi con l'identità di scheda e candidato. Tre casi capaci di invertire il giudizio: quota non collaudata (zero aperture del caricatore), file difforme dopo l'autorizzazione, ripresa dopo il verdetto registrato e prima del rapporto.
+- **#136, rifinito su indicazione del DGS:** i test del periodo ora partono da un caso valido (cartelle distinte, ASK ≠ BID, sigillo) e cambiano solo il periodo; ogni rifiuto ha il suo controllo positivo.
+- **Modello di scheda H-003:** controllo «promossa ⇒ segnale favorevole» replica per replica, e riferimento di potenza di DGS-14.
+- **Da segnalare al titolare:** con D = 1.000 sedute, un trade per seduta e σ = 1,25 R, il metro ha solo il 24% di potenza alla prima apertura. Per lo screening D-36 (potenza ≥ 50%) servono circa 2.400 trade, oppure una dispersione ≤ 0,81 R.
