@@ -675,5 +675,57 @@ class TestRapportoScreening(unittest.TestCase):
             self.assertIn(f"[{x['tipo']}]", testo)
 
 
+# Valori inventati per cui la somma compensata di Python ≥ 3.12 NON è la somma esatta arrotondata (math.fsum)
+DISCORDI = [-6.91055939135834e+18, 2.9029347063393805e-20, -2.3626325107814694e+17, 9.102538185465903e+18]
+
+
+def media_esatta(valori, k):
+    """Riferimento indipendente: somma esatta in frazioni, arrotondata una volta, poi divisa per k (IEEE)."""
+    from fractions import Fraction
+    return float(sum(Fraction(x) for x in valori)) / k
+
+
+class TestSommeEsatte124(unittest.TestCase):
+    """#124 (Gemini, notte del 22/11, N22-A1): con sum() la decisione a filo di soglia dipendeva dalla versione di
+    Python (su 3.9 falsa ammissione allo screening e falso veto). Le medie del modulo usano la somma esatta."""
+
+    def test_screening_media_esattamente_025_non_passa(self):          # S1
+        coppie = [(0.3, 1)] * 125 + [(0.2, 1)] * 125
+        with mock.patch.object(P, "intervallo_bootstrap", return_value=(0.1, 0.4)):
+            s = V.screening(coppie, 9, 0.9)
+        self.assertEqual(s["media"], 0.25)
+        self.assertIn("media 0.2500 non > +0,25 R", s["cause"])
+
+    def test_veto_media_uguale_alla_soglia_non_scatta(self):           # B1, B3
+        self.assertEqual(V.veto_blocchi([(0.3, 1)] * 250, 0.3, 1)["esito"], "superato")
+        self.assertEqual(V.veto_blocchi([(0.3, 1)] * 250, 0.3, 1)["medie"], [0.3])
+        b3 = [(-0.3, 1)] * 125 + [(-0.2, 1)] * 125
+        self.assertEqual(V.veto_blocchi(b3, -0.25, 1), {"id": "blocchi", "veto": True, "esito": "superato",
+                                                         "medie": [-0.25]})
+
+    def test_medie_uguali_al_riferimento_esatto_su_ogni_versione(self):
+        coppie = [(x, 1) for x in DISCORDI]
+        atteso = media_esatta(DISCORDI, 4)
+        with mock.patch.object(P, "intervallo_bootstrap", return_value=(0.1, 0.4)):
+            self.assertEqual(V.screening(coppie, 9, 0.9)["media"], atteso)
+        self.assertEqual(V.veto_blocchi(coppie, 0.0, 1, ampiezza=4)["medie"], [atteso])
+        self.assertEqual(V.verdetto(coppie, 5)["media"], atteso)
+
+    def test_limite_inferiore_vicino_a_zero_segnalato(self):           # N22-A2, proposta 3: V3
+        coppie = costanti(0.6, 780)
+        with mock.patch.object(P, "intervallo_bootstrap", return_value=(4e-16, 0.9)):
+            s = V.screening(coppie, 9, 0.9)
+        self.assertTrue(s["ammessa"])                                    # non cambia l'esito
+        self.assertTrue(s["L_vicino_a_zero"])
+        self.assertIn("limite inferiore a meno di 1e-9 R [REGOLA] da 0", V.rapporto_screening(s))
+        with mock.patch.object(P, "intervallo_bootstrap", return_value=(-4e-16, 0.9)):
+            self.assertTrue(V.screening(coppie, 9, 0.9)["L_vicino_a_zero"])
+        with mock.patch.object(P, "intervallo_bootstrap", return_value=(2e-9, 0.9)):
+            s = V.screening(coppie, 9, 0.9)
+        self.assertFalse(s["L_vicino_a_zero"])
+        self.assertNotIn("a meno di 1e-9 R [REGOLA] da 0", V.rapporto_screening(s))
+        self.assertFalse(V.screening(costanti(0.6, 780), 9, 0.9)["L_vicino_a_zero"])
+
+
 if __name__ == "__main__":
     unittest.main()
