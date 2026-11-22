@@ -216,6 +216,13 @@ class TestRifiutiPrimaDellaLettura(Percorso):
             self.esegui(scheda)
         self.assertEqual((self.chiamate, self.riserva.read_bytes()), ([], prima))
 
+    def test_prenotazione_con_l_impronta_di_un_altra_scheda(self):
+        scheda = self.prepara()                                         # sigillata e prenotata come P1
+        RV.prenota(self.riserva, "P9", "H-T127", B_INIZIO, B_FINE, "0" * 64, ORA)   # stessa ipotesi, altra domanda
+        with self.assertRaisesRegex(ValueError, "un'altra scheda"):
+            self.esegui(scheda, "P9")
+        self.assertEqual(self.chiamate, [])
+
     def test_finestra_diversa_da_1000_sedute(self):
         scheda = self.prepara(fine=FINE - timedelta(days=1))
         prima = self.riserva.read_bytes()

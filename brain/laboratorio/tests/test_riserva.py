@@ -317,6 +317,8 @@ class TestRiserva2(Base):
         a = RV.autorizza(self.reg, "A", 1, h, ORA, impegno=imp)
         self.assertEqual(a["impegno"], imp)
         self.assertEqual(RV.autorizza(self.reg, "A", 1, h, ORA, impegno=imp), a)   # ripetizione tecnica
+        with self.assertRaises(ValueError):                             # stessa impronta, impegno diverso: no
+            RV.autorizza(self.reg, "A", 1, h, ORA, impegno=dict(imp, codice="f" * 64))
         altro = dict(imp, finestra=["2005-01-01", "2005-01-30"])
         with self.assertRaises(ValueError):
             RV.autorizza(self.reg, "A", 1, RV.impronta_impegno(altro), ORA, impegno=altro)

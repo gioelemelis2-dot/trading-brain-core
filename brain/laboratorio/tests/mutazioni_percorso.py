@@ -44,7 +44,7 @@ M = {
     "MF06 altro mercato accettato": [(MF, "if f\"/{simbolo}/\" not in url:", "if False:")],
     "MF07 esiti http accettati come dati": [(MF, "if r.get(\"esito\") not in VALIDI:", "if not r.get(\"esito\"):")],
     "MF08 quarantena ignorata": [(MF, "\"quarantena\" if giorno in quarantena else ", "")],
-    "MF09 impronta dell'elenco senza ordine": [(MF, "return sorted((simbolo, lato, x)", "return list((simbolo, lato, x)")],
+    "MF09 insieme atteso senza ordinamento (atteso EQUIVALENTE: lati e giorni sono già generati in ordine)": [(MF, "return sorted((simbolo, lato, x)", "return list((simbolo, lato, x)")],
     # caricatore
     "CB01 byte non confrontati": [(C, "hashlib.sha256(dati).hexdigest() != atteso:", "False:")],
     "CB02 giorno fuori dal manifesto letto": [(C, "if attese is not None and atteso is None:", "if False:")],
