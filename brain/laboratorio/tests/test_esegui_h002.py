@@ -551,6 +551,33 @@ class TestRevisioneR11Gemini(BaseRiga):
         self.assertEqual(self.esecuzioni("sviluppo"), [])
 
 
+class TestD51VerificaDisattivata(BaseRiga):
+    """D-51 (DA-38 a, 22/11/2026): la verifica del vecchio esecutore è disattivata; passa solo dal percorso ordinario
+    D-31 (esegui_verifica). Il rifiuto è IMMEDIATO: nessuna lettura, nessuna scrittura, nessun rapporto. Il caso di
+    partenza è valido (cache completa, sigillo, screening promosso), cambia solo la modalità (DGS-16 Q7)."""
+
+    def test_rifiuto_immediato_senza_letture_ne_scritture(self):
+        from unittest import mock
+        self.cache_di(date(2010, 1, 1), 59)
+        self.sigilla(["V-T", "V-S"])
+        self.sviluppo_finto(V_T=True, V_S=False)
+        prima = self.registro.read_bytes()
+        with mock.patch.object(_C, "carica", side_effect=AssertionError("lettura durante una verifica disattivata")) \
+                as carica, mock.patch.object(S, "controlla_sigillo", side_effect=AssertionError("sigillo letto")):
+            rc, err = self.lancia_errore("--modalita", "verifica", "--varianti", "V-T")
+        self.assertEqual(rc, 2)
+        self.assertIn("D-51", err)
+        self.assertIn("esegui_verifica", err)
+        carica.assert_not_called()
+        self.assertEqual(self.registro.read_bytes(), prima)
+        self.assertFalse(self.uscita.exists())
+
+    def test_lo_sviluppo_resta(self):
+        self.cache_di(date(2024, 1, 1), 60)
+        self.sigilla(["V-T", "V-S"])
+        self.assertEqual(self.lancia("--modalita", "sviluppo"), 0)
+
+
 if __name__ == "__main__":
     unittest.main()
 
