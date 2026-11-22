@@ -231,8 +231,6 @@ class TestRigaDiComando(BaseRiga):
         self.sigilla(["V-T", "V-S"])
         self.periodi(sviluppo=(date(2023, 11, 1), date(2024, 2, 29)), verifica=(date(2024, 1, 1), date(2024, 2, 29)))
         self.assertEqual(self.lancia("--modalita", "sviluppo"), 2)                  # sviluppo nel periodo sigillato
-        self.sviluppo_finto(V_T=True, V_S=False)
-        self.assertEqual(self.lancia("--modalita", "verifica", "--varianti", "V-T"), 2)   # verifica nello sviluppo
         self.periodi(sviluppo=(date(2024, 1, 1), date(2024, 2, 29)))
         self.scheda.write_text("# H-002 cambiata\n", encoding="utf-8")
         self.assertEqual(self.lancia("--modalita", "sviluppo"), 2)
@@ -275,35 +273,16 @@ class TestRevisioneR7Gemini(BaseRiga):
     """Rilievi P1–P7 della revisione R7 di Gemini (G-20261115-R7, ramo rev/gemini-esecutore-h002), scritti come
     test PRIMA delle correzioni."""
 
-    def verifica(self, varianti="V-T"):
-        a = ["--modalita", "verifica"]
-        return self.lancia(*(a + (["--varianti", varianti] if varianti else [])))
-
-    def verifiche(self):
-        return [e for e in S.leggi(self.registro)["esecuzioni"] if e["ruolo"] == "verifica"]
-
-    def test_p1_verifica_solo_delle_varianti_promosse_in_sviluppo(self):
-        self.cache_di(date(2010, 1, 1), 59)
-        self.sigilla(["V-T", "V-S"])
-        self.assertEqual(self.verifica("V-T"), 2)                       # nessuno screening registrato
-        self.sviluppo_finto(V_T=False, V_S=False)
-        self.assertEqual(self.verifica("V-T"), 2)                       # bocciata in sviluppo
-        self.assertEqual(self.verifiche(), [])
-
     def test_p3_sigillo_con_varianti_diverse_da_quelle_dell_esecutore(self):
         self.cache_di(date(2024, 1, 1), 60)
         self.sigilla(["V-T"])                 # N = 1 invece di 2
         self.assertEqual(self.lancia("--modalita", "sviluppo"), 2)
         self.assertEqual(S.leggi(self.registro)["esecuzioni"], [])
 
-    def test_p6_dati_mancanti_non_bruciano_la_verifica(self):
+    def test_p6_dati_mancanti_non_bruciano_lo_sviluppo(self):
+        """P6, dopo D-51 sul solo sviluppo (nel percorso ordinario i dati incompleti li ferma il manifesto)."""
         self.sigilla(["V-T", "V-S"])
-        self.sviluppo_finto(V_T=True, V_S=False)
-        self.assertEqual(self.verifica("V-T"), 2)                       # cache inesistente
-        self.cache_di(date(2010, 1, 1), 30)                             # cache fino al 30/1, periodo fino al 28/2
-        self.assertEqual(self.verifica("V-T"), 2)
-        self.assertEqual(self.verifiche(), [])
-        self.cache_di(date(2024, 1, 1), 30)                             # anche lo sviluppo con dati incompleti
+        self.cache_di(date(2024, 1, 1), 30)                             # sviluppo con dati incompleti
         self.assertEqual(self.lancia("--modalita", "sviluppo"), 2)
         self.assertEqual([e for e in S.leggi(self.registro)["esecuzioni"] if e["ruolo"] != "sviluppo" or
                           "periodo" in e], [])
@@ -397,13 +376,19 @@ class TestRevisioneR11Gemini(BaseRiga):
         self.assertIn("minuti 1/0", err)
         self.assertEqual(self.esecuzioni("sviluppo"), [])
 
-    def test_s4_rapporto_non_scrivibile_non_brucia_la_verifica(self):
-        self.cache_di(date(2010, 1, 1), 59)
+    def test_s4_rapporto_cartella_fermato_prima_di_leggere(self):
+        """R11-S4 (mutante R05), dopo D-51 sullo sviluppo: un rapporto che è una cartella si rifiuta PRIMA di leggere
+        i dati e di registrare."""
+        from unittest import mock
+        self.cache_di(date(2024, 1, 1), 60)
         self.sigilla()
-        self.sviluppo_finto(V_T=True, V_S=False)
         self.uscita.mkdir()                                                      # il rapporto è una cartella
-        self.assertEqual(self.lancia("--modalita", "verifica", "--varianti", "V-T"), 2)
-        self.assertEqual(self.esecuzioni("verifica"), [])
+        with mock.patch.object(_C, "carica", wraps=_C.carica) as carica:
+            rc, err = self.lancia_errore("--modalita", "sviluppo")
+        self.assertEqual(rc, 2)
+        self.assertIn("è una cartella", err)
+        carica.assert_not_called()
+        self.assertEqual(self.esecuzioni("sviluppo"), [])
 
     def test_s5_copertura_minima_dei_confronti(self):
         """350 giorni della strategia, benchmark e casuale solo su 20 (5,7%): criteri 4 e 5 non passano."""
@@ -416,13 +401,6 @@ class TestRevisioneR11Gemini(BaseRiga):
         self.assertFalse(nomi["sopra il 95° percentile del confronto casuale"])
         self.assertFalse(nomi["batte «compro sempre» e «vendo sempre»"])
         self.assertFalse(x["screening"]["promossa"])
-
-    def test_s6_stessa_cache_dello_sviluppo(self):
-        self.cache_di(date(2010, 1, 1), 59)
-        self.sigilla()
-        self.sviluppo_finto(V_T=True, V_S=False, cache=self.dir / "altra_cache")
-        self.assertEqual(self.lancia("--modalita", "verifica", "--varianti", "V-T"), 2)
-        self.assertEqual(self.esecuzioni("verifica"), [])
 
     def test_codice_sigillato(self):
         """Il sigillo registra l'impronta del codice che esegue la scheda: se il codice cambia, niente esecuzioni."""
