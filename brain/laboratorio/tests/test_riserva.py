@@ -328,6 +328,13 @@ class TestRiserva2(Base):
         with self.assertRaisesRegex(ValueError, "impegno"):
             RV.stato(self.reg)
 
+    def test_date_dello_sviluppo_fuori_dalla_riserva(self):          # PIANO-D51 §3.5
+        reg = Path(self._t.name) / "riserva_vera.json"
+        RV.crea(reg, D(2005, 1, 1), D(2023, 10, 31), 0.05, ORA)        # i confini di D-29
+        for a, b in ((D(2023, 11, 15), D(2023, 12, 31)), (D(2023, 10, 1), D(2023, 11, 15)), (D(2024, 1, 2), D(2024, 1, 2))):
+            with self.assertRaisesRegex(ValueError, "fuori dalla riserva"):
+                RV.prenota(reg, "S", "H-900", a, b, "x", ORA)
+
     def test_prenotazione_letta_senza_scrivere(self):
         self.prenota("A", D(2005, 1, 1), D(2005, 1, 31))
         prima = self.reg.read_bytes()

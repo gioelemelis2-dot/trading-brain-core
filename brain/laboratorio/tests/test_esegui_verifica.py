@@ -174,6 +174,21 @@ class TestCorsaCompleta(Percorso):
                           "requisito blocchi [veto]: superato"):
             self.assertIn(frammento, testo)
 
+    def test_seconda_verifica_della_stessa_variante_rifiutata_prima_di_consumare(self):
+        # PIANO-D51 §3.4: una verifica per ipotesi e variante (come nella vecchia verifica). Una seconda prenotazione
+        # della stessa ipotesi si ferma PRIMA di ogni lettura e senza consumare la riserva
+        scheda = self.prepara()
+        self.assertEqual(self.esegui(scheda)["esito"], "promossa")
+        RV.prenota(self.riserva, "P2", "H-T127", B_INIZIO, B_FINE, S.impronta(scheda), ORA)
+        self.chiamate.clear()
+        prima = self.riserva.read_bytes()
+        with self.assertRaisesRegex(ValueError, "verifica di H-T127 V-T già eseguita"):
+            self.esegui(scheda, "P2")
+        self.assertEqual((self.chiamate, self.riserva.read_bytes()), ([], prima))
+        self.assertEqual(RV.prenotazione(self.riserva, "P2")["stato"], "prenotato")
+        voci = [e for e in S.leggi(self.registro)["esecuzioni"] if e["ruolo"] == "verifica"]
+        self.assertEqual([e["prenotazione"] for e in voci], ["P1"])
+
     def test_ripresa_dopo_il_verdetto_senza_rileggere(self):
         scheda = self.prepara()
         rapporto = self.d / "rapporto.txt"
