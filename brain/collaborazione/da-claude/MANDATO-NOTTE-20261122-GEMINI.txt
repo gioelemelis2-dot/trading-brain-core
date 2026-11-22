@@ -1,0 +1,57 @@
+MANDATO PER GEMINI — notte del 22/11/2026 (modello: il più capace disponibile, con ragionamento approfondito)
+
+CONTESTO
+- R18 chiuso e corretto. Decisioni del titolare del 22/11: D-47 (potenza ≥ 50%, il 50% esatto passa), D-48
+  (contatore D-24 a 1 su 2; R19 sul nuovo candidato, più avanti), D-49 (protezione del ramo: la tua opzione 2 più
+  le etichette sigillo-* e riserva-* della 3; il titolare conserva lo scavalcamento).
+- Nuovo difetto #136 (corretto da Claude): due test del caricatore resi ciechi da #126. Mutanti del perimetro
+  314/314 su 3.13 e 3.9.
+- Stanotte NON c'è un giro R19: il nuovo candidato nasce dopo la correzione di #127. Due compiti di contorno.
+
+REGOLE (come in R18)
+- Worktree nuovo ../tb-notte22 sulla punta del ramo feat/esecutore-h002; scrivi SOLO in
+  brain/collaborazione/da-gemini/; NON modificare il codice del progetto; mai compiacente; percorsi locali con ~.
+- Nessun dato vero; rete bloccata nei test (HTTPS_PROXY=http://127.0.0.1:9 HTTP_PROXY=http://127.0.0.1:9).
+- NON toccare ~/Downloads/tb-riconta, brain/dati/reali/, ~/Downloads/p001_sottotitoli, ~/Desktop/consuntivo_ask.
+  Stanotte il titolare fa girare sul Mac il consuntivo dell'ASK: non lanciare corse lunghe in parallelo
+  (un solo processo, niente corse complete dei mutanti). Prima di ogni blocco controlla `df -h ~`: fermati sotto i 3 GB.
+- NON modificare impostazioni di GitHub (protezione del ramo, regole, etichette): solo ricerca e istruzioni.
+
+COMPITO A — #124: somme in virgola mobile nel modulo del verdetto (brain/laboratorio/verdetto/verdetto_d31.py)
+Da Python 3.12 sum() sui float usa una somma compensata, quindi le medie possono differire di circa 1e-15 fra 3.9
+e 3.13. Una decisione può cambiare solo per un valore esattamente a filo di soglia. Il DGS (DGS-13) chiede un
+confronto con un riferimento in aritmetica ESATTA.
+1. Elenca ogni punto del modulo dove una somma o una media di float arriva a un confronto con una soglia:
+   media di screening > +0,25 R, limite inferiore > 0, media di blocco contro la soglia di veto, L > +0,20, U < +0,10,
+   ampiezza < 1e-9 R, potenza ≥ 50%, e altri se li trovi. Indica il numero di riga.
+2. Scrivi uno script indipendente (fractions.Fraction, senza importare il modulo per i calcoli di riferimento) che
+   costruisca casi INVENTATI a filo di soglia e immediatamente adiacenti (±1 ulp, ±1e-15). Esempi: 250 sedute con
+   S = 0,3, oppure con medie che in aritmetica esatta valgono esattamente 0,25. Confronta la decisione del modulo
+   con quella del riferimento esatto.
+3. Eseguilo su Apple Python 3.9 e, se c'è sul Mac, su un Python ≥ 3.12. Dichiara le versioni; se ne manca una,
+   dillo, non simulare.
+4. Tabella: caso, valore esatto, valore del modulo su ciascuna versione, decisione esatta, decisione del modulo,
+   DIVERGE sì/no. Se trovi divergenze, proponi la correzione (per esempio math.fsum o Fraction nel punto
+   interessato) SENZA applicarla, con pro e contro.
+
+COMPITO B — D-49: come si applica davvero la protezione del ramo
+Il repository è privato e personale (un solo account, il titolare). Verifica sulla documentazione ufficiale di
+GitHub, citando le pagine con data di consultazione, e distinguendo [VERIFICATO] da [DEDOTTO]:
+1. Su un repository privato personale, con il piano del titolare (chiedigli quale: Free o Pro), sono disponibili
+   le «rulesets» e la vecchia «branch protection»? Che cosa cambia fra i piani?
+2. «Richiedi approvazione» con un solo account: l'autore può approvare la propria richiesta di unione? Se no,
+   quali alternative esistono (secondo account, approvazione non richiesta ma CODEOWNERS e controlli obbligatori,
+   lista di scavalcamento)? Pro e contro di ciascuna, SENZA scegliere.
+3. Le etichette sigillo-* e riserva-*: come si rendono non cancellabili e non spostabili (tag rulesets)?
+4. Come si rende registrato e visibile uno scavalcamento del titolare?
+5. Istruzioni passo per passo, clic per clic, per l'opzione decisa (2 + etichette della 3), pronte per il titolare.
+   NON applicarle.
+6. Che cosa resta scoperto: ripeti i limiti noti (repository e registri locali prima del push, cache dei dati,
+   avvio.py sul Mac) e aggiungi quelli che trovi.
+
+COMPITO C — solo se il mandato P-001 di ieri (MANDATO-P001-GEMINI.txt, prova sui 10 video) non è finito e c'è tempo
+dopo A e B: completalo con le stesse regole di quel mandato.
+
+CONSEGNA: brain/collaborazione/da-gemini/G-20261122-NOTTE.md più gli script (per esempio notte22_somme_esatte.py),
+commit con la tua identità, push su rev/gemini-notte22. Per ogni rilievo: gravità proposta, tipo (E/M), RIPRODOTTO o
+NON RIPRODOTTO. Frase finale esplicita: «#124: nessuna divergenza di decisione trovata» oppure l'elenco dei casi.

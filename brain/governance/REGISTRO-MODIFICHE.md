@@ -1118,3 +1118,9 @@ Nulla di questo tocca il candidato `8e51ce9` su cui lavora R15.
 - **D-48 (DA-35 c):** contatore D-24 a 1 su 2. R19 sul nuovo candidato è un giro ordinario completo più le manomissioni.
 - **D-49 (DA-36):** opzione 2 più le etichette protette della 3; il titolare conserva lo scavalcamento. Da applicare dopo aver verificato chi può approvare in un repository personale.
 - DGS-13 ricaricato dal titolare il 22/11: identico a quello archiviato il 21/11 (confronto byte per byte), nessuna nuova risposta.
+
+## 2026-11-22 · v1.90 (fine dell'ASK; messaggio 13 al DGS; mandato notturno a Gemini)
+
+- **Scaricamento ASK finito** il 21/11 alle 23:50: «FINITO ASK 2005-01-01 → 2023-11-11: in cache 5.337, scaricati 1.552, 404 0, vuoti 0, HTTP 0, rovinati 0» (riga del log letta dal titolare). Il consuntivo (controllo della cache, intersezione BID/ASK, buchi per anno: soli conteggi e date) gira sul Mac.
+- **Messaggio 13 al DGS** (`collaborazione/da-claude/MESSAGGIO-13-DGS.md`): decisioni D-47–D-49, #136, fine dell'ASK e progetto di #127 per la sua critica prima dei test (prenotazione → controllo della quota → autorizzazione con l'impronta presa dal registro dello scaricamento → verdetto D-31 → rendiconto).
+- **Mandato notturno a Gemini** (`MANDATO-NOTTE-20261122-GEMINI.txt`): #124 con un riferimento in aritmetica esatta; ricerca su come applicare D-49 in un repository personale; P-001 solo se avanza tempo.
