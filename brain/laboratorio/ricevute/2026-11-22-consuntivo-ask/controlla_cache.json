@@ -1,0 +1,639 @@
+[
+  {
+    "cartella": "brain/dati/reali/cache_dukascopy/XAUUSD",
+    "inizio": "2005-01-01",
+    "fine": "2023-11-11",
+    "anni": {
+      "2005": {
+        "giorni": 365,
+        "file": 365,
+        "mancanti": 0,
+        "feriali_vuoti": [],
+        "chiusure_note_vuote": [],
+        "illeggibili": [],
+        "corti": [
+          "2005-03-25"
+        ],
+        "minuti": 278588,
+        "prima_data": "2005-01-02",
+        "ultima_data": "2005-12-30"
+      },
+      "2006": {
+        "giorni": 365,
+        "file": 365,
+        "mancanti": 0,
+        "feriali_vuoti": [],
+        "chiusure_note_vuote": [],
+        "illeggibili": [],
+        "corti": [
+          "2006-01-02",
+          "2006-04-14",
+          "2006-12-25"
+        ],
+        "minuti": 333198,
+        "prima_data": "2006-01-01",
+        "ultima_data": "2006-12-31"
+      },
+      "2007": {
+        "giorni": 365,
+        "file": 365,
+        "mancanti": 0,
+        "feriali_vuoti": [],
+        "chiusure_note_vuote": [],
+        "illeggibili": [],
+        "corti": [
+          "2007-01-01",
+          "2007-04-06"
+        ],
+        "minuti": 346941,
+        "prima_data": "2007-01-01",
+        "ultima_data": "2007-12-31"
+      },
+      "2008": {
+        "giorni": 366,
+        "file": 366,
+        "mancanti": 0,
+        "feriali_vuoti": [],
+        "chiusure_note_vuote": [],
+        "illeggibili": [],
+        "corti": [
+          "2008-01-01",
+          "2008-03-21",
+          "2008-12-25"
+        ],
+        "minuti": 363465,
+        "prima_data": "2008-01-01",
+        "ultima_data": "2008-12-31"
+      },
+      "2009": {
+        "giorni": 365,
+        "file": 365,
+        "mancanti": 0,
+        "feriali_vuoti": [],
+        "chiusure_note_vuote": [],
+        "illeggibili": [],
+        "corti": [
+          "2009-04-10",
+          "2009-12-25"
+        ],
+        "minuti": 363585,
+        "prima_data": "2009-01-01",
+        "ultima_data": "2009-12-31"
+      },
+      "2010": {
+        "giorni": 365,
+        "file": 365,
+        "mancanti": 0,
+        "feriali_vuoti": [],
+        "chiusure_note_vuote": [],
+        "illeggibili": [],
+        "corti": [
+          "2010-01-01"
+        ],
+        "minuti": 365764,
+        "prima_data": "2010-01-01",
+        "ultima_data": "2010-12-31"
+      },
+      "2011": {
+        "giorni": 365,
+        "file": 365,
+        "mancanti": 0,
+        "feriali_vuoti": [],
+        "chiusure_note_vuote": [],
+        "illeggibili": [],
+        "corti": [
+          "2011-12-26"
+        ],
+        "minuti": 363850,
+        "prima_data": "2011-01-02",
+        "ultima_data": "2011-12-30"
+      },
+      "2012": {
+        "giorni": 366,
+        "file": 366,
+        "mancanti": 0,
+        "feriali_vuoti": [],
+        "chiusure_note_vuote": [],
+        "illeggibili": [],
+        "corti": [
+          "2012-01-02",
+          "2012-04-06",
+          "2012-12-25"
+        ],
+        "minuti": 362888,
+        "prima_data": "2012-01-01",
+        "ultima_data": "2012-12-31"
+      },
+      "2013": {
+        "giorni": 365,
+        "file": 365,
+        "mancanti": 0,
+        "feriali_vuoti": [],
+        "chiusure_note_vuote": [
+          "2013-03-29",
+          "2013-12-25"
+        ],
+        "illeggibili": [],
+        "corti": [
+          "2013-01-01"
+        ],
+        "minuti": 352469,
+        "prima_data": "2013-01-01",
+        "ultima_data": "2013-12-31"
+      },
+      "2014": {
+        "giorni": 365,
+        "file": 365,
+        "mancanti": 0,
+        "feriali_vuoti": [],
+        "chiusure_note_vuote": [
+          "2014-04-18"
+        ],
+        "illeggibili": [],
+        "corti": [
+          "2014-01-01",
+          "2014-12-25"
+        ],
+        "minuti": 351953,
+        "prima_data": "2014-01-01",
+        "ultima_data": "2014-12-31"
+      },
+      "2015": {
+        "giorni": 365,
+        "file": 365,
+        "mancanti": 0,
+        "feriali_vuoti": [],
+        "chiusure_note_vuote": [
+          "2015-04-03",
+          "2015-12-25"
+        ],
+        "illeggibili": [],
+        "corti": [
+          "2015-01-01"
+        ],
+        "minuti": 353861,
+        "prima_data": "2015-01-01",
+        "ultima_data": "2015-12-31"
+      },
+      "2016": {
+        "giorni": 366,
+        "file": 366,
+        "mancanti": 0,
+        "feriali_vuoti": [],
+        "chiusure_note_vuote": [
+          "2016-01-01",
+          "2016-03-25"
+        ],
+        "illeggibili": [],
+        "corti": [
+          "2016-12-26"
+        ],
+        "minuti": 354379,
+        "prima_data": "2016-01-03",
+        "ultima_data": "2016-12-30"
+      },
+      "2017": {
+        "giorni": 365,
+        "file": 365,
+        "mancanti": 0,
+        "feriali_vuoti": [],
+        "chiusure_note_vuote": [
+          "2017-04-14"
+        ],
+        "illeggibili": [],
+        "corti": [
+          "2017-01-02",
+          "2017-12-25"
+        ],
+        "minuti": 352815,
+        "prima_data": "2017-01-02",
+        "ultima_data": "2017-12-29"
+      },
+      "2018": {
+        "giorni": 365,
+        "file": 365,
+        "mancanti": 0,
+        "feriali_vuoti": [],
+        "chiusure_note_vuote": [
+          "2018-03-30"
+        ],
+        "illeggibili": [],
+        "corti": [
+          "2018-01-01",
+          "2018-12-25"
+        ],
+        "minuti": 353923,
+        "prima_data": "2018-01-01",
+        "ultima_data": "2018-12-31"
+      },
+      "2019": {
+        "giorni": 365,
+        "file": 365,
+        "mancanti": 0,
+        "feriali_vuoti": [],
+        "chiusure_note_vuote": [
+          "2019-04-19"
+        ],
+        "illeggibili": [],
+        "corti": [
+          "2019-01-01",
+          "2019-12-25"
+        ],
+        "minuti": 353349,
+        "prima_data": "2019-01-01",
+        "ultima_data": "2019-12-31"
+      },
+      "2020": {
+        "giorni": 366,
+        "file": 366,
+        "mancanti": 0,
+        "feriali_vuoti": [],
+        "chiusure_note_vuote": [
+          "2020-04-10",
+          "2020-12-25"
+        ],
+        "illeggibili": [],
+        "corti": [
+          "2020-01-01"
+        ],
+        "minuti": 355495,
+        "prima_data": "2020-01-01",
+        "ultima_data": "2020-12-31"
+      },
+      "2021": {
+        "giorni": 365,
+        "file": 365,
+        "mancanti": 0,
+        "feriali_vuoti": [],
+        "chiusure_note_vuote": [
+          "2021-01-01",
+          "2021-04-02",
+          "2021-12-24"
+        ],
+        "illeggibili": [],
+        "corti": [],
+        "minuti": 354346,
+        "prima_data": "2021-01-03",
+        "ultima_data": "2021-12-31"
+      },
+      "2022": {
+        "giorni": 365,
+        "file": 365,
+        "mancanti": 0,
+        "feriali_vuoti": [],
+        "chiusure_note_vuote": [
+          "2022-04-15"
+        ],
+        "illeggibili": [],
+        "corti": [
+          "2022-12-26"
+        ],
+        "minuti": 354633,
+        "prima_data": "2022-01-02",
+        "ultima_data": "2022-12-30"
+      },
+      "2023": {
+        "giorni": 315,
+        "file": 315,
+        "mancanti": 0,
+        "feriali_vuoti": [],
+        "chiusure_note_vuote": [
+          "2023-04-07"
+        ],
+        "illeggibili": [],
+        "corti": [
+          "2023-01-02"
+        ],
+        "minuti": 306529,
+        "prima_data": "2023-01-02",
+        "ultima_data": "2023-11-10"
+      }
+    },
+    "tmp_residui": [],
+    "pulito": true,
+    "messi_da_parte": [],
+    "file_estranei": []
+  },
+  {
+    "cartella": "brain/dati/reali/cache_dukascopy/XAUUSD_ASK",
+    "inizio": "2005-01-01",
+    "fine": "2023-11-11",
+    "anni": {
+      "2005": {
+        "giorni": 365,
+        "file": 365,
+        "mancanti": 0,
+        "feriali_vuoti": [],
+        "chiusure_note_vuote": [],
+        "illeggibili": [],
+        "corti": [
+          "2005-03-25"
+        ],
+        "minuti": 278588,
+        "prima_data": "2005-01-02",
+        "ultima_data": "2005-12-30"
+      },
+      "2006": {
+        "giorni": 365,
+        "file": 365,
+        "mancanti": 0,
+        "feriali_vuoti": [],
+        "chiusure_note_vuote": [],
+        "illeggibili": [],
+        "corti": [
+          "2006-01-02",
+          "2006-04-14",
+          "2006-12-25"
+        ],
+        "minuti": 333198,
+        "prima_data": "2006-01-01",
+        "ultima_data": "2006-12-31"
+      },
+      "2007": {
+        "giorni": 365,
+        "file": 365,
+        "mancanti": 0,
+        "feriali_vuoti": [],
+        "chiusure_note_vuote": [],
+        "illeggibili": [],
+        "corti": [
+          "2007-01-01",
+          "2007-04-06"
+        ],
+        "minuti": 346941,
+        "prima_data": "2007-01-01",
+        "ultima_data": "2007-12-31"
+      },
+      "2008": {
+        "giorni": 366,
+        "file": 366,
+        "mancanti": 0,
+        "feriali_vuoti": [],
+        "chiusure_note_vuote": [],
+        "illeggibili": [],
+        "corti": [
+          "2008-01-01",
+          "2008-03-21",
+          "2008-12-25"
+        ],
+        "minuti": 363465,
+        "prima_data": "2008-01-01",
+        "ultima_data": "2008-12-31"
+      },
+      "2009": {
+        "giorni": 365,
+        "file": 365,
+        "mancanti": 0,
+        "feriali_vuoti": [],
+        "chiusure_note_vuote": [],
+        "illeggibili": [],
+        "corti": [
+          "2009-04-10",
+          "2009-12-25"
+        ],
+        "minuti": 363585,
+        "prima_data": "2009-01-01",
+        "ultima_data": "2009-12-31"
+      },
+      "2010": {
+        "giorni": 365,
+        "file": 365,
+        "mancanti": 0,
+        "feriali_vuoti": [],
+        "chiusure_note_vuote": [],
+        "illeggibili": [],
+        "corti": [
+          "2010-01-01"
+        ],
+        "minuti": 365764,
+        "prima_data": "2010-01-01",
+        "ultima_data": "2010-12-31"
+      },
+      "2011": {
+        "giorni": 365,
+        "file": 365,
+        "mancanti": 0,
+        "feriali_vuoti": [],
+        "chiusure_note_vuote": [],
+        "illeggibili": [],
+        "corti": [
+          "2011-12-26"
+        ],
+        "minuti": 363850,
+        "prima_data": "2011-01-02",
+        "ultima_data": "2011-12-30"
+      },
+      "2012": {
+        "giorni": 366,
+        "file": 366,
+        "mancanti": 0,
+        "feriali_vuoti": [],
+        "chiusure_note_vuote": [],
+        "illeggibili": [],
+        "corti": [
+          "2012-01-02",
+          "2012-04-06",
+          "2012-12-25"
+        ],
+        "minuti": 362888,
+        "prima_data": "2012-01-01",
+        "ultima_data": "2012-12-31"
+      },
+      "2013": {
+        "giorni": 365,
+        "file": 365,
+        "mancanti": 0,
+        "feriali_vuoti": [],
+        "chiusure_note_vuote": [
+          "2013-03-29",
+          "2013-12-25"
+        ],
+        "illeggibili": [],
+        "corti": [
+          "2013-01-01"
+        ],
+        "minuti": 352469,
+        "prima_data": "2013-01-01",
+        "ultima_data": "2013-12-31"
+      },
+      "2014": {
+        "giorni": 365,
+        "file": 365,
+        "mancanti": 0,
+        "feriali_vuoti": [],
+        "chiusure_note_vuote": [
+          "2014-04-18"
+        ],
+        "illeggibili": [],
+        "corti": [
+          "2014-01-01",
+          "2014-12-25"
+        ],
+        "minuti": 351953,
+        "prima_data": "2014-01-01",
+        "ultima_data": "2014-12-31"
+      },
+      "2015": {
+        "giorni": 365,
+        "file": 365,
+        "mancanti": 0,
+        "feriali_vuoti": [],
+        "chiusure_note_vuote": [
+          "2015-04-03",
+          "2015-12-25"
+        ],
+        "illeggibili": [],
+        "corti": [
+          "2015-01-01"
+        ],
+        "minuti": 353861,
+        "prima_data": "2015-01-01",
+        "ultima_data": "2015-12-31"
+      },
+      "2016": {
+        "giorni": 366,
+        "file": 366,
+        "mancanti": 0,
+        "feriali_vuoti": [],
+        "chiusure_note_vuote": [
+          "2016-01-01",
+          "2016-03-25"
+        ],
+        "illeggibili": [],
+        "corti": [
+          "2016-12-26"
+        ],
+        "minuti": 354379,
+        "prima_data": "2016-01-03",
+        "ultima_data": "2016-12-30"
+      },
+      "2017": {
+        "giorni": 365,
+        "file": 365,
+        "mancanti": 0,
+        "feriali_vuoti": [],
+        "chiusure_note_vuote": [
+          "2017-04-14"
+        ],
+        "illeggibili": [],
+        "corti": [
+          "2017-01-02",
+          "2017-12-25"
+        ],
+        "minuti": 352815,
+        "prima_data": "2017-01-02",
+        "ultima_data": "2017-12-29"
+      },
+      "2018": {
+        "giorni": 365,
+        "file": 365,
+        "mancanti": 0,
+        "feriali_vuoti": [],
+        "chiusure_note_vuote": [
+          "2018-03-30"
+        ],
+        "illeggibili": [],
+        "corti": [
+          "2018-01-01",
+          "2018-12-25"
+        ],
+        "minuti": 353923,
+        "prima_data": "2018-01-01",
+        "ultima_data": "2018-12-31"
+      },
+      "2019": {
+        "giorni": 365,
+        "file": 365,
+        "mancanti": 0,
+        "feriali_vuoti": [],
+        "chiusure_note_vuote": [
+          "2019-04-19"
+        ],
+        "illeggibili": [],
+        "corti": [
+          "2019-01-01",
+          "2019-12-25"
+        ],
+        "minuti": 353349,
+        "prima_data": "2019-01-01",
+        "ultima_data": "2019-12-31"
+      },
+      "2020": {
+        "giorni": 366,
+        "file": 366,
+        "mancanti": 0,
+        "feriali_vuoti": [],
+        "chiusure_note_vuote": [
+          "2020-04-10",
+          "2020-12-25"
+        ],
+        "illeggibili": [],
+        "corti": [
+          "2020-01-01"
+        ],
+        "minuti": 355495,
+        "prima_data": "2020-01-01",
+        "ultima_data": "2020-12-31"
+      },
+      "2021": {
+        "giorni": 365,
+        "file": 365,
+        "mancanti": 0,
+        "feriali_vuoti": [],
+        "chiusure_note_vuote": [
+          "2021-01-01",
+          "2021-04-02",
+          "2021-12-24"
+        ],
+        "illeggibili": [],
+        "corti": [],
+        "minuti": 354346,
+        "prima_data": "2021-01-03",
+        "ultima_data": "2021-12-31"
+      },
+      "2022": {
+        "giorni": 365,
+        "file": 365,
+        "mancanti": 0,
+        "feriali_vuoti": [],
+        "chiusure_note_vuote": [
+          "2022-04-15"
+        ],
+        "illeggibili": [],
+        "corti": [
+          "2022-12-26"
+        ],
+        "minuti": 354633,
+        "prima_data": "2022-01-02",
+        "ultima_data": "2022-12-30"
+      },
+      "2023": {
+        "giorni": 315,
+        "file": 315,
+        "mancanti": 0,
+        "feriali_vuoti": [],
+        "chiusure_note_vuote": [
+          "2023-04-07"
+        ],
+        "illeggibili": [],
+        "corti": [
+          "2023-01-02"
+        ],
+        "minuti": 306529,
+        "prima_data": "2023-01-02",
+        "ultima_data": "2023-11-10"
+      }
+    },
+    "tmp_residui": [],
+    "pulito": true,
+    "messi_da_parte": [],
+    "file_estranei": []
+  },
+  {
+    "giorni": 6889,
+    "senza_file_ask": [],
+    "senza_file_bid": [],
+    "vuoto_da_un_lato": [],
+    "allineati": true
+  }
+]
