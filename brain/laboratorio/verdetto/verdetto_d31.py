@@ -22,6 +22,7 @@ import hashlib
 import math
 import random
 import re
+from fractions import Fraction
 from pathlib import Path
 
 from ..esecuzione import sigillo as S
@@ -66,6 +67,17 @@ def vicini(lo: float, hi: float) -> list:
     return out
 
 
+def _somma_esatta(valori) -> Fraction:
+    """#124: somma in frazioni esatte (nessun arrotondamento, nessuna dipendenza dall'ordine o dalla versione)."""
+    return sum((Fraction(x) for x in valori), Fraction(0))
+
+
+def _media(valori, k: int):
+    """(media esatta, media riportata): la riportata è il quoziente esatto arrotondato UNA volta."""
+    esatta = _somma_esatta(valori) / k
+    return esatta, float(esatta)
+
+
 def controlla_coppie(coppie, ignote: bool = False) -> None:
     """Con `ignote` (solo per il veto per blocchi) una seduta con trade può avere l'esito ignoto: S = None."""
     if not isinstance(coppie, (list, tuple)):                                     # #134: niente generatori
@@ -86,7 +98,11 @@ def controlla_coppie(coppie, ignote: bool = False) -> None:
             raise ValueError(f"seduta {i}: S = {s!r} non è un numero finito")
         if k == 0 and s != 0:
             raise ValueError(f"seduta {i}: risultato {s} senza trade")
-    if not math.isfinite(sum(s for s, _ in coppie if s is not None)):           # #134: somme enormi
+    try:                                   # #134, #124 (V124-06): il pilota somma in qualunque ordine, quindi conta
+        finito = math.isfinite(float(_somma_esatta(abs(s) for s, _ in coppie if s is not None)))   # la somma dei |S|
+    except OverflowError:
+        finito = False
+    if not finito:
         raise ValueError("la somma dei risultati non è un numero finito")
 
 
@@ -184,7 +200,7 @@ def verdetto(coppie, seme: int, requisiti=(), contesto=None, quota=QUOTA) -> dic
     if inidonei is None:
         v["trade"] = sum(k for _, k in coppie)
         v["sedute_attive"] = sum(1 for _, k in coppie if k > 0)
-        v["media"] = math.fsum(s for s, _ in coppie) / v["trade"] if v["trade"] else None   # #124
+        v["media"] = _media((s for s, _ in coppie), v["trade"])[1] if v["trade"] else None   # #124
         mancano = minimi_mancanti(coppie)
         if not mancano:
             iv = intervallo(coppie, seme)
@@ -227,8 +243,8 @@ def screening(coppie, seme: int, potenza_stimata) -> dict:
     if trade == 0:
         s["cause"].append("nessun trade")
         return s
-    s["media"] = math.fsum(x for x, _ in coppie) / trade          # #124: somma esatta, uguale su ogni Python
-    if not s["media"] > SCREENING_MEDIA:
+    esatta, s["media"] = _media((x for x, _ in coppie), trade)     # #124: decisione in frazioni esatte
+    if not esatta > Fraction(SCREENING_MEDIA):
         s["cause"].append(f"media {s['media']:.4f} non > +0,25 R")
     iv = intervallo(coppie, seme)
     if segnale(iv) == "invalido":
@@ -260,11 +276,11 @@ def veto_blocchi(coppie, soglia, minimo_trade_blocco, ampiezza: int = 250) -> di
             sottile = True
             continue
         k = sum(x for _, x in blocco)
-        m = math.fsum(x for x, _ in blocco) / k if k else None      # #124
+        esatta, m = _media((x for x, _ in blocco), k) if k else (None, None)   # #124
         medie.append(m)
         if k < minimo_trade_blocco:
             sottile = True
-        elif m < soglia:
+        elif esatta < Fraction(soglia):
             fallito = True
     esito = "fallito" if fallito else "non valutabile" if sottile else "superato"
     return {"id": "blocchi", "veto": True, "esito": esito, "medie": medie}
