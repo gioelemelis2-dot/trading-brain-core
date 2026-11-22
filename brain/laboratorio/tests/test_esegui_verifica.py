@@ -501,7 +501,7 @@ class TestAncoraEStoria(Percorso):
         self.sp.run(self.g + ["checkout", "-q", "-b", "rifaccio", prima], check=True)
         self.sp.run(self.g + ["push", "-q", "-u", "origin", "rifaccio"], check=True, capture_output=True)
         self.assertEqual(RV.prenotazione(self.riserva, "P1")["stato"], "prenotato")   # qui sembra libera
-        with self.assertRaisesRegex(ValueError, "altra versione"):
+        with self.assertRaisesRegex(ValueError, "'P1' è già consumata in un'altra versione"):   # mutante EV26
             self.esegui(scheda)
         self.assertEqual(self.chiamate, [])
 
