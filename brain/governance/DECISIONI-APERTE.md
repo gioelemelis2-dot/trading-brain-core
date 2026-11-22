@@ -471,3 +471,11 @@ DA-13 rulebook (Q-09) ──► DA-11 G0 minimo ──► DA-12 indicatori compo
   - **(ii)** una riga nel registro delle prove. Quel registro però conta N, e il rifiuto non è una prova.
   - **(iii)** solo nel rapporto. Il rapporto può mancare proprio quando il percorso si ferma.
 - **Consiglio del DGS e di Claude: (i).** È l'unica traccia che resta legata alla prenotazione e che un revisore può ricostruire anche dopo un riavvio. Il costo è un cambio di schema, con test e mutanti, che entra comunque nel nuovo candidato di R19.
+
+### DA-38 · Che cosa fare della verifica nel vecchio esecutore di H-002 (22/11/2026) · **da decidere dal titolare**
+- **Il fatto (#127):** oggi `esegui_h002 --modalita verifica` legge la riserva 2005 → FINE_VERIFICA senza passare dal registro della riserva (né prenotazione, né autorizzazione, né quota) e decide con i criteri annuali di H-002. D-37 aveva lasciato quei criteri «nel perimetro attuale: valgono per H-002». Il nuovo esecutore ordinario (`esegui_verifica`) rifiuta la vecchia scheda di H-002 prima di ogni autorizzazione, come raccomanda DGS-14 Q3, ma il vecchio comando esiste ancora.
+- **Opzioni:**
+  - **(a) Disattivare la verifica di `esegui_h002`:** resta solo lo sviluppo. La verifica passa soltanto dal percorso ordinario D-31 con una scheda H-003. Se H-002 dovesse mai andare in verifica, servirebbe una scheda H-003 nuova, cioè un'ipotesi nuova. Costo: riscrivere circa 20 test e togliere i mutanti del ramo di verifica; cambia il perimetro (entra in R19).
+  - **(b) Collegarla alla riserva:** la verifica di H-002 resta con i suoi criteri annuali, ma passa da prenotazione, quota e autorizzazione come il percorso nuovo. Costo alto: due percorsi di verifica da mantenere e da rivedere, e due regole di decisione diverse.
+  - **(c) Lasciarla com'è:** sconsigliato. È il difetto #127: un comando legge tutta la riserva senza lasciare traccia nel registro.
+- **Consiglio di Claude: (a).** Un solo percorso, che è quello collaudato (D-31), e nessuna lettura della riserva fuori dal registro. H-002 non è oggi una candidata: lo sviluppo ne resta come riferimento.

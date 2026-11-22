@@ -1,0 +1,24 @@
+RAPPORTO DI VERIFICA · H-T127 V-T · esito promossa
+- prenotazione P1 · j = 1 · quota 0.025 [REGOLA] · N globale 1 [MISURA] dal registro canonico
+- impronta dell'impegno: 88069ac02da32b09f05c8e26d5876059f1458350304a9403d08af47f536f5450 [MISURA] · scheda 8e48e09ff3c09a47… · seme 20261122
+- finestra di lettura 2010-01-04 → 2014-01-31, verifica 2010-02-08 → 2014-01-31 [REGOLA]
+- chiamate al caricatore: sviluppo 1, verifica 1 [MISURA]
+VERDETTO D-31 · promossa · causa: L > +0,20 R e requisiti superati
+- sedute: 1000 sedute [MISURA] · incertezza: esatto · fonte: coppie giornaliere della prova
+- trade: 1000 trade [MISURA] · incertezza: esatto · fonte: coppie giornaliere della prova
+- sedute con trade: 1000 sedute [MISURA] · incertezza: esatto · fonte: coppie giornaliere della prova
+- media del campione: 0.3837 R a trade [DERIVATO] · incertezza: esatto (sul campione) · fonte: somma di S / somma di K
+- prove nel registro (N): 1 prove [MISURA] · incertezza: esatto · fonte: registro_prove.json, sha256 7e839b985f9be592…
+- soglie del metro: [0.2000; 0.1000] R a trade [REGOLA] · incertezza: esatto · fonte: D-31 (Δ = 0,05 R attorno a +0,15 R)
+- quota: 0.0250 per coda [REGOLA] · incertezza: esatto · fonte: D-31, D-38
+- vantaggio della strategia: [0.3086; 0.4612] R a trade [STIMA] · incertezza: intervallo bootstrap basic, 2,5% per coda, blocchi da 10, B = 3999, seme 20261122; valido nel dominio del collaudo IA-02 · fonte: pilota_ia02 sha256 717e55996b23a495…
+- segnale del solo metro: favorevole
+- requisito blocchi [veto]: superato
+Esito della regola, non una raccomandazione a operare: la decisione resta del titolare (D-14).
+SCREENING D-36 · ammessa alla verifica
+- media sullo sviluppo: 0.5551 R a trade [DERIVATO] · incertezza: esatto sul campione, ma gonfiata dalla selezione fra varianti · fonte: sviluppo dal 15/11/2023 (D-29)
+- soglie dello screening: [0.2500; 0.0000; 0.5000] R, R, probabilità [REGOLA] · incertezza: esatto · fonte: D-36 (media > +0,25 R; L > 0; potenza ≥ 50%)
+- potenza stimata della verifica: 0.6000 probabilità [STIMA] · incertezza: dalla procedura congelata nella scheda prima del sigillo · fonte: scheda dell'ipotesi (D-36)
+- intervallo sullo sviluppo: [0.3705; 0.7346] R a trade [STIMA] · incertezza: intervallo bootstrap basic, 2,5% per coda, blocchi da 10, B = 3999, seme 9 · fonte: pilota_ia02 sha256 717e55996b23a495…
+Lo screening non è una prova: decide solo se spendere la riserva; il giudizio è della verifica (D-36).
+- criteri di H-002 (solo descrizione, non cambiano l'esito D-31): {"dd_max": 11.202299999999923, "errore_std": 0.0390177961660487, "n": 1000, "n_acquisti": 1000, "n_vendite": 0, "per_anno": {"2010": [226, 0.35918123893802956, 81.17495999999468], "2011": [251, 0.32547155378483794, 81.69335999999431], "2012": [250, 0.3611303999999764, 90.2825999999941], "2013": [251, 0.48501896414339946, 121.73975999999325], "2014": [22, 0.39844636363633906, 8.76581999999946]}, "r_acquisti": 0.3836564999999758, "r_medio": 0.3836564999999758, "r_vendite": null, "serie_perdite": 8, "sharpe": 0.3109423130832804, "vinti": 0.585} [MISURA]

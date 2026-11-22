@@ -1,0 +1,12 @@
+RAPPORTO DI VERIFICA · H-T127 V-T · esito non decidibile
+- prenotazione P1 · j = 1 · quota 0.025 [REGOLA] · N globale 1 [MISURA] dal registro canonico
+- impronta dell'impegno: 88069ac02da32b09f05c8e26d5876059f1458350304a9403d08af47f536f5450 [MISURA] · scheda 8e48e09ff3c09a47… · seme 20261122
+- finestra di lettura 2010-01-04 → 2014-01-31, verifica 2010-02-08 → 2014-01-31 [REGOLA]
+- chiamate al caricatore: sviluppo 1, verifica 1 [MISURA]
+ESITO TECNICO · file difforme · non decidibile · causa: file difforme: ASK 2010-02-18: byte diversi dal manifesto autorizzato [MISURA]
+SCREENING D-36 · ammessa alla verifica
+- media sullo sviluppo: 0.5551 R a trade [DERIVATO] · incertezza: esatto sul campione, ma gonfiata dalla selezione fra varianti · fonte: sviluppo dal 15/11/2023 (D-29)
+- soglie dello screening: [0.2500; 0.0000; 0.5000] R, R, probabilità [REGOLA] · incertezza: esatto · fonte: D-36 (media > +0,25 R; L > 0; potenza ≥ 50%)
+- potenza stimata della verifica: 0.6000 probabilità [STIMA] · incertezza: dalla procedura congelata nella scheda prima del sigillo · fonte: scheda dell'ipotesi (D-36)
+- intervallo sullo sviluppo: [0.3705; 0.7346] R a trade [STIMA] · incertezza: intervallo bootstrap basic, 2,5% per coda, blocchi da 10, B = 3999, seme 9 · fonte: pilota_ia02 sha256 717e55996b23a495…
+Lo screening non è una prova: decide solo se spendere la riserva; il giudizio è della verifica (D-36).
