@@ -26,14 +26,15 @@ Ultimo aggiornamento: **2026-11-21** (sezione in testa); prima: 2026-11-15, dopo
 - Difetti #122 e #123 corretti, #124 aperto.
 - Modello H-003 riallineato.
 - Messaggio 11 pronto: `collaborazione/da-claude/RISCONTRO-DGS-12.md`.
-- **DA-34** è aperta per il titolare.
+- **DA-34** decisa il 22/11 → D-47 (il 50% esatto passa).
 - D-34 punto 5: superato sui casi del DGS. Il DGS può ancora rispondere alle domande del messaggio 11.
 
 **R18 (21/11) consegnato, verificato e NON pulito.**
 - Tre importanti nel perimetro: #125, #126, #127.
 - Corretti #125, #126, #128 e, nel verdetto, #131–#134, più #135 nella CI. Test prima, poi codice, poi mutanti: Q 11/11 e VD 117/118 su 3.13 e 3.9.
 - **#127 aperto:** collegamento fra esecutore e riserva. La verifica di H-002 oggi prenderebbe tutta la riserva, quindi serve una scelta di progetto prima di qualunque verifica.
-- Decisioni del titolare: **DA-35** (contatore; Claude consiglia c, cioè 1 su 2) e **DA-36** (protezione del ramo; Claude consiglia la 2 con le etichette della 3).
+- **Decise il 22/11:** D-48 (DA-35 c): **contatore a 1 su 2**; R19 = giro ordinario completo più le manomissioni. D-49 (DA-36): protezione del ramo, opzione 2 più le etichette `sigillo-*` e `riserva-*`, con lo scavalcamento del titolare; da applicare dopo aver chiarito chi approva.
+- **#136 (22/11):** due test del caricatore resi ciechi da #126; corretti. Mutanti dell'esecuzione **314/314** su 3.13 e 3.9.
 - Dopo: nuovo candidato e mandato R19.
 - Disco pieno di notte: sospetti Time Machine o un aggiornamento di macOS; da controllare con `tmutil listlocalsnapshots /`.
 

@@ -428,6 +428,7 @@ DA-13 rulebook (Q-09) ──► DA-11 G0 minimo ──► DA-12 indicatori compo
 - **Prerequisito:** il motore generico (fase 3 della visione). Non è urgente.
 
 ### DA-34 · Potenza esattamente al 50% nello screening (21/11/2026) · **da decidere dal titolare**
+**Decisa il 22/11/2026 → D-47.** Il testo sotto resta come storia.
 - **Il problema (DGS-12 §2):** D-36 scrive «potenza stimata ≥ 50%», ma nella stessa riga dice «confronti stretti: l'uguaglianza non passa». Il codice, D-42 e la specifica del verdetto usano «≥»: con potenza esattamente 50% la variante passa.
 - **Opzioni:**
   - **(a)** «≥ 50%»: il 50% esatto passa. «L'uguaglianza non passa» vale per le soglie in R (media e limite inferiore). Nessuna modifica al codice.
@@ -435,6 +436,7 @@ DA-13 rulebook (Q-09) ──► DA-11 G0 minimo ──► DA-12 indicatori compo
 - **Consiglio di Claude: (a).** È la formula scritta e la lettura di D-42 («potenza del 50%»). Una potenza stimata esattamente al 50,00% è un caso quasi solo teorico, quindi la scelta conta soprattutto per la chiarezza del testo.
 
 ### DA-35 · Contatore D-24 dopo R18 (21/11/2026) · **da decidere dal titolare**
+**Decisa il 22/11/2026 → D-48.** Il testo sotto resta come storia.
 - **Il fatto:** R18 (il giro su tutte le manomissioni) ha trovato tre difetti **importanti** nel perimetro sigillato, di tipo E/M e costo basso:
   - #125: copia parziale del repository non vista;
   - #126: ASK uguale al BID accettato;
@@ -450,6 +452,7 @@ DA-13 rulebook (Q-09) ──► DA-11 G0 minimo ──► DA-12 indicatori compo
   - Con (c) R19 rifà tutto il perimetro, non solo le prove toccate.
 
 ### DA-36 · Protezione del ramo su GitHub (21/11/2026) · **da decidere dal titolare (D-24)**
+**Decisa il 22/11/2026 → D-49.** Il testo sotto resta come storia.
 - **Opzioni preparate da Gemini** (R18, compito D; `collaborazione/da-gemini/G-20261121-R18.md`):
   1. **Minima:** niente push forzati né cancellazioni; i test automatici obbligatori; scavalcamento possibile per il titolare.
   2. **Con revisione:** come la 1, più modifiche solo tramite richiesta di unione (PR) e approvazione del titolare per i file della CI, il perimetro, il verdetto e i registri (CODEOWNERS).
