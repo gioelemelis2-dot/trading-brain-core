@@ -235,7 +235,8 @@ def esegui(scheda: Path, registro: Path, riserva: Path, id_: str, cache: Path, c
                "metro": {"modulo": "D-31", "pilota": V.IMPRONTA_PILOTA, "quota": V.QUOTA},
                "finestra": identita["finestra"], "registri": man["registri"], "elenco": man["elenco"],
                "impronta_elenco": man["impronta_elenco"], "n_globale": ctx["n_prove"], "quota": q, "j": j,
-               "variante": c["variante"], "seme": c["seme"], "contratto": c}
+               "variante": c["variante"], "seme": c["seme"], "contratto": c,
+               "sedute": [g.isoformat() for g in giorni_verifica]}             # DGS-16: fissate prima di aprire
     h = RV.impronta_impegno(impegno)
     try:
         RV.autorizza(riserva, id_, ctx["n_prove"], h, ora, c["m"], impegno=impegno, quota_attesa=q)
@@ -262,7 +263,11 @@ def esegui(scheda: Path, registro: Path, riserva: Path, id_: str, cache: Path, c
         veto = V.veto_blocchi(cp, c["veto_blocchi"]["soglia"], c["veto_blocchi"]["minimo_trade"])
         v = V.verdetto(cp, c["seme"], [veto], contesto=ctx)
         rec.update(esito=v["esito"], esito_tecnico="completata", causa=v["causa"], verdetto=v,
-                   descrizione_h002=O.metriche(dentro))
+                   descrizione_h002=O.metriche(dentro),
+                   coppie=[[g.isoformat(), s, k] for g, (s, k) in zip(giorni_verifica, cp)],   # DGS-16: in ordine
+                   feriali_esclusi=[g.isoformat() for g in (verifica[0] + timedelta(days=i)
+                                                            for i in range((verifica[1] - verifica[0]).days + 1))
+                                    if g.weekday() < 5 and g not in set(giorni_verifica)])
     rec["chiamate_caricatore"] = dict(chiamate)
     rec = _json(rec)
     RV.rendiconta(riserva, id_, rec["esito"], ora, record=rec)                            # 11

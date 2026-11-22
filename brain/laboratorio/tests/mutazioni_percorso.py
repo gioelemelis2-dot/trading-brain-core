@@ -57,6 +57,8 @@ M = {
     "EV04 ripresa senza controllo d'identità": [(EV, "if p[\"record\"][\"identita\"] != _json(identita):", "if False:")],
     "EV05 sigillo non controllato": [(EV, "    sigillo = S.controlla_sigillo(registro, c[\"ipotesi\"], scheda, codice=identita[\"codice\"])", "    sigillo = {\"varianti\": [c[\"variante\"]]}")],
     "EV17 variante non controllata prima di leggere": [(EV, "if c[\"variante\"] not in sigillo[\"varianti\"]:", "if False:")],
+    "EV18 sedute fuori dall'impegno": [(EV, "               \"sedute\": [g.isoformat() for g in giorni_verifica]}", "               }")],
+    "EV19 coppie del record senza le sedute in ordine": [(EV, "for g, (s, k) in zip(giorni_verifica, cp)]", "for g, (s, k) in zip(sorted(giorni_verifica, reverse=True), cp)]")],
     "EV06 sedute non controllate": [(EV, "if len(giorni_verifica) != c[\"sedute\"]:", "if False:")],
     "EV07 quota non controllata prima della lettura": [(EV, "        if q != V.QUOTA:", "        if False:")],
     "EV08 manifesto con anomalie accettato": [(EV, "    if man[\"anomalie\"]:", "    if False:")],
