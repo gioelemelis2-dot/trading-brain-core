@@ -1166,3 +1166,22 @@ Nulla di questo tocca il candidato `8e51ce9` su cui lavora R15.
   - ricalcolo di S1, B1, B3, della tabella di potenza e dei limiti Beta.
 - **Secondo mandato a Gemini** (`MANDATO-GEMINI-20261122-B.txt`): verifica indipendente della correzione di #124 e mutanti del verdetto su 3.9; prova P-001 sui 10 video, con il mandato riportato intero, perché nella notte non era nella sua sessione.
 - Il messaggio di Gemini inoltrato dal titolare è lo stesso già archiviato (`6fb7949`): niente di nuovo da registrare.
+
+## 2026-11-22 · v1.94 (DGS-15: percorso ordinario di verifica, #127, ricevute)
+
+- **DGS-15 archiviato** (`collaborazione/da-chatgpt/DGS-20261122-15-mandato-ricevuta-127.md`): mandato per la ricevuta di #127, in sei punti. Non risponde alle domande Q1–Q4 del messaggio 14.
+- **Punto 1, attribuzione** (`laboratorio/ricevute/2026-11-22-attribuzione/ATTRIBUZIONE.md`, con i log):
+  - 17/17 attribuiti a `f5d0cad`; 314/314 a `6ce6388`, con le due parti su 3.9;
+  - R18 diviso fra `efcfcbc` e le riesecuzioni;
+  - dimostrazione di #136 su 3.13 e 3.9 e spiegazione di V10;
+  - suite e mutanti del verdetto rifatti in una copia bloccata su `dfe0227`: verdi, 124/125.
+- **Errore di Claude, corretto:** ho modificato `test_riserva.py` mentre la corsa di attribuzione leggeva la stessa cartella. La corsa non sarebbe stata attribuibile a un solo commit. L'ho fermata e rifatta in un worktree bloccato sul commit. **Regola:** le corse da attribuire si fanno sempre in una copia bloccata sul commit.
+- **Codice nuovo (test prima, poi codice):**
+  - schema `riserva/2` (D-50): rifiuto durevole, quota prevista, ricontrollo della quota sotto il blocco, impegno legato all'impronta, record del verdetto, `prenotazione()`;
+  - `manifesto.py`: insieme atteso contro il registro dello scaricamento;
+  - byte verificati nel caricatore (`FileDifforme`);
+  - `esegui_verifica.py`, l'esecutore ordinario con la scheda H-003;
+  - mercato sintetico per le prove;
+  - mutanti del percorso (`mutazioni_percorso.py`, 40).
+- **Ricevuta di #127** (`laboratorio/ricevute/2026-11-22-percorso-127/RICEVUTA-127.md`): prove A–G su 3.13 e 3.9 con esiti identici. Gli estremi L e U differiscono di 5,7e-15 R fra le versioni, per le somme del pilota congelato (N22-A2): è un caso concreto per Q1 del messaggio 14.
+- **#127 in parte corretto.** Resta il vecchio esecutore di H-002 in verifica: **DA-38** al titolare, perché D-37 gli aveva lasciato i suoi criteri.
