@@ -202,7 +202,9 @@ def esegui(scheda: Path, registro: Path, riserva: Path, id_: str, cache: Path, c
             raise ValueError("ripresa non identica: scheda, codice, variante, seme o finestra diversi dal record")
         _scrivi_rapporto(rapporto, rapporto_da_record(p["record"]))
         return risultato("rapporto rigenerato", p["record"]["esito"], p["record"]["impronta_impegno"], rapporto)
-    S.controlla_sigillo(registro, c["ipotesi"], scheda, codice=identita["codice"])       # 3
+    sigillo = S.controlla_sigillo(registro, c["ipotesi"], scheda, codice=identita["codice"])   # 3
+    if c["variante"] not in sigillo["varianti"]:                                         # #137: prima di leggere
+        raise ValueError(f"variante {c['variante']!r} non dichiarata nel sigillo di {c['ipotesi']}: {sigillo['varianti']}")
     giorni_verifica = sedute(*verifica)                                                  # 4
     if len(giorni_verifica) != c["sedute"]:
         raise ValueError(f"la finestra di verifica ha {len(giorni_verifica)} sedute, la scheda ne dichiara {c['sedute']}")
