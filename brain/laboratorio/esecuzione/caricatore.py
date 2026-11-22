@@ -62,7 +62,11 @@ def impronta_cache(cartella_bid: Path, cartella_ask: Path, inizio: date, fine: d
     return impronta.hexdigest()
 
 
-def _leggi_cache(cartella: Path, inizio: date, fine: date, simbolo: str, impronta):
+class FileDifforme(ValueError):
+    """DGS-14 Q1: un file della finestra mancante, non previsto o con byte diversi dal manifesto autorizzato."""
+
+
+def _leggi_cache(cartella: Path, inizio: date, fine: date, simbolo: str, impronta, lato: str = "", attese=None):
     """Minuti, giorni senza file, giorni feriali con il file vuoto o senza minuti (fuori dalle chiusure note), giorni
     feriali con meno della QUOTA_SESSIONE dei minuti della sessione di Londra (fuori da chiusure e vigilie: #49, un
     solo minuto a mezzanotte non fa un giorno con i dati). Aggiorna `impronta` con nome e SHA-256 di ogni file letto."""
@@ -75,10 +79,17 @@ def _leggi_cache(cartella: Path, inizio: date, fine: date, simbolo: str, impront
         f = Path(cartella) / f"{giorno.isoformat()}.bi5"
         if f.is_symlink():                                       # #126: un giorno «prestato» da un'altra cartella
             raise ValueError(f"{f}: collegamento simbolico nella cache, non un file scaricato")
+        atteso = None if attese is None else attese.get((lato, giorno.isoformat()))
+        if attese is not None and atteso is None:
+            raise FileDifforme(f"{lato} {giorno}: giorno letto ma assente dal manifesto autorizzato")
         if not f.exists():
+            if atteso is not None:
+                raise FileDifforme(f"{lato} {giorno}: file del manifesto sparito dopo l'autorizzazione")
             mancanti += 1
         else:
-            dati = f.read_bytes()
+            dati = f.read_bytes()                                    # gli STESSI byte: impronta, poi decodifica
+            if atteso is not None and hashlib.sha256(dati).hexdigest() != atteso:
+                raise FileDifforme(f"{lato} {giorno}: byte diversi dal manifesto autorizzato")
             _aggiorna_impronta(impronta, cartella, giorno, dati)
             minuti = DK.decodifica(dati, giorno, DK.SCALA[simbolo]) if dati else []
             for t, o, h, l, c, _v in minuti:
@@ -117,7 +128,7 @@ def _ask_diverso_dal_bid(bid: Dict[datetime, Quota], ask: Dict[datetime, Quota])
 
 def carica(cartella_bid: Path, cartella_ask: Path, inizio: date, fine: date, modalita: str,
            registro: Optional[Path] = None, ipotesi: Optional[str] = None, scheda: Optional[Path] = None,
-           simbolo: str = "XAUUSD") -> Tuple[Dict[datetime, Quota], Dict[datetime, Quota], dict]:
+           simbolo: str = "XAUUSD", attese=None) -> Tuple[Dict[datetime, Quota], Dict[datetime, Quota], dict]:
     if modalita not in MODALITA:
         raise ValueError(f"modalità {modalita!r} non in {MODALITA}")
     if fine < inizio:
@@ -135,11 +146,11 @@ def carica(cartella_bid: Path, cartella_ask: Path, inizio: date, fine: date, mod
             raise ValueError(f"la verifica finisce il {FINE_VERIFICA} (poi embargo e sviluppo): {fine} è oltre")
     _cartelle_distinte(Path(cartella_bid), Path(cartella_ask))
     impronta = hashlib.sha256()
-    bid, mb, vb, ib = _leggi_cache(cartella_bid, inizio, fine, simbolo, impronta)
-    ask, ma, va, ia = _leggi_cache(cartella_ask, inizio, fine, simbolo, impronta)
+    bid, mb, vb, ib = _leggi_cache(cartella_bid, inizio, fine, simbolo, impronta, "BID", attese)
+    ask, ma, va, ia = _leggi_cache(cartella_ask, inizio, fine, simbolo, impronta, "ASK", attese)
     _ask_diverso_dal_bid(bid, ask)
     info = {"modalita": modalita, "inizio": inizio.isoformat(), "fine": fine.isoformat(),
             "giorni_bid_mancanti": mb, "giorni_ask_mancanti": ma, "minuti_bid": len(bid), "minuti_ask": len(ask),
             "feriali_vuoti_bid": vb, "feriali_vuoti_ask": va, "feriali_incompleti_bid": ib,
-            "feriali_incompleti_ask": ia, "dati_sha256": impronta.hexdigest()}
+            "feriali_incompleti_ask": ia, "dati_sha256": impronta.hexdigest(), "byte_verificati": attese is not None}
     return bid, ask, info

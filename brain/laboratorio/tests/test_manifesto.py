@@ -118,7 +118,8 @@ class TestConfronto(Cache):
     def test_lato_sbagliato_nel_registro_o_nell_indirizzo(self):
         self.righe["BID"][2]["url"] = DK.url_giorno("XAUUSD", date(2024, 1, 4), "ASK")
         self.scrivi_registri()
-        self.assertEqual(self.manifesto()["anomalie"], ["lato sbagliato: XAUUSD BID 2024-01-04 (indirizzo ASK)"])
+        self.assertEqual(self.manifesto()["anomalie"], ["lato sbagliato: XAUUSD BID 2024-01-04 (indirizzo ASK)",
+                                                        "omesso: XAUUSD BID 2024-01-04"])   # la riga scartata lascia il giorno scoperto
         self.rifai()
         riga = dict(self.righe["ASK"][2], lato="ASK")
         self.righe["BID"][2] = riga                                    # riga ASK finita nel registro BID
