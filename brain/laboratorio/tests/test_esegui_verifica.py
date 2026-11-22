@@ -93,6 +93,9 @@ class Percorso(unittest.TestCase):
         p = mock.patch.object(C, "carica", side_effect=conta)
         p.start()
         self.addCleanup(p.stop)
+        q = mock.patch.object(EV, "ANCORA_GIT", False)                    # registri temporanei, fuori da git
+        q.start()
+        self.addCleanup(q.stop)
 
     def tearDown(self):
         self._d.cleanup()
@@ -409,6 +412,84 @@ class TestConcorrenzaEFileDifforme(Percorso):
         rec = RV.record_esito(self.riserva, "P1")
         self.assertIn("byte diversi dal manifesto", rec["causa"])
         self.assertIn("file difforme", Path(r["rapporto"]).read_text(encoding="utf-8"))
+
+
+class TestAncoraEStoria(Percorso):
+    """PIANO-D51 §3.1 (protezioni #86, #125, R14-03 della vecchia verifica, portate nel percorso ordinario): registri
+    canonici, ancorati alla versione su GitHub, con la storia completa; una prenotazione consumata in un'altra
+    versione del registro della riserva non si riusa; N non scende. Repository git temporaneo con un remoto finto."""
+
+    def setUp(self):
+        import subprocess
+        super().setUp()
+        self.sp = subprocess
+        remoto, self.repo = self.d / "remoto.git", self.d / "repo"
+        subprocess.run(["git", "init", "-q", "--bare", str(remoto)], check=True)
+        subprocess.run(["git", "clone", "-q", str(remoto), str(self.repo)], check=True, capture_output=True)
+        self.g = ["git", "-C", str(self.repo), "-c", "user.name=t", "-c", "user.email=t@invalid"]
+        subprocess.run(self.g + ["checkout", "-q", "-b", "principale"], check=True)
+        base = self.repo / "brain" / "laboratorio"
+        base.mkdir(parents=True)
+        self.registro = base / "registro_prove.json"
+        self.riserva = base / "registro_riserva.json"
+        RV.crea(self.riserva, date(2005, 1, 1), date(2023, 10, 31), 0.05, ORA)
+        for nome, valore in (("RADICE", self.repo), ("ANCORA_GIT", True)):
+            c = mock.patch.object(EV, nome, valore)
+            c.start()
+            self.addCleanup(c.stop)
+        self.d_schede = self.repo
+
+    def spingi(self, messaggio, ramo="principale"):
+        self.sp.run(self.g + ["add", "-A"], check=True)
+        self.sp.run(self.g + ["commit", "-q", "-m", messaggio], check=True)
+        self.sp.run(self.g + ["push", "-q", "-u", "origin", ramo], check=True, capture_output=True)
+        return self.sp.run(self.g + ["rev-parse", "HEAD"], capture_output=True, text=True).stdout.strip()
+
+    def scheda_nel_repo(self, ipotesi="H-T127", id_="P1", inizio=LETTURA, fine=FINE):
+        scheda = self.repo / f"{ipotesi}.md"
+        scheda.write_text(testo_scheda(contratto(ipotesi)), encoding="utf-8")
+        S.sigilla(self.registro, ipotesi, scheda, ["V-T"], ORA, codice=EV.impronte_codice())
+        RV.prenota(self.riserva, id_, ipotesi, inizio, fine, S.impronta(scheda), ORA)
+        return scheda
+
+    def test_registro_della_riserva_non_canonico(self):
+        scheda = self.scheda_nel_repo()
+        self.spingi("sigillo e prenotazione")
+        altro = self.repo / "riserva_bis.json"
+        altro.write_bytes(self.riserva.read_bytes())
+        with self.assertRaisesRegex(ValueError, "canonico"):
+            EV.esegui(scheda, self.registro, altro, "P1", self.cache, self.cache_sv, self.d / "r.txt", ORA)
+        self.assertEqual(self.chiamate, [])
+
+    def test_riserva_non_committata(self):
+        scheda = self.scheda_nel_repo()
+        self.spingi("sigillo e prenotazione")
+        RV.quarantena(self.riserva, date(2005, 1, 3), date(2005, 1, 3), "prova", ORA)   # modifica locale
+        with self.assertRaisesRegex(ValueError, "committ"):
+            self.esegui(scheda)
+        self.assertEqual(self.chiamate, [])
+
+    def test_prenotazione_consumata_in_un_altra_versione(self):
+        scheda = self.scheda_nel_repo()
+        prima = self.spingi("sigillo e prenotazione")
+        RV.autorizza(self.riserva, "P1", 1, "h" * 64, ORA)                # consumata su principale
+        self.spingi("autorizzata")
+        self.sp.run(self.g + ["checkout", "-q", "-b", "rifaccio", prima], check=True)
+        self.sp.run(self.g + ["push", "-q", "-u", "origin", "rifaccio"], check=True, capture_output=True)
+        self.assertEqual(RV.prenotazione(self.riserva, "P1")["stato"], "prenotato")   # qui sembra libera
+        with self.assertRaisesRegex(ValueError, "altra versione"):
+            self.esegui(scheda)
+        self.assertEqual(self.chiamate, [])
+
+    def test_n_non_scende(self):
+        scheda = self.scheda_nel_repo()
+        prima = self.spingi("sigillo e prenotazione")                     # N = 1
+        S.sigilla(self.registro, "H-ALTRA", scheda, [f"X{k}" for k in range(8)], ORA)
+        self.spingi("altre 8 prove")                                       # N = 9
+        self.sp.run(self.g + ["checkout", "-q", "-b", "vecchio", prima], check=True)
+        self.sp.run(self.g + ["push", "-q", "-u", "origin", "vecchio"], check=True, capture_output=True)
+        self.assertEqual(V.contesto_prove(self.registro)["n_prove"], 1)
+        self.assertEqual(EV.n_globale(self.registro, EV.RADICE)["n_prove"], 9)
 
 
 if __name__ == "__main__":
