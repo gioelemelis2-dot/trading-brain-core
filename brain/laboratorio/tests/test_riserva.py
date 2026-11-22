@@ -325,6 +325,18 @@ class TestRiserva2(Base):
         with self.assertRaisesRegex(ValueError, "impegno"):
             RV.stato(self.reg)
 
+    def test_prenotazione_letta_senza_scrivere(self):
+        self.prenota("A", D(2005, 1, 1), D(2005, 1, 31))
+        prima = self.reg.read_bytes()
+        p = RV.prenotazione(self.reg, "A")
+        self.assertEqual((p["stato"], p["evento"]["inizio"], p["evento"]["hash_domanda"], p["esito"]),
+                         ("prenotato", "2005-01-01", "domanda-A", None))
+        self.assertEqual(self.reg.read_bytes(), prima)
+        with self.assertRaises(ValueError):
+            RV.prenotazione(self.reg, "Z")
+        RV.rifiuta(self.reg, "A", 2, 0.025, "m", "f", SCHEDA, ORA)
+        self.assertEqual(RV.prenotazione(self.reg, "A")["stato"], "rifiutato")
+
     def test_esito_con_il_record_del_verdetto(self):
         self.prenota("A", D(2005, 1, 1), D(2005, 1, 31))
         RV.autorizza(self.reg, "A", 1, "h", ORA)
