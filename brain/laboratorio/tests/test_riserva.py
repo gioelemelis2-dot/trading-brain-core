@@ -309,6 +309,7 @@ class TestRiserva2(Base):
                "elenco": [["XAUUSD", "ASK", "2005-01-03", "d" * 64], ["XAUUSD", "BID", "2005-01-03", "e" * 64]]}
         h = RV.impronta_impegno(imp)
         self.assertEqual(h, RV.impronta_impegno(json.loads(json.dumps(imp))))
+        self.assertEqual(h, RV.impronta_impegno(dict(reversed(list(imp.items())))))   # l'ordine delle chiavi non conta
         self.assertNotEqual(h, RV.impronta_impegno(dict(imp, codice="f" * 64)))
         self.prenota("A", D(2005, 1, 1), D(2005, 1, 31))
         with self.assertRaisesRegex(ValueError, "impegno"):

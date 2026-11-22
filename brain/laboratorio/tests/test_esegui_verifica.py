@@ -143,6 +143,7 @@ class TestCorsaCompleta(Percorso):
         self.assertAlmostEqual(v["media"], (vinte * M.R_VINTA + (1000 - vinte) * M.R_PERSA) / 1000, places=6)
         self.assertEqual(rec["impronta_impegno"], RV.impronta_impegno(imp))
         self.assertTrue(rec["screening"]["ammessa"])
+        self.assertEqual(rec["descrizione_h002"]["n"], 1000)          # le date accessorie sono solo storia
         # registro delle prove: screening, verifica ed esito, una volta sola
         ruoli = [e["ruolo"] for e in S.leggi(self.registro)["esecuzioni"]]
         self.assertEqual(ruoli, ["sviluppo", "verifica", "esito"])
@@ -150,7 +151,8 @@ class TestCorsaCompleta(Percorso):
         testo = Path(r["rapporto"]).read_text(encoding="utf-8")
         self.assertEqual(testo, EV.rapporto_da_record(rec))
         for frammento in ("VERDETTO D-31 · promossa", "[MISURA]", "[STIMA]", "[REGOLA]", "impronta dell'impegno",
-                          "chiamate al caricatore", "criteri di H-002 (solo descrizione", "j = 1", "quota 0.025"):
+                          "chiamate al caricatore", "criteri di H-002 (solo descrizione", "j = 1", "quota 0.025",
+                          "requisito blocchi [veto]: superato"):
             self.assertIn(frammento, testo)
 
     def test_ripresa_dopo_il_verdetto_senza_rileggere(self):
@@ -204,6 +206,22 @@ class TestRifiutiPrimaDellaLettura(Percorso):
         with self.assertRaises(S.NonSigillata):
             self.esegui(altra, "P2")
         self.assertEqual(self.chiamate, [])
+
+    def test_finestra_diversa_da_1000_sedute(self):
+        scheda = self.prepara(fine=FINE - timedelta(days=1))
+        prima = self.riserva.read_bytes()
+        with self.assertRaisesRegex(ValueError, "999 sedute"):
+            self.esegui(scheda)
+        self.assertEqual((self.chiamate, self.riserva.read_bytes()), ([], prima))
+
+    def test_screening_non_superato_ferma_prima_del_manifesto(self):
+        scheda = self.prepara(potenza_stimata=0.4)
+        prima = self.riserva.read_bytes()
+        with mock.patch.object(MF, "manifesto") as man:
+            with self.assertRaisesRegex(ValueError, "screening non superato"):
+                self.esegui(scheda)
+        man.assert_not_called()
+        self.assertEqual((self.chiamate, self.riserva.read_bytes()), (["sviluppo"], prima))
 
     def test_quota_non_collaudata_rifiuto_durevole_e_zero_letture(self):
         scheda = self.prepara(m=2)
