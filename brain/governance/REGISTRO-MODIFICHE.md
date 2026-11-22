@@ -1151,3 +1151,7 @@ Nulla di questo tocca il candidato `8e51ce9` su cui lavora R15.
   - L'autore di una richiesta di unione non può approvarla da solo. Gemini propone tre alternative: un secondo account per gli agenti; approvazioni a 0 con richiesta di unione e test obbligatori; approvazione a 1 con scavalcamento.
   - **Limite nuovo:** gli agenti che usano le credenziali del titolare ne ereditano lo scavalcamento.
   - Istruzioni clic per clic nel rapporto.
+- **Verifica dopo la correzione di #124:**
+  - suite completa verde su 3.13.18 e 3.9.25; mutanti del caricatore C01–C09 9/9 su entrambe, con i test del periodo riscritti da casi validi;
+  - la prima corsa dei mutanti del verdetto ha dato 121/125: VD26, VD35 e VD72 non si applicavano più, perché la correzione aveva cambiato le loro righe (stessa classe di errore di V10 in #136, errore di Claude). Riallineati, 3/3 su entrambe;
+  - **totale: 124/125 su 3.13.18 e su 3.9.25, con VD13 equivalente dichiarato.**
