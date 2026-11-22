@@ -67,6 +67,7 @@ M = {
     "EV26 prenotazione consumata altrove accettata": [(EV, "if q is not None and q[\"stato\"] == \"autorizzato\" and stato_attuale != \"autorizzato\":", "if False:")],
     "EV27 N della sola versione corrente": [(EV, "ctx = dict(ctx, n_prove=max([ctx[\"n_prove\"]] + [S.n_prove(d) for d in storia]))", "pass")],
     "EV28 aperture perse rispetto a un'altra versione": [(EV, "        if s.j > j_attuale:", "        if False:")],
+    "EV29 seconda verifica della stessa variante ammessa": [(EV, "    if altre:                                                                            # PIANO-D51 §3.4", "    if False:")],
     "EV19 coppie del record senza le sedute in ordine": [(EV, "for g, (s, k) in zip(giorni_verifica, cp)]", "for g, (s, k) in zip(sorted(giorni_verifica, reverse=True), cp)]")],
     "EV06 sedute non controllate": [(EV, "if len(giorni_verifica) != c[\"sedute\"]:", "if False:")],
     "EV07 quota non controllata prima della lettura": [(EV, "        if q != V.QUOTA:", "        if False:")],

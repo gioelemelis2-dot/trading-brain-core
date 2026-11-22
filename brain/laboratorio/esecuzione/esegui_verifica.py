@@ -246,6 +246,11 @@ def esegui(scheda: Path, registro: Path, riserva: Path, id_: str, cache: Path, c
     sigillo = S.controlla_sigillo(registro, c["ipotesi"], scheda, codice=identita["codice"])   # 3
     if c["variante"] not in sigillo["varianti"]:                                         # #137: prima di leggere
         raise ValueError(f"variante {c['variante']!r} non dichiarata nel sigillo di {c['ipotesi']}: {sigillo['varianti']}")
+    altre = [e.get("prenotazione") for e in S.leggi(registro)["esecuzioni"] if e["ipotesi"] == c["ipotesi"]
+             and e["ruolo"] == "verifica" and e.get("variante") == c["variante"] and e.get("prenotazione") != id_]
+    if altre:                                                                            # PIANO-D51 §3.4
+        raise ValueError(f"verifica di {c['ipotesi']} {c['variante']} già eseguita (prenotazione {altre[0]!r}): "
+                         f"si fa una volta sola")
     giorni_verifica = sedute(*verifica)                                                  # 4
     if len(giorni_verifica) != c["sedute"]:
         raise ValueError(f"la finestra di verifica ha {len(giorni_verifica)} sedute, la scheda ne dichiara {c['sedute']}")
@@ -295,7 +300,7 @@ def esegui(scheda: Path, registro: Path, riserva: Path, id_: str, cache: Path, c
                    sha_scheda, ora)
         return risultato("rifiutata per quota", None, motivo=str(e))
     _registra_una_volta(registro, c["ipotesi"], {"ruolo": "verifica", "variante": c["variante"],
-                                                "impronta_impegno": h}, ora)
+                                                "impronta_impegno": h, "prenotazione": id_}, ora)
     rec = {"prenotazione": id_, "j": j, "quota": q, "n_globale": ctx["n_prove"], "impronta_impegno": h,
            "identita": identita, "screening": scr, "chiamate_caricatore": None}
     try:                                                                                   # 9
