@@ -19,10 +19,14 @@ aggira i controlli; per questo è sigillato con il resto, è su GitHub e i revis
 
 Uso (dalla radice del repository):
   python3 -I -S -B brain/laboratorio/esecuzione/avvio.py --modalita sviluppo --rapporto <file>
+Verifica sul percorso ordinario D-31 (D-51, PIANO-D51 §3.3): il primo argomento è `verifica`; l'ipotesi si legge dal
+contratto H-003 della scheda (`--scheda`) e si controlla il codice sigillato per QUELL'ipotesi, poi `esegui_verifica`:
+  python3 -I -S -B brain/laboratorio/esecuzione/avvio.py verifica --scheda <file> --registro … --riserva … …
 """
 import hashlib
 import json
 import os
+import re
 import sys
 
 RADICE = os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
@@ -32,7 +36,26 @@ IMPORTABILI = (".py", ".pyc", ".pyo", ".so", ".pyd", ".pth", ".zip", ".egg", ".w
 COMPILATI = (".pyc", ".pyo", ".so", ".pyd", ".pth")
 
 
-def controlla(radice: str) -> list:
+def ipotesi_della_scheda(argv: list):
+    """(ipotesi, problema): l'ipotesi dal blocco «json contratto-h003» della scheda indicata con --scheda."""
+    try:
+        percorso = argv[argv.index("--scheda") + 1]
+    except (ValueError, IndexError):
+        return None, "manca --scheda"
+    try:
+        with open(percorso, encoding="utf-8") as fh:
+            blocchi = re.findall(r"```json contratto-h003\n(.*?)\n```", fh.read(), re.S)
+        if len(blocchi) != 1:
+            return None, f"{percorso}: nessun contratto H-003 (un solo blocco «json contratto-h003»)"
+        ipotesi = json.loads(blocchi[0]).get("ipotesi")
+    except (OSError, ValueError, AttributeError) as e:
+        return None, f"{percorso}: contratto H-003 illeggibile ({e})"
+    if not isinstance(ipotesi, str) or not ipotesi:
+        return None, f"{percorso}: contratto H-003 senza ipotesi"
+    return ipotesi, None
+
+
+def controlla(radice: str, ipotesi: str = IPOTESI) -> list:
     problemi = []
     if not (sys.flags.isolated and sys.flags.no_site and sys.flags.dont_write_bytecode):    # R14-09: anche -B
         problemi.append("eseguire con python3 -I -S -B")
@@ -57,11 +80,11 @@ def controlla(radice: str) -> list:
                      for f in file if f.endswith(COMPILATI)]
     try:
         with open(os.path.join(radice, REGISTRO), encoding="utf-8") as fh:
-            codice = [s for s in json.load(fh)["sigilli"] if s.get("ipotesi") == IPOTESI][0]["codice"]
+            codice = [s for s in json.load(fh)["sigilli"] if s.get("ipotesi") == ipotesi][0]["codice"]
         if not isinstance(codice, dict) or not codice:
             raise ValueError("codice vuoto")
     except (OSError, ValueError, KeyError, IndexError, TypeError, AttributeError):
-        return problemi + [f"{REGISTRO}: nessun sigillo di {IPOTESI} con il codice: non si importa nulla"]
+        return problemi + [f"{REGISTRO}: nessun sigillo di {ipotesi} con il codice: non si importa nulla"]
     for rel, impronta in sorted(codice.items()):
         try:
             with open(os.path.join(radice, rel), "rb") as fh:
@@ -74,12 +97,22 @@ def controlla(radice: str) -> list:
 
 
 def principale(argv=None) -> int:
-    problemi = controlla(RADICE)
+    argv = list(sys.argv[1:] if argv is None else argv)
+    verifica = bool(argv) and argv[0] == "verifica"
+    if verifica:                                                       # D-51: percorso ordinario D-31
+        argv = argv[1:]
+        ipotesi, problema = ipotesi_della_scheda(argv)
+        problemi = [problema] if problema else controlla(RADICE, ipotesi)
+    else:
+        problemi = controlla(RADICE)
     if problemi:
         print(f"FERMO prima di importare il codice (#95): {problemi[:10]}", file=sys.stderr)
         return 2
     sys.path.insert(0, RADICE)
     sys._tb_avvio_controllato = True
+    if verifica:
+        from brain.laboratorio.esecuzione.esegui_verifica import main as main_verifica
+        return main_verifica(argv)
     from brain.laboratorio.esecuzione.esegui_h002 import main
     return main(argv)
 

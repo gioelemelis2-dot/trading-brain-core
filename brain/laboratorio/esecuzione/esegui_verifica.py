@@ -39,7 +39,7 @@ from . import caricatore as C
 from . import manifesto as MF
 from . import riserva as RV
 from . import sigillo as S
-from .esegui_h002 import RADICE, VARIANTI, moduli_brain
+from .esegui_h002 import RADICE, VARIANTI, controlla_ambiente, moduli_brain
 
 PARTENZA = "brain.laboratorio.esecuzione.esegui_verifica"
 BLOCCO = re.compile(r"```json contratto-h003\n(.*?)\n```", re.S)
@@ -47,6 +47,7 @@ DESTINAZIONI = ("test", "verifica")
 ESITI_TECNICI = ("completata", "rapporto rigenerato", "rifiutata per quota", "file difforme")
 REL_REGISTRO_PROVE = "brain/laboratorio/registro_prove.json"     # i soli registri validi (#86)
 REL_RISERVA = "brain/laboratorio/registro_riserva.json"
+CONTROLLO_AMBIENTE = True      # PIANO-D51 §3.3 (#61, #95): solo dal lanciatore, ambiente ricontrollato prima di leggere
 ANCORA_GIT = True              # PIANO-D51 §3.1: registri canonici, ancorati a GitHub, con la storia completa; i test con
                                # registri temporanei la spengono. Cambiarla nel codice vero cambia le impronte sigillate.
 
@@ -248,6 +249,8 @@ def esegui(scheda: Path, registro: Path, riserva: Path, id_: str, cache: Path, c
         raise ValueError(f"variante {c['variante']!r} non dichiarata nel sigillo di {c['ipotesi']}: {sigillo['varianti']}")
     altre = [e.get("prenotazione") for e in S.leggi(registro)["esecuzioni"] if e["ipotesi"] == c["ipotesi"]
              and e["ruolo"] == "verifica" and e.get("variante") == c["variante"] and e.get("prenotazione") != id_]
+    if CONTROLLO_AMBIENTE:                                                               # PIANO-D51 §3.3
+        controlla_ambiente(sigillo["codice"])
     if altre:                                                                            # PIANO-D51 §3.4
         raise ValueError(f"verifica di {c['ipotesi']} {c['variante']} già eseguita (prenotazione {altre[0]!r}): "
                          f"si fa una volta sola")
@@ -336,6 +339,10 @@ def main(argv=None) -> int:
     a.add_argument("--prenotazione", required=True)
     a.add_argument("--ora", required=True)
     x = a.parse_args(argv)
+    if CONTROLLO_AMBIENTE and not getattr(sys, "_tb_avvio_controllato", False):        # PIANO-D51 §3.3
+        print("RIFIUTATA: lanciare con python3 -I -S -B brain/laboratorio/esecuzione/avvio.py verifica …: i controlli "
+              "vanno fatti prima di importare il codice", file=sys.stderr)
+        return 2
     try:
         r = esegui(x.scheda, x.registro, x.riserva, x.prenotazione, x.cache, x.cache_sviluppo, x.rapporto, x.ora)
     except (ValueError, S.NonSigillata) as e:

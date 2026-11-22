@@ -175,7 +175,7 @@ M = {
     # della cartella resta per un messaggio più chiaro.
     'N58 lanciatore: cartella di lancio non controllata (#95)': [(AV, '        elif nome.endswith(IMPORTABILI):', '        elif False:')],
     'N59 lanciatore: impronte non controllate (#95)': [(AV, '        if adesso != impronta:', '        if False:')],
-    'N60 lanciatore: senza sigillo prosegue (#95)': [(AV, '        return problemi + [f"{REGISTRO}: nessun sigillo di {IPOTESI} con il codice: non si importa nulla"]', '        return problemi')],
+    'N60 lanciatore: senza sigillo prosegue (#95)': [(AV, '        return problemi + [f"{REGISTRO}: nessun sigillo di {ipotesi} con il codice: non si importa nulla"]', '        return problemi')],
     'N61 lanciatore: modalità non isolata accettata (#95)': [(AV, '    if not (sys.flags.isolated and sys.flags.no_site and sys.flags.dont_write_bytecode):', '    if not (sys.flags.no_site and sys.flags.dont_write_bytecode):')],
     'N62 lanciatore: cartelle importabili nella radice ammesse (R14-01)': [(AV, '            if nome.isidentifier():', '            if False:')],
     'N63 lanciatore: -B non richiesto (R14-09)': [(AV, 'sys.flags.no_site and sys.flags.dont_write_bytecode)', 'sys.flags.no_site)')],

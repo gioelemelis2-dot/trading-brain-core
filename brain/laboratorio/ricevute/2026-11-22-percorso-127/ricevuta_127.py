@@ -39,6 +39,7 @@ def _conta(*a, **k):
 
 C.carica = _conta
 EV.ANCORA_GIT = False   # registri SINTETICI fuori da git; l'ancora e la storia sono provate in TestAncoraEStoria
+EV.CONTROLLO_AMBIENTE = False   # stesso processo dello script; lanciatore e ambiente provati in TestLanciatore
 
 
 def candidato():
