@@ -447,6 +447,12 @@ class TestRevisioneR18(unittest.TestCase):
         with self.assertRaises(ValueError):
             V.verdetto(SU, 5, [{"id": 5, "veto": False, "esito": "superato"}])
 
+    def test_soglia_infinita_rifiutata_anche_con_blocchi_sottili(self):   # mutante VD44 (dopo le frazioni)
+        for soglia in (float("inf"), float("-inf"), float("nan")):
+            for minimo in (1, 10_000):                                      # blocchi valutati o tutti sottili
+                with self.assertRaises(ValueError, msg=(soglia, minimo)):
+                    V.veto_blocchi(costanti(0.6, 250), soglia, minimo)
+
     def test_134_errore_indica_la_seduta(self):                           # per il mutante VD10
         for cattivo in (float("nan"), float("inf")):
             c = list(SU)

@@ -18,6 +18,7 @@ brain.laboratorio.tests.test_esegui_h002
 brain.laboratorio.tests.test_esegui_verifica
 brain.laboratorio.tests.test_intersezione_bid_ask
 brain.laboratorio.tests.test_manifesto
+brain.laboratorio.tests.test_mutanti_applicabili
 brain.laboratorio.tests.test_orb_londra
 brain.laboratorio.tests.test_pilota_ia02
 brain.laboratorio.tests.test_potenza_soglia
