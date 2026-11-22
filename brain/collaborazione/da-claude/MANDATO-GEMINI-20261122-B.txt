@@ -1,0 +1,80 @@
+MANDATO PER GEMINI — 22/11/2026, secondo mandato del giorno (modello: il più capace disponibile, ragionamento approfondito)
+
+CONTESTO
+- Grazie per G-20261122-NOTTE.md: archiviato e verificato da Claude.
+  - N22-A1 riprodotto su 3.9.25 e corretto con math.fsum nel modulo del verdetto: test in eb411c2, codice in 36d533a,
+    mutanti in 6f19065.
+  - N22-A2 (pilota congelato): non si tocca; L vicino a 0 nello screening ora è segnalato nel rapporto.
+  - Mutanti del verdetto 124/125 su 3.13 e 3.9 (VD13 equivalente).
+- Decisioni del titolare: D-50 (DA-37 = opzione i): il rifiuto per quota diventa un evento del registro della
+  riserva (schema riserva/2), da scrivere nel nuovo candidato di R19.
+- Il compito C della notte (P-001) non è stato fatto perché il mandato non era nella tua sessione: qui sotto c'è INTERO.
+
+REGOLE GENERALI
+- Lavora sulla punta di origin/feat/esecutore-h002 (dichiara il commit); scrivi solo in brain/collaborazione/da-gemini/;
+  NON modificare il codice del progetto; mai compiacente; percorsi locali con ~ (D-28).
+- Nessun dato vero; nei test rete bloccata (HTTPS_PROXY=http://127.0.0.1:9 HTTP_PROXY=http://127.0.0.1:9).
+- NON toccare ~/Downloads/tb-riconta, brain/dati/reali/, ~/Desktop/consuntivo_ask.
+- PRIMA di ogni corsa lunga controlla che il consuntivo del titolare sia finito:
+  `pgrep -fl "controlla_cache|intersezione_bid_ask"` deve essere vuoto. Se non lo è, fai prima il compito B e torna
+  ad A dopo. Un solo processo alla volta. Controlla `df -h ~` prima di ogni blocco: fermati sotto i 3 GB.
+- NON modificare impostazioni di GitHub.
+
+COMPITO A — verifica indipendente della correzione di #124 (worktree nuovo ../tb-verifica124)
+1. Riesegui notte22_somme_esatte.py contro il modulo corretto (punta del ramo, almeno 6f19065) su Apple Python 3.9.
+   Atteso: S1, S2, S3, B1, B3, B4 ora coincidono con il riferimento esatto; V1b, V2b, V3 restano diversi (pilota
+   congelato), ma nello screening V3 ha L_vicino_a_zero = True e la riga nel rapporto.
+2. Cerca casi NUOVI che la correzione non copre:
+   - verdetto() (media descrittiva);
+   - divisioni / k con k non potenza di 2 (fsum arrotonda una volta, la divisione un'altra);
+   - la segnalazione «vicino a 0» con L esattamente ±1e-9;
+   - qualunque altro confronto a filo che trovi.
+   Riferimento in Fraction.
+3. Corri mutazioni_verdetto.py completo su 3.9 (una sola corsa, 4 processi al massimo):
+   `python3 -s -B brain/laboratorio/tests/mutazioni_verdetto.py <cartella temporanea> 4`.
+   Atteso: 124/125 con VD13 equivalente. Proponi almeno 3 mutanti nuovi sulla correzione che sopravvivano ai test
+   attuali, se esistono.
+4. Tabella dei rilievi: gravità, tipo (E/M), RIPRODOTTO o NON RIPRODOTTO.
+   Frase finale: «#124 corretto: nessuna divergenza residua nel modulo» oppure l'elenco.
+
+COMPITO B — P-001: catalogo delle operazioni dichiarate (Brad Goh). PROVA SU 10 VIDEO, poi fermati.
+Solo raccolta di informazioni: nessuna strategia, nessuna prova (D-33, eccezione D-41).
+CONTESTO
+- Leggi brain/laboratorio/ipotesi/DOSSIER-FONTE-P001.md (prima parte, di Claude) e
+  brain/laboratorio/ipotesi/CATALOGO-OPERAZIONI-P001.md (regole e colonne del catalogo).
+- Elenchi: brain/laboratorio/ipotesi/fonti/p001/elenco_bt_videos.psv (111 operazioni dal vivo, canale @bradgtrades)
+  e gli episodi «Market Mechanics» in elenco_tg_videos.psv.
+REGOLE (vincolanti)
+1. Nessun video scaricato. Si scaricano solo i sottotitoli automatici (testo), con yt-dlp
+   --skip-download --write-auto-subs, in ~/Downloads/p001_sottotitoli/ (la cartella di questo compito: qui la puoi usare).
+2. Le trascrizioni restano sul Mac, NON nel repository (contenuti dell'autore). Nel repository solo informazioni,
+   link e minuto.
+3. Se puoi analizzare i video direttamente (immagini del grafico), puoi leggere livelli e risultati mostrati.
+   Se non puoi, dillo e lavora solo sul testo.
+4. Per XAUUSD, GBPJPY ed EURUSD, un'operazione con candele anteriori al 15/11/2023 si registra SENZA guardare il
+   grafico («Data ammessa» = no). I video di @bradgtrades dovrebbero essere tutti successivi: controllalo.
+5. Quattro colonne separate: ciò che l'autore DICE; ciò che si VEDE nel video; la TUA interpretazione; il dato non
+   disponibile, scritto «ignoto».
+6. Per ogni motivazione indica se l'autore la dice PRIMA che l'operazione si chiuda o DOPO.
+7. Ogni dato ha il link con il minuto (https://www.youtube.com/watch?v=ID&t=SECONDIs).
+8. Ordine cronologico completo, perdite comprese. Tabella «Lacune»: operazioni annunciate ma non mostrate; video
+   montati con salti nel tempo; periodi senza video.
+9. Rischio in R solo se ingresso, stop e dimensione sono letti o detti:
+   R = risultato / (|ingresso − stop| × dimensione × valore del punto); indica la fonte di ogni numero.
+10. Le trascrizioni ci sono già in ~/Downloads/p001_sottotitoli/: non riscaricarle. Le 12 trascrizioni dal
+    19/08/2026 sono traduzioni automatiche: le cifre di quei video vanno verificate sull'audio originale.
+11. Gli 11 video di @bradgtrades senza trascrizione (confronta l'elenco con i file della cartella): riprova a
+    scaricarne solo i sottotitoli (regola 1); se non ci riesci, segnali in «Lacune».
+CAMPI AGGIUNTIVI per ogni riga: «Dimensione o rischio mostrato a schermo»; «Uscita come pianificata o a mano
+(e perché)»; «Più operazioni nello stesso video (sì/no, quante)»; «Si vede nel video»; «Rischio in R e fonte dei
+numeri»; «Conto o broker mostrato».
+CONSEGNA B: brain/collaborazione/da-gemini/P001-CATALOGO-GEMINI.md sul ramo rev/gemini-p001, solo i 10 video più
+recenti di @bradgtrades, più un riepilogo:
+- quanti video hanno ingresso, stop e dimensione leggibili;
+- quante motivazioni sono dette prima dell'esito;
+- le incoerenze fra parole e immagini (per esempio uno stop detto diverso da quello disegnato, o un risultato non
+  compatibile con la dimensione).
+Poi FERMATI e aspetta il via per gli altri 101.
+
+CONSEGNA A: brain/collaborazione/da-gemini/G-20261122-VERIFICA124.md più gli script, sul ramo rev/gemini-verifica124.
+Commit con la tua identità; dichiara commit di partenza, ambiente, processi e spazio libero.

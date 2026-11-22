@@ -464,6 +464,7 @@ DA-13 rulebook (Q-09) ──► DA-11 G0 minimo ──► DA-12 indicatori compo
 - **Limite da verificare:** in un repository personale l'approvazione richiesta non può venire dall'autore stesso. Va controllato se serve un secondo account o se bastano le regole dei Ruleset.
 
 ### DA-37 · Dove si registra il rifiuto per quota non collaudata (22/11/2026) · **da decidere dal titolare**
+**Decisa il 22/11/2026 → D-50.** Il testo sotto resta come storia.
 - **Il caso:** la prima verifica usa la quota 2,5% (una variante, prima apertura), l'unica collaudata. Se una richiesta arriva a una quota diversa (per esempio 1,25% con due varianti, o 0,83% alla seconda apertura), il percorso si ferma **prima** di autorizzare e di leggere i dati (DGS-13 §A). Serve una traccia verificabile del rifiuto.
 - **Opzioni (DGS-14, Q2):**
   - **(i)** un evento nuovo «rifiutata per quota» nel registro della riserva, legato alla prenotazione. Contiene: identità della richiesta, impronta della scheda, finestra, j previsto, m, quota calcolata e quota collaudata, motivo. Non spende date né quota e non crea una prova N. Cambia lo schema del registro (`riserva/1` → `riserva/2`) e quindi il perimetro.

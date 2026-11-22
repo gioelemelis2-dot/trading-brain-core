@@ -1155,3 +1155,14 @@ Nulla di questo tocca il candidato `8e51ce9` su cui lavora R15.
   - suite completa verde su 3.13.18 e 3.9.25; mutanti del caricatore C01–C09 9/9 su entrambe, con i test del periodo riscritti da casi validi;
   - la prima corsa dei mutanti del verdetto ha dato 121/125: VD26, VD35 e VD72 non si applicavano più, perché la correzione aveva cambiato le loro righe (stessa classe di errore di V10 in #136, errore di Claude). Riallineati, 3/3 su entrambe;
   - **totale: 124/125 su 3.13.18 e su 3.9.25, con VD13 equivalente dichiarato.**
+
+## 2026-11-22 · v1.93 (D-50; messaggio 14 al DGS; secondo mandato a Gemini)
+
+- **D-50 (DA-37 i):** il rifiuto per quota non collaudata diventa un evento del registro della riserva (schema `riserva/2`), da scrivere nel nuovo candidato.
+- **Messaggio 14 al DGS** (`collaborazione/da-claude/MESSAGGIO-14-DGS.md`), con la ricevuta della prova generale e il rapporto notturno di Gemini allegati. Su richiesta del titolare, il DGS deve usare lo strumento di esecuzione del codice per ricalcolare i numeri. Domande:
+  - #124: congelare una versione di Python nella verifica?
+  - D-49: confronto metodologico delle alternative A, B e C;
+  - schema `riserva/2`: dopo un rifiuto la prenotazione si chiude?
+  - ricalcolo di S1, B1, B3, della tabella di potenza e dei limiti Beta.
+- **Secondo mandato a Gemini** (`MANDATO-GEMINI-20261122-B.txt`): verifica indipendente della correzione di #124 e mutanti del verdetto su 3.9; prova P-001 sui 10 video, con il mandato riportato intero, perché nella notte non era nella sua sessione.
+- Il messaggio di Gemini inoltrato dal titolare è lo stesso già archiviato (`6fb7949`): niente di nuovo da registrare.
