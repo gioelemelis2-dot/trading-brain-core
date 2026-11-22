@@ -1185,3 +1185,24 @@ Nulla di questo tocca il candidato `8e51ce9` su cui lavora R15.
   - mutanti del percorso (`mutazioni_percorso.py`, 40).
 - **Ricevuta di #127** (`laboratorio/ricevute/2026-11-22-percorso-127/RICEVUTA-127.md`): prove A–G su 3.13 e 3.9 con esiti identici. Gli estremi L e U differiscono di 5,7e-15 R fra le versioni, per le somme del pilota congelato (N22-A2): è un caso concreto per Q1 del messaggio 14.
 - **#127 in parte corretto.** Resta il vecchio esecutore di H-002 in verifica: **DA-38** al titolare, perché D-37 gli aveva lasciato i suoi criteri.
+
+## 2026-11-22 · v1.95 (consegne di Gemini del mandato B; #124 seconda parte; seconda revisione di Claude)
+
+- **Gemini, compito A** (`rev/gemini-verifica124`, `1855fde`, base `b0763c5`), archiviato in `collaborazione/da-gemini/G-20261122-VERIFICA124.md` con lo script:
+  - la prima correzione di #124 regge per la dipendenza dalla versione;
+  - **sei divergenze residue** contro le frazioni esatte (V124-01..06): tre cambiano una decisione a filo, una è descrittiva, una riguarda la banda di vicinanza e una la finitezza;
+  - 4 mutanti nuovi sopravvissuti;
+  - mutanti del verdetto 124/125 su Apple 3.9.6.
+  - **Riprodotte da Claude e corrette** (test `3b5f4ea`, codice `85dd9b7`): decisioni in frazioni esatte, medie arrotondate una volta, finitezza sui valori assoluti. #124 è **riclassificato importante per il modulo**, perché può cambiare una decisione.
+  - **Errore di Claude nel test di V124-06:** prima avevo scritto che la somma esatta di (1,5e308; 1,5e308; −1,5e308) non fosse finita, mentre lo è. La regola giusta per proteggere il pilota è la somma dei valori assoluti; ho corretto il test prima del codice.
+- **Gemini, compito B** (`rev/gemini-p001`, `21399c6`), archiviato in `collaborazione/da-gemini/P001-CATALOGO-GEMINI.md`. Catalogo pilota di 10 video, 11 operazioni, lavorato solo sulle trascrizioni:
+  - ingresso, stop e dimensione leggibili in 0 casi su 11;
+  - 9 motivazioni su 11 dette prima dell'esito;
+  - incoerenze fra titoli e cifre, e lo stop allargato a mano in 3 video su 6;
+  - recuperati 9 sottotitoli mancanti su 11.
+  Gemini si è fermato come da mandato: **il via per gli altri 101 video spetta al titolare** (D-33, D-41).
+- **Seconda revisione di Claude** del percorso nuovo:
+  - #137, la variante non dichiarata nel sigillo, ora rifiutata prima di ogni lettura;
+  - il manifesto legge il registro dello scaricamento una volta sola;
+  - test aggiunti per i mutanti vivi PR08, EV03 ed EV08; MF09 dichiarato equivalente.
+- **Corse finali su `d866e4b`:** suite verdi su 3.13.18 e 3.9.25. Il modulo del verdetto è cambiato dopo (`85dd9b7`), quindi le corse di attribuzione si rifanno sul candidato nuovo.
