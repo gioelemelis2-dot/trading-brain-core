@@ -93,9 +93,10 @@ class Percorso(unittest.TestCase):
         p = mock.patch.object(C, "carica", side_effect=conta)
         p.start()
         self.addCleanup(p.stop)
-        q = mock.patch.object(EV, "ANCORA_GIT", False)                    # registri temporanei, fuori da git
-        q.start()
-        self.addCleanup(q.stop)
+        for nome in ("ANCORA_GIT", "CONTROLLO_AMBIENTE"):                  # registri temporanei, stesso processo
+            q = mock.patch.object(EV, nome, False)
+            q.start()
+            self.addCleanup(q.stop)
 
     def tearDown(self):
         self._d.cleanup()
@@ -432,6 +433,7 @@ class TestConcorrenzaEFileDifforme(Percorso):
 class TestCostanti(unittest.TestCase):
     def test_ancora_accesa_nel_codice(self):                           # mutante EV23: solo i test la spengono
         self.assertIs(EV.ANCORA_GIT, True)
+        self.assertIs(EV.CONTROLLO_AMBIENTE, True)                      # PIANO-D51 §3.3
         self.assertEqual((EV.REL_REGISTRO_PROVE, EV.REL_RISERVA),
                          ("brain/laboratorio/registro_prove.json", "brain/laboratorio/registro_riserva.json"))
 
@@ -525,6 +527,100 @@ class TestAncoraEStoria(Percorso):
         self.sp.run(self.g + ["push", "-q", "-u", "origin", "vecchio"], check=True, capture_output=True)
         self.assertEqual(V.contesto_prove(self.registro)["n_prove"], 1)
         self.assertEqual(EV.n_globale(self.registro, EV.RADICE)["n_prove"], 9)
+
+
+class TestLanciatore(Percorso):
+    """PIANO-D51 §3.3 (#61, #95 della vecchia verifica, portati nel percorso ordinario): il solo ingresso è il
+    lanciatore `avvio.py verifica`, che controlla l'ambiente e il codice sigillato PRIMA di importare il progetto;
+    l'esecutore, chiamato direttamente, si ferma; e ricontrolla l'ambiente prima di leggere i dati."""
+
+    def test_senza_lanciatore_si_ferma(self):
+        scheda = self.prepara()
+        prima = self.riserva.read_bytes()
+        argomenti = ["--scheda", str(scheda), "--registro", str(self.registro), "--riserva", str(self.riserva),
+                     "--prenotazione", "P1", "--cache", str(self.cache), "--cache-sviluppo", str(self.cache_sv),
+                     "--rapporto", str(self.d / "r.txt"), "--ora", ORA]
+        import contextlib
+        import io
+        errore = io.StringIO()
+        with mock.patch.object(EV, "CONTROLLO_AMBIENTE", True), contextlib.redirect_stderr(errore), \
+                contextlib.redirect_stdout(io.StringIO()):
+            rc = EV.main(argomenti)
+        self.assertEqual(rc, 2)
+        self.assertIn("avvio.py verifica", errore.getvalue())
+        self.assertEqual((self.chiamate, self.riserva.read_bytes()), ([], prima))
+
+    def test_ambiente_ricontrollato_prima_di_leggere(self):
+        scheda = self.prepara()
+        visti = []
+
+        def ambiente(codice):
+            visti.append(codice)
+            raise ValueError("ambiente non pulito (simulato)")
+        with mock.patch.object(EV, "CONTROLLO_AMBIENTE", True), mock.patch.object(EV, "controlla_ambiente", ambiente):
+            with self.assertRaisesRegex(ValueError, "ambiente non pulito"):
+                self.esegui(scheda)
+        self.assertEqual(visti, [EV.impronte_codice()])                  # con il codice sigillato
+        self.assertEqual(self.chiamate, [])
+
+
+class TestAvvioVerifica(unittest.TestCase):
+    """Il lanciatore in una COPIA di `brain`, in un processo separato (come TestAvvioControllato di esegui_h002)."""
+
+    def setUp(self):
+        self._t = tempfile.TemporaryDirectory()
+        self.dir = Path(self._t.name)
+        shutil.copytree(repo_root / "brain", self.dir / "brain", ignore=shutil.ignore_patterns("__pycache__"))
+        self.scheda = self.dir / "H-T127.md"
+        self.scheda.write_text(testo_scheda(contratto("H-T127")), encoding="utf-8")
+
+    def tearDown(self):
+        self._t.cleanup()
+
+    def sigilla(self, ipotesi="H-T127", codice=None):
+        reg = self.dir / "brain/laboratorio/registro_prove.json"
+        reg.write_text(json.dumps({"schema": S.SCHEMA, "prove": [], "esecuzioni": [], "sigilli": [
+            {"ipotesi": ipotesi, "codice": EV.impronte_codice(self.dir) if codice is None else codice}]}),
+            encoding="utf-8")
+
+    def avvia(self, *argomenti):
+        import os
+        import subprocess
+        return subprocess.run([sys.executable, "-I", "-S", "-B", "brain/laboratorio/esecuzione/avvio.py", "verifica",
+                               *argomenti], cwd=str(self.dir), capture_output=True, text=True,
+                              env=dict(os.environ, HTTPS_PROXY="http://127.0.0.1:9", HTTP_PROXY="http://127.0.0.1:9"))
+
+    def test_scheda_senza_contratto_ferma_prima_degli_import(self):
+        self.sigilla()
+        vecchia = self.dir / "vecchia.md"
+        vecchia.write_text("# H-002\nnessun contratto\n", encoding="utf-8")
+        r = self.avvia("--scheda", str(vecchia))
+        self.assertEqual(r.returncode, 2)
+        self.assertIn("FERMO prima di importare", r.stderr)
+        self.assertIn("contratto", r.stderr)
+
+    def test_codice_non_sigillato_per_quell_ipotesi(self):
+        self.sigilla(ipotesi="H-ALTRA")
+        r = self.avvia("--scheda", str(self.scheda))
+        self.assertEqual(r.returncode, 2)
+        self.assertIn("FERMO prima di importare", r.stderr)
+        self.assertIn("H-T127", r.stderr)
+
+    def test_codice_cambiato_dopo_il_sigillo(self):
+        codice = EV.impronte_codice(self.dir)
+        primo = sorted(codice)[0]
+        self.sigilla(codice=dict(codice, **{primo: "0" * 64}))
+        r = self.avvia("--scheda", str(self.scheda))
+        self.assertEqual(r.returncode, 2)
+        self.assertIn("diverso da quello sigillato", r.stderr)
+
+    def test_con_i_controlli_superati_passa_all_esecutore(self):
+        self.sigilla()
+        r = self.avvia("--scheda", str(self.scheda), "--registro", "x", "--riserva", "x", "--prenotazione", "P1",
+                       "--cache", "x", "--cache-sviluppo", "x", "--rapporto", str(self.dir / "r.txt"), "--ora", ORA)
+        self.assertNotIn("FERMO prima di importare", r.stderr)
+        self.assertNotIn("avvio.py verifica", r.stderr)                 # l'esecutore riconosce il lanciatore
+        self.assertIn("RIFIUTATA", r.stderr)                            # poi si ferma sui registri finti
 
 
 if __name__ == "__main__":
