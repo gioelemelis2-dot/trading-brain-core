@@ -414,6 +414,13 @@ class TestConcorrenzaEFileDifforme(Percorso):
         self.assertIn("file difforme", Path(r["rapporto"]).read_text(encoding="utf-8"))
 
 
+class TestCostanti(unittest.TestCase):
+    def test_ancora_accesa_nel_codice(self):                           # mutante EV23: solo i test la spengono
+        self.assertIs(EV.ANCORA_GIT, True)
+        self.assertEqual((EV.REL_REGISTRO_PROVE, EV.REL_RISERVA),
+                         ("brain/laboratorio/registro_prove.json", "brain/laboratorio/registro_riserva.json"))
+
+
 class TestAncoraEStoria(Percorso):
     """PIANO-D51 §3.1 (protezioni #86, #125, R14-03 della vecchia verifica, portate nel percorso ordinario): registri
     canonici, ancorati alla versione su GitHub, con la storia completa; una prenotazione consumata in un'altra

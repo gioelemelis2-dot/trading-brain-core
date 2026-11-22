@@ -45,6 +45,10 @@ PARTENZA = "brain.laboratorio.esecuzione.esegui_verifica"
 BLOCCO = re.compile(r"```json contratto-h003\n(.*?)\n```", re.S)
 DESTINAZIONI = ("test", "verifica")
 ESITI_TECNICI = ("completata", "rapporto rigenerato", "rifiutata per quota", "file difforme")
+REL_REGISTRO_PROVE = "brain/laboratorio/registro_prove.json"     # i soli registri validi (#86)
+REL_RISERVA = "brain/laboratorio/registro_riserva.json"
+ANCORA_GIT = True              # PIANO-D51 §3.1: registri canonici, ancorati a GitHub, con la storia completa; i test con
+                               # registri temporanei la spengono. Cambiarla nel codice vero cambia le impronte sigillate.
 
 
 class SchedaNonConforme(ValueError):
@@ -170,6 +174,40 @@ def _registra_una_volta(registro: Path, ipotesi: str, voce: dict, ora: str) -> N
     S.registra_esecuzioni(registro, ipotesi, [voce], ora)
 
 
+def n_globale(registro: Path, radice: Path) -> dict:
+    """N dal registro canonico (D-34 punto 2) e, con l'ancora, il massimo su tutte le sue versioni nella storia git
+    (#86: N non scende su un ramo più vecchio)."""
+    ctx = V.contesto_prove(registro)
+    if ANCORA_GIT:
+        storia = S.versioni_nella_storia(radice, REL_REGISTRO_PROVE)
+        ctx = dict(ctx, n_prove=max([ctx["n_prove"]] + [S.n_prove(d) for d in storia]))
+    return ctx
+
+
+def _ancora(registro: Path, riserva: Path) -> List[dict]:
+    """PIANO-D51 §3.1: i due registri sono quelli canonici, identici alla versione spinta su GitHub, in una copia
+    completa del repository; restituisce le versioni del registro della riserva in tutta la storia."""
+    for f, rel in ((registro, REL_REGISTRO_PROVE), (riserva, REL_RISERVA)):
+        if Path(f).resolve() != (Path(RADICE) / rel).resolve():
+            raise ValueError(f"il registro deve essere quello canonico del repository ({rel}), non {f}")
+    S.controlla_ancora(registro, RADICE)
+    RV.controlla_ancora(riserva, RADICE)
+    S.versioni_nella_storia(RADICE, REL_REGISTRO_PROVE)
+    return S.versioni_nella_storia(RADICE, REL_RISERVA)
+
+
+def _gia_consumata(versioni: List[dict], id_: str, stato_attuale: str, j_attuale: int) -> None:
+    """Una prenotazione autorizzata in un'altra versione del registro (altro ramo, reflog) non si riusa; e il
+    registro attuale non può avere meno aperture di un'altra versione (j non scende)."""
+    for dati in versioni:
+        s = RV._ricostruisci(dati)
+        q = s.prenotazioni.get(id_)
+        if q is not None and q["stato"] == "autorizzato" and stato_attuale != "autorizzato":
+            raise ValueError(f"la prenotazione {id_!r} è già consumata in un'altra versione del registro della riserva")
+        if s.j > j_attuale:
+            raise ValueError(f"il registro della riserva ha {j_attuale} aperture, un'altra versione {s.j}: j non scende")
+
+
 def esegui(scheda: Path, registro: Path, riserva: Path, id_: str, cache: Path, cache_sviluppo: Path,
            rapporto: Path, ora: str) -> dict:
     chiamate = {"sviluppo": 0, "verifica": 0}
@@ -186,7 +224,9 @@ def esegui(scheda: Path, registro: Path, riserva: Path, id_: str, cache: Path, c
 
     c = leggi_contratto(scheda)                                                          # 1
     sha_scheda = S.impronta(scheda)
+    versioni_riserva = _ancora(registro, riserva) if ANCORA_GIT else []                  # PIANO-D51 §3.1
     p = RV.prenotazione(riserva, id_)                                                    # 2
+    _gia_consumata(versioni_riserva, id_, p["stato"], RV.quota_prevista(riserva, 1)[0] - 1)
     if p["evento"]["ipotesi"] != c["ipotesi"] or p["evento"]["hash_domanda"] != sha_scheda:
         raise ValueError(f"la prenotazione {id_!r} è di un'altra ipotesi o di un'altra scheda")
     if p["stato"] == "rifiutato":
@@ -235,7 +275,7 @@ def esegui(scheda: Path, registro: Path, riserva: Path, id_: str, cache: Path, c
     man = MF.manifesto(cache, c["mercato"], lettura[0], lettura[1])                       # 7
     if man["anomalie"]:
         raise ValueError(f"manifesto con anomalie: {'; '.join(man['anomalie'][:10])}")
-    ctx = V.contesto_prove(registro)
+    ctx = n_globale(registro, RADICE)                                                     # #86: N non scende
     impegno = {"scheda_sha256": sha_scheda, "codice": identita["codice"],                    # 8
                "metro": {"modulo": "D-31", "pilota": V.IMPRONTA_PILOTA, "quota": V.QUOTA},
                "finestra": identita["finestra"], "registri": man["registri"], "elenco": man["elenco"],
