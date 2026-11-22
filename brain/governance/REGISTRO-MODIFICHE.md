@@ -1206,3 +1206,17 @@ Nulla di questo tocca il candidato `8e51ce9` su cui lavora R15.
   - il manifesto legge il registro dello scaricamento una volta sola;
   - test aggiunti per i mutanti vivi PR08, EV03 ed EV08; MF09 dichiarato equivalente.
 - **Corse finali su `d866e4b`:** suite verdi su 3.13.18 e 3.9.25. Il modulo del verdetto è cambiato dopo (`85dd9b7`), quindi le corse di attribuzione si rifanno sul candidato nuovo.
+
+## 2026-11-22 · v1.96 (candidato finale di #127; controllo di applicabilità dei mutanti; messaggio 15)
+
+- **Decisioni del titolare:** D-51 (DA-38 a: disattivare la verifica di `esegui_h002`, da applicare con i test prima); D-52 (P-001 in pausa, «prima la macchina»). Il titolare ha il **piano GitHub Free**, quindi D-49 non si può applicare: **DA-39** è aperta.
+- **Errore ripetuto di Claude (terza volta):** dopo #124 seconda parte, VD30, VD39 e VD111 non si applicavano più e VD44 era vivo. **Contromisura strutturale:** il test `test_mutanti_applicabili`, nella suite, controlla che ogni mutante dei tre script si applichi una volta sola. Ha trovato subito anche V07, V17 e V18, rotti da `riserva/2`. Tutti riallineati, con un test nuovo per VD44, in `db3c85f`.
+- **Candidato finale `aca694f`**, worktree bloccato, 3.13.18 e 3.9.25:
+  - suite verdi;
+  - prove A–G identiche;
+  - mutanti del percorso 40/41 (MF09 equivalente);
+  - mutanti del verdetto 131/132 (VD13 equivalente);
+  - controlli del punto 5 identici.
+- **Da fare:** la corsa completa di `mutazioni_esecuzione.py` sul candidato nuovo, dopo D-51.
+- **Messaggio 15 al DGS** completato (`collaborazione/da-claude/MESSAGGIO-15-DGS.md`).
+- Engram, proposto da un conoscente del titolare come «memoria»: valutato da Claude. Sono strumenti di memoria per agenti, non protezioni del repository; sconsigliato per il progetto. Il titolare è d'accordo.
