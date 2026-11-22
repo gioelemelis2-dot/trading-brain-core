@@ -777,6 +777,34 @@ class TestVerificaUnaVoltaNellaStoria(BaseRiga):
             S.versioni_nella_storia(copia, E.REL_REGISTRO)
         self.assertIn("parziale", str(e.exception))
 
+    def test_storia_di_tutti_i_rami_e_del_reflog(self):
+        """#86, R14-03 (mutanti N41, N65), dopo D-51 provati direttamente: le versioni del registro su un altro ramo, e
+        quelle rimaste solo nel reflog dopo un ramo cancellato e un riferimento remoto riscritto, si leggono."""
+        prima = self.prepara()
+        S.sigilla(self.registro, "H-001", self.scheda, ["X0"], ORA)
+        self.spingi("seconda versione")                                         # N = 3 su principale
+        _sp.run(self.g + ["checkout", "-q", "-b", "rifaccio", prima], check=True)
+        _sp.run(self.g + ["push", "-q", "-u", "origin", "rifaccio"], check=True, capture_output=True)
+        self.assertIn(3, {S.n_prove(d) for d in S.versioni_nella_storia(self.repo, E.REL_REGISTRO)})   # altro ramo
+        _sp.run(self.g + ["branch", "-q", "-D", "principale"], check=True)
+        _sp.run(self.g + ["update-ref", "refs/remotes/origin/principale", prima], check=True)
+        _sp.run(["git", "-C", str(self.dir / "remoto.git"), "update-ref", "refs/heads/principale", prima], check=True)
+        self.assertIn(3, {S.n_prove(d) for d in S.versioni_nella_storia(self.repo, E.REL_REGISTRO)})   # solo reflog
+
+    def test_lo_sviluppo_si_ferma_in_una_copia_parziale(self):
+        """#125 (mutante N38), dopo D-51 sullo sviluppo: in una copia con la storia parziale main si ferma."""
+        self.prepara()
+        parziale = self.dir / "parziale"
+        _sp.run(["git", "clone", "-q", "--depth", "1", "--branch", "principale", f"file://{self.dir / 'remoto.git'}",
+                 str(parziale)], check=True, capture_output=True)
+        from unittest import mock
+        self.registro = parziale / E.REL_REGISTRO
+        self.scheda = parziale / "H-002.md"
+        with mock.patch.object(E, "RADICE", parziale):
+            rc, err = self.lancia_errore("--modalita", "sviluppo")
+        self.assertEqual(rc, 2, err)
+        self.assertIn("parziale", err)
+
     def test_versione_illeggibile_rifiutata(self):
         """#125: anche senza la configurazione della copia parziale, un file presente in un commit ma illeggibile
         (oggetto mancante) ferma la lettura invece di essere saltato."""
