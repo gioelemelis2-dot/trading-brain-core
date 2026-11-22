@@ -54,21 +54,29 @@ def testo_scheda(c):
             f"```json contratto-h003\n{json.dumps(c, indent=2, ensure_ascii=False)}\n```\n")
 
 
+CACHE = {}
+
+
+def setUpModule():
+    """Le cache sintetiche si scrivono UNA volta per tutto il modulo (sono solo lette dalle prove)."""
+    CACHE["tmp"] = tempfile.TemporaryDirectory()
+    base = Path(CACHE["tmp"].name)
+    CACHE["cache"], CACHE["sviluppo"] = base / "cache", base / "cache_sviluppo"
+    CACHE["vere"] = M.scrivi(CACHE["cache"], LETTURA, FINE, 0.6, 11)
+    M.scrivi(CACHE["cache"], B_INIZIO, B_FINE, 0.6, 12)
+    M.scrivi(CACHE["sviluppo"], *SVILUPPO, 0.6, 13)
+
+
+def tearDownModule():
+    CACHE["tmp"].cleanup()
+
+
 class Percorso(unittest.TestCase):
-    """Cache sintetiche scritte una volta; registri nuovi per ogni prova."""
+    """Cache sintetiche comuni; registri nuovi per ogni prova."""
 
     @classmethod
     def setUpClass(cls):
-        cls._t = tempfile.TemporaryDirectory()
-        base = Path(cls._t.name)
-        cls.cache, cls.cache_sv = base / "cache", base / "cache_sviluppo"
-        cls.vere = M.scrivi(cls.cache, LETTURA, FINE, 0.6, 11)
-        M.scrivi(cls.cache, B_INIZIO, B_FINE, 0.6, 12)
-        M.scrivi(cls.cache_sv, *SVILUPPO, 0.6, 13)
-
-    @classmethod
-    def tearDownClass(cls):
-        cls._t.cleanup()
+        cls.cache, cls.cache_sv, cls.vere = CACHE["cache"], CACHE["sviluppo"], CACHE["vere"]
 
     def setUp(self):
         self._d = tempfile.TemporaryDirectory()

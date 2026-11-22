@@ -300,6 +300,15 @@ def rifiuta(registro: Path, id_: str, m: int, quota_collaudata: float, motivo: s
     return e
 
 
+def prenotazione(registro: Path, id_: str) -> dict:
+    """Lo stato di una prenotazione (evento, stato, autorizzazione, esito), senza scrivere nulla."""
+    p = _ricostruisci(_leggi(registro)).prenotazioni.get(id_)
+    if p is None:
+        raise ValueError(f"prenotazione {id_!r} sconosciuta")
+    return {"evento": dict(p["evento"]), "stato": p["stato"], "autorizzazione": p["autorizzazione"],
+            "esito": p["esito"], "record": p.get("record"), "rifiuto": p.get("rifiuto")}
+
+
 def record_esito(registro: Path, id_: str) -> Optional[dict]:
     """Il record del verdetto scritto con l'esito (None se l'esito non c'è ancora): rapporto senza rileggere i dati."""
     p = _ricostruisci(_leggi(registro)).prenotazioni.get(id_)
