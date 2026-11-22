@@ -1220,3 +1220,26 @@ Nulla di questo tocca il candidato `8e51ce9` su cui lavora R15.
 - **Da fare:** la corsa completa di `mutazioni_esecuzione.py` sul candidato nuovo, dopo D-51.
 - **Messaggio 15 al DGS** completato (`collaborazione/da-claude/MESSAGGIO-15-DGS.md`).
 - Engram, proposto da un conoscente del titolare come «memoria»: valutato da Claude. Sono strumenti di memoria per agenti, non protezioni del repository; sconsigliato per il progetto. Il titolare è d'accordo.
+
+## 2026-11-22 · v1.97 (DGS-16: riscontro alla ricevuta di #127)
+
+- **DGS-16 archiviato** (`collaborazione/da-chatgpt/DGS-20261122-16-riscontro-ricevuta-127.md`). Numeri ricalcolati da Claude e confermati:
+  - limiti Beta 1,189728%, 0,093538%, 0,108806%;
+  - riferimento normale 24,35% e 50,66%;
+  - 0,5 − ulp(0,5) = 0,4999999999999999, mentre il vicino immediato è 0,49999999999999994.
+- **I «40 feriali in più» sono spiegati:** dall'08/02/2010 al 31/01/2014 ci sono 1.040 feriali e 1.000 sedute. I 40 giorni esclusi sono le chiusure del calendario di H-002 (`orb_londra.esclusi`): festività inglesi, vigilie e 31 dicembre. L'elenco completo andrà nella ricevuta.
+- **Pareri del DGS:**
+  - Q1: fissare un ambiente di riferimento prima della verifica e usare l'altro come prova di portabilità;
+  - Q2: rinviare Pro va bene durante il lavoro sintetico, con le prove sulle identità vere prima del primo accesso reale;
+  - Q3: chiudere la prenotazione dopo un rifiuto per quota va bene, ma vanno esplicitate le transizioni di B e G (date ancora prenotate: correzione, ripresa, rilascio);
+  - Q5: tenere la regola attuale sulla quarantena; l'alternativa va al titolare solo dopo una simulazione;
+  - Q6: una prova logica dei veti e, separata, una stima con un generatore registrato prima;
+  - Q7: con D-51 ogni protezione va provata sull'ingresso nuovo.
+- **Richieste a Claude:**
+  - legare i due JSON finali al commit e ai test;
+  - per la corsa A, dire chi prepara sigillo, prenotazione e potenza;
+  - elenco delle sedute fissato prima dell'apertura e coppie usate;
+  - rapporto originale, record e rapporto rigenerato confrontabili, con i comandi;
+  - verdetto e valori numerici separati fra le due versioni (anche in esadecimale);
+  - allegare gli estratti Q2 e Q4 del messaggio 14;
+  - per R19, la versione con D-51 e le protezioni provate sull'ingresso ordinario.
