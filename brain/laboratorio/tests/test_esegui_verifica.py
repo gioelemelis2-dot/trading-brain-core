@@ -147,6 +147,10 @@ class TestCorsaCompleta(Percorso):
         # sedute senza operazioni
         attese = [g.isoformat() for g in M.sedute(INIZIO, FINE)]
         self.assertEqual(imp["sedute"], attese)
+        sv = MF.manifesto(self.cache_sv, "XAUUSD", *SVILUPPO)                # PIANO-D51 §3.2
+        self.assertEqual(imp["sviluppo"], {"finestra": [SVILUPPO[0].isoformat(), SVILUPPO[1].isoformat()],
+                                           "registri": sv["registri"], "impronta_elenco": sv["impronta_elenco"]})
+        self.assertEqual(S.leggi(self.registro)["esecuzioni"][0]["impronta_sviluppo"], sv["impronta_elenco"])
         self.assertEqual(len(attese), 1000)
         self.assertEqual([x[0] for x in rec["coppie"]], attese)
         self.assertEqual(sum(x[2] for x in rec["coppie"]), 1000)
@@ -278,6 +282,36 @@ class TestRifiutiPrimaDellaLettura(Percorso):
         s = RV.stato(self.riserva)
         self.assertEqual((s["giorni"]["prenotato"], s["prenotazioni_attive"]), (0, []))
         self.assertEqual(RV.prenotazione(self.riserva, "P1")["stato"], "rilasciato")
+
+    def test_dati_di_sviluppo_diversi_dal_registro_dello_scaricamento(self):
+        # PIANO-D51 §3.2 (protezione R11-S6 e #51 della vecchia verifica): lo screening legge lo sviluppo con i byte
+        # verificati contro il registro dello scaricamento; un file cambiato ferma tutto PRIMA dell'autorizzazione
+        scheda = self.prepara()
+        f = self.cache_sv / "XAUUSD" / "2024-03-05.bi5"
+        originale = f.read_bytes()
+        prima = self.riserva.read_bytes()
+        try:
+            f.write_bytes(originale + b"\x00")
+            with self.assertRaisesRegex(ValueError, "BID 2024-03-05: byte diversi"):
+                self.esegui(scheda)
+        finally:
+            f.write_bytes(originale)
+        self.assertEqual((self.chiamate, self.riserva.read_bytes()), (["sviluppo"], prima))
+        self.assertEqual(S.leggi(self.registro)["esecuzioni"], [])
+
+    def test_registro_dello_scaricamento_dello_sviluppo_con_anomalie(self):
+        scheda = self.prepara()
+        reg = self.cache_sv / "registro_scaricamento_XAUUSD_BID.csv"
+        originale = reg.read_bytes()
+        righe = originale.decode("utf-8").splitlines(keepends=True)
+        prima = self.riserva.read_bytes()
+        try:
+            reg.write_text("".join(x for x in righe if not x.split(",")[1:2] == ["2024-03-05"]), encoding="utf-8")
+            with self.assertRaisesRegex(ValueError, "manifesto dello sviluppo con anomalie: omesso: XAUUSD BID 2024-03-05"):
+                self.esegui(scheda)
+        finally:
+            reg.write_bytes(originale)
+        self.assertEqual((self.chiamate, self.riserva.read_bytes()), ([], prima))
 
     def test_finestra_diversa_da_1000_sedute(self):
         scheda = self.prepara(fine=FINE - timedelta(days=1))
