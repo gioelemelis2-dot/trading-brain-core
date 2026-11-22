@@ -207,6 +207,15 @@ class TestRifiutiPrimaDellaLettura(Percorso):
             self.esegui(altra, "P2")
         self.assertEqual(self.chiamate, [])
 
+    def test_variante_non_dichiarata_nel_sigillo_prima_dell_autorizzazione(self):
+        # #137 (seconda revisione di Claude): il rifiuto arrivava solo alla registrazione dello screening, dopo una
+        # lettura dello sviluppo; ora arriva subito dopo il sigillo, prima di ogni lettura
+        scheda = self.prepara(variante="V-S")                          # sigillo con le sole ["V-T"]
+        prima = self.riserva.read_bytes()
+        with self.assertRaisesRegex(ValueError, "non dichiarata nel sigillo"):
+            self.esegui(scheda)
+        self.assertEqual((self.chiamate, self.riserva.read_bytes()), ([], prima))
+
     def test_finestra_diversa_da_1000_sedute(self):
         scheda = self.prepara(fine=FINE - timedelta(days=1))
         prima = self.riserva.read_bytes()
