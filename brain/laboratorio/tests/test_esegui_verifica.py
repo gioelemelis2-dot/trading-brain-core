@@ -664,6 +664,52 @@ class TestAvvioVerifica(unittest.TestCase):
         self.assertEqual(r.returncode, 2)
         self.assertIn("diverso da quello sigillato", r.stderr)
 
+    def test_il_lanciatore_e_nel_codice_sigillato(self):
+        # #142 (prova positiva dal lanciatore, 23/11; protezione #95 non portata nel percorso nuovo): il lanciatore
+        # è caricato in ogni verifica, quindi sta nel codice sigillato e si controlla prima degli import
+        self.assertIn("brain/laboratorio/esecuzione/avvio.py", EV.impronte_codice(self.dir))
+
+    def test_positivo_completo_dal_lanciatore(self):
+        # #142, DGS-18 Q4: la corsa ORDINARIA intera, dal lanciatore isolato ai due registri canonici e al rapporto,
+        # in un repository git con un remoto finto, con ancora e controllo dell'ambiente accesi come nel codice
+        import os
+        import subprocess
+        remoto = Path(self._t.name + "-remoto.git")
+        self.addCleanup(shutil.rmtree, remoto, True)
+        g = ["git", "-C", str(self.dir), "-c", "user.name=t", "-c", "user.email=t@invalid"]
+        subprocess.run(["git", "init", "-q", "--bare", str(remoto)], check=True)
+        subprocess.run(["git", "init", "-q", str(self.dir)], check=True)
+        subprocess.run(g + ["checkout", "-q", "-b", "principale"], check=True)
+        subprocess.run(g + ["remote", "add", "origin", str(remoto)], check=True)
+        registro, riserva = self.dir / EV.REL_REGISTRO_PROVE, self.dir / EV.REL_RISERVA
+        S.sigilla(registro, "H-T127", self.scheda, ["V-T"], ORA, codice=EV.impronte_codice(self.dir))
+        RV.crea(riserva, date(2005, 1, 1), date(2023, 10, 31), 0.05, ORA)
+        RV.prenota(riserva, "P1", "H-T127", LETTURA, FINE, S.impronta(self.scheda), ORA)
+        subprocess.run(g + ["add", "-A"], check=True)
+        subprocess.run(g + ["commit", "-q", "-m", "sigillo e prenotazione"], check=True)
+        subprocess.run(g + ["push", "-q", "-u", "origin", "principale"], check=True, capture_output=True)
+        rapporto = Path(self._t.name + "-rapporto.txt")
+        self.addCleanup(lambda: rapporto.unlink() if rapporto.exists() else None)
+        argomenti = ["--scheda", str(self.scheda), "--registro", EV.REL_REGISTRO_PROVE, "--riserva", EV.REL_RISERVA,
+                     "--prenotazione", "P1", "--cache", str(CACHE["cache"]), "--cache-sviluppo", str(CACHE["sviluppo"]),
+                     "--rapporto", str(rapporto), "--ora", ORA]
+        r = self.avvia(*argomenti)
+        self.assertEqual(r.returncode, 0, r.stderr[-600:])
+        uscita = json.loads(r.stdout)
+        self.assertEqual((uscita["esito_tecnico"], uscita["esito"]), ("completata", "promossa"))
+        rec = RV.record_esito(riserva, "P1")
+        self.assertEqual(rec["impronta_impegno"], uscita["impronta_impegno"])
+        self.assertEqual(rapporto.read_bytes(), EV.rapporto_da_record(rec).encode("utf-8"))
+        self.assertEqual([e["ruolo"] for e in S.leggi(registro)["esecuzioni"]], ["sviluppo", "verifica", "esito"])
+        subprocess.run(g + ["add", "-A"], check=True)                      # il titolare pubblica i registri
+        subprocess.run(g + ["commit", "-q", "-m", "esito P1"], check=True)
+        subprocess.run(g + ["push", "-q"], check=True, capture_output=True)
+        prima = riserva.read_bytes()
+        r2 = self.avvia(*argomenti)                                       # ripresa identica: nessuna lettura
+        self.assertEqual(r2.returncode, 0, r2.stderr[-600:])
+        self.assertEqual(json.loads(r2.stdout)["esito_tecnico"], "rapporto rigenerato")
+        self.assertEqual(riserva.read_bytes(), prima)
+
     def test_con_i_controlli_superati_passa_all_esecutore(self):
         self.sigilla()
         r = self.avvia("--scheda", str(self.scheda), "--registro", "x", "--riserva", "x", "--prenotazione", "P1",
