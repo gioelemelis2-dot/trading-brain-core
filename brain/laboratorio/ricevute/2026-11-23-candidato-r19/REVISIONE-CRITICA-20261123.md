@@ -36,7 +36,7 @@ Richiesta dal titolare dopo DGS-17 («siamo in una fase molto importante»). Ho 
      - Applica lo stesso manifesto al periodo intero e conta le anomalie per tipo, lato e anno, con gli esiti delle voci doppie.
      - Controlla che i byte di ogni file abbiano l'impronta del registro, senza decodificarli.
      - Scrive solo conteggi e date.
-   - **Da fare sul Mac, con un comando che preparo.** Se escono anomalie, come trattarle (per esempio: vale l'ultima riga dopo una nuova prova dei vuoti, oppure si rigenera un registro di riconciliazione firmato dal titolare) è una **decisione di metodo**, da portare al DGS prima di cambiare il manifesto.
+   - **Da fare sul Mac:** `dati/PROCEDURA-DIAGNOSI-MANIFESTO.md`, su riserva (confini di D-29) e sviluppo. Se escono anomalie, come trattarle (per esempio: vale l'ultima riga dopo una nuova prova dei vuoti, oppure si rigenera un registro di riconciliazione firmato dal titolare) è una **decisione di metodo**, da portare al DGS prima di cambiare il manifesto.
 6. **Un solo simulatore.** `esegui_verifica` accetta solo `orb_londra` con le varianti di H-002. Per una scheda H-003 vera con un'altra strategia servirà un simulatore registrato e sigillato. Il percorso va esteso prima di quella scheda, non adesso.
 7. **La prova della storia git usa un remoto finto** (DGS-17).
    - Il permesso reale, la versione autorevole su GitHub e la protezione dei riferimenti restano da provare con il repository vero, prima del primo accesso reale.
