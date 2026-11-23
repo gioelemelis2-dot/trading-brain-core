@@ -42,7 +42,7 @@ Per ogni prova: esito atteso e osservato, registro della riserva prima e dopo (i
 
 | Prova | Atteso | Osservato | Chiamate al caricatore | Date e quota consumate |
 |---|---|---|---|---|
-| A · corsa completa | completata, promossa | **completata, promossa**: L = +0,3086, U = +0,4612, media +0,3837 R, 1.000 sedute / 1.000 trade / 1.000 attive; screening ammesso; registro delle prove: sviluppo → verifica → esito; il rapporto coincide con quello rigenerato dal record | sviluppo 1, verifica 1 | 1.489 giorni consumati (tutta la prenotazione, date accessorie comprese); j = 1; α_j = 0,025; N = 1 |
+| A · corsa completa | completata, promossa | **completata, promossa**: L = +0,3086, U = +0,4612, media ≈ +0,3836565 R (esadecimale `0x1.88dd3fe19743fp-2`, DGS-17), 1.000 sedute / 1.000 trade / 1.000 attive; screening ammesso; registro delle prove: sviluppo → verifica → esito; il rapporto coincide con quello rigenerato dal record | sviluppo 1, verifica 1 | 1.489 giorni consumati (tutta la prenotazione, date accessorie comprese); j = 1; α_j = 0,025; N = 1 |
 | B · vecchia scheda H-002 | rifiutata prima dell'autorizzazione | **rifiutata**: «serve un solo blocco json contratto-h003 (modello H-003)»; registro della riserva invariato (stessa impronta prima e dopo): le 1.489 date restano **prenotate**, non consumate | nessuna | nessuna |
 | C · quota non collaudata (m = 2, 1,25%) | rifiuto durevole, nessuna lettura, nessun consumo | **«rifiutata per quota»**: evento `rifiuto` con j previsto 1, m 2, quota calcolata 0,0125 e fase «prima dell'autorizzazione». Riletto dal file: 0 giorni prenotati o consumati, α speso 0. La quota prevista dopo il rifiuto è ancora (1; 0,025), quindi l'indice delle aperture non è avanzato. Nessuna esecuzione nel registro delle prove: N invariato. Il secondo tentativo con la stessa prenotazione è rifiutato («serve una richiesta nuova») | nessuna, anche al primo tentativo | nessuna |
 | D · concorrenza | una sola apertura alla quota | B controlla la quota (2,5%), poi, prima della sua autorizzazione, A si autorizza attraverso lo stesso ingresso (j = 1) e cade durante la lettura. Al ricontrollo sotto il blocco **B è rifiutata** (fase «ricontrollo all'autorizzazione», j previsto 2, quota calcolata 0,00833) | B: sviluppo 1, verifica 0. A: sviluppo 1, lettura interrotta alla chiamata (caduta simulata prima di leggere file) | solo le date di A (j = 1, 0,025, N = 2 perché sono sigillate due ipotesi); A resta autorizzata senza esito; nessun consumo per B |
@@ -166,7 +166,7 @@ Il secondo comando ristampa il rapporto dal solo record, senza leggere dati.
 
 **4. Le due versioni di Python: verdetto e numeri separati**
 - **Verdetto:** identico, promossa, con lo stesso segnale e la stessa causa.
-- **Media:** identica, bit per bit: `0x1.88dd3fe19743fp-2` = 0,3836565 R.
+- **Media:** identica, bit per bit: `0x1.88dd3fe19743fp-2` ≈ 0,3836565 R (il valore esatto del double è 0,3836564999999758…; DGS-17: l’uguaglianza dei bit e l’arrotondamento decimale sono confronti diversi).
 - **L e U:** diversi nelle ultime cifre binarie.
   - L: `0x1.3bf9a49c2bffbp-2` (3.13) contro `0x1.3bf9a49c2c061p-2` (3.9);
   - U: `0x1.d850f9ed97262p-2` contro `0x1.d850f9ed972c8p-2`;

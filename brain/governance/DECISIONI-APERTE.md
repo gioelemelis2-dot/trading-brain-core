@@ -488,3 +488,29 @@ DA-13 rulebook (Q-09) ──► DA-11 G0 minimo ──► DA-12 indicatori compo
   - **(b) Rendere pubblico il repository:** sconsigliato. Contiene la storia delle decisioni, i registri e il lavoro sulle fonti; i dati veri restano comunque fuori da GitHub.
   - **(c) Restare su Free senza protezione lato server**, con le difese che ci sono già: registri ancorati a GitHub, impronte del codice sigillato, test automatici che segnalano (senza bloccare), riproduzione indipendente di Gemini e del DGS.
 - **Consiglio di Claude:** (c) **finché il lavoro è sintetico**, poi (a) **prima del primo accesso reale alla riserva**. La protezione serve quando c'è qualcosa di irreversibile da proteggere, cioè le date della riserva e i sigilli veri. Il costo, intorno ai 50 USD l'anno, è piccolo rispetto al rischio di una verifica non attribuibile.
+
+### DA-40 · Ambiente di riferimento del risultato ufficiale (23/11/2026) · **da decidere dal titolare**
+- **Il fatto:** sul candidato le due versioni di Python dei test automatici (3.13 e 3.9) danno lo stesso verdetto, la stessa media bit per bit e la stessa impronta dell'impegno. **L e U invece differiscono di 102 ulp**, circa 5,7e-15 R, per via della somma del pilota congelato. Le decisioni sono prese in frazioni esatte (#124), quindi oggi non cambiano. Resta però da dire **quale ambiente produce il numero ufficiale** (DGS-16 e DGS-17 Q1).
+- **Opzioni:**
+  - **(a)** L'ambiente Linux del collaudo IA-02, se dai suoi artefatti si ricostruiscono interprete esatto, architettura, dipendenze, codice, semi e configurazione, e vi si riproducono i riferimenti congelati.
+  - **(b)** Una sola immagine dei test automatici, riproducibile (sistema, Python e versione esatti), qualificata rieseguendo i riferimenti congelati del collaudo IA-02 e documentando le differenze.
+  - **(c)** Il Mac del titolare (Python 3.9): sconsigliato. La versione cambia con gli aggiornamenti di sistema e l'ambiente non si ricostruisce altrove.
+- **In ogni caso:** l'identità dell'ambiente che calcola va registrata nell'impegno, separata dalla macchina da cui il titolare lancia la richiesta. L'altra versione e il Mac restano prove di portabilità.
+- **Consiglio di Claude:** **(b)**. Il collaudo IA-02 l'ho eseguito io in un contenitore temporaneo, di cui oggi si conoscono la versione di Python e la piattaforma, ma non un'immagine ricostruibile. Per (a) mancherebbe proprio la prova di ricostruzione che il DGS chiede.
+- **Fonte:** DGS-17 Q1; RICEVUTA-127 §4.
+
+### DA-41 · Autorizzazione su GitHub prima della lettura dei dati (23/11/2026) · **da decidere dal titolare**
+- **Il fatto:** oggi l'esecutore scrive l'autorizzazione nel registro della riserva sul disco e **subito dopo legge la finestra**. Il commit e il push vengono dopo.
+  - Se fra la lettura e il commit il registro locale venisse riportato indietro (per errore o sotto pressione), la lettura non lascerebbe traccia.
+  - La stessa finestra si potrebbe poi leggere di nuovo, con un'altra scheda.
+  - L'ancora e la storia git proteggono solo ciò che è già su GitHub. È il limite dichiarato #90/#98, e vale anche per il percorso nuovo.
+- **Opzioni:**
+  - **(a) Lettura solo dopo la pubblicazione.**
+    1. L'esecutore scrive l'autorizzazione e si ferma.
+    2. Il titolare (o il lanciatore) fa commit e push.
+    3. Una seconda chiamata, con lo stesso impegno, legge i dati solo se l'ancora conferma che l'autorizzazione è già nella versione remota.
+
+    Tecnicamente è la ripresa che esiste già, più un controllo. Costa un passo in più per ogni verifica.
+  - **(b) Lasciare com'è**, con la regola scritta «commit e push subito dopo ogni verifica». Più semplice, ma si affida alla disciplina.
+- **Consiglio di Claude:** **(a), prima del primo accesso reale.** Va scritta in TDD, con i mutanti, e portata in un giro di revisione. Con il piano Free (DA-39) è la difesa più forte disponibile senza costi.
+- **Fonte:** revisione critica di Claude del 23/11 (`laboratorio/ricevute/2026-11-23-candidato-r19/REVISIONE-CRITICA-20261123.md`, punto B.1).
