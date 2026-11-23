@@ -1,0 +1,37 @@
+{
+ "candidato": "67380cd5ff7d1f0b5f0e250fb79742de5493687a",
+ "python": "3.13.18",
+ "comando": "/usr/local/bin/python3 -I -S -B brain/laboratorio/esecuzione/avvio.py verifica --scheda <uscita>/repo/H-T127.md --registro brain/laboratorio/registro_prove.json --riserva brain/laboratorio/registro_riserva.json --prenotazione P1 --cache <uscita>/cache --cache-sviluppo <uscita>/cache_sviluppo --rapporto <uscita>/rapporto_P1.txt --ora 2026-11-22T12:00:00Z",
+ "prima_chiamata": {
+  "codice": 2,
+  "uscita": null,
+  "stderr": "RIFIUTATA prima dell'autorizzazione o della lettura: ambiente non pulito: ['brain/laboratorio/esecuzione/avvio.py: modulo brain non sigillato', 'brain/laboratorio/esecuzione/avvio.py: modulo brain non sigillato']\n"
+ },
+ "seconda_chiamata": {
+  "codice": 2,
+  "uscita": null,
+  "stderr": "RIFIUTATA prima dell'autorizzazione o della lettura: ambiente non pulito: ['brain/laboratorio/esecuzione/avvio.py: modulo brain non sigillato', 'brain/laboratorio/esecuzione/avvio.py: modulo brain non sigillato']\n",
+  "riserva_invariata": true
+ },
+ "registri": {
+  "prima": {
+   "registro_prove": "68fa0a073944736c515236f3cb7bd2dc52885ac9d4cd1b9e7fb8a8ca435f09f8",
+   "riserva": "2b68a8183e43c522c070e59455ef031b020044491192fc21c7a671e79d0e90c0"
+  },
+  "dopo": {
+   "registro_prove": "68fa0a073944736c515236f3cb7bd2dc52885ac9d4cd1b9e7fb8a8ca435f09f8",
+   "riserva": "2b68a8183e43c522c070e59455ef031b020044491192fc21c7a671e79d0e90c0"
+  },
+  "commit_prima": "6e47562771b7b212207fa8cac974a79f6aaf0627",
+  "commit_dopo": null,
+  "storia": [
+   "6e47562 sigillo e prenotazione P1"
+  ]
+ },
+ "stato_riserva": [],
+ "esecuzioni_registro_prove": [],
+ "controlli_dal_record": {},
+ "tutti": false,
+ "riga_potenza_nel_rapporto": [],
+ "impegno_impronta": null
+}

@@ -39,7 +39,7 @@ from . import caricatore as C
 from . import manifesto as MF
 from . import riserva as RV
 from . import sigillo as S
-from .esegui_h002 import RADICE, VARIANTI, controlla_ambiente, moduli_brain
+from .esegui_h002 import AVVIO, RADICE, VARIANTI, controlla_ambiente, moduli_brain
 
 PARTENZA = "brain.laboratorio.esecuzione.esegui_verifica"
 BLOCCO = re.compile(r"```json contratto-h003\n(.*?)\n```", re.S)
@@ -106,7 +106,8 @@ def leggi_contratto(scheda: Path) -> dict:
 
 def impronte_codice(radice: Path = RADICE) -> Dict[str, str]:
     radice = Path(radice)
-    return {f: hashlib.sha256((radice / f).read_bytes()).hexdigest() for f in moduli_brain(radice, PARTENZA)}
+    file = list(moduli_brain(radice, PARTENZA)) + [AVVIO]                       # #142 (come #95): anche il lanciatore
+    return {f: hashlib.sha256((radice / f).read_bytes()).hexdigest() for f in file}
 
 
 def sedute(inizio: date, fine: date) -> List[date]:

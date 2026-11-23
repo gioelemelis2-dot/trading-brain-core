@@ -75,6 +75,7 @@ M = {
     "EV31 ambiente non ricontrollato prima di leggere": [(EV, "        controlla_ambiente(sigillo[\"codice\"])\n", "        pass\n")],
     "EV32 controllo dell'ambiente spento nel codice": [(EV, "CONTROLLO_AMBIENTE = True      # PIANO-D51 §3.3", "CONTROLLO_AMBIENTE = False     # PIANO-D51 §3.3")],
     "EV33 ripresa senza riconciliare il registro delle prove": [(EV, "            _registra_una_volta(registro, c[\"ipotesi\"], voce, ora)\n        _scrivi_rapporto(rapporto, rapporto_da_record(p[\"record\"]))", "            pass\n        _scrivi_rapporto(rapporto, rapporto_da_record(p[\"record\"]))")],
+    "EV34 lanciatore fuori dal codice sigillato": [(EV, "    file = list(moduli_brain(radice, PARTENZA)) + [AVVIO]", "    file = list(moduli_brain(radice, PARTENZA))")],
     "AV01 verifica senza leggere il contratto": [("laboratorio/esecuzione/avvio.py", "        problemi = [problema] if problema else controlla(RADICE, ipotesi)", "        problemi = []")],
     "AV02 codice sigillato di H-002 per ogni verifica": [("laboratorio/esecuzione/avvio.py", "controlla(RADICE, ipotesi)", "controlla(RADICE)")],
     "EV19 coppie del record senza le sedute in ordine": [(EV, "for g, (s, k) in zip(giorni_verifica, cp)]", "for g, (s, k) in zip(sorted(giorni_verifica, reverse=True), cp)]")],

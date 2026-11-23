@@ -1,0 +1,65 @@
+M00 copia non mutata: suite verde
+UCCISO PR01 rifiuto che non libera le date
+UCCISO PR02 rifiuto con j previsto non controllato
+UCCISO PR03 rifiuto con quota calcolata non controllata
+UCCISO PR04 rifiuto senza motivo ammesso
+UCCISO PR05 rifiuto dopo l'autorizzazione
+UCCISO PR06 quota attesa non ricontrollata
+UCCISO PR07 impegno non legato all'impronta
+UCCISO PR08 ripetizione tecnica senza l'impegno
+UCCISO PR09 record incoerente con l'esito
+UCCISO PR10 impronta dell'impegno senza ordine delle chiavi
+UCCISO PR11 vecchio schema accettato
+UCCISO PR12 due autorizzazioni della stessa domanda
+UCCISO PR13 unicità senza l'impronta della domanda
+UCCISO PR14 unicità solo fra le verifiche senza esito
+UCCISO MF01 date accessorie ignorate
+UCCISO MF02 voce doppia non vista
+UCCISO MF03 giorno omesso non visto
+UCCISO MF04 riga dell'altro lato accettata
+UCCISO MF05 indirizzo dell'altro lato accettato
+UCCISO MF06 altro mercato accettato
+UCCISO MF07 esiti http accettati come dati
+UCCISO MF08 quarantena ignorata
+VIVO   MF09 insieme atteso senza ordinamento (atteso EQUIVALENTE: lati e giorni sono già generati in ordine)
+UCCISO CB01 byte non confrontati
+UCCISO CB02 giorno fuori dal manifesto letto
+UCCISO CB03 file sparito contato come mancante
+UCCISO CB04 lato scambiato nel controllo
+UCCISO EV01 contratto senza modello H-003
+UCCISO EV02 metro non controllato
+UCCISO EV03 prenotazione di un'altra scheda
+UCCISO EV04 ripresa senza controllo d'identità
+UCCISO EV05 sigillo non controllato
+UCCISO EV17 variante non controllata prima di leggere
+UCCISO EV18 sedute fuori dall'impegno
+UCCISO EV20 sviluppo letto senza i byte attesi
+UCCISO EV21 manifesto dello sviluppo con anomalie accettato
+UCCISO EV22 impronta dello sviluppo non confrontata
+UCCISO EV23 ancora spenta nel codice
+UCCISO EV24 registro della riserva non canonico accettato
+UCCISO EV25 riserva non ancorata a GitHub
+UCCISO EV26 prenotazione consumata altrove accettata
+UCCISO EV27 N della sola versione corrente
+UCCISO EV28 aperture perse rispetto a un'altra versione
+UCCISO EV29 seconda verifica della stessa variante ammessa
+UCCISO EV30 esecutore senza lanciatore
+UCCISO EV31 ambiente non ricontrollato prima di leggere
+UCCISO EV32 controllo dell'ambiente spento nel codice
+UCCISO EV33 ripresa senza riconciliare il registro delle prove
+UCCISO AV01 verifica senza leggere il contratto
+UCCISO AV02 codice sigillato di H-002 per ogni verifica
+UCCISO EV19 coppie del record senza le sedute in ordine
+UCCISO EV06 sedute non controllate
+UCCISO EV07 quota non controllata prima della lettura
+UCCISO EV08 manifesto con anomalie accettato
+UCCISO EV09 autorizzazione senza quota attesa
+UCCISO EV10 lettura senza i byte attesi
+UCCISO EV11 date accessorie dentro le coppie
+UCCISO EV12 verdetto senza veto per blocchi
+UCCISO EV13 esito senza record
+UCCISO EV14 screening non bloccante
+UCCISO EV15 rifiuto non scritto al ricontrollo
+UCCISO EV16 file difforme non registrato
+
+61/62 mutanti uccisi (3.13.18); equivalenti dichiarati vivi: 1
