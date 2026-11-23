@@ -1,0 +1,19 @@
+{
+ "candidato": "7191156d1e3f2c42b5d6a6445fbb6df6086e16fd",
+ "python": "3.13.18",
+ "tutti": true,
+ "controlli_dal_record": {
+  "identita": true,
+  "sedute": true,
+  "media": true,
+  "verdetto": true,
+  "rapporto_byte": true,
+  "ripresa_byte_identici": true
+ },
+ "riga_potenza_nel_rapporto": [
+  "- soglie dello screening: [0.2500; 0.0000; 0.5000] R, R, probabilità [REGOLA] · incertezza: esatto · fonte: D-36 (media > +0,25 R; L > 0; potenza ≥ 50%)",
+  "- potenza stimata della verifica: 0.6000 probabilità [STIMA] · incertezza: dalla procedura congelata nella scheda prima del sigillo · fonte: scheda dell'ipotesi (D-36)"
+ ]
+}
+prima: 0 completata promossa 
+seconda: 0 rapporto rigenerato

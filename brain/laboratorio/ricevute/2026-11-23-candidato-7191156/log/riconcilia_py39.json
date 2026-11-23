@@ -1,0 +1,17 @@
+{
+ "python": "3.9.25",
+ "esiti": {
+  "1 identità": true,
+  "2 sedute": true,
+  "3 media": true,
+  "4 verdetto ricalcolato": true,
+  "5 rapporto": true
+ },
+ "tutti": true,
+ "sedute": 1000,
+ "sedute_attive": 1000,
+ "media": 0.3836564999999758,
+ "media_esadecimale": "0x1.88dd3fe19743fp-2",
+ "esito": "promossa",
+ "causa": "L > +0,20 R e requisiti superati"
+}

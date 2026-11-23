@@ -1,0 +1,104 @@
+{
+ "candidato": "7191156d1e3f2c42b5d6a6445fbb6df6086e16fd",
+ "python": "3.13.18",
+ "comando": "/usr/local/bin/python3 -I -S -B brain/laboratorio/esecuzione/avvio.py verifica --scheda <uscita>/repo/H-T127.md --registro brain/laboratorio/registro_prove.json --riserva brain/laboratorio/registro_riserva.json --prenotazione P1 --cache <uscita>/cache --cache-sviluppo <uscita>/cache_sviluppo --rapporto <uscita>/rapporto_P1.txt --ora 2026-11-22T12:00:00Z",
+ "prima_chiamata": {
+  "codice": 0,
+  "uscita": {
+   "esito_tecnico": "completata",
+   "esito": "promossa",
+   "chiamate_caricatore": {
+    "sviluppo": 1,
+    "verifica": 1
+   },
+   "prenotazione": "P1",
+   "impronta_impegno": "115f1945a90bc757b29d14989e057ceb7dfc0367deb09b82b01e0ea1c9c7a315",
+   "rapporto": "/tmp/claude-0/-home-user/cf76bcae-15b0-5f4e-b9ff-4bc4b5339697/scratchpad/yl13/rapporto_P1.txt",
+   "motivo": ""
+  },
+  "stderr": ""
+ },
+ "seconda_chiamata": {
+  "codice": 0,
+  "uscita": {
+   "esito_tecnico": "rapporto rigenerato",
+   "esito": "promossa",
+   "chiamate_caricatore": {
+    "sviluppo": 0,
+    "verifica": 0
+   },
+   "prenotazione": "P1",
+   "impronta_impegno": "115f1945a90bc757b29d14989e057ceb7dfc0367deb09b82b01e0ea1c9c7a315",
+   "rapporto": "/tmp/claude-0/-home-user/cf76bcae-15b0-5f4e-b9ff-4bc4b5339697/scratchpad/yl13/rapporto_P1.txt",
+   "motivo": ""
+  },
+  "stderr": "",
+  "riserva_invariata": true
+ },
+ "registri": {
+  "prima": {
+   "registro_prove": "e05234a582e5d76871ae37ea744233e333dc019d8559fbbe4f0d4ca36c91be6f",
+   "riserva": "2b68a8183e43c522c070e59455ef031b020044491192fc21c7a671e79d0e90c0"
+  },
+  "dopo": {
+   "registro_prove": "c36a2f3ef3bf6e4921f66821754f28197ca6bca92aa76669b57c821acbccfdd0",
+   "riserva": "d2dffe907df209d87148b618f35014ce465ff6082d63874abf0ab369559ead4f"
+  },
+  "commit_prima": "f67e77bd0803af33515d2c37efcd229d4af410e1",
+  "commit_dopo": "87a032551cc3dd2851c416dbf234b369663aa2ca",
+  "storia": [
+   "87a0325 esito della verifica P1",
+   "f67e77b sigillo e prenotazione P1"
+  ]
+ },
+ "stato_riserva": [
+  {
+   "id": "P1",
+   "ipotesi": "H-T127",
+   "inizio": "2010-01-04",
+   "fine": "2014-01-31",
+   "j": 1,
+   "n_globale": 1,
+   "m": 1,
+   "alfa_j": 0.025,
+   "quota_famiglia": 0.025,
+   "hash_dati": "115f1945a90bc757b29d14989e057ceb7dfc0367deb09b82b01e0ea1c9c7a315",
+   "ora": "2026-11-22T12:00:00Z",
+   "esito": "promossa"
+  }
+ ],
+ "esecuzioni_registro_prove": [
+  {
+   "ruolo": "sviluppo",
+   "variante": "V-T",
+   "esito": null,
+   "prenotazione": null
+  },
+  {
+   "ruolo": "verifica",
+   "variante": "V-T",
+   "esito": null,
+   "prenotazione": "P1"
+  },
+  {
+   "ruolo": "esito",
+   "variante": "V-T",
+   "esito": "promossa",
+   "prenotazione": null
+  }
+ ],
+ "controlli_dal_record": {
+  "identita": true,
+  "sedute": true,
+  "media": true,
+  "verdetto": true,
+  "rapporto_byte": true,
+  "ripresa_byte_identici": true
+ },
+ "tutti": true,
+ "riga_potenza_nel_rapporto": [
+  "- soglie dello screening: [0.2500; 0.0000; 0.5000] R, R, probabilità [REGOLA] · incertezza: esatto · fonte: D-36 (media > +0,25 R; L > 0; potenza ≥ 50%)",
+  "- potenza stimata della verifica: 0.6000 probabilità [STIMA] · incertezza: dalla procedura congelata nella scheda prima del sigillo · fonte: scheda dell'ipotesi (D-36)"
+ ],
+ "impegno_impronta": "115f1945a90bc757b29d14989e057ceb7dfc0367deb09b82b01e0ea1c9c7a315"
+}

@@ -1,8 +1,8 @@
-# Messaggio 18 al DGS (23/11/2026): risposta a DGS-18 — BOZZA, da mandare quando la ricevuta di `7191156` è pronta
+# Messaggio 18 al DGS (23/11/2026): risposta a DGS-18
 
 **Come si manda.**
 - Nella stessa conversazione si incolla il testo fra le due righe di trattini.
-- Si allegano: la ricevuta del candidato `7191156`, `DECISIONI-APERTE.md` (solo la sezione DA-42), il §6 del progetto generale.
+- Si allega **un solo file**, `consegna-dgs18.zip`. Contiene: la ricevuta e i log del candidato `7191156` (prova dal lanciatore con record, impegno e rapporto); la ricevuta di `67380cd`, che documenta #142; DA-42; il progetto generale con il §6 corretto; la tabella della convergenza; il registro dei difetti; l'indice `SHA256SUMS`.
 - Modello: Astra con ragionamento esteso; strumento di esecuzione del codice e plugin di verifica attivi.
 
 ---
@@ -16,7 +16,15 @@ MESSAGGIO 18 AL DGS — risposta a DGS-18. Solo metodo; nessuna decisione riserv
   - Il vecchio esecutore sigillava anche il lanciatore (#95); nel percorso nuovo l'avevo dimenticato. È un mio errore di porting di D-51.
   - Nessun test lo vedeva, perché quelli del lanciatore si fermavano prima, su registri finti.
   - Corretto con i test scritti prima. Nella suite ora c'è un test positivo completo dal lanciatore fino a «promossa», ai due registri, al rapporto confrontato a byte e alla ripresa identica.
-  - **Nuovo candidato `7191156`.** Esiti nella ricevuta allegata: [DA COMPLETARE].
+  - **Nuovo candidato `7191156`.** Su 3.13.18 e 3.9.25: suite verdi (759 test), A–G con osservato = atteso, riconciliazione 5/5.
+  - **La prova positiva completa dal lanciatore è superata su entrambe:**
+    - prima chiamata «promossa» (j = 1, una sola apertura, sviluppo → verifica → esito);
+    - registri pubblicati sul remoto finto;
+    - seconda chiamata «rapporto rigenerato», con la riserva invariata e il rapporto identico a byte;
+    - controlli dal solo record tutti veri.
+
+    Record, impegno e rapporto sono nell'archivio.
+  - Mutanti: percorso 62/63 su 3.13 (MF09 equivalente, EV34 ucciso). Gli altri sono in corso: te li mando a parte.
   - Gemini rifà la prova dal lanciatore in modo indipendente, dentro R19.
 - **Riconciliazione:** ora confronta i byte del rapporto. Provato: un byte in più dà «false».
 - **#141 registrato:** la riga della potenza nel rapporto dice «dalla procedura congelata», ma il valore è dichiarato; le metriche di H-002 sono etichettate MISURA invece che DERIVATO. Minore, nel prossimo lotto.
