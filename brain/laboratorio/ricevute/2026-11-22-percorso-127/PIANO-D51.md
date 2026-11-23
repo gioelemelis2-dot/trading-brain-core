@@ -59,4 +59,7 @@ Ogni punto si prova attraverso `esegui_verifica.main`, con il caso valido e il c
   - prove in una copia di `brain`, in un processo separato.
 - **§3.4 fatto** (`716f00a`): una sola verifica per ipotesi e variante, rifiutata prima di ogni lettura e della quota. Ha trovato il difetto **#138**: oggi la ferma solo la quota.
 - **§3.5:** date di sviluppo rifiutate dal registro della riserva con i confini di D-29 (test; il comportamento c'era già).
-- **Corsa completa dei tre script di mutanti e delle suite su `1080da8`:** in corso. Sarà il candidato proposto per R19.
+- **Corse complete:**
+  - su `1080da8` superate da `1431190`, candidato proposto per R19 (ricevuta `../2026-11-23-candidato-r19/RICEVUTA-CANDIDATO-R19.md`);
+  - dopo DGS-17 (#139, #140) e la revisione critica, il candidato è **`67380cd`** (ricevuta `../2026-11-23-candidato-67380cd/`).
+- **Fuori dal piano, ancora aperti** (revisione critica del 23/11): positivo completo dal lanciatore con un repository git di prova (chiesto a Gemini nell'aggiunta a R19); prova della storia con il GitHub vero prima del primo accesso reale.
