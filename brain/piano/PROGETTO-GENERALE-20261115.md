@@ -1,6 +1,8 @@
 <!-- Esportato dal documento condiviso «Trading Brain — Progetto generale» (claude.ai), revisione 45, il 15/11/2026. Gli schemi sono trascritti in testo. -->
 # Trading Brain — Progetto generale
 
+> **Nota del 23/11/2026 (Claude):** questo documento è fermo al 15–17/11 ed è in parte superato. Il quadro corrente è `PROGETTO-GENERALE-20261123.md`; la sua §12 elenca che cosa è superato qui.
+
 Nov 13, 2026 · l'utente
 
 ## Scopo e principi

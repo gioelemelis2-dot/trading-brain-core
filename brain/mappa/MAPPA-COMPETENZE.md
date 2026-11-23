@@ -1,6 +1,96 @@
 # Mappa generale delle competenze
 
-Versione 1.0 · 11/11/2026
+**Versione 2.0 · 23/11/2026** (Claude, su richiesta del titolare).
+- **Parte A (nuova):** dove va il progetto, quali capacità servono per arrivarci, che cosa c'è e che cosa manca.
+- **Parte B (invariata dall'11/11, versione 1.0):** la mappa delle materie (A–Z) del percorso di studio.
+
+Fonti della parte A: `piano/PROGETTO-GENERALE-20261123.md`, `governance/DECISIONI.md` (D-01…D-55), l'audit globale del 19/11, la revisione critica del 23/11.
+
+---
+
+# Parte A · Dove andiamo e che cosa ci manca (23/11/2026)
+
+**La destinazione (D-14, D-30, D-42, D-46).** Un conto FTMO operato con poche strategie certificate:
+- ognuna con un vantaggio di almeno **+0,25 R a trade**;
+- passate dalla riserva storica, dalla prova in avanti e dalla demo;
+- seguite dentro una **fabbrica di ricerca multi-mercato** che prova molte idee e ne tiene pochissime;
+- obiettivo di rendimento: l'1–2% al mese.
+
+**Il tragitto ha quattro tratti:**
+1. la macchina che giudica;
+2. le idee da giudicare;
+3. la prova nel tempo e in demo;
+4. l'esecuzione protetta.
+
+Oggi il tratto 1 è quasi finito; gli altri sono appena iniziati o fermi.
+
+## A.1 Capacità per tratto
+
+Legenda: ✅ c'è e funziona · 🔄 in corso · 🟡 costruito, mai usato davvero · ⏳ manca · ⛔ fermo per decisione.
+
+### Tratto 1 · La macchina che giudica una strategia
+
+| Capacità | Stato | Che cosa manca | Materie (parte B) |
+|---|---|---|---|
+| Dati storici puliti, con controllo e custodia | ✅ XAUUSD BID e ASK 2005–2026, consuntivo, copia su due cloud | Seconda fonte (confronto con MT5); diagnosi del manifesto sui registri veri | N, C |
+| Partizione cieca e regole di spesa della riserva | ✅ D-29, D-38, registro `riserva/2` | Date esatte, embargo, quarantena; registro vero da creare | M, F |
+| Ipotesi sigillata prima dei dati (scheda H-003) | 🔄 modello approvato in parte (D-32), contratto leggibile dalla macchina | **Procedura di potenza ricalcolabile** dentro il contratto (DGS-17 Q9) | M, S |
+| Simulatore della strategia minuto per minuto | ✅ solo per la rottura del range di Londra (`orb_londra.py`) | **Motore generico** a regole e parametri; sessioni e costi per mercato | N, D, C |
+| Screening sullo sviluppo | ✅ D-36, D-47, byte verificati | — | M, F |
+| Verdetto statistico onesto | ✅ D-31 collaudato su dati sintetici, decisioni esatte, tipi nei rapporti | Ambiente di riferimento unico (D-54) | F, M, S |
+| Conteggio di tutte le prove (N) | ✅ registro unico | Registro unico **su tutti i mercati** (DA-28) | M |
+| Difesa contro errori e manomissioni | 🔄 140 difetti corretti; revisione R19 in corso | Lettura solo dopo l'autorizzazione pubblicata (D-55); protezione del ramo (DA-39) | N, R |
+
+### Tratto 2 · Le idee da giudicare
+
+| Capacità | Stato | Che cosa manca | Materie (parte B) |
+|---|---|---|---|
+| Generare idee **forti** (≥ +0,25 R, regolari) | ⏳ nessuna candidata. H-001 chiusa, H-002 parcheggiata, P-001 in pausa (D-33) | Un flusso di idee del titolare e della letteratura, scritte come regole meccaniche | I, D, C, W, T |
+| Sapere da dove viene un'idea e se è contaminata | ✅ registro della provenienza (D-32) | — | S, Z |
+| Ragione economica di un vantaggio | 🟡 il modello H-003 la chiede già (§1, «meccanismo»), mai compilata per un'ipotesi vera | Saperla scrivere e criticare: è il filtro che separa un'idea da un caso | W, B, C |
+| Dati di contorno: notizie, orari, festività | ⏳ | Calendario storico delle notizie (P-08); orari per mercato | A, B |
+| Più mercati e famiglie indipendenti | ⏳ pianificati (DA-27, DA-28, D-46) | Scaricatore e calendario per altri strumenti; famiglie di mercati dichiarate | B, L, Y |
+
+### Tratto 3 · La prova nel tempo e in demo
+
+| Capacità | Stato | Che cosa manca | Materie (parte B) |
+|---|---|---|---|
+| Prova in avanti simulata, ogni giorno, su molte strategie | ⏳ decisa come direzione (D-46) | Motore generico; dove gira (DA-33); conteggio in N | N, M |
+| Demo con costi veri | 🟡 demo FP Markets creata | Misura di spread e commissione per ora; broker del conto da 50.000 USD (DA-25) | C, B |
+| Quando fermarsi | 🟡 test di Wald simulato (DA-29) | Soglie decise prima, applicate a una strategia vera | F, L |
+| Portafoglio di strategie | ⏳ | Correlazioni misurate, rischio totale entro l'1,5% al giorno | L, Y, F |
+
+### Tratto 4 · L'esecuzione protetta
+
+| Capacità | Stato | Che cosa manca | Materie (parte B) |
+|---|---|---|---|
+| Guardian G0 (limiti FTMO, regole personali) | 🟡 77 test, mai riconciliato | Riconciliazione con un estratto conto (DA-25); P-15 | L, Q, R |
+| Journal e previsioni (Brier) | 🟡 costruito, zero dati veri | Uso quotidiano in demo | P, Z |
+| Alert sul telefono, poi ordine precompilato (D-45) | ⏳ | Ore del titolare (DA-32); collegamento con MetaTrader | N, R |
+| Disciplina del titolare | 🟡 14 regole personali confermate | Indicatori comportamentali accesi (DA-12) | P |
+| Regole FTMO aggiornate | 🟡 lette il 12/11 | Rilettura prima della sfida (overnight, notizie, Expert Advisor) | Q |
+
+## A.2 Le cinque mancanze che pesano di più
+
+1. **Idee forti.** La macchina boccia con onestà, ma promuove solo vantaggi forti e regolari (§6 del progetto generale). Senza un flusso di idee buone, la fabbrica gira a vuoto. È la mancanza più grande, e non è di codice.
+2. **Motore generico.** Oggi ogni idea nuova richiede un simulatore nuovo e giri di revisione. Il costo di un'ipotesi va portato da settimane a giorni.
+3. **Potenza calcolata dalla macchina** e lettura della riserva solo dopo l'autorizzazione pubblicata (D-55): bloccanti prima del primo accesso reale.
+4. **Prova in avanti quotidiana:** è il vero banco di prova illimitato (D-46), e oggi non esiste.
+5. **Pilastro della protezione mai usato:** Guardian e journal vanno riconciliati e usati in demo prima che servano davvero.
+
+## A.3 Competenze del titolare (pilastro conoscenza)
+
+- Il percorso di studio (parte B) è **fermo** dal 12/11 (D-10, D-12, D-20): Modulo 2 in verifica, nessun registro dei cancelli superati.
+- Le materie che servono **prima** per il tratto 2 sono:
+  - **I** (strategie e ragione economica);
+  - **D e C** (tradurre l'analisi tecnica e la microstruttura in regole misurabili);
+  - **W** (perché un vantaggio dovrebbe esistere);
+  - **F** quanto basta per leggere un verdetto.
+- Riattivare la formazione è una decisione del titolare: era fra le quattro dell'audit del 19/11, mai presa.
+
+---
+
+# Parte B · Mappa delle materie (versione 1.0 · 11/11/2026, invariata)
 
 La mappa ha tre livelli:
 1. **Nucleo** — le aree che descrivono il funzionamento dei mercati (A–I).
