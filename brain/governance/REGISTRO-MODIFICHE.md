@@ -1311,3 +1311,26 @@ Nulla di questo tocca il candidato `8e51ce9` su cui lavora R15.
 
 - **Copie fuori dal Mac (D-39), per scelta del titolare su due cloud:** iCloud Drive e Google Drive, entrambe con SHA-256 `40b401ab…b1f32c`, uguale all'originale. La copia di Google Drive è stata scaricata di nuovo per il controllo, poi cancellata dai Download. **D-39 è soddisfatta**, con due cloud invece di chiavetta più cloud.
 - **Incidente, senza conseguenze sulla riserva:** al primo download da Google Drive, Safari ha decompresso lo zip da solo (impostazione «Apri i file sicuri») in `~/Downloads/reali`. Il titolare ha elencato solo i nomi di primo livello (`cache_dukascopy`, `partizioni`, log, CSV a 15 minuti), **non ha aperto nessun file** e ha cancellato la cartella con `rm -rf`. Poi ha tolto l'impostazione di Safari e ha riscaricato lo zip senza estrarlo. Nessun prezzo della riserva è stato visto.
+
+## 2026-11-23 · v2.04 (DGS-17: #139, #140, K = 0, riconciliazione; revisione critica; candidato `67380cd`)
+
+- **DGS-17 archiviato.** Due difetti nel perimetro, test rossi prima (`40ee11d`), poi corretti (`8ef4615`):
+  - **#139:** una sola autorizzazione per (ipotesi, impronta della scheda), sotto il blocco e alla ricostruzione del registro della riserva;
+  - **#140:** la ripresa dopo il verdetto registra verifica ed esito una volta sola nel registro delle prove.
+  Mutanti PR12, PR13, EV33. `test_mutanti_applicabili` ora compila anche ogni mutante: PR12 ed EV33 erano «non validi» al primo tentativo.
+- **K = 0** (`b9ec2f4`): il mercato sintetico ha giornate neutre (dati completi, nessuna operazione). Un test controlla la media come somma degli S su somma dei K, e che le coppie con K = 0 abbiano S = 0.
+- **`riconcilia_record.py`:** 5 controlli dal solo record (identità, sedute, media esatta, verdetto ricalcolato, rapporto). Su `b9ec2f4`: «tutti: true» su 3.13 e 3.9, media `0x1.88dd3fe19743fp-2`.
+- **Ricevuta 127:** media scritta «≈ 0,3836565 R», con il valore esatto del double (DGS-17).
+- **Revisione critica di Claude** (`ricevute/2026-11-23-candidato-r19/REVISIONE-CRITICA-20261123.md`):
+  - 8 punti aperti; proposte **DA-40** (ambiente di riferimento) e **DA-41** (lettura solo dopo che l'autorizzazione è su GitHub);
+  - **lacune nei miei test**, chiuse in `67380cd` (solo test e mutanti):
+    - #139 non era provato dopo l'esito della prima verifica: il mutante PR14 sopravviveva;
+    - la ripresa tecnica identica dopo una caduta durante la lettura non era provata attraverso l'esecutore;
+    - nel caso B ora il test controlla che il rifiuto non rilasci la prenotazione.
+- **Strumento di contorno** `laboratorio/studi/diagnosi_manifesto.py` (`bb6e314` rosso, `7edcb80` verde):
+  - applica il manifesto ai registri veri e conta le anomalie per tipo, lato e anno, più i byte contro il registro;
+  - solo conteggi e date;
+  - test 10/10, mutanti 13/13 su 3.13 e 3.9 (3 sopravvissuti al primo giro, test rafforzati);
+  - procedura per il Mac: `dati/PROCEDURA-DIAGNOSI-MANIFESTO.md`.
+- **Candidato per R19: `67380cd`.** Il codice del perimetro è identico a `b9ec2f4`. Aggiunta al mandato per Gemini: `collaborazione/da-claude/MANDATO-R19-AGGIUNTA-GEMINI.txt`. Bozza del messaggio 17 al DGS.
+- **Corse complete sul candidato:** in corso nel worktree bloccato. Esiti nella ricevuta `ricevute/2026-11-23-candidato-67380cd/`.
