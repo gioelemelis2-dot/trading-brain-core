@@ -335,6 +335,31 @@ class TestRiserva2(Base):
             with self.assertRaisesRegex(ValueError, "fuori dalla riserva"):
                 RV.prenota(reg, "S", "H-900", a, b, "x", ORA)
 
+    def test_una_sola_autorizzazione_per_domanda(self):              # #139 (DGS-17 Q8)
+        # due prenotazioni della STESSA domanda (stessa ipotesi, stessa scheda): una sola si consuma, sotto il blocco
+        RV.prenota(self.reg, "A", "H-900", D(2005, 1, 1), D(2005, 1, 31), SCHEDA, ORA)
+        RV.prenota(self.reg, "B", "H-900", D(2005, 2, 1), D(2005, 2, 28), SCHEDA, ORA)
+        RV.autorizza(self.reg, "A", 1, "h", ORA)
+        prima = self.reg.read_bytes()
+        with self.assertRaisesRegex(ValueError, "domanda già autorizzata"):
+            RV.autorizza(self.reg, "B", 1, "h", ORA)
+        self.assertEqual(self.reg.read_bytes(), prima)
+        RV.prenota(self.reg, "C", "H-900", D(2005, 3, 1), D(2005, 3, 31), "cd" * 32, ORA)   # altra scheda: ammessa
+        RV.autorizza(self.reg, "C", 2, "h", ORA)
+        self.prenota("D", D(2005, 4, 1), D(2005, 4, 30))                                    # altra ipotesi: ammessa
+        RV.autorizza(self.reg, "D", 2, "h", ORA)
+
+    def test_doppia_autorizzazione_della_stessa_domanda_rifiutata_alla_ricostruzione(self):
+        RV.prenota(self.reg, "A", "H-900", D(2005, 1, 1), D(2005, 1, 31), SCHEDA, ORA)
+        RV.prenota(self.reg, "B", "H-900", D(2005, 2, 1), D(2005, 2, 28), SCHEDA, ORA)
+        RV.autorizza(self.reg, "A", 1, "h", ORA)
+        dati = json.loads(self.reg.read_text(encoding="utf-8"))
+        dati["eventi"].append({"tipo": "autorizzazione", "id": "B", "j": 2, "n_globale": 1, "hash_dati": "h", "m": 1,
+                               "alfa_j": RV.quota(0.05, 2, 1), "ora": ORA})            # scritta a mano
+        self.reg.write_text(json.dumps(dati), encoding="utf-8")
+        with self.assertRaisesRegex(ValueError, "domanda già autorizzata"):
+            RV.stato(self.reg)
+
     def test_prenotazione_letta_senza_scrivere(self):
         self.prenota("A", D(2005, 1, 1), D(2005, 1, 31))
         prima = self.reg.read_bytes()

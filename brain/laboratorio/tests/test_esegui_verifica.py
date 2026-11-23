@@ -190,6 +190,29 @@ class TestCorsaCompleta(Percorso):
         voci = [e for e in S.leggi(self.registro)["esecuzioni"] if e["ruolo"] == "verifica"]
         self.assertEqual([e["prenotazione"] for e in voci], ["P1"])
 
+    def test_caduta_dopo_l_esito_nella_riserva_prima_del_registro_delle_prove(self):
+        # #140 (DGS-17 Q8): la ripresa riconcilia i due registri: l'esito entra UNA volta nel registro delle prove
+        scheda = self.prepara()
+        vero = EV._registra_una_volta
+
+        def cade_sull_esito(registro, ipotesi, voce, ora):
+            if voce["ruolo"] == "esito":
+                raise RuntimeError("caduta fra i due registri")
+            return vero(registro, ipotesi, voce, ora)
+        with mock.patch.object(EV, "_registra_una_volta", side_effect=cade_sull_esito):
+            with self.assertRaisesRegex(RuntimeError, "fra i due registri"):
+                self.esegui(scheda)
+        self.assertEqual(RV.record_esito(self.riserva, "P1")["esito"], "promossa")
+        self.assertEqual([e["ruolo"] for e in S.leggi(self.registro)["esecuzioni"]], ["sviluppo", "verifica"])
+        self.chiamate.clear()
+        r = self.esegui(scheda)
+        self.assertEqual((r["esito_tecnico"], self.chiamate), ("rapporto rigenerato", []))
+        esiti = [e for e in S.leggi(self.registro)["esecuzioni"] if e["ruolo"] == "esito"]
+        self.assertEqual([(e["esito"], e["impronta_impegno"]) for e in esiti],
+                         [("promossa", RV.record_esito(self.riserva, "P1")["impronta_impegno"])])
+        self.esegui(scheda)                                              # una seconda ripresa non duplica
+        self.assertEqual(len([e for e in S.leggi(self.registro)["esecuzioni"] if e["ruolo"] == "esito"]), 1)
+
     def test_ripresa_dopo_il_verdetto_senza_rileggere(self):
         scheda = self.prepara()
         rapporto = self.d / "rapporto.txt"
