@@ -10,21 +10,25 @@ PERCHÉ
     due registri.
 - Sono state aggiunte anche le sedute senza operazioni (K = 0) nel mercato sintetico e lo script di riconciliazione
   del record.
-- Per D-24 il giro vale per il candidato che rivede. Il NUOVO CANDIDATO è b9ec2f4 (ricevuta di Claude:
-  laboratorio/ricevute/2026-11-23-candidato-r19/RICEVUTA-CANDIDATO-B9EC2F4.md).
+- Nella sua revisione critica Claude ha poi trovato due lacune nei SUOI test (solo test, nessun cambio al codice):
+  #139 dopo l'esito della prima verifica (mutante PR14, che sopravviveva) e la ripresa tecnica identica dopo una
+  caduta durante la lettura.
+- Per D-24 il giro vale per il candidato che rivede. Il NUOVO CANDIDATO è 67380cd (ricevuta di Claude:
+  laboratorio/ricevute/2026-11-23-candidato-67380cd/RICEVUTA-CANDIDATO-67380CD.md). Il codice del perimetro è
+  identico a b9ec2f4: cambiano solo test e mutanti.
 
-COSA CAMBIA (git diff 1431190 b9ec2f4 -- brain/laboratorio/esecuzione brain/laboratorio/tests)
+COSA CAMBIA (git diff 1431190 67380cd -- brain/laboratorio/esecuzione brain/laboratorio/tests)
 - esecuzione/riserva.py: +6 righe (#139);
 - esecuzione/esegui_verifica.py: +6 righe (#140);
 - tests: test_riserva, test_esegui_verifica, test_mutanti_applicabili (ora compila anche ogni mutante),
-  mercato_sintetico (giornate neutre), mutazioni_percorso (PR12, PR13, EV33);
+  mercato_sintetico (giornate neutre), mutazioni_percorso (PR12, PR13, PR14, EV33);
 - ricevute/2026-11-22-percorso-127/riconcilia_record.py (nuovo, fuori dal perimetro).
 
-REGOLE: quelle del mandato R19, invariate. Worktree nuovo ../tb-r19b sul commit b9ec2f4 (dichiaralo).
+REGOLE: quelle del mandato R19, invariate. Worktree nuovo ../tb-r19b sul commit 67380cd (dichiaralo).
 
 COMPITI
 1. Quello che hai già fatto su 1431190 resta valido per i file che non cambiano: dichiara quali parti vale.
-2. Su b9ec2f4 rifai A, cioè le suite e le tre corse di mutanti: riserva.py ed esegui_verifica.py sono nel
+2. Su 67380cd rifai A, cioè le suite e le tre corse di mutanti: riserva.py ed esegui_verifica.py sono nel
    perimetro.
 3. Rivedi la differenza come parte di B e C. In particolare:
    - due richieste per la STESSA ipotesi e variante che arrivano entrambe all'autorizzazione: al massimo
@@ -48,4 +52,4 @@ COMPITI
    riserva.json, rapporto_P1.txt e la prenotazione P1 nella cartella che gli passi: adatta i nomi o dichiaralo).
    Se il lanciatore non arriva al positivo, è un RILIEVO da classificare.
 
-CONSEGNA: aggiungi una sezione «Aggiunta su b9ec2f4» al tuo G-<data>-R19.md, con le stesse regole di consegna.
+CONSEGNA: aggiungi una sezione «Aggiunta su 67380cd» al tuo G-<data>-R19.md, con le stesse regole di consegna.

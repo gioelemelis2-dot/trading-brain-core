@@ -9,6 +9,7 @@ Richiesta dal titolare dopo DGS-17 («siamo in una fase molto importante»). Ho 
 | #139 | Due prenotazioni della stessa domanda potevano superare entrambe il controllo «una verifica sola» (#138), che gira prima dell'autorizzazione; la seconda la fermava solo la quota non collaudata. Ora l'unicità è garantita **dal registro della riserva**, sotto il blocco e alla ricostruzione | DGS-17 Q8, riprodotto |
 | #140 | Con una caduta fra l'esito scritto nella riserva e quello nel registro delle prove, la ripresa non riconciliava i due registri | DGS-17 Q8, riprodotto |
 | — | Una seduta con i dati completi ma senza operazioni (K = 0) non era mai esercitata: ora c'è un test con il 25% di giornate neutre e la media ricalcolata come somma degli S diviso somma dei K | DGS-17 |
+| — | **Lacune dei MIEI test, trovate in questa revisione:** #139 non era provato dopo l'esito della prima verifica (il mutante PR14 sopravviveva); la ripresa tecnica dopo una caduta durante la lettura non era provata attraverso l'esecutore. Test aggiunti, codice invariato (`67380cd`) | Rilettura del codice e mutante a mano |
 | — | Il controllo veloce dei mutanti ora verifica anche che il file mutato resti Python valido: PR12 ed EV33 erano «non validi» e si sarebbero visti solo nella corsa lunga | Corsa mirata |
 
 ## B. Punti critici ancora aperti (in ordine di gravità)
@@ -25,8 +26,8 @@ Richiesta dal titolare dopo DGS-17 («siamo in una fase molto importante»). Ho 
    - Fra 3.13 e 3.9 i verdetti coincidono, ma gli estremi differiscono di 102 ulp.
    - Va deciso quale ambiente produce il risultato ufficiale, con l'identità registrata nell'impegno.
    - **Proposta (DA-40):** un'immagine Linux riproducibile con Python e versione esatti, qualificata rieseguendo i riferimenti congelati del collaudo IA-02. Il Mac (3.9) e l'altra versione restano prove di portabilità.
-4. **R19 è partito su `1431190`, ma il codice è cambiato dopo (#139, #140, `b9ec2f4`).** Per D-24 il giro vale per il candidato che rivede.
-   - **Proposta:** a Gemini un'aggiunta al mandato con la differenza `1431190..b9ec2f4`: riserva, esecutore, test, mercato sintetico. Gemini la rivede dentro R19.
+4. **R19 è partito su `1431190`, ma il codice è cambiato dopo (#139 e #140 in `b9ec2f4`; più test in `67380cd`).** Per D-24 il giro vale per il candidato che rivede.
+   - **Proposta:** a Gemini un'aggiunta al mandato con la differenza `1431190..67380cd`: riserva, esecutore, test, mercato sintetico. Gemini la rivede dentro R19.
    - In alternativa, R19 conta per `1431190` e le correzioni si rivedono a parte. Ma allora il candidato finale non avrebbe un giro pulito.
 5. **Il manifesto non è mai stato confrontato con i registri VERI dello scaricamento.**
    - **Verificato (REGISTRO-MODIFICHE v1.33):** il BID fino al 07/06/2009 era già in cache il 15/11, prima che nascesse `scarica_cache` con il registro per giorno. Quei file hanno una riga solo se `scarica_cache` è poi passato su quel periodo, come «in-cache-non-registrato», con l'impronta di quel momento. Altrimenti il manifesto li vede «omessi».

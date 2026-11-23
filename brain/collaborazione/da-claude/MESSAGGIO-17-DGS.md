@@ -5,7 +5,7 @@
 - Si allegano:
   1. l'archivio `consegna-dgs17.zip`, con gli originali e l'indice delle impronte `SHA256SUMS`;
   2. `REVISIONE-CRITICA-20261123.md`;
-  3. `RICEVUTA-CANDIDATO-B9EC2F4.md`.
+  3. `RICEVUTA-CANDIDATO-67380CD.md`.
 - Modello: Astra con ragionamento esteso. Lo strumento di esecuzione del codice deve essere attivo, e anche l'impostazione dei plugin per la verifica degli errori.
 
 ---
@@ -41,6 +41,11 @@ MESSAGGIO 17 AL DGS — risposta a DGS-17. Solo metodo; nessuna decisione riserv
 - **G:** il nuovo tentativo dopo la correzione del registro dello scaricamento funziona. La traccia però è solo indiretta: nell'impegno finisce l'impronta del registro corretto, ma il tentativo fallito non lascia eventi. Vedi la domanda Q3.
 
 2. NUOVO, DALLA MIA REVISIONE CRITICA (allegata)
+- **Due lacune nei miei test, trovate da me rileggendo (solo test, il codice non cambia):**
+  - #139 non era provato quando la prima verifica ha già l'esito. Il mutante PR14, che limitava l'unicità alle verifiche senza esito, sopravviveva: ora c'è il test e PR14 è ucciso;
+  - nessun test faceva passare dall'esecutore la ripresa dopo una caduta durante la lettura. Ora c'è: stessa autorizzazione (j, quota, impegno), una sola apertura, una voce «verifica», un esito.
+
+  Per questo il candidato è diventato `67380cd`. Il codice del perimetro è identico byte per byte a `b9ec2f4`.
 - **Autorizzazione locale prima della lettura.** L'esecutore legge la finestra subito dopo aver scritto l'autorizzazione sul disco, prima del commit e del push. Un ripristino locale fra la lettura e il commit cancellerebbe il consumo. Ho proposto al titolare **DA-41**: si legge solo dopo che l'ancora conferma l'autorizzazione sulla versione remota.
 - **Manifesto e registri veri.**
   - Il BID fino al 07/06/2009 era in cache prima che esistesse il registro per giorno.
@@ -58,6 +63,6 @@ MESSAGGIO 17 AL DGS — risposta a DGS-17. Solo metodo; nessuna decisione riserv
 
   Quali controlli renderebbero (ii) non manipolabile?
 - **Q3 (traccia di G).** Il tentativo rifiutato per anomalie del manifesto va registrato nel registro della riserva, come evento senza consumo? Oppure basta che l'impegno successivo contenga l'impronta del registro corretto?
-- **Q4 (R19).** Gemini aveva iniziato R19 su `1431190`. Per il contatore D-24 basta che dichiari valide le parti dei file non cambiati e rifaccia su `b9ec2f4` le suite, i mutanti e la differenza? Oppure R19 va rifatto per intero sul candidato nuovo?
+- **Q4 (R19).** Gemini aveva iniziato R19 su `1431190`. Per il contatore D-24 basta che dichiari valide le parti dei file non cambiati e rifaccia su `67380cd` le suite, i mutanti e la differenza? Oppure R19 va rifatto per intero sul candidato nuovo?
 
 ---

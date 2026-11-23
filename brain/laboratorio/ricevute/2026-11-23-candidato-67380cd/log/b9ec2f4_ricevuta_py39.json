@@ -1,0 +1,413 @@
+{
+ "candidato": {
+  "commit": "b9ec2f457b0bad81fbbf57ca0c2e2993250992c7",
+  "perimetro_modificato_rispetto_al_commit": false,
+  "impronta_insieme_codice": "0d3c603de28f4f6402e22a4e93f3579f6e68456dd575440484c5090204ec7f4c",
+  "file_di_codice": 31,
+  "python": "3.9.25"
+ },
+ "finestra": {
+  "lettura": [
+   "2010-01-04",
+   "2014-01-31"
+  ],
+  "accessorie_giorni": 35,
+  "verifica": [
+   "2010-02-08",
+   "2014-01-31"
+  ]
+ },
+ "prove": [
+  {
+   "prova": "A_corsa_completa",
+   "atteso": "completata, promossa; letture: sviluppo, verifica; j = 1; quota 0,025",
+   "osservato": {
+    "esito_tecnico": "completata",
+    "esito": "promossa",
+    "impronta_impegno": "be80f0e06a0e50cdc6990cb144bf8759a8e9264a508265ddfb4a153b529523bc",
+    "provenienza": {
+     "sigillo": "preparato dal collaudo (S.sigilla nello script), con le impronte del codice",
+     "prenotazione": "preparata dal collaudo (RV.prenota), con l'impronta della scheda",
+     "potenza_stimata": "valore DICHIARATO nel contratto della scheda di test (0,6): input, non calcolato",
+     "screening": "calcolato dall'esecutore sullo sviluppo sintetico",
+     "quota, manifesto, impegno, autorizzazione, lettura, coppie, verdetto, record, rapporto": "generati dall'esecutore ordinario"
+    },
+    "sedute_nell_impegno": 1000,
+    "coppie_uguali_alle_sedute": true,
+    "feriali_esclusi": 40,
+    "valori_esadecimali": {
+     "L": "0x1.3bf9a49c2c061p-2",
+     "U": "0x1.d850f9ed972c8p-2",
+     "media": "0x1.88dd3fe19743fp-2"
+    },
+    "sha256": {
+     "rapporto_originale": "4cd8c6977bc06348b5fa569c68da443418ec875980239e90983f443e1b839d8e",
+     "rapporto_rigenerato": "4cd8c6977bc06348b5fa569c68da443418ec875980239e90983f443e1b839d8e",
+     "record": "be42c091bebb872f552bfeec9328617bf044c89974b02065729ca59c143a1e36"
+    },
+    "rapporto_originale_uguale_al_rigenerato": true,
+    "L_U": [
+     0.30856949999998134,
+     0.46124639999997585
+    ],
+    "media": 0.3836564999999758,
+    "sedute_trade_attive": [
+     1000,
+     1000,
+     1000
+    ],
+    "screening_ammessa": true,
+    "registro_prove": [
+     "sviluppo",
+     "verifica",
+     "esito"
+    ],
+    "rapporto_uguale_al_record": true
+   },
+   "registro_riserva_prima": {
+    "sha256_file": "2b68a8183e43c522c070e59455ef031b020044491192fc21c7a671e79d0e90c0",
+    "giorni": {
+     "disponibile": 5389,
+     "prenotato": 1489,
+     "consumato": 0,
+     "quarantena": 0
+    },
+    "aperture": [],
+    "rifiuti": [],
+    "alfa_speso": 0,
+    "prenotazioni_attive": [
+     "P1"
+    ]
+   },
+   "registro_riserva_dopo": {
+    "sha256_file": "ffd65792aaae6c73ad4a96bd36920315cc1e457b2a17fb8dda6e1ef0d2085cea",
+    "giorni": {
+     "disponibile": 5389,
+     "prenotato": 0,
+     "consumato": 1489,
+     "quarantena": 0
+    },
+    "aperture": [
+     {
+      "id": "P1",
+      "j": 1,
+      "alfa_j": 0.025,
+      "n_globale": 1,
+      "esito": "promossa"
+     }
+    ],
+    "rifiuti": [],
+    "alfa_speso": 0.025,
+    "prenotazioni_attive": []
+   },
+   "chiamate_al_caricatore": [
+    "sviluppo",
+    "verifica"
+   ],
+   "rapporti": [
+    "A_corsa_completa/rapporto_P1.txt",
+    "A_corsa_completa/rapporto_rigenerato_P1.txt"
+   ]
+  },
+  {
+   "prova": "B_vecchia_scheda_H002",
+   "atteso": "rifiutata prima dell'autorizzazione; nessuna lettura; registro invariato",
+   "osservato": "rifiutata prima dell'autorizzazione: H-002-ORB-v3.md: serve un solo blocco «json contratto-h003» (modello H-003)",
+   "registro_riserva_prima": {
+    "sha256_file": "5164a4110f2e13a09cd9512861425d96cf2e098de388fa4de0253612a569819c",
+    "giorni": {
+     "disponibile": 5389,
+     "prenotato": 1489,
+     "consumato": 0,
+     "quarantena": 0
+    },
+    "aperture": [],
+    "rifiuti": [],
+    "alfa_speso": 0,
+    "prenotazioni_attive": [
+     "P1"
+    ]
+   },
+   "registro_riserva_dopo": {
+    "sha256_file": "5164a4110f2e13a09cd9512861425d96cf2e098de388fa4de0253612a569819c",
+    "giorni": {
+     "disponibile": 5389,
+     "prenotato": 1489,
+     "consumato": 0,
+     "quarantena": 0
+    },
+    "aperture": [],
+    "rifiuti": [],
+    "alfa_speso": 0,
+    "prenotazioni_attive": [
+     "P1"
+    ]
+   },
+   "chiamate_al_caricatore": [],
+   "rapporti": []
+  },
+  {
+   "prova": "C_quota_non_collaudata",
+   "atteso": "rifiuto durevole; nessuna lettura; nessun consumo; j e N invariati",
+   "osservato": {
+    "esito_tecnico": "rifiutata per quota",
+    "secondo_tentativo": "rifiutato: la prenotazione 'P1' è stata rifiutata (quota 0.0125 non collaudata (D-31: solo 0.025)): serve una richiesta nuova",
+    "quota_prevista_dopo": [
+     1,
+     0.025
+    ],
+    "esecuzioni_nel_registro_prove": 0
+   },
+   "registro_riserva_prima": {
+    "sha256_file": "1b46e7d198da28a592ff9f6ff9ad7259645d5c0855ce42c536e6b1b646753d0f",
+    "giorni": {
+     "disponibile": 5389,
+     "prenotato": 1489,
+     "consumato": 0,
+     "quarantena": 0
+    },
+    "aperture": [],
+    "rifiuti": [],
+    "alfa_speso": 0,
+    "prenotazioni_attive": [
+     "P1"
+    ]
+   },
+   "registro_riserva_dopo": {
+    "sha256_file": "ab6d054a14e3eb4e18220e6728a9a49ba11855ea9bfc5e3fd62d66974d016501",
+    "giorni": {
+     "disponibile": 6878,
+     "prenotato": 0,
+     "consumato": 0,
+     "quarantena": 0
+    },
+    "aperture": [],
+    "rifiuti": [
+     {
+      "id": "P1",
+      "j_previsto": 1,
+      "m": 2,
+      "quota_calcolata": 0.0125,
+      "fase": "prima dell'autorizzazione"
+     }
+    ],
+    "alfa_speso": 0,
+    "prenotazioni_attive": []
+   },
+   "chiamate_al_caricatore": [],
+   "rapporti": []
+  },
+  {
+   "prova": "D_concorrenza",
+   "atteso": "A consuma (j = 1); B rifiutata al ricontrollo (j previsto 2); nessuna lettura della finestra di B",
+   "osservato": {
+    "B": "rifiutata per quota",
+    "B_chiamate": {
+     "sviluppo": 1,
+     "verifica": 0
+    }
+   },
+   "registro_riserva_prima": {
+    "sha256_file": "9825eb8249cb343bf7bb4aa7d6643dd47df89f4a2ad5190cd3fb15f974f878df",
+    "giorni": {
+     "disponibile": 3904,
+     "prenotato": 2974,
+     "consumato": 0,
+     "quarantena": 0
+    },
+    "aperture": [],
+    "rifiuti": [],
+    "alfa_speso": 0,
+    "prenotazioni_attive": [
+     "A",
+     "B"
+    ]
+   },
+   "registro_riserva_dopo": {
+    "sha256_file": "5197534de5d73036cfa620654c6b616c130974e1bc566cd458549eb271efbd0e",
+    "giorni": {
+     "disponibile": 5389,
+     "prenotato": 0,
+     "consumato": 1489,
+     "quarantena": 0
+    },
+    "aperture": [
+     {
+      "id": "A",
+      "j": 1,
+      "alfa_j": 0.025,
+      "n_globale": 2,
+      "esito": null
+     }
+    ],
+    "rifiuti": [
+     {
+      "id": "B",
+      "j_previsto": 2,
+      "m": 1,
+      "quota_calcolata": 0.008333333333333333,
+      "fase": "ricontrollo all'autorizzazione"
+     }
+    ],
+    "alfa_speso": 0.025,
+    "prenotazioni_attive": []
+   },
+   "chiamate_al_caricatore": [
+    "sviluppo",
+    "sviluppo"
+   ],
+   "rapporti": []
+  },
+  {
+   "prova": "E_file_difforme",
+   "atteso": "esito tecnico «file difforme», non decidibile; consumo mantenuto",
+   "osservato": {
+    "esito_tecnico": "file difforme",
+    "esito": "non decidibile",
+    "causa": "file difforme: ASK 2010-02-18: byte diversi dal manifesto autorizzato"
+   },
+   "registro_riserva_prima": {
+    "sha256_file": "2b68a8183e43c522c070e59455ef031b020044491192fc21c7a671e79d0e90c0",
+    "giorni": {
+     "disponibile": 5389,
+     "prenotato": 1489,
+     "consumato": 0,
+     "quarantena": 0
+    },
+    "aperture": [],
+    "rifiuti": [],
+    "alfa_speso": 0,
+    "prenotazioni_attive": [
+     "P1"
+    ]
+   },
+   "registro_riserva_dopo": {
+    "sha256_file": "452a0810933b20c4fa0462cb75782fccf9c162a5f3268f058a688f120493ec7b",
+    "giorni": {
+     "disponibile": 5389,
+     "prenotato": 0,
+     "consumato": 1489,
+     "quarantena": 0
+    },
+    "aperture": [
+     {
+      "id": "P1",
+      "j": 1,
+      "alfa_j": 0.025,
+      "n_globale": 1,
+      "esito": "non decidibile"
+     }
+    ],
+    "rifiuti": [],
+    "alfa_speso": 0.025,
+    "prenotazioni_attive": []
+   },
+   "chiamate_al_caricatore": [
+    "sviluppo",
+    "verifica"
+   ],
+   "rapporti": [
+    "E_file_difforme/rapporto_P1.txt"
+   ]
+  },
+  {
+   "prova": "F_ripresa_dopo_il_verdetto",
+   "atteso": "rapporto rigenerato dal record senza letture; codice diverso rifiutato",
+   "osservato": {
+    "letture_della_prima_corsa_caduta": [
+     "sviluppo",
+     "verifica"
+    ],
+    "ripresa": "rapporto rigenerato",
+    "sha256_rapporto_rigenerato": "4cd8c6977bc06348b5fa569c68da443418ec875980239e90983f443e1b839d8e",
+    "esito": "promossa",
+    "ripresa_con_codice_diverso": "rifiutata: ripresa non identica: scheda, codice, variante, seme o finestra diversi dal record"
+   },
+   "registro_riserva_prima": {
+    "sha256_file": "ffd65792aaae6c73ad4a96bd36920315cc1e457b2a17fb8dda6e1ef0d2085cea",
+    "giorni": {
+     "disponibile": 5389,
+     "prenotato": 0,
+     "consumato": 1489,
+     "quarantena": 0
+    },
+    "aperture": [
+     {
+      "id": "P1",
+      "j": 1,
+      "alfa_j": 0.025,
+      "n_globale": 1,
+      "esito": "promossa"
+     }
+    ],
+    "rifiuti": [],
+    "alfa_speso": 0.025,
+    "prenotazioni_attive": []
+   },
+   "registro_riserva_dopo": {
+    "sha256_file": "ffd65792aaae6c73ad4a96bd36920315cc1e457b2a17fb8dda6e1ef0d2085cea",
+    "giorni": {
+     "disponibile": 5389,
+     "prenotato": 0,
+     "consumato": 1489,
+     "quarantena": 0
+    },
+    "aperture": [
+     {
+      "id": "P1",
+      "j": 1,
+      "alfa_j": 0.025,
+      "n_globale": 1,
+      "esito": "promossa"
+     }
+    ],
+    "rifiuti": [],
+    "alfa_speso": 0.025,
+    "prenotazioni_attive": []
+   },
+   "chiamate_al_caricatore": [],
+   "rapporti": [
+    "F_ripresa_dopo_il_verdetto/rapporto_P1.txt"
+   ]
+  },
+  {
+   "prova": "G_giorno_omesso_nel_registro",
+   "atteso": "rifiutata prima dell'autorizzazione (manifesto con anomalie)",
+   "osservato": "rifiutata prima dell'autorizzazione: manifesto con anomalie: omesso: XAUUSD ASK 2010-02-08",
+   "registro_riserva_prima": {
+    "sha256_file": "2b68a8183e43c522c070e59455ef031b020044491192fc21c7a671e79d0e90c0",
+    "giorni": {
+     "disponibile": 5389,
+     "prenotato": 1489,
+     "consumato": 0,
+     "quarantena": 0
+    },
+    "aperture": [],
+    "rifiuti": [],
+    "alfa_speso": 0,
+    "prenotazioni_attive": [
+     "P1"
+    ]
+   },
+   "registro_riserva_dopo": {
+    "sha256_file": "2b68a8183e43c522c070e59455ef031b020044491192fc21c7a671e79d0e90c0",
+    "giorni": {
+     "disponibile": 5389,
+     "prenotato": 1489,
+     "consumato": 0,
+     "quarantena": 0
+    },
+    "aperture": [],
+    "rifiuti": [],
+    "alfa_speso": 0,
+    "prenotazioni_attive": [
+     "P1"
+    ]
+   },
+   "chiamate_al_caricatore": [
+    "sviluppo"
+   ],
+   "rapporti": []
+  }
+ ]
+}

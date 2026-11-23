@@ -11,7 +11,7 @@ Ultimo aggiornamento: **2026-11-23, mattina** (sezione in testa); prima: 2026-11
   - **#139** (`8ef4615`): una sola autorizzazione per domanda nel registro della riserva, sotto il blocco e alla ricostruzione;
   - **#140**: la ripresa riconcilia verifica ed esito nel registro delle prove.
   Aggiunti anche le sedute K = 0 nel mercato sintetico e `riconcilia_record.py` (`b9ec2f4`).
-- **Nuovo candidato per R19: `b9ec2f4`.** Corse nel worktree bloccato `scratchpad/wt-n`: suite, ricevute, riconciliazione e mutanti dei tre script su 3.13 e 3.9. La ricevuta va in `laboratorio/ricevute/2026-11-23-candidato-r19/RICEVUTA-CANDIDATO-B9EC2F4.md`.
+- **Nuovo candidato per R19: `67380cd`.** Rispetto a `b9ec2f4` cambiano solo test e mutanti (lacune dei miei test: PR14 e ripresa tecnica identica); il codice del perimetro è identico. Su `b9ec2f4` suite e riconciliazione erano già verdi su entrambe le versioni. Corse in corso nel worktree bloccato `scratchpad/wt-x`. La ricevuta va in `laboratorio/ricevute/2026-11-23-candidato-67380cd/`.
 - **Gemini aveva iniziato R19 su `1431190`.** Aggiunta al mandato pronta: `collaborazione/da-claude/MANDATO-R19-AGGIUNTA-GEMINI.txt`. Il titolare la manda quando la ricevuta è pronta.
 - **Revisione critica di Claude:** `laboratorio/ricevute/2026-11-23-candidato-r19/REVISIONE-CRITICA-20261123.md`, 8 punti aperti. I più gravi:
   1. l'autorizzazione è letta prima di essere su GitHub (proposta **DA-41**);
