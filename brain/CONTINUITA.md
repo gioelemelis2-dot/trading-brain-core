@@ -4,6 +4,8 @@ Ultimo aggiornamento: **2026-11-23** (sezione in testa); prima: 2026-11-15, dopo
 
 ## Aggiornamento del 22–23/11/2026 (LEGGERE PER PRIMO)
 
+**Regola fissa del titolare (23/11): Claude scrive SEMPRE in italiano**, in ogni messaggio, anche brevissimo o di stato. Il titolare ha dovuto ripeterlo più volte: ogni frase in inglese gli costa token.
+
 **Stato alla notte fra il 22 e il 23/11** (il titolare dorme; Claude ha lavorato su DGS-16 e D-51):
 - **ASK finito** (21/11, 23:50, zero errori). Consuntivo archiviato in `laboratorio/ricevute/2026-11-22-consuntivo-ask/`:
   - cache pulite e allineate su 6.889 giorni;
