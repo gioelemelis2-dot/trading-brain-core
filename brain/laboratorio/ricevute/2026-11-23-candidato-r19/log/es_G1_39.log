@@ -1,0 +1,99 @@
+M00 copia non mutata: suite verde
+UCCISO K15a copertura predefinita a 1 (#107)
+UCCISO K15b percentile fuori dominio accettato (#110)
+UCCISO K15c anni vuoti accettati (#110)
+UCCISO K15e anni da un generatore letti una volta sola (#114)
+UCCISO K15d Sharpe non numerici accettati (#110)
+UCCISO N23 terzi della sessione ignorati
+UCCISO N24 HEAD staccata accettata
+UCCISO N25 ramo senza versione remota accettato
+UCCISO N26 storia riscritta accettata
+UCCISO N27 modifiche non committate accettate
+UCCISO N28 collegamento simbolico accettato
+UCCISO N29 ambiente non controllato all'avvio
+UCCISO N30 modalità isolata non richiesta
+UCCISO N31 libreria standard ombrata accettata
+UCCISO N32 modulo brain caricato non confrontato
+UCCISO N33 robustezza del sigillo non controllata
+UCCISO N34 robustezza non dichiarata accettata
+UCCISO N36 completezza per record, non per minuti (#85)
+UCCISO N47 esito senza verifica accettato (#90)
+UCCISO N48 secondo esito accettato (#90)
+UCCISO N49 testa della riserva non ricontrollata (#93)
+UCCISO N50 alfa totale booleano accettato (#93)
+UCCISO N51 contatore j non intero accettato (#94)
+UCCISO N52 verifiche registrate una per volta (#94)
+UCCISO N53 fuso orario non controllato (#94)
+UCCISO N54 ultimo giorno d'estate sbagliato (#94)
+UCCISO N55 avvio diretto accettato (#95)
+UCCISO N56 lanciatore non sigillato (#95)
+UCCISO N58 lanciatore: cartella di lancio non controllata (#95)
+UCCISO N59 lanciatore: impronte non controllate (#95)
+UCCISO N60 lanciatore: senza sigillo prosegue (#95)
+UCCISO N61 lanciatore: modalità non isolata accettata (#95)
+UCCISO N62 lanciatore: cartelle importabili nella radice ammesse (R14-01)
+UCCISO N63 lanciatore: -B non richiesto (R14-09)
+UCCISO N64 storia parziale accettata (R14-03)
+UCCISO N65 reflog non letto (R14-03)
+UCCISO N67 cartella esterna del bytecode fuori dalla lista (R14-02)
+UCCISO N68 lanciatore: archivi nella radice ammessi (M-R14-01 di Gemini)
+UCCISO N69 lanciatore: cartella esterna del bytecode ammessa (M-R14-02 di Gemini)
+UCCISO N37 registro non canonico accettato (#86)
+UCCISO N38 storia git non controllata (#86, #125)
+UCCISO N41 storia del solo ramo corrente (#86)
+UCCISO N42 ambiente non ricontrollato prima degli esiti dello sviluppo (#91)
+UCCISO N43 bytecode in __pycache__ accettato (#87)
+UCCISO N44 pycache_prefix accettato (#87)
+UCCISO N45 libreria standard troppo larga (#88)
+UCCISO N46 pacchetti installati come standard (#88)
+UCCISO N01 __init__ fuori dalle impronte
+UCCISO N02 import dentro le funzioni ignorati
+UCCISO N03 pacchetti attraversati ignorati
+UCCISO N04 import relativi risolti male
+UCCISO N05 codice non ricalcolato senza impronte date
+UCCISO N06 registro su git non confrontato
+UCCISO N07 registro non versionato accettato
+UCCISO N08 registro fuori dal repository accettato
+UCCISO N09 ancora git ignorata
+UCCISO N10 --ora non controllata
+UCCISO N12 robustezza senza nome della prova
+UCCISO N13 suffissi liberi nello sviluppo
+UCCISO N14 completezza non controllata
+UCCISO N15 minuti contati fuori sessione
+UCCISO N16 vigilie non tollerate
+UCCISO N17 incompleti non bloccano
+UCCISO N18 Natale di domenica senza martedì 27
+UCCISO N19 Lunedì dell'Angelo mancante
+UCCISO N20 Capodanno di sabato senza il 31
+UCCISO N21 solo l'anno stesso
+UCCISO N22 impronta della cache diversa dal caricatore
+UCCISO K01 percentile al rango sbagliato
+UCCISO K02 confronto casuale con >=
+UCCISO K03 seme ignorato
+UCCISO K04 benchmark sull'unione dei giorni
+UCCISO K05 basta battere un benchmark
+UCCISO K06 veto: base non positiva ignorata
+UCCISO K07 veto: metà esatta bocciata
+UCCISO K08 veto: prova senza trade non gestita
+UCCISO K09 R medio con >
+UCCISO K10 Sharpe ignorato
+UCCISO K11 trade minimi con >
+UCCISO K12 confronto casuale ignorato
+UCCISO K13 benchmark ignorati
+UCCISO K14 vendite ignorate
+UCCISO K15 drawdown dello screening a 13R
+UCCISO K16 veto ignorato
+UCCISO K17 stress ignorato
+UCCISO K18 anno senza trade positivo
+UCCISO K19 DSR con N = 1
+UCCISO K20 varianza empirica ignorata
+UCCISO K21 ultimi 5 anni diventano 6
+UCCISO K22 quota degli anni con >
+UCCISO K23 R medio della verifica ignorato
+UCCISO K24 curtosi in eccesso
+UCCISO K25 trade non ordinati per data
+UCCISO K26 percentile al 90%
+UCCISO K27 ripetizioni 999
+UCCISO K28 ultimi 5 anni dall'ultimo trade (P4 di Gemini)
+
+96/96 mutanti uccisi (3.9.25)

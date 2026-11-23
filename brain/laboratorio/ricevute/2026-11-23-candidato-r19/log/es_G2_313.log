@@ -1,0 +1,74 @@
+M00 copia non mutata: suite verde
+UCCISO TA01 taratura: chiusure note contate
+UCCISO TA02 taratura: fine settimana contato
+UCCISO TA03 taratura: minuti fuori sessione contati
+UCCISO TA04 taratura: vigilie mischiate
+UCCISO TA05 taratura: soglia di sessione ignorata
+UCCISO TA07 taratura: record ripetuti contati (#85)
+UCCISO TA06 taratura: percentili non ordinati
+UCCISO V01 riserva: sovrapposizioni ignorate
+UCCISO V02 riserva: fuori dalla riserva
+UCCISO V03 riserva: intervallo rovesciato
+UCCISO V04 riserva: protetta senza sblocco
+UCCISO V05 riserva: identità riusata
+UCCISO V06 riserva: rilascio dopo l'autorizzazione
+UCCISO V07 riserva: rilascio non libera
+UCCISO V08 riserva: autorizzazione dopo il rilascio
+UCCISO V09 riserva: j non controllato
+UCCISO V10 riserva: quota non controllata
+UCCISO V11 riserva: quota senza m
+UCCISO V12 riserva: quota 1/j
+UCCISO V13 riserva: l'autorizzazione non consuma
+UCCISO V14 riserva: due esiti
+UCCISO V15 riserva: esito sconosciuto
+UCCISO V16 riserva: evento sconosciuto
+UCCISO V17 riserva: ripetizione con byte diversi
+UCCISO V18 riserva: ripetizione con N diverso
+UCCISO V19 riserva: senza blocco
+UCCISO V20 riserva: creazione ripetuta
+UCCISO V21 riserva: α speso diviso per m
+UCCISO V22 riserva: quarantena su prenotate
+UCCISO V23 riserva: esito prima dell'autorizzazione
+UCCISO V24 riserva: m zero accettato
+UCCISO V25 riserva: m booleano nel file
+UCCISO V26 riserva: N globale non controllato
+UCCISO V27 riserva: N globale che scende
+UCCISO V28 riserva: impronta dei dati vuota
+UCCISO V29 riserva: ripetizione dopo l'esito
+UCCISO V30 riserva: quarantena sulla protetta
+UCCISO V31 riserva: testa cambiata accettata
+UCCISO V32 riserva: eventi cambiati accettati
+UCCISO V33 riserva: ancora non controllata
+UCCISO S01 doppio sigillo ammesso
+UCCISO S02 impronta della scheda non controllata
+UCCISO S03 verifica ripetibile
+UCCISO S04 esecuzione senza sigillo
+UCCISO S05 N conta anche le esecuzioni
+UCCISO S06 ruolo dell'esecuzione non controllato
+UCCISO S07 varianti duplicate ammesse
+UCCISO S08 sigillo dopo esecuzioni ammesso
+UCCISO S09 schema del registro non controllato
+UCCISO E01 robustezza solo se la base è positiva
+UCCISO E02 memoria di prepara senza range e tetto
+UCCISO E03 stress non applicato
+UCCISO E04 casuale con un solo benchmark
+UCCISO E05 vendo sempre = compro sempre
+UCCISO E06 sigillo non controllato dalla riga di comando
+UCCISO E07 robustezza non registrata
+UCCISO E08 rapporto senza impronta
+UCCISO E09 target nella robustezza di V-S
+UCCISO E10 stress a 0,10
+UCCISO E15 sigillo con varianti diverse ammesso (P3 di Gemini)
+UCCISO E17 casuale contro l'R di tutti i trade (P5 di Gemini)
+UCCISO E18 dati incompleti ammessi (P6 di Gemini)
+UCCISO S10 registro senza blocco (P8 di Gemini)
+UCCISO MG03 R medio della verifica con >= (Gemini)
+UCCISO MG04 drawdown della verifica con <= (Gemini)
+UCCISO MG06 varianza nulla 1/T (Gemini)
+UCCISO MG07 ultimi 5 anni con >= (Gemini)
+UCCISO MR01 ASK mancanti non controllati (Gemini R11)
+UCCISO MR02 zero minuti ASK ammessi (Gemini R11)
+UCCISO MR06 DSR con > (Gemini R11)
+UCCISO MR07 promossa sempre vera nel registro (Gemini R11)
+
+71/71 mutanti uccisi (3.13.18)

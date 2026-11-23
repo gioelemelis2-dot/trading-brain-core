@@ -1289,3 +1289,14 @@ Nulla di questo tocca il candidato `8e51ce9` su cui lavora R15.
 - **§3.3:** lanciatore `avvio.py verifica`; esecutore fermo senza lanciatore; ambiente ricontrollato prima di leggere.
 - Mutanti del percorso fino a EV32 più AV01 e AV02; N60 riallineato, segnalato da `test_mutanti_applicabili` prima della corsa.
 - **Candidato `1080da8`:** suite e mutanti completi su 3.13 e 3.9 in un worktree bloccato, in corso.
+
+## 2026-11-23 · v2.01 (candidato proposto per R19: `1431190`)
+
+- **Pulizia di D-51** (`2e4cab4`, `1431190`): test diretti della storia git (N38, N41, N65); R11-S4 e P6 portati sullo sviluppo con il controllo «prima di leggere» (R05); tolti P1 e S6 della vecchia verifica. Test della prenotazione consumata altrove reso specifico (EV26, `d977973`).
+- **Candidato `1431190`, worktree bloccato, 3.13.18 e 3.9.25:**
+  - suite verdi;
+  - perimetro **299/299** su entrambe;
+  - verdetto 131/132 (VD13 equivalente);
+  - percorso 57/58 (MF09 equivalente).
+  Ricevuta in `laboratorio/ricevute/2026-11-23-candidato-r19/`.
+- **Da decidere dal titolare:** l'avvio di R19 con Gemini su questo candidato (D-48).
