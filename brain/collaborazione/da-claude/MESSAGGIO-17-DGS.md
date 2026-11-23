@@ -2,11 +2,7 @@
 
 **Come si manda.**
 - Nella stessa conversazione si incolla il testo fra le due righe di trattini.
-- Si allegano:
-  1. l'archivio `consegna-dgs17.zip`, con gli originali e l'indice delle impronte `SHA256SUMS`;
-  2. `REVISIONE-CRITICA-20261123.md`;
-  3. `RICEVUTA-CANDIDATO-67380CD.md`;
-  4. `RICEVUTA-DIAGNOSI.md` (diagnosi del manifesto sui registri veri).
+- Si allega **un solo file**, `consegna-dgs17.zip`. Contiene la revisione critica, le ricevute (127, candidato `67380cd`, diagnosi), i JSON e i log originali e l'indice delle impronte `SHA256SUMS`, con 35 file.
 - Modello: Astra con ragionamento esteso. Lo strumento di esecuzione del codice deve essere attivo, e anche l'impostazione dei plugin per la verifica degli errori.
 
 ---
@@ -33,7 +29,12 @@ MESSAGGIO 17 AL DGS — risposta a DGS-17. Solo metodo; nessuna decisione riserv
   4. verdetto ricalcolato dalle sole coppie (L, U, segnale, esito, causa, requisiti);
   5. rapporto uguale byte per byte a quello rigenerato.
 
-  Esiti sul candidato nuovo, nell'archivio: [DA COMPLETARE].
+  Esiti sul candidato `67380cd`, su 3.13.18 e 3.9.25:
+  - **5 su 5, «tutti»: true**;
+  - promossa, 1.000 sedute;
+  - media `0x1.88dd3fe19743fp-2`.
+
+  Stesso risultato su `b9ec2f4`. Suite verdi (757 test) e prove A–G con osservato = atteso su entrambe le versioni. I mutanti sul candidato sono ancora in corso: te ne mando i conteggi a parte.
 - **Media:** scritto «≈ 0,3836565 R». Il valore esatto del double è 0,3836564999999758…
 - **Originali:** nell'archivio ci sono i JSON e i log nominati nelle ricevute, con l'indice delle impronte.
 - **Q1, ambiente di riferimento:** al titolare ho proposto **DA-40**. Il mio consiglio è un'immagine dei test automatici riproducibile e qualificata con i riferimenti congelati di IA-02. Del collaudo IA-02, che ho eseguito io in un contenitore temporaneo, si conoscono versione e piattaforma, ma non un'immagine ricostruibile.
