@@ -141,11 +141,23 @@ Ogni stato qui sotto rimanda a un documento del repository. Dove non è verifica
 
 - **Una verifica** usa 1.000 sedute (circa 4 anni) e richiede almeno 300 trade e 200 sedute con trade (D-37).
 - **Quante verifiche:** con circa 4.400–4.800 sedute ammissibili, le finestre disgiunte sono **al massimo 4**, prima dell'embargo e delle date accessorie (consuntivo del 22/11). Ogni verifica successiva è più severa: la quota scende da 2,5% a 0,83%, poi 0,42%… (D-38).
-- **Potenza** [STIMA, dai calcoli del collaudo e di DGS-14]: per una strategia vera da **+0,25 R** a trade il metro promuove circa:
-  - il **25%** delle volte con deviazione per trade di 1,25 R;
-  - il **51%** con deviazione 0,8 R.
+- **Potenza** del metro per una strategia vera da **+0,25 R** a trade. La probabilità di promozione dipende soprattutto da **quanti trade** cadono nella finestra: 1.000 sedute danno 1.000 trade solo se la strategia fa un trade per seduta; il minimo ammesso è 300 (D-37).
 
-  Da +0,20 R quasi mai. Quindi la macchina boccia con onestà, ma promuove solo vantaggi forti e regolari.
+  | Trade nella finestra | Deviazione per trade | 1ª apertura (2,5%) | 2ª (0,83%) | 3ª (0,42%) | 4ª (0,25%) | Almeno una, se tutte e 4 le candidate sono vere |
+  |---|---|---|---|---|---|---|
+  | 1.000 | 0,80 R | 50,7% | 33,8% | 25,4% | 20,3% | 80,6% |
+  | 1.000 | 1,25 R | 24,4% | 12,9% | 8,5% | 6,2% | 43,4% |
+  | 605 | 0,80 R | 33,6% | 19,6% | 13,5% | 10,2% | 58,6% |
+  | 605 | 1,25 R | 16,5% | 7,9% | 4,9% | 3,4% | 29,3% |
+  | 300 | 0,80 R | 19,0% | 9,5% | 6,0% | 4,2% | 34,0% |
+  | 300 | 1,25 R | 10,3% | 4,4% | 2,6% | 1,7% | 17,9% |
+
+  - [DERIVATO] La tabella usa l'approssimazione normale, con trade indipendenti e promozione se il limite inferiore supera +0,20 R alla quota dell'apertura.
+  - [MISURA, simulazione] Per la prima apertura con 1.000 trade, la simulazione del metro vero dà **24,75%** (σ = 1,25) e **51,15%** (σ = 0,80) su 2.000 repliche (RICEVUTA-127, controlli aperti). ChatGPT l'ha ricontrollata in DGS-16, con i riferimenti normali 24,35% e 50,66%.
+  - Con dipendenza fra i trade, la potenza sarebbe più bassa.
+  - **Le aperture dopo la prima oggi non sono possibili:** il metro è collaudato solo alla quota del 2,5%, e il codice rifiuta le altre (D-31, D-50). Le colonne dalla 2ª alla 4ª richiedono prima un collaudo a quelle quote.
+  - Da 300 a 1.000 trade la potenza cambia anche di 2–5 volte. Quindi **la frequenza della strategia conta quanto il suo vantaggio**, e va stimata nella scheda (procedura di potenza, DGS-17 Q9).
+  - Correzione del 23/11 (errore di Claude): la prima versione di questo punto dava 25% e 51% senza dire che valgono per 1.000 trade. L'ha notato una revisione esterna, che con 300 e 605 trade otteneva valori più bassi, corretti per quei casi.
 - **Code** [STIMA, esempio inventato dell'audit del 19/11]: con perdite gravi nello 0,2% dei trade, il metro può promuovere per errore circa **una volta su nove**. Per questo ogni scheda dichiara l'esposizione massima in R (D-43); un collaudo nuovo serve se l'esposizione esce dal dominio provato.
 - **Conseguenza pratica.** La riserva è un **primo filtro scarso**, non la prova finale. La prova vera e illimitata è il futuro (D-46), e il suo costo è il **tempo**:
   - circa 5–7 mesi per riconoscere una strategia da +0,30 R;
