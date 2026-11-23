@@ -35,6 +35,8 @@ M = {
     "PR09 record incoerente con l'esito": [(RV, "r.get(\"esito\") != e[\"esito\"])", "False)")],
     "PR10 impronta dell'impegno senza ordine delle chiavi": [(RV, "json.dumps(impegno, sort_keys=True,", "json.dumps(impegno, sort_keys=False,")],
     "PR11 vecchio schema accettato": [(RV, 'SCHEMA = "riserva/2"', 'SCHEMA = "riserva/1"')],
+    "PR12 due autorizzazioni della stessa domanda": [(RV, "            if gia:                                                            # #139: unicità al consumo", "            if False:")],
+    "PR13 unicità senza l'impronta della domanda": [(RV, "                   and q[\"evento\"][\"hash_domanda\"] == p[\"evento\"][\"hash_domanda\"]]", "]")],
     # manifesto
     "MF01 date accessorie ignorate": [(MF, "inizio - timedelta(days=accessorie)", "inizio")],
     "MF02 voce doppia non vista": [(MF, "if len(righe) > 1:", "if False:")],
@@ -71,6 +73,7 @@ M = {
     "EV30 esecutore senza lanciatore": [(EV, "    if CONTROLLO_AMBIENTE and not getattr(sys, \"_tb_avvio_controllato\", False):", "    if False:")],
     "EV31 ambiente non ricontrollato prima di leggere": [(EV, "        controlla_ambiente(sigillo[\"codice\"])\n", "        pass\n")],
     "EV32 controllo dell'ambiente spento nel codice": [(EV, "CONTROLLO_AMBIENTE = True      # PIANO-D51 §3.3", "CONTROLLO_AMBIENTE = False     # PIANO-D51 §3.3")],
+    "EV33 ripresa senza riconciliare il registro delle prove": [(EV, "            _registra_una_volta(registro, c[\"ipotesi\"], voce, ora)\n        _scrivi_rapporto(rapporto, rapporto_da_record(p[\"record\"]))", "            pass\n        _scrivi_rapporto(rapporto, rapporto_da_record(p[\"record\"]))")],
     "AV01 verifica senza leggere il contratto": [("laboratorio/esecuzione/avvio.py", "        problemi = [problema] if problema else controlla(RADICE, ipotesi)", "        problemi = []")],
     "AV02 codice sigillato di H-002 per ogni verifica": [("laboratorio/esecuzione/avvio.py", "controlla(RADICE, ipotesi)", "controlla(RADICE)")],
     "EV19 coppie del record senza le sedute in ordine": [(EV, "for g, (s, k) in zip(giorni_verifica, cp)]", "for g, (s, k) in zip(sorted(giorni_verifica, reverse=True), cp)]")],

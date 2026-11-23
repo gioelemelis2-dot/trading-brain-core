@@ -242,6 +242,12 @@ def esegui(scheda: Path, registro: Path, riserva: Path, id_: str, cache: Path, c
     if p["record"] is not None:                                                          # ripresa dopo il verdetto
         if p["record"]["identita"] != _json(identita):
             raise ValueError("ripresa non identica: scheda, codice, variante, seme o finestra diversi dal record")
+        rec = p["record"]                                                                # #140: riconcilia i registri
+        for voce in ({"ruolo": "verifica", "variante": c["variante"], "impronta_impegno": rec["impronta_impegno"],
+                      "prenotazione": id_},
+                     {"ruolo": "esito", "variante": c["variante"], "esito": rec["esito"],
+                      "impronta_impegno": rec["impronta_impegno"]}):
+            _registra_una_volta(registro, c["ipotesi"], voce, ora)
         _scrivi_rapporto(rapporto, rapporto_da_record(p["record"]))
         return risultato("rapporto rigenerato", p["record"]["esito"], p["record"]["impronta_impegno"], rapporto)
     sigillo = S.controlla_sigillo(registro, c["ipotesi"], scheda, codice=identita["codice"])   # 3

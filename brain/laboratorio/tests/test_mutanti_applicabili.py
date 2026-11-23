@@ -2,7 +2,8 @@
 
 Perché: tre volte (V10 dopo #128; VD26, VD35, VD72 dopo #124; VD30, VD39, VD111 dopo la seconda parte di #124) una
 correzione ha cambiato le righe che un mutante modificava e la cosa si è vista solo nella corsa completa dei mutanti,
-ore dopo il commit. Questo controllo è veloce (nessuna copia, nessuna suite) e gira con i test normali.
+ore dopo il commit. Dal 23/11 controlla anche che il file mutato resti Python valido (PR12 ed EV33
+erano «NON VALIDI»). Questo controllo è veloce (nessuna copia, nessuna suite) e gira con i test normali.
 Uso: python3 -s -B -W error -m unittest brain.laboratorio.tests.test_mutanti_applicabili
 """
 import runpy
@@ -25,12 +26,20 @@ class TestMutantiApplicabili(unittest.TestCase):
                 brain = g["BRAIN"]
                 problemi = []
                 for mutante, sostituzioni in g["M"].items():
+                    testi = {}
                     for f, vecchio, nuovo in sostituzioni:
-                        n = (brain / f).read_text(encoding="utf-8").count(vecchio)
+                        testo = testi.get(f) or (brain / f).read_text(encoding="utf-8")
+                        n = testo.count(vecchio)
                         if n != 1:
                             problemi.append(f"{mutante}: {n} volte in {f}")
                         if vecchio == nuovo:
                             problemi.append(f"{mutante}: sostituzione identica")
+                        testi[f] = testo.replace(vecchio, nuovo)
+                    for f, testo in testi.items():                  # il mutante deve restare Python valido
+                        try:
+                            compile(testo, f, "exec")
+                        except SyntaxError as e:
+                            problemi.append(f"{mutante}: sintassi rotta in {f} ({e.msg})")
                 self.assertEqual(problemi, [])
                 self.assertEqual(len(set(g["M"])), len(g["M"]))
 

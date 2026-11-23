@@ -148,6 +148,12 @@ class _Stato:
                 raise ValueError("impronta dei dati vuota")
             if "impegno" in e and (not isinstance(e["impegno"], dict) or impronta_impegno(e["impegno"]) != h):
                 raise ValueError("l'impronta dei dati non è quella dell'impegno registrato")
+            gia = [i for i, q in self.prenotazioni.items() if q["stato"] == "autorizzato" and i != id_
+                   and q["evento"]["ipotesi"] == p["evento"]["ipotesi"]
+                   and q["evento"]["hash_domanda"] == p["evento"]["hash_domanda"]]
+            if gia:                                                            # #139: unicità al consumo
+                raise ValueError(f"domanda già autorizzata con la prenotazione {gia[0]!r}: una sola verifica per "
+                                 f"ipotesi e scheda")
             if type(e.get("j")) is not int or e.get("j") != self.j + 1:          # #94: True == 1, 1.0 == 1
                 raise ValueError(f"contatore j = {e.get('j')!r}, atteso {self.j + 1}")
             alfa = e.get("alfa_j")                                               # #128: NaN, testo, booleano
