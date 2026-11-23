@@ -60,3 +60,7 @@ Non la richiesta originale, ma questa, più corta:
 Attacca anche questi numeri: li ho controllati io, ma vale la regola di sempre.
 
 ---
+
+
+## Nota del 23/11, pomeriggio
+La versione corta per il DGS del §4 è superata da `MESSAGGIO-18-DGS.md`. Il messaggio 18 contiene le tre domande, la quarta proposta dalla chat (bootstrap contro approssimazione normale) e il criterio d'uscita DA-42.

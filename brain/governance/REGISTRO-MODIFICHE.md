@@ -1374,3 +1374,13 @@ Nulla di questo tocca il candidato `8e51ce9` su cui lavora R15.
   - nella suite ora c'è `test_positivo_completo_dal_lanciatore`.
 - **Candidato `67380cd`:** suite 757 verdi, A–G, riconciliazione 5/5, percorso 61/62 su 3.13 e 3.9, verdetto 131/132 su 3.13. **Non valido per #142.**
 - **Nuovo candidato `7191156`:** corse in corso. Aggiunta al mandato R19 aggiornata; la prova dal lanciatore va rifatta da Gemini in modo indipendente.
+
+## 2026-11-23 · v2.08 (riscontro della chat di Claude: 605, congelamento, riassunto, D-24)
+
+- **605 = 1.000 × 456/754:** [MISURA, H-002 V-T sullo sviluppo], la frequenza di una sola strategia, quella parcheggiata. Scritto così nel §6. La procedura di potenza deve stimare la frequenza dalla scheda stessa.
+- **Progetto generale, riassunto e §6:** «circa 4 verifiche» confondeva capacità e disponibilità. Oggi la verifica disponibile è **una**: le aperture successive richiedono un collaudo a quote più severe. Il collaudo è aggiunto ai prossimi passi (§11, punto 7). Allineati anche il candidato (`7191156`) e il conteggio dei difetti (142).
+- **DA-42 (criterio d'uscita dal Gate 2½):** tre opzioni, con il controllo sulla direzione dell'errore dei 14 importanti dal 18/11: 10 permissivi, 3 prudenti, 1 di coerenza.
+  - Il criterio «solo critici» proposto dalla chat avrebbe chiuso il gate con #125, #126, #131–#133 e #139 aperti.
+  - Autocritica: le gravità le assegnano Claude e Gemini; #126 era critico alla lettera.
+  - Consiglio di Claude: (c).
+- **Bozza del messaggio 18 al DGS:** #142 e nuovo candidato, potenza (Q1–Q4, con la domanda bootstrap contro approssimazione normale), DA-42 (Q5–Q6).

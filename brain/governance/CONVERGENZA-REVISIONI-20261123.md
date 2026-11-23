@@ -75,3 +75,7 @@ Ognuna, fatta da sola, riaprirebbe il contatore.
 - **#141 (minore)** e **#142 (importante)**, entrambi nel codice nuovo del percorso ordinario. #142 l'ha trovato Claude con la prova positiva completa dal lanciatore chiesta dal DGS: il percorso non poteva arrivare in fondo.
 - Conferma la lettura del §3: **zero critici**; gli importanti nascono dove il codice è nuovo o non è mai stato esercitato davvero.
 - Fa capire anche che cosa mancava: **una prova d'insieme del percorso vero**, non solo dei pezzi. Ora è nella suite.
+
+## Aggiornamento: la regola sulle correzioni e il criterio d'uscita
+
+La chat di Claude ha mostrato un buco nella proposta del §4: una correzione è codice nuovo, e la proposta non diceva se riapre il contatore. Le opzioni sono in **DA-42** (`DECISIONI-APERTE.md`), con il controllo sulla direzione dell'errore dei 14 importanti dal 18/11: 10 permissivi, 3 prudenti, 1 di coerenza. Nota: le gravità sono assegnate da chi scrive e da chi rivede; #126 rientrava alla lettera fra i critici.

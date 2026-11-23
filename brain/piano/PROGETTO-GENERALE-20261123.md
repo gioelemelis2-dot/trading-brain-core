@@ -3,9 +3,9 @@
 **Scritto da Claude il 23/11/2026, su richiesta del titolare.** Sostituisce come quadro corrente `PROGETTO-GENERALE-20261115.md`, che resta com'era (nessun documento si cancella).
 
 **Fonti:**
-- ramo `feat/esecutore-h002` (non unito a `main`), candidato `67380cd`;
+- ramo `feat/esecutore-h002` (non unito a `main`), candidato `7191156` (dopo #142; il `67380cd` non è valido);
 - `governance/DECISIONI.md` (D-01…D-55) e `DECISIONI-APERTE.md`;
-- `CONTINUITA.md`, `REGISTRO-MODIFICHE.md` (fino a v2.04), `laboratorio/REGISTRO-DIFETTI.md` (#1…#140);
+- `CONTINUITA.md`, `REGISTRO-MODIFICHE.md` (fino a v2.07), `laboratorio/REGISTRO-DIFETTI.md` (#1…#142);
 - `piano/ROADMAP-20261117.md`, `piano/VISIONE-FABBRICA-MULTIMERCATO.md`;
 - l'audit globale del 19/11 (`collaborazione/da-claude/AUDIT-GLOBALE-TRADING-BRAIN-E-ROADMAP.md`) e la revisione critica del 23/11 (`laboratorio/ricevute/2026-11-23-candidato-r19/REVISIONE-CRITICA-20261123.md`).
 
@@ -22,7 +22,7 @@ Ogni stato qui sotto rimanda a un documento del repository. Dove non è verifica
   - **Nessuna strategia è stata provata sulla riserva**, e oggi non c'è un'ipotesi candidata: la prossima idea spetta al titolare.
   - Guardian e journal sono costruiti ma **mai usati con dati veri**; la formazione è ferma.
 - **Il collo di bottiglia non è il codice.** Sono tre cose:
-  1. **la potenza statistica:** una strategia vera da +0,25 R a trade viene promossa al più una volta su due, e la riserva basta per **circa 4 verifiche** in tutto;
+  1. **la potenza statistica:** oggi è disponibile **una sola verifica** (la prima apertura, quota 2,5%). In quella, una strategia vera da +0,25 R viene promossa fra il 10% e il 51% delle volte, secondo quanti trade fa e quanto varia (§6). La riserva avrebbe spazio per circa 3–4 finestre, ma le aperture successive richiedono un collaudo a quote più severe che **non è in programma**. Capacità e disponibilità sono cose diverse;
   2. **il tempo** della prova in avanti;
   3. **le idee:** il metro boccia con onestà, quindi servono molte idee buone.
 - **Regola di priorità (D-33, D-52):** prima la macchina, poi le strategie.
@@ -77,8 +77,8 @@ Ogni stato qui sotto rimanda a un documento del repository. Dove non è verifica
 | Ramo di lavoro | `feat/esecutore-h002`, **non unito a `main`** (molto indietro) | Storia completa su GitHub | La protezione del ramo (D-49) non si può applicare con il piano GitHub Free (DA-39 aperta) |
 | Test automatici | **746** sul candidato `b9ec2f4` (dati, laboratorio, governance, Guardian), verdi su Python 3.13 e 3.9 con la rete bloccata; 12 aggiunti dopo | Log in `laboratorio/ricevute/` | Provano i casi immaginati, non la logica nella sua interezza |
 | Mutanti | Perimetro dell'esecuzione 299/299; verdetto 131/132 (VD13 equivalente); percorso di verifica 57/58 su `1431190` (MF09 equivalente), ora 62 mutanti con #139, #140 e PR14. Gli altri script erano al 100% all'ultima corsa completa | Script `mutazioni_*.py`, log nelle ricevute | Sul candidato `67380cd` le corse sono in corso |
-| Difetti | **140 registrati** (#1…#140), tutti corretti o dichiarati. Gli ultimi: #139 (due autorizzazioni della stessa domanda) e #140 (ripresa che non riconciliava i registri) | `laboratorio/REGISTRO-DIFETTI.md` | Ogni giro di revisione ha trovato ancora qualcosa |
-| Giri di revisione puliti (regola del sigillo, D-24) | **1 su 2** dopo R18 (D-48). **R19 in corso** con Gemini: giro ordinario completo più tutte le manomissioni, ora sul candidato `67380cd` | `collaborazione/da-gemini/`, D-53 | Se R19 trova un difetto importante, il contatore riparte |
+| Difetti | **142 registrati** (#1…#142), tutti corretti o dichiarati tranne #141 (minore, nel prossimo lotto). Gli ultimi: #139 e #140 (riserva e ripresa, DGS-17), #142 (il lanciatore fuori dal codice sigillato: il percorso ordinario non arrivava in fondo) | `laboratorio/REGISTRO-DIFETTI.md`, `governance/CONVERGENZA-REVISIONI-20261123.md` | Nessun critico dal 18/11; gli importanti nascono nel codice nuovo |
+| Giri di revisione puliti (regola del sigillo, D-24) | **1 su 2** dopo R18 (D-48). **R19 in corso** con Gemini: giro ordinario completo più tutte le manomissioni, ora sul candidato `7191156` | `collaborazione/da-gemini/`, D-53 | Se R19 trova un difetto importante, il contatore riparte |
 | Dati XAUUSD | **Completi**, BID e ASK: riserva dal 2005 all'11/11/2023, sviluppo dal 15/11/2023 al 12/11/2026. Consuntivo: 6.889 giorni allineati, 4.823 sedute, di cui circa 4.400–4.800 ammissibili secondo la soglia di qualità. Nessuna quotazione incrociata | `laboratorio/ricevute/2026-11-22-consuntivo-ask/` | Una sola fonte (Dukascopy); il confronto con MT5 non è fatto |
 | Custodia dei dati | Copia finale da 179 MB, SHA-256 `40b401ab…b1f32c`, su iCloud e Google Drive, impronta verificata su entrambe (D-39) | `piano/PROCEDURA-ASSISTENZA-MAC.md` | Il Mac resta l'unica macchina che li usa |
 | Riserva di verifica | **Mai letta dal sistema.** Regole di spesa decise: α totale 5%, quota α_j = α/[j(j+1)]/m (D-38). Registro con prenotazione, rifiuto, autorizzazione, esito (schema `riserva/2`, D-50) | `laboratorio/esecuzione/riserva.py` | Mancano: date esatte, embargo, quarantena; il registro vero non è ancora creato |
@@ -140,7 +140,9 @@ Ogni stato qui sotto rimanda a un documento del repository. Dove non è verifica
 ## 6. Quanto può dimostrare la macchina (i numeri che contano)
 
 - **Una verifica** usa 1.000 sedute (circa 4 anni) e richiede almeno 300 trade e 200 sedute con trade (D-37).
-- **Quante verifiche:** con circa 4.400–4.800 sedute ammissibili, le finestre disgiunte sono **al massimo 4**, prima dell'embargo e delle date accessorie (consuntivo del 22/11). Ogni verifica successiva è più severa: la quota scende da 2,5% a 0,83%, poi 0,42%… (D-38).
+- **Quante verifiche: capacità e disponibilità sono diverse.**
+  - **Capacità** [DERIVATO]: con circa 4.400–4.800 sedute ammissibili le finestre disgiunte sono **al massimo 4**, prima dell'embargo e delle date accessorie (consuntivo del 22/11). Sono **3** se il BID dal 2005 al 07/06/2009 restasse senza registro (DGS-18: 1.155 feriali in meno).
+  - **Disponibilità oggi: 1.** Il metro è collaudato solo alla quota del 2,5%, e il codice rifiuta le altre (D-31, D-50). Le aperture successive (0,83%, 0,42%…, D-38) richiedono un collaudo a quelle quote, che oggi non è né nel Gate 2½ né nei prossimi passi.
 - **Potenza** del metro per una strategia vera da **+0,25 R** a trade. La probabilità di promozione dipende soprattutto da **quanti trade** cadono nella finestra: 1.000 sedute danno 1.000 trade solo se la strategia fa un trade per seduta; il minimo ammesso è 300 (D-37).
 
   | Trade nella finestra | Deviazione per trade | 1ª apertura (2,5%) | 2ª (0,83%) | 3ª (0,42%) | 4ª (0,25%) | Almeno una, se tutte e 4 le candidate sono vere |
@@ -156,6 +158,7 @@ Ogni stato qui sotto rimanda a un documento del repository. Dove non è verifica
   - [MISURA, simulazione] Per la prima apertura con 1.000 trade, la simulazione del metro vero dà **24,75%** (σ = 1,25) e **51,15%** (σ = 0,80) su 2.000 repliche (RICEVUTA-127, controlli aperti). ChatGPT l'ha ricontrollata in DGS-16, con i riferimenti normali 24,35% e 50,66%.
   - Con dipendenza fra i trade, la potenza sarebbe più bassa.
   - **Le aperture dopo la prima oggi non sono possibili:** il metro è collaudato solo alla quota del 2,5%, e il codice rifiuta le altre (D-31, D-50). Le colonne dalla 2ª alla 4ª richiedono prima un collaudo a quelle quote.
+  - **Da dove viene 605:** 605 = 1.000 sedute × 0,605. Il valore 0,605 = 456/754 è [MISURA, H-002 V-T sullo sviluppo]: la frequenza di trade per seduta ammissibile di **una sola strategia**, quella parcheggiata (`collaborazione/da-revisori-esterni/2026-11-15-nucleo-statistico-e-incidente.md`). **Non è un parametro generale.** La procedura di potenza deve stimare la frequenza dallo screening della scheda stessa, con la sua incertezza.
   - Da 300 a 1.000 trade la potenza cambia anche di 2–5 volte. Quindi **la frequenza della strategia conta quanto il suo vantaggio**, e va stimata nella scheda (procedura di potenza, DGS-17 Q9).
   - Correzione del 23/11 (errore di Claude): la prima versione di questo punto dava 25% e 51% senza dire che valgono per 1.000 trade. L'ha notato una revisione esterna, che con 300 e 605 trade otteneva valori più bassi, corretti per quei casi.
 - **Code** [STIMA, esempio inventato dell'audit del 19/11]: con perdite gravi nello 0,2% dei trade, il metro può promuovere per errore circa **una volta su nove**. Per questo ogni scheda dichiara l'esposizione massima in R (D-43); un collaudo nuovo serve se l'esposizione esce dal dominio provato.
@@ -215,7 +218,7 @@ Ogni stato qui sotto rimanda a un documento del repository. Dove non è verifica
 
 ## 9. Rischi e punti deboli, in ordine di peso
 
-1. **La macchina può non promuovere mai nulla di utile.** Il metro è severo, la riserva basta per circa 4 verifiche, e serve un vantaggio di +0,25 R ben regolare. Contromisura: candidare solo idee forti (D-42) e spostare il peso sulla prova in avanti (D-46). Segnale per cambiare strada: le prime 3–5 ipotesi ben formate escono «non decidibili» per mancanza di potenza.
+1. **La macchina può non promuovere mai nulla di utile.** Il metro è severo, oggi è disponibile una sola verifica (le altre richiedono un collaudo), e serve un vantaggio di +0,25 R ben regolare. Contromisura: candidare solo idee forti (D-42) e spostare il peso sulla prova in avanti (D-46). Segnale per cambiare strada: le prime 3–5 ipotesi ben formate escono «non decidibili» per mancanza di potenza.
 2. **Lettura della riserva prima che l'autorizzazione sia su GitHub.** Un ripristino locale cancellerebbe la traccia. Decisa la correzione (D-55), da scrivere.
 3. **Potenza dichiarata e non calcolata.** Chi scrive la scheda può dichiarare un numero che supera lo screening. È bloccante prima del primo accesso reale.
 4. **Protezione del ramo assente** con GitHub Free (DA-39). Oggi la difesa è la storia git, controllata dall'esecutore, più le revisioni.
@@ -247,14 +250,15 @@ Ogni stato qui sotto rimanda a un documento del repository. Dove non è verifica
 
 ## 11. Prossimi passi, in ordine
 
-1. **Chiudere R19** su `67380cd`: corse di Claude in corso; Gemini riceve l'aggiunta al mandato.
+1. **Chiudere R19** sul candidato `7191156` (dopo #142): corse di Claude in corso; Gemini riceve l'aggiunta al mandato.
 2. **Registri dello scaricamento** (A1 e B1, dopo il DGS e la decisione del titolare). Poi la proposta delle date della riserva, dell'embargo e della quarantena (D-38).
-3. **Messaggio 17 al DGS**, con l'archivio degli originali.
+3. **Messaggio 18 al DGS** (il 17 ha avuto risposta in DGS-18).
 4. **D-55 e procedura di potenza** in TDD, poi un giro di revisione dedicato.
 5. **D-54:** immagine di riferimento riproducibile e qualificata.
 6. **DA-39**, prima del primo accesso reale; poi l'unione in `main`.
-7. **Prima idea H-003** del titolare, compatibile con +0,25 R e con le sue ore (DA-32).
-8. Dopo: il motore generico, il secondo mercato, la prova in avanti quotidiana (D-46).
+7. **Collaudo del metro alle quote delle aperture successive** (0,83%, 0,42%, 0,25%). Senza, la seconda verifica non è possibile. Non blocca la prima. Va deciso se e quando farlo, sapendo che cambia quanto vale la riserva rispetto alla prova in avanti.
+8. **Prima idea H-003** del titolare, compatibile con +0,25 R e con le sue ore (DA-32).
+9. Dopo: il motore generico, il secondo mercato, la prova in avanti quotidiana (D-46).
 
 **In parallelo, quando c'è tempo del titolare:** riconciliazione del G0 con 2–3 micro-operazioni in demo (DA-25); confronto Dukascopy–MT5 a campione; calendario storico delle notizie (P-08).
 
