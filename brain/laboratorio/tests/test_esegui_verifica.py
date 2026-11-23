@@ -646,5 +646,39 @@ class TestAvvioVerifica(unittest.TestCase):
         self.assertIn("RIFIUTATA", r.stderr)                            # poi si ferma sui registri finti
 
 
+class TestSeduteSenzaOperazioni(Percorso):
+    """DGS-17: una seduta con i dati completi ma senza operazioni è una coppia (0, 0) nel record, distinta da una seduta
+    con dati mancanti (che il manifesto ferma prima dell'autorizzazione). Il 25% delle giornate è neutro (nessun
+    segnale). Si ricontrolla anche la media come somma degli S diviso somma dei K, dal solo record."""
+
+    @classmethod
+    def setUpClass(cls):
+        cls._t = tempfile.TemporaryDirectory()
+        base = Path(cls._t.name)
+        cls.cache, cls.cache_sv = base / "cache", CACHE["sviluppo"]
+        cls.vere = M.scrivi(cls.cache, LETTURA, FINE, 0.6, 21, p_neutra=0.25)
+
+    @classmethod
+    def tearDownClass(cls):
+        cls._t.cleanup()
+
+    def test_coppie_zero_e_riconciliazione_dal_record(self):
+        from fractions import Fraction
+        scheda = self.prepara()
+        r = self.esegui(scheda)
+        rec = RV.record_esito(self.riserva, "P1")
+        coppie = rec["coppie"]
+        neutre = sorted(g.isoformat() for g, x in self.vere.items() if x is None and INIZIO <= g <= FINE)
+        self.assertGreater(len(neutre), 150)
+        self.assertEqual([c[0] for c in coppie if c[2] == 0], neutre)          # K = 0 proprio nelle neutre
+        self.assertTrue(all(c[1] == 0 for c in coppie if c[2] == 0))
+        self.assertEqual(len({c[0] for c in coppie}), 1000)                    # date uniche
+        v = rec["verdetto"]
+        self.assertEqual((v["sedute"], v["sedute_attive"], v["trade"]), (1000, 1000 - len(neutre), 1000 - len(neutre)))
+        esatta = sum(Fraction(c[1]) for c in coppie) / sum(c[2] for c in coppie)
+        self.assertEqual(v["media"], float(esatta))                           # somma degli S / somma dei K
+        self.assertEqual(r["esito"], v["esito"])
+
+
 if __name__ == "__main__":
     unittest.main()

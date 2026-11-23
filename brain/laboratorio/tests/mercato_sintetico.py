@@ -52,7 +52,8 @@ def fine_per_sedute(inizio: date, n: int) -> date:
         g += timedelta(days=1)
 
 
-def _minuti(g: date, vinta: bool) -> List[tuple]:
+def _minuti(g: date, vinta) -> List[tuple]:
+    """vinta: True (target), False (stop) oppure None (giornata NEUTRA: il prezzo resta nel range, nessun segnale)."""
     mezzanotte = datetime(g.year, g.month, g.day, tzinfo=timezone.utc)
     out = []
     t = O._utc(g, time(8, 0))
@@ -60,7 +61,10 @@ def _minuti(g: date, vinta: bool) -> List[tuple]:
     while t < fine:
         sec = int((t - mezzanotte).total_seconds())
         locale = t.astimezone(O.LONDRA).time()
-        if locale < time(8, 30):
+        if vinta is None:                                   # giornata neutra: dati completi, nessuna operazione
+            o = c = P
+            lo, hi = P - 2_500, P + 2_500
+        elif locale < time(8, 30):
             o = c = P
             lo, hi = P - 2_500, P + 2_500
         elif locale < time(8, 46):
@@ -79,7 +83,8 @@ def _bi5(record: Iterable[tuple], spread: int = 0) -> bytes:
     return lzma.compress(grezzo, format=lzma.FORMAT_ALONE)
 
 
-def scrivi(cache: Path, inizio: date, fine: date, p_vinta: float, seme: int, simbolo: str = "XAUUSD") -> Dict[date, bool]:
+def scrivi(cache: Path, inizio: date, fine: date, p_vinta: float, seme: int, simbolo: str = "XAUUSD",
+           p_neutra: float = 0.0) -> Dict[date, bool]:
     """Scrive i file BID e ASK di ogni giorno di calendario e i due registri dello scaricamento. Restituisce, per ogni
     seduta, se è vinta (il «vero» del mercato sintetico)."""
     r = random.Random(seme)
@@ -90,7 +95,7 @@ def scrivi(cache: Path, inizio: date, fine: date, p_vinta: float, seme: int, sim
     g = inizio
     while g <= fine:
         if seduta(g):
-            esiti[g] = r.random() < p_vinta
+            esiti[g] = None if (p_neutra and r.random() < p_neutra) else r.random() < p_vinta
             minuti = _minuti(g, esiti[g])
         else:
             minuti = None
