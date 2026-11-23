@@ -14,6 +14,7 @@
 
 - File controllati contro il registro: ASK 6.878 su 6.878, BID 5.023 su 5.023 (6.878 − 1.619 omessi − 236 doppi).
 - **Tutti hanno l'impronta registrata.**
+- **Precisazione (DGS-18):** questo dice soltanto che **nei confronti eseguiti non c'è nessuna discrepanza**: ASK 6.878, BID 5.023 più i 236 doppi, cioè 5.259. Per i 1.619 giorni BID senza riga e per tutto lo sviluppo **il confronto non c'è**, perché manca la riga con cui confrontare. Le frasi «nessun file alterato», scritte da Claude in chat e in alcuni documenti, erano più forti di quanto i dati permettono.
 
 **Sviluppo, dal 15/11/2023 al 12/11/2026** (1.094 giorni attesi per lato):
 

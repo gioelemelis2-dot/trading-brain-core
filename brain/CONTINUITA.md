@@ -18,7 +18,7 @@ Ultimo aggiornamento: **2026-11-23, mattina** (sezione in testa); prima: 2026-11
   2. la potenza è un input e non un calcolo: requisito bloccante prima di qualunque accesso reale;
   3. l'ambiente di riferimento non è fissato (proposta **DA-40**);
   4. il manifesto non è mai stato provato sui registri veri.
-- **Diagnosi del manifesto sui registri veri, ESEGUITA dal titolare** (`laboratorio/ricevute/2026-11-23-diagnosi-manifesto/RICEVUTA-DIAGNOSI.md`). Nessun file è alterato, ma il manifesto blocca:
+- **Diagnosi del manifesto sui registri veri, ESEGUITA dal titolare** (`laboratorio/ricevute/2026-11-23-diagnosi-manifesto/RICEVUTA-DIAGNOSI.md`). Nessuna discrepanza nei file confrontati (DGS-18: per 1.619 giorni BID e per lo sviluppo il confronto non c'è), ma il manifesto blocca:
   - BID senza riga fino al 07/06/2009 (1.619 giorni);
   - 236 doppioni identici del 16/11 (#60);
   - **tutto lo sviluppo senza registro**: oggi lo screening si fermerebbe.

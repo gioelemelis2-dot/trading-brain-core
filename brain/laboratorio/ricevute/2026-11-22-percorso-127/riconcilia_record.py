@@ -8,7 +8,8 @@ Controlla:
 3. media = somma degli S / somma dei K, in frazioni esatte, arrotondata una volta;
 4. verdetto RICALCOLATO dalle sole coppie del record (stesso seme, veto per blocchi della scheda, contesto N
    registrato) uguale a quello registrato: L, U, segnale, esito, causa, requisiti;
-5. rapporto sul disco = rapporto rigenerato dal record, byte per byte.
+5. rapporto sul disco = rapporto rigenerato dal record, byte per byte (confronto dei byte, non del testo decodificato:
+   DGS-18, la lettura come testo può normalizzare le terminazioni di riga).
 Uso (dalla radice): python3 -s -B brain/laboratorio/ricevute/2026-11-22-percorso-127/riconcilia_record.py <cartella A>
 """
 import json
@@ -43,7 +44,7 @@ ctx = {"registro": v["contesto_prove"]["registro"], "n_prove": v["contesto_prove
 w = json.loads(json.dumps(V.verdetto(cp, imp["seme"], [veto], contesto=ctx), default=str))
 chiavi = ("L", "U", "segnale", "esito", "causa", "requisiti", "sedute", "trade", "sedute_attive")
 esiti["4 verdetto ricalcolato"] = all(w[k] == v[k] for k in chiavi)
-esiti["5 rapporto"] = (d / "rapporto_P1.txt").read_text(encoding="utf-8") == EV.rapporto_da_record(rec)
+esiti["5 rapporto"] = (d / "rapporto_P1.txt").read_bytes() == EV.rapporto_da_record(rec).encode("utf-8")   # DGS-18: byte, non testo
 print(json.dumps({"python": sys.version.split()[0], "esiti": esiti, "tutti": all(esiti.values()),
                   "sedute": len(date), "sedute_attive": v["sedute_attive"], "media": v["media"],
                   "media_esadecimale": float.hex(v["media"]), "esito": v["esito"], "causa": v["causa"]},

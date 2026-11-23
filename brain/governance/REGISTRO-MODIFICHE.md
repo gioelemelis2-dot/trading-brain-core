@@ -1345,3 +1345,21 @@ Nulla di questo tocca il candidato `8e51ce9` su cui lavora R15.
   - 236 doppioni BID identici, registrati il 16/11 (#60);
   - sviluppo senza registro su entrambi i lati (1.094 giorni).
   Il manifesto blocca in tutti e tre i casi: oggi lo screening di qualunque scheda si fermerebbe. **Errore di ordine di Claude:** il confronto con i registri veri andava fatto quando è stato scritto il manifesto. Opzioni A1 e B1 al DGS (messaggio 17, Q2); nessun registro toccato.
+
+## 2026-11-23 · v2.06 (DGS-18)
+
+- **DGS-18 archiviato** (`collaborazione/da-chatgpt/DGS-20261123-18-riscontro-originali-e-R19.md`).
+  - Il DGS ha verificato i 35 file dell'archivio contro l'indice, il calendario e le coppie della corsa A, la media esatta, i blocchi e il verdetto, con un proprio ricalcolo del bootstrap.
+  - Sul candidato `67380cd`: 757 test e A–G letti dai log.
+- **Correzioni da DGS-18:**
+  - `riconcilia_record.py` confronta i **byte** del rapporto, non il testo decodificato. Provato: un byte in più dà «false»;
+  - **#141 (minore, aperto, nel prossimo lotto):** il rapporto per il titolare descrive la potenza come «dalla procedura congelata», ma oggi è solo dichiarata; le metriche descrittive di H-002 sono etichettate «MISURA» invece che «DERIVATO»;
+  - **errore di Claude:** «nessun file alterato» era più forte dei dati. La frase giusta è «nessuna discrepanza nei confronti eseguiti»: per 1.619 giorni BID e per lo sviluppo il confronto non c'è. Corretti la ricevuta della diagnosi, il progetto generale, CONTINUITA e la revisione critica (il messaggio 17 era già partito).
+- **Indicazioni di metodo ricevute:**
+  - **D-55:** lettura concessa solo dopo aver verificato l'identica autorizzazione sul riferimento autorevole; testimone custodito fuori dalle credenziali dell'agente; collaudo di conferma persa, storia divergente e ripresa identica.
+  - **A1 favorevole** con traccia: righe originali conservate, unificazione solo con identità completa, doppioni contati come anomalia di processo.
+  - **B1 accettabile come inventario attestato oggi**, in un registro aggiuntivo; la provenienza dimostrabile comincia oggi; l'ammissibilità la decide il titolare. Per lo sviluppo, una nuova acquisizione sarebbe una nuova versione dei dati.
+  - **Stati dei file da separare** prima di B1: presente, zero byte, assente, chiusura attesa.
+  - **Q3:** il tentativo rifiutato si registra senza consumo.
+  - **Q4:** R19 resta un solo giro aggiornato sul perimetro finale, con una tabella delle evidenze trasferite e rieseguite.
+- **Aggiunta al mandato R19:** i tre controlli mirati di DGS-18 (chiave di unicità di #139, positivo dal lanciatore con l'etichetta della potenza, mappa delle cadute).

@@ -52,4 +52,14 @@ COMPITI
    riserva.json, rapporto_P1.txt e la prenotazione P1 nella cartella che gli passi: adatta i nomi o dichiaralo).
    Se il lanciatore non arriva al positivo, è un RILIEVO da classificare.
 
+6. DAL RISCONTRO DEL DGS (DGS-18), tre controlli mirati:
+   a. chiave di unicità: #138 controlla (ipotesi, variante) prima del blocco, #139 controlla (ipotesi, impronta della
+      scheda) sotto il blocco. Due schede diverse della stessa ipotesi con la stessa variante possono arrivare
+      all'autorizzazione? Claude sostiene di no per un invariante: un solo sigillo per ipotesi e la prenotazione deve
+      avere l'impronta della scheda sigillata. Prova l'invariante o smentiscilo, anche in concorrenza;
+   b. nel caso positivo dal lanciatore (punto 5), conserva record, rapporto e impegno, e controlla come il rapporto
+      descrive la potenza quando è solo dichiarata. Claude ha registrato #141: oggi la descrive come «dalla
+      procedura congelata», ed è sbagliato;
+   c. per ogni caduta del punto 4a indica la stessa autorizzazione, il consumo unico e al massimo un esito.
+
 CONSEGNA: aggiungi una sezione «Aggiunta su 67380cd» al tuo G-<data>-R19.md, con le stesse regole di consegna.
