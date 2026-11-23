@@ -5,7 +5,8 @@
 - Si allegano:
   1. l'archivio `consegna-dgs17.zip`, con gli originali e l'indice delle impronte `SHA256SUMS`;
   2. `REVISIONE-CRITICA-20261123.md`;
-  3. `RICEVUTA-CANDIDATO-67380CD.md`.
+  3. `RICEVUTA-CANDIDATO-67380CD.md`;
+  4. `RICEVUTA-DIAGNOSI.md` (diagnosi del manifesto sui registri veri).
 - Modello: Astra con ragionamento esteso. Lo strumento di esecuzione del codice deve essere attivo, e anche l'impostazione dei plugin per la verifica degli errori.
 
 ---
@@ -52,16 +53,25 @@ MESSAGGIO 17 AL DGS — risposta a DGS-17. Solo metodo; nessuna decisione riserv
   - `--riprova-vuoti` aggiunge una seconda riga valida per lo stesso giorno.
   - Una riga del lato o del mercato sbagliato, in qualunque data, compare fra le anomalie di ogni finestra.
 
-  Il manifesto blocca in tutti questi casi: il verso è giusto, ma potrebbe rendere inutilizzabili interi anni. Ho scritto uno strumento di diagnosi, test prima e mutanti 13/13, che conta le anomalie per tipo, lato e anno, solo conteggi e date. Il titolare lo eseguirà sul Mac.
+  Il manifesto blocca in tutti questi casi: il verso è giusto, ma potrebbe rendere inutilizzabili interi anni. Ho scritto uno strumento di diagnosi, test prima e mutanti 13/13, che conta le anomalie per tipo, lato e anno, solo conteggi e date. Il titolare l'ha eseguito sul Mac (ricevuta allegata, `RICEVUTA-DIAGNOSI.md`). Il manifesto blocca in tre casi, e nessun file è alterato: tutti i file con una riga hanno l'impronta registrata (ASK 6.878 su 6.878, BID 5.023 su 5.023).
+  - **BID dal 01/01/2005 al 07/06/2009:** 1.619 giorni «omessi». Sono i file scaricati prima del registro per giorno.
+  - **BID 2009–2011:** 236 giorni con due righe valide. In tutti la stessa impronta, uguale al file, registrata il 16/11, quando due scaricamenti hanno girato insieme (#60).
+  - **Sviluppo:** tutti i 1.094 giorni «omessi» su entrambi i lati, perché è stato scaricato prima del registro. **Oggi lo screening di qualunque scheda si fermerebbe.**
+
+  Il codice del perimetro non ha difetti: il controllo sui registri veri andava fatto quando ho scritto il manifesto, ed è un mio errore di ordine.
 
 3. DOMANDE (solo metodo)
 - **Q1 (DA-41).** Leggere solo dopo che l'autorizzazione è sulla versione remota chiude il ripristino locale. Con il piano Free resta però possibile riscrivere la storia remota (push forzato). La difesa contro questo, cioè la storia completa e un riferimento conservato altrove, è sufficiente? Oppure serve un testimone esterno all'autorizzazione, per esempio l'impronta dell'autorizzazione mandata a te o a Gemini prima della lettura?
-- **Q2 (manifesto sui registri veri).** Se la diagnosi trova voci doppie «vuoto-200+dati» o file senza riga di registro, quali regole sono accettabili per metodo?
-  - (i) vale l'ultima riga valida, solo per la sequenza «vuoto → dati» prodotta da una nuova prova dichiarata;
-  - (ii) un registro di riconciliazione generato una volta dai file attuali, con impronta, congelato prima di qualunque prenotazione;
-  - (iii) quei giorni vanno in quarantena.
+- **Q2 (manifesto sui registri veri), con i numeri della ricevuta.** Propongo:
+  - **A1:** il manifesto accetta più righe valide per lo stesso giorno e lato **solo se identiche** in esito, byte e impronta; righe diverse continuano a bloccare;
+  - **B1:** registrazione a posteriori dei file già in cache, con «in-cache-non-registrato» e l'impronta di oggi, per i 1.619 giorni del BID e per lo sviluppo. Procedura scritta, copia dei registri prima, conteggi e impronte prima e dopo nel repository.
 
-  Quali controlli renderebbero (ii) non manipolabile?
+  Alternativa a B1 per la riserva: quarantena dei 1.619 giorni, cioè circa 1.100 sedute in meno e le finestre da circa 4 a circa 3. Per lo sviluppo non c'è alternativa.
+
+  Domande:
+  - A1 è accettabile, oppure un doppione identico va trattato come segnale di un processo difettoso e quindi va bloccato?
+  - B1 attesta i file **come sono oggi**. Le ancore sono le copie con impronta del 18/11 e del 22/11, che non si aprono, e il consuntivo del 22/11. Bastano? Quali controlli renderebbero B1 non manipolabile, rispetto al modello di minaccia D-24?
+  - Per i giorni vuoti del fine settimana, «in-cache-non-registrato» darebbe lo stato «dati» invece di «nessun dato». Va corretto prima (lo stato si ricava dai byte, zero = nessun dato), oppure è indifferente?
 - **Q3 (traccia di G).** Il tentativo rifiutato per anomalie del manifesto va registrato nel registro della riserva, come evento senza consumo? Oppure basta che l'impegno successivo contenga l'impronta del registro corretto?
 - **Q4 (R19).** Gemini aveva iniziato R19 su `1431190`. Per il contatore D-24 basta che dichiari valide le parti dei file non cambiati e rifaccia su `67380cd` le suite, i mutanti e la differenza? Oppure R19 va rifatto per intero sul candidato nuovo?
 

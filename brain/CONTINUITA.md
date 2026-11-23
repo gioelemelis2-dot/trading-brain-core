@@ -18,7 +18,14 @@ Ultimo aggiornamento: **2026-11-23, mattina** (sezione in testa); prima: 2026-11
   2. la potenza è un input e non un calcolo: requisito bloccante prima di qualunque accesso reale;
   3. l'ambiente di riferimento non è fissato (proposta **DA-40**);
   4. il manifesto non è mai stato provato sui registri veri.
-- **Strumento nuovo, fuori dal candidato:** `laboratorio/studi/diagnosi_manifesto.py` (`7edcb80`), test prima, mutanti 13/13. Procedura per il Mac: `dati/PROCEDURA-DIAGNOSI-MANIFESTO.md`. **Da fare dal titolare.**
+- **Diagnosi del manifesto sui registri veri, ESEGUITA dal titolare** (`laboratorio/ricevute/2026-11-23-diagnosi-manifesto/RICEVUTA-DIAGNOSI.md`). Nessun file è alterato, ma il manifesto blocca:
+  - BID senza riga fino al 07/06/2009 (1.619 giorni);
+  - 236 doppioni identici del 16/11 (#60);
+  - **tutto lo sviluppo senza registro**: oggi lo screening si fermerebbe.
+
+  Opzioni A1 (doppioni identici accettati) e B1 (registrazione a posteriori) nella Q2 del messaggio 17. **Nessun registro si tocca prima del DGS e della decisione del titolare.**
+- **Decise il 23/11:** D-54 (ambiente di riferimento) e D-55 (lettura solo dopo l'autorizzazione pubblicata); da costruire in TDD.
+- **Progetto generale aggiornato:** `piano/PROGETTO-GENERALE-20261123.md`; mappa delle competenze v2.0.
 - **Messaggio 17 al DGS:** bozza in `collaborazione/da-claude/MESSAGGIO-17-DGS.md`. Va completato con gli esiti del candidato e con l'archivio degli originali più l'indice delle impronte.
 
 **Prossima azione esatta:** chiudere le corse su `b9ec2f4`, poi:

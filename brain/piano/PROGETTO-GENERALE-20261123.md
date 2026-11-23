@@ -131,7 +131,7 @@ Ogni stato qui sotto rimanda a un documento del repository. Dove non è verifica
 1. **D-55:** l'esecutore legge la finestra solo **dopo** che l'autorizzazione è pubblicata su GitHub. Decisa, da scrivere in TDD.
 2. **D-54:** il risultato ufficiale lo calcola **un solo ambiente riproducibile**, qualificato con i riferimenti del collaudo IA-02 e registrato nell'impegno. Deciso, da costruire.
 3. **Procedura di potenza nel contratto H-003.** Oggi la potenza stimata è un numero **dichiarato** dalla scheda, non calcolato dalla macchina (DGS-17 Q9). Va resa ricalcolabile e controllata prima dell'autorizzazione.
-4. **Diagnosi del manifesto sui registri veri** (`dati/PROCEDURA-DIAGNOSI-MANIFESTO.md`), da eseguire sul Mac.
+4. **Registri dello scaricamento da completare:** la diagnosi del 23/11 ha trovato righe mancanti (BID fino al 07/06/2009, tutto lo sviluppo) e doppioni identici. Opzioni A1 e B1, da decidere dopo il DGS.
 5. **Prova positiva completa dal lanciatore**, con un repository git di prova (chiesta a Gemini in R19).
 6. **Prova della storia git con il GitHub vero**, non solo con un remoto finto.
 
@@ -207,7 +207,7 @@ Ogni stato qui sotto rimanda a un documento del repository. Dove non è verifica
 2. **Lettura della riserva prima che l'autorizzazione sia su GitHub.** Un ripristino locale cancellerebbe la traccia. Decisa la correzione (D-55), da scrivere.
 3. **Potenza dichiarata e non calcolata.** Chi scrive la scheda può dichiarare un numero che supera lo screening. È bloccante prima del primo accesso reale.
 4. **Protezione del ramo assente** con GitHub Free (DA-39). Oggi la difesa è la storia git, controllata dall'esecutore, più le revisioni.
-5. **Manifesto mai provato sui registri veri.** Il BID fino al 07/06/2009 è precedente al registro per giorno, e `--riprova-vuoti` crea voci doppie. La macchina in quei casi **blocca**, quindi non lascia passare nulla, ma potrebbe rendere inutilizzabili anni interi. Lo strumento di diagnosi è pronto.
+5. **Registri dello scaricamento incompleti** (diagnosi del 23/11, `laboratorio/ricevute/2026-11-23-diagnosi-manifesto/`). Nessun file è alterato, ma il BID fino al 07/06/2009 e **tutto lo sviluppo** non hanno righe nel registro, e ci sono 236 doppioni identici. Oggi il manifesto blocca, e **lo screening di qualunque scheda si fermerebbe**. Opzioni A1 e B1 al DGS (messaggio 17), poi la decisione del titolare.
 6. **Un solo simulatore**, specifico di Londra e dell'oro. Ogni idea nuova oggi richiede codice nuovo e giri di revisione: il costo di un'ipotesi va misurato in settimane.
 7. **Il ciclo di revisioni non converge da solo.** Ogni giro trova ancora difetti, gli ultimi due il 23/11. D-34 ha chiuso l'elenco, ma non il flusso dei rilievi.
 8. **Una sola fonte di dati** e costi del broker non misurati (DA-25).
@@ -236,7 +236,7 @@ Ogni stato qui sotto rimanda a un documento del repository. Dove non è verifica
 ## 11. Prossimi passi, in ordine
 
 1. **Chiudere R19** su `67380cd`: corse di Claude in corso; Gemini riceve l'aggiunta al mandato.
-2. **Diagnosi del manifesto sul Mac** (titolare). Poi la proposta delle date della riserva, dell'embargo e della quarantena (D-38).
+2. **Registri dello scaricamento** (A1 e B1, dopo il DGS e la decisione del titolare). Poi la proposta delle date della riserva, dell'embargo e della quarantena (D-38).
 3. **Messaggio 17 al DGS**, con l'archivio degli originali.
 4. **D-55 e procedura di potenza** in TDD, poi un giro di revisione dedicato.
 5. **D-54:** immagine di riferimento riproducibile e qualificata.

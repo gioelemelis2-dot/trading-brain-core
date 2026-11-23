@@ -1334,3 +1334,14 @@ Nulla di questo tocca il candidato `8e51ce9` su cui lavora R15.
   - procedura per il Mac: `dati/PROCEDURA-DIAGNOSI-MANIFESTO.md`.
 - **Candidato per R19: `67380cd`.** Il codice del perimetro è identico a `b9ec2f4`. Aggiunta al mandato per Gemini: `collaborazione/da-claude/MANDATO-R19-AGGIUNTA-GEMINI.txt`. Bozza del messaggio 17 al DGS.
 - **Corse complete sul candidato:** in corso nel worktree bloccato. Esiti nella ricevuta `ricevute/2026-11-23-candidato-67380cd/`.
+
+## 2026-11-23 · v2.05 (decisioni D-54 e D-55; progetto generale e mappa aggiornati; diagnosi del manifesto sui registri veri)
+
+- **D-54** (DA-40 b): ambiente di riferimento unico e riproducibile. **D-55** (DA-41 a): lettura solo dopo l'autorizzazione pubblicata su GitHub. Decise dal titolare, da costruire in TDD.
+- **`piano/PROGETTO-GENERALE-20261123.md`**: quadro corrente; il documento del 15/11 resta, con una nota. **`mappa/MAPPA-COMPETENZE.md` v2.0**: parte A nuova (destinazione, capacità, mancanze), parte B invariata.
+- **Diagnosi del manifesto eseguita dal titolare sul Mac** (`laboratorio/ricevute/2026-11-23-diagnosi-manifesto/`):
+  - nessun file alterato (ASK 6.878/6.878 e BID 5.023/5.023 con l'impronta registrata);
+  - BID senza riga dal 2005 al 07/06/2009 (1.619 giorni);
+  - 236 doppioni BID identici, registrati il 16/11 (#60);
+  - sviluppo senza registro su entrambi i lati (1.094 giorni).
+  Il manifesto blocca in tutti e tre i casi: oggi lo screening di qualunque scheda si fermerebbe. **Errore di ordine di Claude:** il confronto con i registri veri andava fatto quando è stato scritto il manifesto. Opzioni A1 e B1 al DGS (messaggio 17, Q2); nessun registro toccato.
