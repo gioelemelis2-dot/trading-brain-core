@@ -18,6 +18,7 @@
 | Data | File | Dimensione | SHA-256 | Contenuto |
 |---|---|---|---|---|
 | 18/11/2026 13:42 | `~/Desktop/dati_reali_20261118.zip`; **copia nel cloud del titolare il 18/11** (confermata dal titolare) | 136 MB | `0aec0b91f6a6f1633b301572261ebef534f626c4af488acc8f41f19e10d14113` | `brain/dati/reali/` completo: BID 2005–2023 controllato, sviluppo, ASK parziale (fino al 02/02/2013 circa), registri dello scaricamento |
+| 22/11/2026 22:06 | `~/Desktop/dati_reali_FINALE.zip` (**copia finale, D-39**, dopo la fine dell'ASK; con i log dello scaricamento) | 179 MB | `40b401ab6300445d21f5b694cd89a538fdf34348d568aadaaaac819134b1f32c` | `brain/dati/reali/` completo: BID e ASK 2005–2023 completi e allineati (consuntivo del 22/11), sviluppo, registri e log dello scaricamento. Copie fuori dal Mac: **da fare** (chiavetta o disco esterno, più il cloud), ciascuna con la stessa impronta |
 
 **Regola:** lo zip contiene la riserva sigillata. Si copia, non si apre e non si guarda.
 

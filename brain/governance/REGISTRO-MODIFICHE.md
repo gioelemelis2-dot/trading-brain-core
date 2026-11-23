@@ -1300,3 +1300,9 @@ Nulla di questo tocca il candidato `8e51ce9` su cui lavora R15.
   - percorso 57/58 (MF09 equivalente).
   Ricevuta in `laboratorio/ricevute/2026-11-23-candidato-r19/`.
 - **Da decidere dal titolare:** l'avvio di R19 con Gemini su questo candidato (D-48).
+
+## 2026-11-23 · v2.02 (copia finale dei dati, D-39)
+
+- **Copia finale** `~/Desktop/dati_reali_FINALE.zip` fatta dal titolare il 22/11 alle 22:06: 179 MB, SHA-256 `40b401ab6300445d21f5b694cd89a538fdf34348d568aadaaaac819134b1f32c`. Registrata in `piano/PROCEDURA-ASSISTENZA-MAC.md`. Il file si copia, non si apre (contiene la riserva sigillata).
+- **Da fare:** due copie fuori dal Mac (chiavetta o disco esterno, più il cloud), ciascuna controllata con `shasum -a 256`. Deve dare la stessa impronta.
+- R19 avviato con Gemini (D-53).
