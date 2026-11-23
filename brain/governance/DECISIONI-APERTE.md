@@ -489,7 +489,7 @@ DA-13 rulebook (Q-09) ──► DA-11 G0 minimo ──► DA-12 indicatori compo
   - **(c) Restare su Free senza protezione lato server**, con le difese che ci sono già: registri ancorati a GitHub, impronte del codice sigillato, test automatici che segnalano (senza bloccare), riproduzione indipendente di Gemini e del DGS.
 - **Consiglio di Claude:** (c) **finché il lavoro è sintetico**, poi (a) **prima del primo accesso reale alla riserva**. La protezione serve quando c'è qualcosa di irreversibile da proteggere, cioè le date della riserva e i sigilli veri. Il costo, intorno ai 50 USD l'anno, è piccolo rispetto al rischio di una verifica non attribuibile.
 
-### DA-40 · Ambiente di riferimento del risultato ufficiale (23/11/2026) · **da decidere dal titolare**
+### DA-40 · Ambiente di riferimento del risultato ufficiale (23/11/2026) · **DECISA: (b), D-54**
 - **Il fatto:** sul candidato le due versioni di Python dei test automatici (3.13 e 3.9) danno lo stesso verdetto, la stessa media bit per bit e la stessa impronta dell'impegno. **L e U invece differiscono di 102 ulp**, circa 5,7e-15 R, per via della somma del pilota congelato. Le decisioni sono prese in frazioni esatte (#124), quindi oggi non cambiano. Resta però da dire **quale ambiente produce il numero ufficiale** (DGS-16 e DGS-17 Q1).
 - **Opzioni:**
   - **(a)** L'ambiente Linux del collaudo IA-02, se dai suoi artefatti si ricostruiscono interprete esatto, architettura, dipendenze, codice, semi e configurazione, e vi si riproducono i riferimenti congelati.
@@ -499,7 +499,7 @@ DA-13 rulebook (Q-09) ──► DA-11 G0 minimo ──► DA-12 indicatori compo
 - **Consiglio di Claude:** **(b)**. Il collaudo IA-02 l'ho eseguito io in un contenitore temporaneo, di cui oggi si conoscono la versione di Python e la piattaforma, ma non un'immagine ricostruibile. Per (a) mancherebbe proprio la prova di ricostruzione che il DGS chiede.
 - **Fonte:** DGS-17 Q1; RICEVUTA-127 §4.
 
-### DA-41 · Autorizzazione su GitHub prima della lettura dei dati (23/11/2026) · **da decidere dal titolare**
+### DA-41 · Autorizzazione su GitHub prima della lettura dei dati (23/11/2026) · **DECISA: (a), D-55**
 - **Il fatto:** oggi l'esecutore scrive l'autorizzazione nel registro della riserva sul disco e **subito dopo legge la finestra**. Il commit e il push vengono dopo.
   - Se fra la lettura e il commit il registro locale venisse riportato indietro (per errore o sotto pressione), la lettura non lascerebbe traccia.
   - La stessa finestra si potrebbe poi leggere di nuovo, con un'altra scheda.
