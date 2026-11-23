@@ -12,6 +12,7 @@ brain.laboratorio.tests.test_anti_frode_statico
 brain.laboratorio.tests.test_backtester
 brain.laboratorio.tests.test_ci
 brain.laboratorio.tests.test_collaudo_ia02
+brain.laboratorio.tests.test_diagnosi_manifesto
 brain.laboratorio.tests.test_dsr_scala
 brain.laboratorio.tests.test_esecuzione
 brain.laboratorio.tests.test_esegui_h002
