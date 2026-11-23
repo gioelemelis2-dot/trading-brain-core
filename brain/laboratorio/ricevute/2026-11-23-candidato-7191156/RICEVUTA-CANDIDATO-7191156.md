@@ -16,7 +16,7 @@
 | Prove A–G (`ricevuta_127.py`) | osservato = atteso | osservato = atteso | `log/ricevuta127_py*.json` |
 | Riconciliazione dal record, corsa A | **5/5** | **5/5** | `log/riconcilia_py*.json` |
 | **Prova positiva completa dal lanciatore** (`../2026-11-23-candidato-67380cd/prova_lanciatore.py`) | **superata** | **superata** | `log/prova_lanciatore_py*.json`, `log/lanciatore_py*.log` |
-| Mutanti del percorso (63) | **62/63** (MF09 equivalente; EV34 ucciso) | in corso | `log/mutanti_percorso_py313.log` |
+| Mutanti del percorso (63) | **62/63** (MF09 equivalente; EV34 ucciso) | **62/63** (MF09 equivalente) | `log/mutanti_percorso_py*.log` |
 | Mutanti del verdetto (132) | 131/132 su `67380cd`, stesso modulo | da lanciare | `../2026-11-23-candidato-67380cd/log/` |
 | Mutanti del perimetro (299, 4 gruppi) | in corso | da lanciare | — |
 
@@ -38,6 +38,5 @@
 - **Riga della potenza nel rapporto:** «[STIMA] · incertezza: dalla procedura congelata nella scheda prima del sigillo». È il **#141**, ancora aperto: il valore 0,60 è dichiarato nel contratto di test, non calcolato.
 
 ## Da completare
-- mutanti del percorso su 3.9;
 - mutanti del verdetto su 3.9;
 - mutanti del perimetro, 4 gruppi su ciascuna versione.
