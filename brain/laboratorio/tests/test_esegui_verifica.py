@@ -320,7 +320,8 @@ class TestRifiutiPrimaDellaLettura(Percorso):
         RV.prenota(self.riserva, "P1", "H-002", LETTURA, FINE, S.impronta(vecchia), ORA)
         with self.assertRaises(EV.SchedaNonConforme):
             self.esegui(vecchia)
-        RV.rilascia(self.riserva, "P1", ORA)
+        self.assertEqual(RV.prenotazione(self.riserva, "P1")["stato"], "prenotato")   # DGS-17: il rifiuto NON rilascia
+        RV.rilascia(self.riserva, "P1", ORA)                                         # il rilascio è un atto esplicito
         s = RV.stato(self.riserva)
         self.assertEqual((s["giorni"]["prenotato"], s["prenotazioni_attive"]), (0, []))
         self.assertEqual(RV.prenotazione(self.riserva, "P1")["stato"], "rilasciato")

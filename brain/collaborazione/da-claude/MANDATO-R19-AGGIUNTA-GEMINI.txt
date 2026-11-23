@@ -1,0 +1,51 @@
+AGGIUNTA AL MANDATO R19 PER GEMINI (23/11/2026) — da mandare nella STESSA conversazione di R19
+(modello: il più capace disponibile, ragionamento approfondito)
+
+PERCHÉ
+- Hai iniziato R19 sul candidato 1431190.
+- Dopo quel commit il riscontro del DGS (DGS-17) ha fatto trovare due difetti nel perimetro, corretti in TDD:
+  - #139: due prenotazioni della stessa domanda potevano essere autorizzate entrambe. Ora l'unicità è nel registro
+    della riserva, sotto il blocco e alla ricostruzione;
+  - #140: dopo una caduta fra l'esito nella riserva e quello nel registro delle prove, la ripresa non riconciliava i
+    due registri.
+- Sono state aggiunte anche le sedute senza operazioni (K = 0) nel mercato sintetico e lo script di riconciliazione
+  del record.
+- Per D-24 il giro vale per il candidato che rivede. Il NUOVO CANDIDATO è b9ec2f4 (ricevuta di Claude:
+  laboratorio/ricevute/2026-11-23-candidato-r19/RICEVUTA-CANDIDATO-B9EC2F4.md).
+
+COSA CAMBIA (git diff 1431190 b9ec2f4 -- brain/laboratorio/esecuzione brain/laboratorio/tests)
+- esecuzione/riserva.py: +6 righe (#139);
+- esecuzione/esegui_verifica.py: +6 righe (#140);
+- tests: test_riserva, test_esegui_verifica, test_mutanti_applicabili (ora compila anche ogni mutante),
+  mercato_sintetico (giornate neutre), mutazioni_percorso (PR12, PR13, EV33);
+- ricevute/2026-11-22-percorso-127/riconcilia_record.py (nuovo, fuori dal perimetro).
+
+REGOLE: quelle del mandato R19, invariate. Worktree nuovo ../tb-r19b sul commit b9ec2f4 (dichiaralo).
+
+COMPITI
+1. Quello che hai già fatto su 1431190 resta valido per i file che non cambiano: dichiara quali parti vale.
+2. Su b9ec2f4 rifai A, cioè le suite e le tre corse di mutanti: riserva.py ed esegui_verifica.py sono nel
+   perimetro.
+3. Rivedi la differenza come parte di B e C. In particolare:
+   - due richieste per la STESSA ipotesi e variante che arrivano entrambe all'autorizzazione: al massimo
+     un'autorizzazione e un consumo, con il rifiuto attribuibile all'unicità e non alla quota;
+   - due ipotesi diverse nello stesso registro NON devono bloccarsi a vicenda;
+   - una ripresa tecnica identica deve essere distinguibile da una nuova verifica.
+4. Le richieste di DGS-17 Q8. Per ciascuna proprietà indica il test che la prova già (file e nome), oppure scrivi
+   «manca» e costruisci la prova su una copia temporanea:
+   a. caduta fra l'autorizzazione e la registrazione della verifica, fra la verifica e l'esito, fra l'esito e il
+      rapporto: le riprese riconciliano gli identificativi, conservano il consumo e producono al massimo un esito,
+      anche se il primo rapporto non è scrivibile;
+   b. una variazione dei dati di sviluppo fra lo screening e l'autorizzazione causa il rifiuto PRIMA della lettura
+      della riserva, anche quando si riusa uno screening già registrato;
+   c. rilascio esplicito (funzione del registro) distinto dal rilascio al rifiuto del comando (caso B);
+   d. per il caso G, la traccia della correzione del registro dello scaricamento resta prima del nuovo tentativo.
+5. CASO POSITIVO DAL LANCIATORE: su una copia temporanea con un repository git di prova (remoto finto, rete
+   bloccata), esegui `python3 -s -B brain/laboratorio/esecuzione/avvio.py verifica ...` su una scheda H-003
+   sintetica fino a «promossa», con i registri canonici committati e pubblicati sul remoto finto. Riporta:
+   comandi, esito, registri prima e dopo, e se lo script di riconciliazione
+   (ricevute/2026-11-22-percorso-127/riconcilia_record.py) dà "tutti": true sul risultato (lo script si aspetta
+   riserva.json, rapporto_P1.txt e la prenotazione P1 nella cartella che gli passi: adatta i nomi o dichiaralo).
+   Se il lanciatore non arriva al positivo, è un RILIEVO da classificare.
+
+CONSEGNA: aggiungi una sezione «Aggiunta su b9ec2f4» al tuo G-<data>-R19.md, con le stesse regole di consegna.
