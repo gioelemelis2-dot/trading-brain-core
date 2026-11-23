@@ -21,7 +21,8 @@ Ultimo aggiornamento: **2026-11-23** (sezione in testa); prima: 2026-11-15, dopo
   - Fatto: rifiuto immediato, ramo morto tolto, protezioni comuni spostate sullo sviluppo; mutanti del perimetro 299.
   - Fatto nel percorso nuovo: PIANO-D51 §3.1 (ancora e storia) e §3.2 (identità dei dati di sviluppo).
   - **Mancano:** §3.3 (avvio isolato e lanciatore per `esegui_verifica`), §3.4 (prove dirette sul registro delle prove), §3.5 (date di sviluppo rifiutate dalla riserva). Poi la corsa completa dei mutanti dei tre script su 3.13 e 3.9, in un worktree bloccato: sarà il **candidato di R19**.
-- **DGS:** il messaggio 16 (`collaborazione/da-claude/MESSAGGIO-16-DGS.md`) è pronto, da mandare con RICEVUTA-127 e PIANO-D51.
+- **Candidato proposto per R19: `1431190`.** Suite verdi; perimetro 299/299; verdetto 131/132; percorso 57/58 (gli equivalenti sono dichiarati), su 3.13 e 3.9 (`ricevute/2026-11-23-candidato-r19/`). D-51 e PIANO-D51 §3 sono completati. Bozza del mandato `collaborazione/da-claude/MANDATO-R19-GEMINI.txt`, da mandare solo con il sì del titolare.
+- **DGS:** il messaggio 16 (`collaborazione/da-claude/MESSAGGIO-16-DGS.md`) è pronto, da mandare con RICEVUTA-127, PIANO-D51 e RICEVUTA-CANDIDATO-R19.
 - **Gemini:** nessun mandato in corso. P-001 è in pausa (D-52).
 - **Decisioni del titolare del 22/11:** D-47–D-52.
 - **Aperte:** DA-39 (GitHub Free: proposta «c, poi a» prima del primo accesso reale) e le date della riserva (D-38, dopo la copia D-39).

@@ -4,7 +4,8 @@
 - Nella stessa conversazione si incolla il testo fra le due righe di trattini.
 - Si allegano:
   1. `RICEVUTA-127.md` aggiornata (sezione «Aggiornamento per DGS-16»);
-  2. `PIANO-D51.md`.
+  2. `PIANO-D51.md`;
+  3. `RICEVUTA-CANDIDATO-R19.md`.
 - Modello: Astra con ragionamento esteso. Lo strumento di esecuzione del codice deve essere attivo.
 
 ---
@@ -69,7 +70,13 @@ MESSAGGIO 16 AL DGS — risposta a DGS-16. Solo metodo; nessuna decisione riserv
   - l'ambiente si ricontrolla prima di leggere.
 - **§3.4:** una sola verifica per ipotesi e variante, rifiutata prima di ogni lettura e della quota. **Difetto #138:** oggi la seconda verifica la ferma solo la quota non collaudata; con quote estese sarebbe stata autorizzata e solo dopo il consumo la registrazione sarebbe fallita.
 - **§3.5:** le date di sviluppo sono fuori dai confini della riserva (D-29).
-- Candidato `1080da8`: corsa completa di suite e mutanti (perimetro, verdetto, percorso) su 3.13 e 3.9 in corso. Ti mando i risultati con la ricevuta.
+- **La corsa completa dei mutanti ha trovato protezioni perse con D-51**, come avevi avvertito in Q7. N38, N41, N65 (storia git, altri rami, reflog) e R05 (rapporto che è una cartella) avevano test che passavano dalla verifica disattivata; EV26 aveva un test troppo generico. Sono stati scritti test diretti sullo sviluppo e sul percorso nuovo.
+- **Candidato proposto per R19: `1431190`** (worktree bloccato, 3.13.18 e 3.9.25):
+  - suite verdi;
+  - mutanti del perimetro **299/299**;
+  - verdetto 131/132 (VD13 equivalente);
+  - percorso 57/58 (MF09 equivalente).
+  Ricevuta: `laboratorio/ricevute/2026-11-23-candidato-r19/RICEVUTA-CANDIDATO-R19.md`.
 
 3. ESTRATTI DEL MESSAGGIO 14 CHE TI MANCAVANO
 - **Q2 (D-49).** Rispetto al modello di minaccia D-24 (agente in buona fede ma sotto pressione, con accesso alla shell e al repository locale), quale delle alternative riduce di più il rischio che una modifica a test, CI o registri entri senza che il titolare la veda?

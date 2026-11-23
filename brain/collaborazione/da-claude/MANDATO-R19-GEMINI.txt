@@ -1,0 +1,51 @@
+MANDATO R19 PER GEMINI — BOZZA, da mandare SOLO se il titolare dice di sì (D-48)
+(modello: il più capace disponibile, ragionamento approfondito)
+
+CONTESTO
+- D-48: dopo R18 il contatore D-24 è a 1 su 2. R19 è un GIRO ORDINARIO COMPLETO su tutto il perimetro PIÙ il giro su
+  tutte le manomissioni. Se è pulito (nessun difetto critico o importante, di qualunque costo), il contatore va a 2 su 2.
+- CANDIDATO: 1431190 (ramo feat/esecutore-h002). Ricevuta di Claude:
+  brain/laboratorio/ricevute/2026-11-23-candidato-r19/RICEVUTA-CANDIDATO-R19.md
+  (suite verdi; perimetro 299/299; verdetto 131/132 con VD13 equivalente; percorso 57/58 con MF09 equivalente; su
+  3.13 e 3.9, nel contenitore di Claude).
+- Novità rispetto a R18:
+  - esecuzione/esegui_verifica.py: percorso ordinario della verifica (D-31), con lo schema riserva/2 (D-50),
+    il manifesto dei dati (esecuzione/manifesto.py) e i byte verificati nel caricatore;
+  - D-51: la verifica di esegui_h002 è DISATTIVATA;
+  - avvio.py ha la modalità «verifica»;
+  - #124 (frazioni esatte nel verdetto), #136, #137, #138.
+  Leggi: ricevute/2026-11-22-percorso-127/RICEVUTA-127.md e PIANO-D51.md.
+
+REGOLE
+- Worktree nuovo ../tb-r19 sul commit 1431190 (dichiaralo). Scrivi SOLO in brain/collaborazione/da-gemini/. NON
+  modificare il codice del progetto. Mai compiacente. Percorsi locali con ~ (D-28).
+- Nessun dato vero, rete bloccata (HTTPS_PROXY=http://127.0.0.1:9 HTTP_PROXY=http://127.0.0.1:9).
+- NON toccare ~/Downloads/tb-riconta, brain/dati/reali/, ~/Desktop/consuntivo_ask, ~/Downloads/p001_sottotitoli,
+  né la copia di sicurezza dei dati. Le manomissioni SOLO su copie temporanee, mai sul repository di lavoro né su GitHub.
+- Un solo processo per le corse lunghe; df -h ~ prima di ogni blocco, fermati sotto i 3 GB.
+
+COMPITI
+A. Base su Apple Python 3.9:
+   - suite complete;
+   - le tre corse di mutanti, a blocchi per prefisso se serve: mutazioni_esecuzione, mutazioni_verdetto,
+     mutazioni_percorso;
+   - atteso: come nella ricevuta.
+B. Giro ordinario completo su tutto il perimetro (D-24 e D-48), compresi i moduli nuovi:
+   - esegui_verifica, manifesto, riserva/2, avvio «verifica», caricatore con le attese;
+   - errori E e manomissioni M, con classificazione e costo.
+C. TUTTE le manomissioni, a qualunque costo, come in R18, più quelle nuove del percorso ordinario:
+   - registro della riserva: rifiuto, impegno, record, ricontrollo della quota, prenotazione consumata altrove;
+   - manifesto e registro dello scaricamento;
+   - contratto H-003 e sigillo;
+   - lanciatore;
+   - ripresa dopo il verdetto;
+   - concorrenza.
+D. Le protezioni spostate da D-51 (PIANO-D51 §2–§3): per ciascuna, un caso valido e lo stesso caso con un solo elemento
+   cambiato, ATTRAVERSO L'INGRESSO ORDINARIO. Riporta causa, fase del rifiuto, chiamate al caricatore e stato dei
+   registri.
+E. Tabella dei rilievi con gravità, tipo (E/M), costo, RILEVATO o NON RILEVATO.
+   Frase finale esplicita: «R19: nessun difetto critico o importante, di qualunque costo, che conti per D-24» oppure
+   l'elenco.
+
+CONSEGNA: brain/collaborazione/da-gemini/G-<data>-R19.md più gli script, sul ramo rev/gemini-r19, commit con la tua
+identità.
