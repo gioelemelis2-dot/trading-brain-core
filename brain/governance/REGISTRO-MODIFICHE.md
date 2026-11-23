@@ -1306,3 +1306,8 @@ Nulla di questo tocca il candidato `8e51ce9` su cui lavora R15.
 - **Copia finale** `~/Desktop/dati_reali_FINALE.zip` fatta dal titolare il 22/11 alle 22:06: 179 MB, SHA-256 `40b401ab6300445d21f5b694cd89a538fdf34348d568aadaaaac819134b1f32c`. Registrata in `piano/PROCEDURA-ASSISTENZA-MAC.md`. Il file si copia, non si apre (contiene la riserva sigillata).
 - **Da fare:** due copie fuori dal Mac (chiavetta o disco esterno, più il cloud), ciascuna controllata con `shasum -a 256`. Deve dare la stessa impronta.
 - R19 avviato con Gemini (D-53).
+
+## 2026-11-23 · v2.03 (copie della custodia verificate; incidente di Safari)
+
+- **Copie fuori dal Mac (D-39), per scelta del titolare su due cloud:** iCloud Drive e Google Drive, entrambe con SHA-256 `40b401ab…b1f32c`, uguale all'originale. La copia di Google Drive è stata scaricata di nuovo per il controllo, poi cancellata dai Download. **D-39 è soddisfatta**, con due cloud invece di chiavetta più cloud.
+- **Incidente, senza conseguenze sulla riserva:** al primo download da Google Drive, Safari ha decompresso lo zip da solo (impostazione «Apri i file sicuri») in `~/Downloads/reali`. Il titolare ha elencato solo i nomi di primo livello (`cache_dukascopy`, `partizioni`, log, CSV a 15 minuti), **non ha aperto nessun file** e ha cancellato la cartella con `rm -rf`. Poi ha tolto l'impostazione di Safari e ha riscaricato lo zip senza estrarlo. Nessun prezzo della riserva è stato visto.
