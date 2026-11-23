@@ -69,9 +69,11 @@ class TestDiagnosi(unittest.TestCase):
         # come dopo --riprova-vuoti: prima «vuoto-200», poi «dati» per lo stesso giorno e lato
         rr = self.righe("ASK")
         prima = dict(next(r for r in rr if r["giorno"] == "2023-12-28"), esito="vuoto-200", byte="0")
-        self.riscrivi("ASK", [prima] + rr)
+        errore = dict(prima, esito="http-503")                          # non valida: fuori dalla combinazione
+        opposta = dict(prima, lato="BID")                               # lato sbagliato: fuori dalla combinazione
+        self.riscrivi("ASK", [errore, prima, opposta] + rr)
         d = DM.diagnosi(self.cache, "XAUUSD", INIZIO, FINE)
-        self.assertEqual(d["per_tipo"], {"voce doppia": {"ASK": {"2023": 1}}})
+        self.assertEqual(d["per_tipo"], {"voce doppia": {"ASK": {"2023": 1}}, "lato sbagliato": {"ASK": {"2023": 1}}})
         self.assertEqual(d["voci_doppie_esiti"], {"vuoto-200+dati": 1})
 
     def test_righe_non_valide_ignorate_come_nel_manifesto(self):
@@ -122,6 +124,10 @@ class TestDiagnosi(unittest.TestCase):
         with redirect_stdout(io.StringIO()):
             self.assertEqual(DM.main(["--cache", str(self.cache), "--inizio", "2023-12-27", "--fine", "2024-01-05"]), 0)
             self.assertEqual(DM.main(["--cache", str(self.cache), "--inizio", "2024-01-05", "--fine", "2023-12-27"]), 2)
+            (self.cache / "XAUUSD" / "2024-01-02.bi5").write_bytes(b"altro")
+            self.assertEqual(DM.main(["--cache", str(self.cache), "--inizio", "2023-12-27", "--fine", "2024-01-05"]), 1)
+            self.assertEqual(DM.main(["--cache", str(self.cache), "--inizio", "2023-12-27", "--fine", "2024-01-05",
+                                      "--senza-byte"]), 0)
             self.assertEqual(DM.main(["--cache", str(self.cache / "niente"), "--inizio", "2023-12-27",
                                       "--fine", "2024-01-05"]), 2)
 
