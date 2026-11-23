@@ -37,6 +37,7 @@ M = {
     "PR11 vecchio schema accettato": [(RV, 'SCHEMA = "riserva/2"', 'SCHEMA = "riserva/1"')],
     "PR12 due autorizzazioni della stessa domanda": [(RV, "            if gia:                                                            # #139: unicità al consumo", "            if False:")],
     "PR13 unicità senza l'impronta della domanda": [(RV, "                   and q[\"evento\"][\"hash_domanda\"] == p[\"evento\"][\"hash_domanda\"]]", "]")],
+    "PR14 unicità solo fra le verifiche senza esito": [(RV, 'if q["stato"] == "autorizzato" and i != id_', 'if q["stato"] == "autorizzato" and q["esito"] is None and i != id_')],
     # manifesto
     "MF01 date accessorie ignorate": [(MF, "inizio - timedelta(days=accessorie)", "inizio")],
     "MF02 voce doppia non vista": [(MF, "if len(righe) > 1:", "if False:")],

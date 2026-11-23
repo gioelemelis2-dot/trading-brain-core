@@ -349,6 +349,17 @@ class TestRiserva2(Base):
         self.prenota("D", D(2005, 4, 1), D(2005, 4, 30))                                    # altra ipotesi: ammessa
         RV.autorizza(self.reg, "D", 2, "h", ORA)
 
+    def test_unicita_anche_dopo_l_esito_della_prima(self):            # #139, revisione critica del 23/11
+        # la prima verifica è conclusa (esito scritto): la stessa domanda non si riapre con un'altra prenotazione
+        RV.prenota(self.reg, "A", "H-900", D(2005, 1, 1), D(2005, 1, 31), SCHEDA, ORA)
+        RV.autorizza(self.reg, "A", 1, "h", ORA)
+        RV.rendiconta(self.reg, "A", "bocciata", ORA)
+        RV.prenota(self.reg, "B", "H-900", D(2005, 2, 1), D(2005, 2, 28), SCHEDA, ORA)
+        prima = self.reg.read_bytes()
+        with self.assertRaisesRegex(ValueError, "domanda già autorizzata con la prenotazione 'A'"):
+            RV.autorizza(self.reg, "B", 1, "h", ORA)
+        self.assertEqual(self.reg.read_bytes(), prima)
+
     def test_doppia_autorizzazione_della_stessa_domanda_rifiutata_alla_ricostruzione(self):
         RV.prenota(self.reg, "A", "H-900", D(2005, 1, 1), D(2005, 1, 31), SCHEDA, ORA)
         RV.prenota(self.reg, "B", "H-900", D(2005, 2, 1), D(2005, 2, 28), SCHEDA, ORA)

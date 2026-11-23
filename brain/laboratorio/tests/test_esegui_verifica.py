@@ -213,6 +213,32 @@ class TestCorsaCompleta(Percorso):
         self.esegui(scheda)                                              # una seconda ripresa non duplica
         self.assertEqual(len([e for e in S.leggi(self.registro)["esecuzioni"] if e["ruolo"] == "esito"]), 1)
 
+    def test_caduta_durante_la_lettura_ripresa_tecnica_identica(self):
+        # DGS-17 Q8, revisione critica del 23/11: dopo l'autorizzazione e la voce «verifica», la lettura cade. La
+        # ripresa con la stessa scheda è una RIPETIZIONE TECNICA: stessa autorizzazione (stessi j, quota e impegno),
+        # nessuna seconda apertura, una sola voce «verifica», un solo esito
+        scheda = self.prepara()
+        vero = C.carica.side_effect
+
+        def cade(*a, **k):
+            if a[4] == "verifica":
+                raise RuntimeError("caduta durante la lettura")
+            return vero(*a, **k)
+        with mock.patch.object(C, "carica", side_effect=cade):
+            with self.assertRaisesRegex(RuntimeError, "durante la lettura"):
+                self.esegui(scheda)
+        prima = RV.prenotazione(self.riserva, "P1")
+        self.assertEqual((prima["stato"], prima["esito"]), ("autorizzato", None))
+        eventi = len(json.loads(self.riserva.read_text(encoding="utf-8"))["eventi"])
+        r = self.esegui(scheda)
+        self.assertEqual((r["esito_tecnico"], r["esito"]), ("completata", "promossa"))
+        dopo = RV.prenotazione(self.riserva, "P1")
+        self.assertEqual(dopo["autorizzazione"], prima["autorizzazione"])
+        self.assertEqual(len(json.loads(self.riserva.read_text(encoding="utf-8"))["eventi"]), eventi + 1)  # solo l'esito
+        self.assertEqual([(x["id"], x["j"]) for x in RV.stato(self.riserva)["aperture"]], [("P1", 1)])
+        ruoli = [e["ruolo"] for e in S.leggi(self.registro)["esecuzioni"]]
+        self.assertEqual(ruoli, ["sviluppo", "verifica", "esito"])
+
     def test_ripresa_dopo_il_verdetto_senza_rileggere(self):
         scheda = self.prepara()
         rapporto = self.d / "rapporto.txt"
