@@ -1,6 +1,31 @@
 # Documento di continuità
 
-Ultimo aggiornamento: **2026-11-23** (sezione in testa); prima: 2026-11-15, dopo il mandato notturno su H-002 (programma dei criteri, strumento di sigillo, quaderno delle ipotesi; ramo `feat/esecutore-h002`, **non unito a main**). Leggere questo file per primo (vale anche per Gemini, insieme a `collaborazione/HANDOFF-GEMINI.md`).
+Ultimo aggiornamento: **2026-11-23, mattina** (sezione in testa); prima: 2026-11-15, dopo il mandato notturno su H-002 (programma dei criteri, strumento di sigillo, quaderno delle ipotesi; ramo `feat/esecutore-h002`, **non unito a main**). Leggere questo file per primo (vale anche per Gemini, insieme a `collaborazione/HANDOFF-GEMINI.md`).
+
+## Aggiornamento del 23/11/2026, mattina (LEGGERE PER PRIMO)
+
+**Regola fissa del titolare: Claude scrive SEMPRE in italiano** (vedi sotto).
+
+**Stato:**
+- **DGS-17 archiviato.** Ha fatto trovare due difetti nel perimetro, corretti in TDD:
+  - **#139** (`8ef4615`): una sola autorizzazione per domanda nel registro della riserva, sotto il blocco e alla ricostruzione;
+  - **#140**: la ripresa riconcilia verifica ed esito nel registro delle prove.
+  Aggiunti anche le sedute K = 0 nel mercato sintetico e `riconcilia_record.py` (`b9ec2f4`).
+- **Nuovo candidato per R19: `b9ec2f4`.** Corse nel worktree bloccato `scratchpad/wt-n`: suite, ricevute, riconciliazione e mutanti dei tre script su 3.13 e 3.9. La ricevuta va in `laboratorio/ricevute/2026-11-23-candidato-r19/RICEVUTA-CANDIDATO-B9EC2F4.md`.
+- **Gemini aveva iniziato R19 su `1431190`.** Aggiunta al mandato pronta: `collaborazione/da-claude/MANDATO-R19-AGGIUNTA-GEMINI.txt`. Il titolare la manda quando la ricevuta è pronta.
+- **Revisione critica di Claude:** `laboratorio/ricevute/2026-11-23-candidato-r19/REVISIONE-CRITICA-20261123.md`, 8 punti aperti. I più gravi:
+  1. l'autorizzazione è letta prima di essere su GitHub (proposta **DA-41**);
+  2. la potenza è un input e non un calcolo: requisito bloccante prima di qualunque accesso reale;
+  3. l'ambiente di riferimento non è fissato (proposta **DA-40**);
+  4. il manifesto non è mai stato provato sui registri veri.
+- **Strumento nuovo, fuori dal candidato:** `laboratorio/studi/diagnosi_manifesto.py` (`7edcb80`), test prima, mutanti 13/13. Procedura per il Mac: `dati/PROCEDURA-DIAGNOSI-MANIFESTO.md`. **Da fare dal titolare.**
+- **Messaggio 17 al DGS:** bozza in `collaborazione/da-claude/MESSAGGIO-17-DGS.md`. Va completato con gli esiti del candidato e con l'archivio degli originali più l'indice delle impronte.
+
+**Prossima azione esatta:** chiudere le corse su `b9ec2f4`, poi:
+1. scrivere la ricevuta;
+2. preparare l'archivio per il DGS;
+3. completare il messaggio 17;
+4. aggiornare PIANO-D51 e REGISTRO-MODIFICHE (v2.04).
 
 ## Aggiornamento del 22–23/11/2026 (LEGGERE PER PRIMO)
 
