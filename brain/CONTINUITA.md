@@ -28,7 +28,14 @@ Ultimo aggiornamento: **2026-11-23, mattina** (sezione in testa); prima: 2026-11
 - **Progetto generale aggiornato:** `piano/PROGETTO-GENERALE-20261123.md`; mappa delle competenze v2.0.
 - **Messaggio 17 al DGS:** bozza in `collaborazione/da-claude/MESSAGGIO-17-DGS.md`. Va completato con gli esiti del candidato e con l'archivio degli originali più l'indice delle impronte.
 
-**Prossima azione esatta:** chiudere le corse su `b9ec2f4`, poi:
+- **Pomeriggio del 23/11:**
+  - **DGS-18** archiviato;
+  - **#141** (etichetta della potenza nel rapporto) aperto per il prossimo lotto;
+  - **#142** trovato con la prova positiva dal lanciatore: il lanciatore non era nel codice sigillato, quindi la verifica vera si fermava sempre. Corretto in TDD.
+  - **Candidato `67380cd` non valido.** **Nuovo candidato `7191156`**, corse in corso nel worktree `scratchpad/wt-y`.
+  - Aggiunta al mandato R19 aggiornata.
+
+**Prossima azione esatta (superata dalla riga sopra per il candidato):** chiudere le corse su `b9ec2f4`, poi:
 1. scrivere la ricevuta;
 2. preparare l'archivio per il DGS;
 3. completare il messaggio 17;

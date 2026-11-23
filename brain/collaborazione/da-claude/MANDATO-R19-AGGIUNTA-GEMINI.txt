@@ -13,22 +13,25 @@ PERCHÉ
 - Nella sua revisione critica Claude ha poi trovato due lacune nei SUOI test (solo test, nessun cambio al codice):
   #139 dopo l'esito della prima verifica (mutante PR14, che sopravviveva) e la ripresa tecnica identica dopo una
   caduta durante la lettura.
-- Per D-24 il giro vale per il candidato che rivede. Il NUOVO CANDIDATO è 67380cd (ricevuta di Claude:
-  laboratorio/ricevute/2026-11-23-candidato-67380cd/RICEVUTA-CANDIDATO-67380CD.md). Il codice del perimetro è
-  identico a b9ec2f4: cambiano solo test e mutanti.
+- Poi la prova positiva completa dal lanciatore, chiesta dal DGS (DGS-18), ha trovato #142: il lanciatore non era
+  nel codice sigillato del percorso ordinario, quindi la verifica vera dal lanciatore si fermava SEMPRE («avvio.py:
+  modulo brain non sigillato»). Corretto in TDD, con un test positivo completo dal lanciatore nella suite.
+- Per D-24 il giro vale per il candidato che rivede. Il NUOVO CANDIDATO è 7191156 (ricevuta di Claude:
+  laboratorio/ricevute/2026-11-23-candidato-7191156/). Rispetto a 67380cd cambia una sola cosa nel perimetro:
+  esegui_verifica.impronte_codice include avvio.py.
 
-COSA CAMBIA (git diff 1431190 67380cd -- brain/laboratorio/esecuzione brain/laboratorio/tests)
+COSA CAMBIA (git diff 1431190 7191156 -- brain/laboratorio/esecuzione brain/laboratorio/tests)
 - esecuzione/riserva.py: +6 righe (#139);
-- esecuzione/esegui_verifica.py: +6 righe (#140);
+- esecuzione/esegui_verifica.py: #140 e #142;
 - tests: test_riserva, test_esegui_verifica, test_mutanti_applicabili (ora compila anche ogni mutante),
-  mercato_sintetico (giornate neutre), mutazioni_percorso (PR12, PR13, PR14, EV33);
+  mercato_sintetico (giornate neutre), mutazioni_percorso (PR12, PR13, PR14, EV33, EV34);
 - ricevute/2026-11-22-percorso-127/riconcilia_record.py (nuovo, fuori dal perimetro).
 
-REGOLE: quelle del mandato R19, invariate. Worktree nuovo ../tb-r19b sul commit 67380cd (dichiaralo).
+REGOLE: quelle del mandato R19, invariate. Worktree nuovo ../tb-r19b sul commit 7191156 (dichiaralo).
 
 COMPITI
 1. Quello che hai già fatto su 1431190 resta valido per i file che non cambiano: dichiara quali parti vale.
-2. Su 67380cd rifai A, cioè le suite e le tre corse di mutanti: riserva.py ed esegui_verifica.py sono nel
+2. Su 7191156 rifai A, cioè le suite e le tre corse di mutanti: riserva.py ed esegui_verifica.py sono nel
    perimetro.
 3. Rivedi la differenza come parte di B e C. In particolare:
    - due richieste per la STESSA ipotesi e variante che arrivano entrambe all'autorizzazione: al massimo
@@ -44,7 +47,8 @@ COMPITI
       della riserva, anche quando si riusa uno screening già registrato;
    c. rilascio esplicito (funzione del registro) distinto dal rilascio al rifiuto del comando (caso B);
    d. per il caso G, la traccia della correzione del registro dello scaricamento resta prima del nuovo tentativo.
-5. CASO POSITIVO DAL LANCIATORE: su una copia temporanea con un repository git di prova (remoto finto, rete
+5. CASO POSITIVO DAL LANCIATORE (su 67380cd falliva per #142; ora c'è un test nella suite e uno script di ricevuta,
+   ricevute/2026-11-23-candidato-67380cd/prova_lanciatore.py: rifallo IN MODO INDIPENDENTE, senza usarli): su una copia temporanea con un repository git di prova (remoto finto, rete
    bloccata), esegui `python3 -s -B brain/laboratorio/esecuzione/avvio.py verifica ...` su una scheda H-003
    sintetica fino a «promossa», con i registri canonici committati e pubblicati sul remoto finto. Riporta:
    comandi, esito, registri prima e dopo, e se lo script di riconciliazione
@@ -62,4 +66,4 @@ COMPITI
       procedura congelata», ed è sbagliato;
    c. per ogni caduta del punto 4a indica la stessa autorizzazione, il consumo unico e al massimo un esito.
 
-CONSEGNA: aggiungi una sezione «Aggiunta su 67380cd» al tuo G-<data>-R19.md, con le stesse regole di consegna.
+CONSEGNA: aggiungi una sezione «Aggiunta su 7191156» al tuo G-<data>-R19.md, con le stesse regole di consegna.

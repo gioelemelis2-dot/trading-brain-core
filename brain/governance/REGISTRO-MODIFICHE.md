@@ -1363,3 +1363,14 @@ Nulla di questo tocca il candidato `8e51ce9` su cui lavora R15.
   - **Q3:** il tentativo rifiutato si registra senza consumo.
   - **Q4:** R19 resta un solo giro aggiornato sul perimetro finale, con una tabella delle evidenze trasferite e rieseguite.
 - **Aggiunta al mandato R19:** i tre controlli mirati di DGS-18 (chiave di unicità di #139, positivo dal lanciatore con l'etichetta della potenza, mappa delle cadute).
+
+## 2026-11-23 · v2.07 (#142: il percorso ordinario non arrivava in fondo dal lanciatore)
+
+- **Prova positiva completa dal lanciatore** (`ricevute/2026-11-23-candidato-67380cd/prova_lanciatore.py`, richiesta da DGS-18 Q4): repository git di prova con un remoto finto, copia del codice del candidato, ancora e controllo dell'ambiente accesi.
+  - Su `67380cd` è **fallita**: «avvio.py: modulo brain non sigillato», codice d'uscita 2.
+- **#142 (importante; errore di Claude nel porting di D-51):** `esegui_verifica.impronte_codice` non includeva il lanciatore, che il #95 aveva messo nel codice sigillato del vecchio esecutore. Nessun test arrivava fin lì.
+  - Test rossi `076d9f4`;
+  - correzione e mutante EV34 in `7191156`;
+  - nella suite ora c'è `test_positivo_completo_dal_lanciatore`.
+- **Candidato `67380cd`:** suite 757 verdi, A–G, riconciliazione 5/5, percorso 61/62 su 3.13 e 3.9, verdetto 131/132 su 3.13. **Non valido per #142.**
+- **Nuovo candidato `7191156`:** corse in corso. Aggiunta al mandato R19 aggiornata; la prova dal lanciatore va rifatta da Gemini in modo indipendente.

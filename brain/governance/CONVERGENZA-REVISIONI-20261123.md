@@ -68,3 +68,10 @@ Ognuna, fatta da sola, riaprirebbe il contatore.
 2. Poi il **congelamento del perimetro**: nel candidato entrano solo correzioni di difetti.
 3. Poi i due giri.
 4. **Limite dichiarato prima:** se dopo N giri (per esempio 4) restano importanti, il titolare decide se dichiararli limiti o se riscrivere D-24. Così il gate ha una fine anche nel caso peggiore.
+
+
+## Aggiornamento del 23/11, pomeriggio
+
+- **#141 (minore)** e **#142 (importante)**, entrambi nel codice nuovo del percorso ordinario. #142 l'ha trovato Claude con la prova positiva completa dal lanciatore chiesta dal DGS: il percorso non poteva arrivare in fondo.
+- Conferma la lettura del §3: **zero critici**; gli importanti nascono dove il codice è nuovo o non è mai stato esercitato davvero.
+- Fa capire anche che cosa mancava: **una prova d'insieme del percorso vero**, non solo dei pezzi. Ora è nella suite.
