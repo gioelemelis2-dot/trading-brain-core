@@ -18,7 +18,7 @@
 | **Prova positiva completa dal lanciatore** (`../2026-11-23-candidato-67380cd/prova_lanciatore.py`) | **superata** | **superata** | `log/prova_lanciatore_py*.json`, `log/lanciatore_py*.log` |
 | Mutanti del percorso (63) | **62/63** (MF09 equivalente; EV34 ucciso) | **62/63** (MF09 equivalente) | `log/mutanti_percorso_py*.log` |
 | Mutanti del verdetto (132) | 131/132 su `67380cd`, stesso modulo (VD13 equivalente) | **131/132** (VD13 equivalente) | `log/mutanti_verdetto_py39.log`; 3.13 in `../2026-11-23-candidato-67380cd/log/` |
-| Mutanti del perimetro (299, 4 gruppi) | N,K **96/96**; V,E,S,TA,MG,MR **71/71**; C,IX,R,Q e P in corso | C,IX,R,Q **62/62**; gli altri in corso | `log/mutanti_perimetro_*` |
+| Mutanti del perimetro (299, 4 gruppi) | N,K **96/96**; V,E,S,TA,MG,MR **71/71**; C,IX,R,Q **62/62**; P in corso | N,K **96/96**; V,E,S,TA,MG,MR **71/71**; C,IX,R,Q **62/62**; P in corso | `log/mutanti_perimetro_*` |
 
 ## La prova positiva dal lanciatore, in dettaglio (uguale su 3.13 e 3.9)
 - **Comando:** `python3 -I -S -B brain/laboratorio/esecuzione/avvio.py verifica --scheda … --registro brain/laboratorio/registro_prove.json --riserva brain/laboratorio/registro_riserva.json --prenotazione P1 …`. Processo separato; ancora git e controllo dell'ambiente accesi come nel codice, senza sostituzioni.
@@ -38,4 +38,4 @@
 - **Riga della potenza nel rapporto:** «[STIMA] · incertezza: dalla procedura congelata nella scheda prima del sigillo». È il **#141**, ancora aperto: il valore 0,60 è dichiarato nel contratto di test, non calcolato.
 
 ## Da completare
-- mutanti del perimetro: C,IX,R,Q e P su 3.13; N,K, V,E,S,TA,MG,MR e P su 3.9.
+- mutanti del perimetro, gruppo P (70) su entrambe le versioni.
