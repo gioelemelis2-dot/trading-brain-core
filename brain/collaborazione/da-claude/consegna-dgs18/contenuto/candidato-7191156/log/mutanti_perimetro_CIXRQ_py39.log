@@ -1,0 +1,65 @@
+M00 copia non mutata: suite verde
+UCCISO Q01 copia parziale non controllata (#125)
+UCCISO Q02 versione illeggibile saltata (#125)
+UCCISO Q03 commit senza il file trattato come illeggibile (#125)
+UCCISO Q04 configurazione della copia parziale non letta (#125)
+UCCISO Q05 giorno collegato accettato (#126)
+UCCISO Q06 cartella collegata accettata (#126)
+UCCISO Q07 stessa cartella accettata (#126)
+UCCISO Q08 ASK identico al BID non controllato (#126)
+UCCISO Q09 basta un minuto uguale per scartare il giorno (#126)
+UCCISO Q10 quota non finita accettata (#128)
+UCCISO Q11 quota di tipo qualsiasi accettata (#128)
+UCCISO IX19 intersezione: vigilie nei percentili annuali (M-R16-01 di Gemini)
+UCCISO CO12 collaudo: media del bootstrap divisa per n (M-R16-03 di Gemini)
+UCCISO CO01 collaudo: F senza il peso (1 - k/n)
+UCCISO CO02 collaudo: AR(1) non stazionario
+UCCISO CO03 collaudo: innovazioni non scalate
+UCCISO CO04 collaudo: ingenuo con varianza su n
+UCCISO CO05 collaudo: HAC senza pesi di Bartlett
+UCCISO CO06 collaudo: HAC con un ritardo in meno
+UCCISO CO07 collaudo: bootstrap senza blocchi
+UCCISO CO08 collaudo: quantile del bootstrap spostato
+UCCISO CO09 collaudo: Clopper–Pearson su una coda intera
+UCCISO CO10 collaudo: promozione con limite uguale alla soglia
+UCCISO CO11 collaudo: avviso delle poche repliche tolto
+UCCISO IX17 intersezione: estremi incrociati non contati (#108)
+UCCISO IX18 intersezione: estremi incrociati non sommati per anno (#108)
+UCCISO IX01 intersezione: ASK sotto BID valido
+UCCISO IX02 intersezione: solo la chiusura confrontata
+UCCISO IX03 intersezione: buco non azzerato
+UCCISO IX04 intersezione: buco dai bordi escluso
+UCCISO IX05 intersezione: solo BID come comune
+UCCISO IX06 intersezione: vigilie piene
+UCCISO IX07 intersezione: chiusure note contate
+UCCISO IX08 intersezione: fine settimana contati
+UCCISO IX09 intersezione: file vuoto come mancante
+UCCISO IX10 intersezione: file rotto fa crollare
+UCCISO IX11 intersezione: soglia per terzo ignorata
+UCCISO IX12 intersezione: buco massimo ignorato
+UCCISO IX13 intersezione: quota della seduta ignorata
+UCCISO IX14 intersezione: prezzi nel rendiconto
+UCCISO IX15 intersezione: ASK mancante non controllato
+UCCISO IX16 intersezione: stati non contati per anno
+UCCISO C01 sviluppo nel periodo sigillato
+UCCISO C02 dati senza sigillo, in sviluppo e in verifica (difetto #41)
+UCCISO C03 verifica senza il 31/10 compreso
+UCCISO C09 embargo aperto (P7 di Gemini)
+UCCISO C04 high e low scambiati
+UCCISO C05 giorni mancanti non contati
+UCCISO C06 ASK letti dalla cartella BID
+UCCISO C07 modalità non controllata
+UCCISO C08 periodo rovesciato ammesso
+UCCISO R01 DSR anche con 2 trade (R11-S1 di Gemini)
+UCCISO R02 giorni feriali vuoti ammessi (R11-S2)
+UCCISO R03 feriali vuoti non contati (R11-S2)
+UCCISO R04 chiusure note ignorate (R11-S2)
+UCCISO R05 rapporto non controllato prima di registrare (R11-S4)
+UCCISO R07 copertura del casuale ignorata (R11-S5)
+UCCISO R08 copertura dei benchmark ignorata (R11-S5)
+UCCISO R10 variante fuori dal sigillo (R11-S7)
+UCCISO R11 codice non controllato
+UCCISO R12 ripetizioni e seme non registrati (R11-S3)
+UCCISO R13 impronta dei dati vuota (R11-S6)
+
+62/62 mutanti uccisi (3.9.25)

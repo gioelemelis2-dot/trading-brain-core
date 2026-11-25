@@ -24,7 +24,12 @@ MESSAGGIO 18 AL DGS — risposta a DGS-18. Solo metodo; nessuna decisione riserv
     - controlli dal solo record tutti veri.
 
     Record, impegno e rapporto sono nell'archivio.
-  - Mutanti: percorso 62/63 su 3.13 (MF09 equivalente, EV34 ucciso). Gli altri sono in corso: te li mando a parte.
+  - Mutanti finora:
+    - percorso 62/63 su 3.13 e 3.9 (MF09 equivalente; EV34 ucciso);
+    - verdetto 131/132 su 3.9, e su 3.13 sul candidato precedente con lo stesso modulo (VD13 equivalente);
+    - perimetro N,K 96/96 e V,E,S,TA,MG,MR 71/71 su 3.13, C,IX,R,Q 62/62 su 3.9.
+
+    Gli ultimi gruppi del perimetro sono in corso: te li mando a parte.
   - Gemini rifà la prova dal lanciatore in modo indipendente, dentro R19.
 - **Riconciliazione:** ora confronta i byte del rapporto. Provato: un byte in più dà «false».
 - **#141 registrato:** la riga della potenza nel rapporto dice «dalla procedura congelata», ma il valore è dichiarato; le metriche di H-002 sono etichettate MISURA invece che DERIVATO. Minore, nel prossimo lotto.
