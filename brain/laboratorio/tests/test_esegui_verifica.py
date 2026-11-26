@@ -1061,7 +1061,7 @@ class TestRegressioniR1906(Percorso):
         prima = self.fotografia(rapporto)
         for ora in ("NON-UNA-DATA", "", "2026-11-22 12:00:00Z", "2026-11-22T12:00:00", "2026-11-22T12:00:00+00:00",
                     "2026-13-01T00:00:00Z", "2026-02-30T00:00:00Z", "2026-11-22T25:00:00Z", " 2026-11-22T12:00:00Z",
-                    None, 20261122):
+                    None, 20261122, "\uff12\uff10\uff12\uff16-11-22T12:00:00Z"):    # cifre a larghezza piena: \\d e strptime le accettano
             with self.subTest(ora=ora):
                 with self.assertRaisesRegex(ValueError, "ora"):
                     EV.esegui(scheda, self.registro, self.riserva, "P1", self.cache, self.cache_sv, rapporto, ora)
