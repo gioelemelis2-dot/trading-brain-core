@@ -1,0 +1,28 @@
+== m150p_python3.13
+M00 copia non mutata: suite verde
+UCCISO PR20 ipotesi della prenotazione non controllata (#150)
+UCCISO PR21 prenotazione con ipotesi vuota (#150)
+UCCISO PR22 prenotazione con spazi ai bordi (#150)
+UCCISO PR23 prenotazione con caratteri di controllo (#150)
+UCCISO PR24 tipo dell'ipotesi della prenotazione non controllato (#150)
+5/5 mutanti uccisi (3.13.18); equivalenti dichiarati vivi: 0
+
+== m150e_python3.13
+M00 copia non mutata: suite verde
+UCCISO N70 orario con cifre non ASCII (#151)
+1/1 mutanti uccisi (3.13.18)
+
+== m150p_python3.9
+M00 copia non mutata: suite verde
+UCCISO PR20 ipotesi della prenotazione non controllata (#150)
+UCCISO PR21 prenotazione con ipotesi vuota (#150)
+UCCISO PR22 prenotazione con spazi ai bordi (#150)
+UCCISO PR23 prenotazione con caratteri di controllo (#150)
+UCCISO PR24 tipo dell'ipotesi della prenotazione non controllato (#150)
+5/5 mutanti uccisi (3.9.25); equivalenti dichiarati vivi: 0
+
+== m150e_python3.9
+M00 copia non mutata: suite verde
+UCCISO N70 orario con cifre non ASCII (#151)
+1/1 mutanti uccisi (3.9.25)
+

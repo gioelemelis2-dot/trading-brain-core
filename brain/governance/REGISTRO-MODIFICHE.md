@@ -1527,3 +1527,13 @@ Nulla di questo tocca il candidato `8e51ce9` su cui lavora R15.
 
   Proposti come rinviabili; la classificazione D-56 va confermata.
 - **Su #144:** il fuso alterato rendeva le sedute K = 0 in silenzio; la causa comune resta di #144.
+
+## 2026-11-26 · v2.20 (#150 e #151 corretti)
+
+- **Test rossi:** `1636c64`. Con l'orario a cifre a larghezza piena lo sviluppo di `esegui_h002` terminava con codice 0 e scriveva nel registro.
+- **#150 (`riserva.py`):** la prenotazione esige un'ipotesi testo non vuoto, senza spazi ai bordi né caratteri di controllo. La regola sta in `applica`, quindi vale anche per un registro manomesso. Il registro canonico della riserva non esiste nel repository, né oggi né nella storia: nessuna prenotazione esistente viene invalidata.
+- **#151 (`esegui_h002.py`):** `_ORA_ISO` usa `[0-9]`.
+- **Test (e) di #146 adeguato** (dichiarato): ora prova i due livelli.
+  - La riserva rifiuta la prenotazione con ipotesi vuota.
+  - L'esecutore, con scheda a ipotesi vuota e prenotazione valida, rifiuta al passo 1, prima del confronto delle ipotesi.
+- **Mutanti:** PR20–PR24 e N70 uccisi su 3.13 e 3.9. In ogni corsa la copia non mutata ha superato la suite del file (percorso: riserva, manifesto ed esegui_verifica; esecuzione: esegui_h002, riserva e le altre). Log: `ricevute/2026-11-26-verifica-r19/log/chiusura_150_151_mutanti.log`.
