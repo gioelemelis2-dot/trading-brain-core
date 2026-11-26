@@ -161,7 +161,7 @@ def rapporto_da_record(rec: dict) -> str:
     d = rec.get("descrizione_h002")
     if d is not None:
         righe.append("- criteri di H-002 (solo descrizione, non cambiano l'esito D-31): "
-                     + json.dumps(d, ensure_ascii=False, sort_keys=True) + " [MISURA]")
+                     + json.dumps(d, ensure_ascii=False, sort_keys=True) + " [DERIVATO]")             # #141 (b)
     return "\n".join(righe) + "\n"
 
 

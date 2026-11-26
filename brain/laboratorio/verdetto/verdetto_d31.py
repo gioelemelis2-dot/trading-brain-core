@@ -367,8 +367,9 @@ def voci_screening(s: dict) -> list:
               else "NON DISPONIBILE", "sviluppo dal 15/11/2023 (D-29)"),
         _voce("soglie dello screening", (SCREENING_MEDIA, 0.0, SCREENING_POTENZA), "R, R, probabilità", "REGOLA",
               "esatto", "D-36 (media > +0,25 R; L > 0; potenza ≥ 50%)"),
-        _voce("potenza stimata della verifica", s["potenza"], "probabilità", "STIMA",
-              "dalla procedura congelata nella scheda prima del sigillo", "scheda dell'ipotesi (D-36)"),
+        _voce("potenza stimata della verifica", s["potenza"], "probabilità", "IPOTESI",              # #141
+              "dichiarata nella scheda, non ricalcolata: la procedura di potenza non esiste ancora (DGS-17 Q9)",
+              "scheda dell'ipotesi (D-36)"),
         _voce("intervallo sullo sviluppo", (s["L"], s["U"]) if stimabile else None, "R a trade", "STIMA",
               (f"intervallo bootstrap basic, 2,5% per coda, blocchi da {BLOCCO}, B = {B}, seme {s['seme']}")
               if stimabile else "NON STIMABILE", f"pilota_ia02 sha256 {IMPRONTA_PILOTA[:16]}…"),

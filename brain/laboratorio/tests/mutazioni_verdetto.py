@@ -152,6 +152,8 @@ M = {
     "VD130 banda di vicinanza a zero 1e-10 (M-124-02 di Gemini)": [(VD, "abs(iv[0]) < VICINANZA", "abs(iv[0]) < 1e-10")],
     "VD131 vicinanza vera per difetto (M-124-03 di Gemini)": [(VD, '"L_vicino_a_zero": False}', '"L_vicino_a_zero": True}')],
     "VD132 riga del rapporto senza spiegazione (M-124-04 di Gemini)": [(VD, "da 0 (non cambia l'esito; arrotondamento possibile, #124)", "da 0")],
+    "VD133 potenza dichiarata presentata come stima (#141)": [(VD, '"probabilità", "IPOTESI",              # #141', '"probabilità", "STIMA",              # #141')],
+    "VD134 potenza attribuita a una procedura che non esiste (#141)": [(VD, '"dichiarata nella scheda, non ricalcolata: la procedura di potenza non esiste ancora (DGS-17 Q9)"', '"dalla procedura congelata nella scheda prima del sigillo"')],
 }
 
 
