@@ -15,3 +15,27 @@ UCCISO EV59 tipo dell'ipotesi non controllato (#146 e)
 UCCISO EV60 periodi del fuso ignorati: sempre quelli di H-002 (#146 a)
 
 14/14 mutanti uccisi (3.13.18); equivalenti dichiarati vivi: 0
+
+== mutanti 3.9 (EV31, EV47–EV60)
+UCCISO EV31 ambiente non ricontrollato prima di leggere
+UCCISO EV47 fuso non controllato nel percorso ordinario (#146 a)
+UCCISO EV48 fuso controllato solo sulla finestra di lettura (#146 a)
+UCCISO EV49 ambiente non ricontrollato prima dell'esito (#146 b)
+UCCISO EV50 ambiente non ricontrollato alla ripresa (#146 b)
+UCCISO EV51 formato dell'ora non controllato (#146 c)
+UCCISO EV52 data e ora impossibili accettate (#146 c)
+UCCISO EV53 ora con cifre non ASCII (#146 c)
+UCCISO EV54 soglia del veto non finita accettata (#146 d)
+UCCISO EV55 ipotesi non controllata (#146 e)
+UCCISO EV56 ipotesi vuota accettata (#146 e)
+UCCISO EV57 ipotesi con spazi ai bordi accettata (#146 e)
+UCCISO EV58 ipotesi con caratteri di controllo accettata (#146 e)
+UCCISO EV59 tipo dell'ipotesi non controllato (#146 e)
+UCCISO EV60 periodi del fuso ignorati: sempre quelli di H-002 (#146 a)
+
+15/15 mutanti uccisi (3.9.25); equivalenti dichiarati vivi: 0
+
+== EV31 (reso univoco) su 3.13
+UCCISO EV31 ambiente non ricontrollato prima di leggere
+
+1/1 mutanti uccisi (3.13.18); equivalenti dichiarati vivi: 0

@@ -1515,7 +1515,7 @@ Nulla di questo tocca il candidato `8e51ce9` su cui lavora R15.
 
   Ora è un test (`test_il_fuso_alterato_cambia_le_coppie_con_lo_stesso_impegno`).
 - **Test aggiunto DOPO il codice, per i mutanti:** `test_fuso_alterato_solo_negli_anni_dello_sviluppo`. I periodi di H-002 coprono 2005–2026 e nascondevano i mutanti EV48 ed EV60.
-- **Mutanti EV47–EV60:** al primo commit EV47–EV53 uccisi su 3.13; il resto e la corsa su 3.9 sono in corso e verranno registrati qui. **Errore di Claude, corretto:** il nuovo controllo prima dell'esito duplicava il testo sostituito da EV31, che non era più univoco. L'ha trovato `test_mutanti_applicabili`; EV31 ora include la sua riga `if`.
+- **Mutanti EV47–EV60:** uccisi su 3.13 (14/14) e su 3.9 (15/15, con EV31); log in `ricevute/2026-11-26-verifica-r19/log/chiusura_146_mutanti.log`. **Errore di Claude, corretto:** il nuovo controllo prima dell'esito duplicava il testo sostituito da EV31, che non era più univoco. L'ha trovato `test_mutanti_applicabili`; EV31 ora include la sua riga `if`.
 - **Suite:** `test_esegui_verifica` e `test_esegui_h002` verdi su 3.13 e 3.9 (136 test, `-W error`).
 - **Sonde R19-06 di Gemini** rieseguite sul codice corretto:
   - 06c, 06d e 06e sono rifiutate senza consumo e senza scritture;
