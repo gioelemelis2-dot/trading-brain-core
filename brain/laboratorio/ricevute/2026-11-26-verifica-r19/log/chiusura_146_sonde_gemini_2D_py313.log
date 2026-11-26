@@ -1,0 +1,12 @@
+# Chiusura #146 (R19-06): blocco '# 2D' di r19_sonde_manomissioni_d51.py eseguito senza modifiche al testo, su copia wt-c identica al codice di lavoro
+# (cmp: esecuzione/*.py, verdetto/*.py, dati/pipeline/*.py, simulatori/*.py UGUALI), Python 3.13, rete bloccata.
+# Aggiunta dichiarata: EV.esegui avvolto per leggere lo stato al rifiuto. Le etichette fisse dello script (es. «fallita tardi») NON descrivono il dato: vale lo stato.
+# 06a e 06b sono sonde STATICHE (nome presente, conteggio delle chiamate): calcolate a parte perché il blocco si interrompe prima (IndexError atteso su aperture[0]).
+  [R19-06d leggi_contratto soglia=-inf] RIFIUTATO: contratto H-003 non valido: veto per blocchi
+  [stato al rifiuto di H-INF.md ora='2026-11-23T10:00:00Z'] SchedaNonConforme: contratto H-003 non valido: veto per blocchi | riserva_invariata=True | registro_prove_invariato=True | giorni_consumati=0 | rapporto_scritto=False
+  [R19-06d esegui soglia=-inf] fallita tardi (SchedaNonConforme: contratto H-003 non valido: veto per blocchi) | chiamate=[] | esecuzioni_scritte=0
+  [R19-06e leggi_contratto ipotesi=''] RIFIUTATO: contratto H-003 non valido: ipotesi vuota o non valida
+  [stato al rifiuto di H-OK.md ora='NON-UNA-DATA'] ValueError: --ora 'NON-UNA-DATA' non è nel formato AAAA-MM-GGThh:mm:ssZ | riserva_invariata=True | registro_prove_invariato=True | giorni_consumati=0 | rapporto_scritto=False
+  [blocco 2D interrotto nello script di Gemini] IndexError list index out of range
+  [R19-06a controlla_fuso in esegui_verifica.py] presente=True   (sonda STATICA di Gemini, 2D.4)
+  [R19-06b chiamate controlla_ambiente in esegui_verifica.py] count=3   (sonda STATICA; prima: 1)
