@@ -624,7 +624,7 @@ class TestAncoraEStoria(Percorso):
         scheda = self.scheda_nel_repo()
         self.spingi("sigillo e prenotazione")
         dati = json.loads(self.riserva.read_text(encoding="utf-8"))
-        dati["fine"] = "2023-09-30"                                       # confini riscritti su questo ramo
+        dati["riserva"]["fine"] = "2023-09-30"                            # confini riscritti su questo ramo
         self.riserva.write_text(json.dumps(dati), encoding="utf-8")
         self.spingi("testa riscritta")
         with self.assertRaisesRegex(ValueError, "testa del registro della riserva"):
