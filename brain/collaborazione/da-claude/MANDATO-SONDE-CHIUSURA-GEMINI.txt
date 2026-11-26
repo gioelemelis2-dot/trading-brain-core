@@ -1,0 +1,45 @@
+MANDATO PER GEMINI (27/11/2026) — SONDE DI CHIUSURA PER I RILIEVI DI R19
+(modello: il più capace disponibile, ragionamento approfondito)
+
+CONTESTO
+- R19 è archiviato non pulito e attribuito a 1431190 (DGS-20). Claude ha riprodotto 7 rilievi su 9 sul candidato
+  7191156 e sul codice attuale. Erano già chiusi R19-01 (#142) e R19-05 (#140). Ricevuta:
+  brain/laboratorio/ricevute/2026-11-26-verifica-r19/VERIFICA-R19.md
+- I rilievi aperti sono #143 (R19-02), #144 (R19-03), #145 (R19-04), #146 (R19-06), #147 (R19-07), #148 (R19-08) e
+  #149 (R19-09). Claude li corregge nell'ultimo lotto (brain/piano/REQUISITI-ULTIMO-LOTTO.md, requisiti 12–18).
+- D-56: il prossimo giro di revisione sarà sul candidato CONGELATO dopo il lotto. Questo mandato NON è un giro di
+  revisione e non dà credito al contatore. Prepara le prove indipendenti che quel giro userà.
+
+REGOLE (come R19)
+- Worktree nuovo ../tb-sonde sul commit 7f35740 del ramo feat/esecutore-h002 (dichiaralo). Scrivi SOLO in
+  brain/collaborazione/da-gemini/. NON modificare il codice del progetto. Mai compiacente. Percorsi locali con ~ (D-28).
+- Nessun dato vero; rete bloccata (HTTPS_PROXY=http://127.0.0.1:9 HTTP_PROXY=http://127.0.0.1:9).
+- NON toccare ~/Downloads/tb-riconta, brain/dati/reali/, ~/Desktop/consuntivo_ask, ~/Downloads/p001_sottotitoli, né
+  la copia di sicurezza dei dati. Le manomissioni SOLO su copie temporanee.
+- Un solo processo per le corse lunghe; df -h ~ prima di ogni blocco, fermati sotto i 3 GB.
+- NON guardare le correzioni di Claude: le sonde devono essere indipendenti.
+
+COMPITI
+1. Uno script r20_sonde_chiusura.py con UNA sonda per ciascun rilievo aperto (#143–#149; #146 diviso in a–e; #147 in a
+   e b). Per #148 la sonda va separata dall'orario invalido, perché in R19 le due condizioni erano combinate. Ogni
+   sonda:
+   - costruisce il caso su una copia temporanea;
+   - legge lo STATO EFFETTIVO: codice d'uscita, esito tecnico, eventi della riserva, voci del registro delle prove,
+     chiamate al caricatore, file creati;
+   - stampa una riga JSON: {"sonda", "rilievo", "atteso_dopo_la_correzione", "osservato", "difetto_presente": true/false}.
+     NIENTE scritte fisse come «manca 'esito'!» o «BYPASS»: in R19 tre scritte non corrispondevano al dato (r.17, r.19,
+     «file extra»; vedi VERIFICA-R19).
+2. Per ogni rilievo, ALMENO una sonda del PERCORSO VALIDO, che deve restare riuscito dopo la correzione (D-56):
+   - corsa valida dal lanciatore, «promossa»;
+   - l'argomento --scheda nella forma normale;
+   - una sola verifica sul ramo principale;
+   - un rapporto valido;
+   - una quota esatta.
+3. Sonde #124 D4 e D5. Lo script di R19 eseguiva solo D1, D2, D3, D6a e D6b. Aggiungi le due mancanti, come in
+   G-20261122-VERIFICA124.md.
+4. Esegui lo script su 7f35740. Atteso: «difetto_presente: true» per i rilievi aperti, false per i casi validi.
+   Consegna l'output completo.
+
+CONSEGNA: brain/collaborazione/da-gemini/G-<data>-SONDE-CHIUSURA.md, più lo script e l'output, sul ramo
+rev/gemini-sonde-chiusura, commit con la tua identità. Lo script verrà rieseguito sul candidato congelato: lì
+tutti i «difetto_presente» dovranno essere false.

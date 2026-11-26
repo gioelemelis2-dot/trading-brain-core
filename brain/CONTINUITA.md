@@ -2,6 +2,22 @@
 
 Ultimo aggiornamento: **2026-11-23, mattina** (sezione in testa); prima: 2026-11-15, dopo il mandato notturno su H-002 (programma dei criteri, strumento di sigillo, quaderno delle ipotesi; ramo `feat/esecutore-h002`, **non unito a main**). Leggere questo file per primo (vale anche per Gemini, insieme a `collaborazione/HANDOFF-GEMINI.md`).
 
+## Piano del 27/11/2026, mattina (LEGGERE PER PRIMO)
+
+**Sempre in italiano.** Il titolare è fuori al mattino; domani fa la D2 sulla demo (D-57).
+- **Al DGS:** `collaborazione/da-claude/MESSAGGIO-20-DGS.md` con `consegna-dgs20.zip`. Chiede i casi d'accettazione per i requisiti 1 e 12–18 e una convenzione di tolleranza per la D2: in DA-25 le tolleranze **non esistono**, contrariamente a quanto scritto in DGS-20.
+- **A Gemini:** `collaborazione/da-claude/MANDATO-SONDE-CHIUSURA-GEMINI.txt`. Sonde indipendenti per #143–#149 su `7f35740`, lette sullo stato effettivo, più D4 e D5 di #124. Non è un giro di revisione: nessun credito (D-56).
+- **Claude, in ordine:**
+  1. #143 (critico): una sola identità fra lanciatore ed esecutore;
+  2. #148: rapporto controllato prima dell'autorizzazione;
+  3. #149: quota in frazioni;
+  4. #144: feriali vuoti, con il requisito 6;
+  5. #145: unicità nella storia, α fissato, testa della riserva;
+  6. #147: manifesto;
+  7. #146, a–e.
+
+  Ognuno in TDD con i mutanti. Se arrivano prima, si usano i casi d'accettazione del DGS. Poi D-55, la procedura di potenza, A1 e gli stati dei file.
+
 ## Aggiornamento del 26/11/2026 (LEGGERE PER PRIMO)
 
 **Sempre in italiano.**
