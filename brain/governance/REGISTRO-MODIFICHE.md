@@ -1423,3 +1423,18 @@ Nulla di questo tocca il candidato `8e51ce9` su cui lavora R15.
   - Tre scritte dello script non corrispondono al dato (r.17, r.19, sezione 6): vanno segnalate a Gemini.
 - **Calcolo per #149:** `RV.quota(0.05, 1, 1) == 0.025` è True con l'α di D-38. Il falso rifiuto si raggiunge solo con α alterato.
 - **Ultimo lotto:** aggiunti i requisiti 12–18; il requisito 10 è assorbito dal 14. R19 non avanza il contatore. Il prossimo giro di Gemini sarà sul candidato congelato dopo il lotto.
+
+## 2026-11-26 · v2.13 (DGS-20)
+
+- **DGS-20 archiviato.** R19 è archiviato non pulito e attribuito a `1431190`. Il prossimo giro va sul candidato congelato. D2 è la prossima prova senza strategia.
+- **Correzioni verificate e applicate:**
+  - audit: «1 critico, 5 importanti, 1 minore» (avevo scritto «sei importanti»); «15 dei 18 requisiti» (era «8 su 11»);
+  - formula del banco riscritta come la propone il DGS;
+  - limite dei falsi positivi: 0/100 al 95% = 2,95% [CALCOLATO];
+  - «nessuna strategia provata» circoscritto alla verifica in riserva;
+  - verifica R19: sonde #124 solo D1, D2, D3, D6a, D6b (D4 e D5 non nello script);
+  - D-56 annotato: 0 giri accreditati e 0 dei 4 tentativi prima del congelamento;
+  - #145: riesame verso «critico» aperto;
+  - requisiti 15–17: criteri di chiusura più stretti; indice unico al congelamento.
+- **Nuovo `guardian/PROCEDURA-D2-RICONCILIAZIONE-DEMO.md`:** procedura e prospetto per operazione. La demo è MT4 Raw e le specifiche sono MT5: il profilo va identificato prima di interpretare gli scarti. La decisione è del titolare.
+- **Trovato:** il nome e il cognome del titolare compaiono in 28 file del repository (205 occorrenze), fra cui `TEMPLATE_RICONCILIAZIONE_DA25.toml` alla voce `operatore`, quasi tutti consegnati prima del 18/11. Non modificati (D-28: i documenti consegnati non si toccano). Portato al titolare come decisione.

@@ -22,10 +22,12 @@
 | 12 | **#143**: il lanciatore legge le opzioni come l'esecutore (una sola `--scheda`; doppioni e forma `--scheda=PATH` gestiti in modo identico o rifiutati) ed esige nel sigillo `esegui_verifica.py` e `avvio.py` per la verifica | Doppio `--scheda` con esca H-002 → FERMO prima degli import | R19-02 | Congelamento |
 | 13 | **#144**: i feriali vuoti o incompleti della finestra non diventano sedute con K = 0; esito «non decidibile» o stato distinto (con il requisito 6) | 20 feriali vuoti → niente «promossa» | R19-03 | Congelamento |
 | 14 | **#145**: «una sola verifica» controllata su tutte le versioni del registro delle prove nella storia; α totale fissato a D-38 nell'esecutore; testa del registro della riserva identica in tutte le versioni (sostituisce l'ipotesi del requisito 10) | Ramo divergente con lo stesso j e α alterato → rifiuto | R19-04 | Congelamento |
-| 15 | **#146**: controllo del fuso (o motivazione scritta per non serve); ambiente ricontrollato prima dell'esito e alla ripresa; `--ora` validato; contratto con soglie finite e ipotesi non vuota, rifiutato al passo 1 | Le sonde 06a–e | R19-06 | Congelamento |
-| 16 | **#147**: il manifesto controlla dominio e data dell'indirizzo e un'impronta di 64 cifre esadecimali sulle righe «dati» | Sonde 07a e 07b → anomalia prima dell'autorizzazione | R19-07 | Congelamento |
-| 17 | **#148**: `--rapporto` controllato prima dell'autorizzazione | Cartella → rifiuto, nessun consumo | R19-08 | Congelamento |
+| 15 | **#146**: controllo del fuso (o motivazione scritta per non serve); ambiente ricontrollato prima dell'esito e alla ripresa; `--ora` validato; contratto con soglie finite e ipotesi non vuota, rifiutato al passo 1 | Le sonde 06a–e, ciascuna con il suo livello di prova (comportamento osservato, non conteggio statico). Per il fuso: lo stesso caso sintetico con fusi diversi, con un confine di seduta e di ora legale, confrontando date, sedute, impegno ed esito (DGS-20) | R19-06 | Congelamento |
+| 16 | **#147**: il manifesto controlla dominio e data dell'indirizzo e un'impronta di 64 cifre esadecimali sulle righe «dati» | Sonde 07a e 07b → anomalia prima dell'autorizzazione; provenienza dei dati provata **separatamente** dalla destinazione del rapporto (DGS-20) | R19-07 | Congelamento |
+| 17 | **#148**: `--rapporto` controllato prima dell'autorizzazione | Cartella → rifiuto, nessun consumo, in una prova **senza** l'orario invalido (la sonda di Gemini combinava le due condizioni, DGS-20) | R19-08 | Congelamento |
 | 18 | **#149**: confronto della quota in frazioni esatte | `quota(0.15, 2, 1)` → uguale a 0,025 | R19-09 | Congelamento |
+
+**Consegna per il congelamento (DGS-20):** un **indice unico collegato al commit congelato**, con, per ogni difetto: proprietà violata, prova della correzione, prova del percorso valido, voce del requisito. Il requisito 10 resta tracciabile dentro il 14, comprese le date già consumate. Il requisito 11 riguarda solo le aperture successive: non blocca il primo accesso.
 
 **Dopo il lotto:**
 1. il congelamento del perimetro, esplicitato per scritto;

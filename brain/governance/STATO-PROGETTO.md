@@ -5,7 +5,7 @@ Una pagina: dove siamo, i contatori, cosa manca. La versione precedente, del 17�
 
 ## Dove siamo, in tre frasi
 - La **macchina che giudica una strategia** fa la corsa intera dal lanciatore sui dati sintetici (candidato `7191156`), ma **non è certificata**. R19 ha trovato un critico aperto (#143) e sei altri difetti; restano 15 dei 18 requisiti dell'ultimo lotto.
-- **Nessuna strategia è stata provata**, nessuna è candidata, e la riserva non è mai stata letta dal sistema.
+- **Nessuna verifica di strategia sulla riserva** è documentata, e nessuna strategia è candidata. H-002 ha prodotto solo osservazioni sullo sviluppo. Copie, inventario e consuntivo dei dati della riserva sono operazioni distinte dalla verifica (DGS-20).
 - Guardian, diario e formazione esistono, ma **il titolare non li ha ancora potuti usare per decidere**.
 
 ## Contatori

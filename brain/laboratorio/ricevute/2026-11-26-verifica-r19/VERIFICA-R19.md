@@ -32,7 +32,7 @@
 - **7 rilievi su 9 sono riprodotti** sul codice attuale; gli altri 2 sono già chiusi (#140, #142).
 - Superati sul candidato e sul codice attuale (r.31–40):
   - concorrenza reale con due processi (CONC-1, 2, 3);
-  - sonde #124 (D1–D6).
+  - sonde #124 **D1, D2, D3, D6a, D6b**. Correzione da DGS-20: lo script non esegue D4 e D5 [VERIFICATO: righe 35–40 dei log e sezione 4 dello script], quindi la serie completa D1–D6 su questi commit non è attestata qui.
 - Tutte le protezioni della matrice D-51 sono superate, tranne R19-04.
 - I mutanti di Gemini su `1431190` (Apple Python 3.9.6) coincidono con quelli di Claude su quel candidato. N63 è equivalente di piattaforma (#106).
 
