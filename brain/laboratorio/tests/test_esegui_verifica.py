@@ -923,5 +923,197 @@ class TestSeduteSenzaOperazioni(Percorso):
         self.assertEqual(r["esito"], v["esito"])
 
 
+
+def _ultima_domenica(anno, mese):
+    g = date(anno, mese, 31)
+    return g - timedelta(days=(g.weekday() - 6) % 7)
+
+
+class LondraSpostata(__import__("datetime").tzinfo):
+    """Un tzdata ALTERATO (#94 d, #146 a): Londra, ma l'ora legale comincia una settimana dopo l'ultima domenica di
+    marzo. Fuori da quelle settimane è identica a Europe/London."""
+    from zoneinfo import ZoneInfo as _Z
+    _L = _Z("Europe/London")
+
+    @staticmethod
+    def in_ritardo(g):
+        a = _ultima_domenica(g.year, 3)
+        return a <= g < a + timedelta(days=7)
+
+    def utcoffset(self, dt):
+        return timedelta(0) if self.in_ritardo(dt.date()) else self._L.utcoffset(dt.replace(tzinfo=None))
+
+    def dst(self, dt):
+        return self.utcoffset(dt)
+
+    def tzname(self, dt):
+        return "LONDRA-SPOSTATA"
+
+    def fromutc(self, dt):
+        from datetime import timezone
+        u = dt.replace(tzinfo=timezone.utc)
+        loc = u.astimezone(self._L).replace(tzinfo=None)
+        if self.in_ritardo(loc.date()) or self.in_ritardo(u.date()):
+            loc = u.replace(tzinfo=None)
+        return loc.replace(tzinfo=self)
+
+
+class TestRegressioniR1906(Percorso):
+    """#146 (R19-06): protezioni di esegui_h002 perse nel percorso ordinario. Ogni prova legge lo stato effettivo
+    (registro della riserva, registro delle prove, chiamate al caricatore, rapporto) e ha il suo caso valido (D-56)."""
+
+    def fotografia(self, rapporto=None):
+        return (list(self.chiamate), self.riserva.read_bytes(),
+                self.registro.read_bytes() if self.registro.exists() else None,
+                rapporto.exists() if rapporto else None)
+
+    # (a) fuso orario (#94 d)
+    def test_fuso_alterato_rifiutato_prima_di_ogni_lettura(self):
+        from zoneinfo import ZoneInfo
+        scheda = self.prepara()
+        rapporto = self.d / "r.txt"
+        prima = self.fotografia(rapporto)
+        for zona in (LondraSpostata(), ZoneInfo("Atlantic/Reykjavik"), ZoneInfo("America/New_York"), ZoneInfo("UTC")):
+            with self.subTest(zona=str(zona)), mock.patch.object(EV.O, "LONDRA", zona):
+                with self.assertRaisesRegex(ValueError, "fuso"):
+                    self.esegui(scheda, rapporto=rapporto)
+                self.assertEqual(self.fotografia(rapporto), prima)          # niente letto, scritto né consumato
+        with mock.patch.object(EV.O, "LONDRA", ZoneInfo("Europe/Lisbon")):  # stessa regola: percorso valido
+            r = self.esegui(scheda, rapporto=rapporto)
+        self.assertEqual((r["esito_tecnico"], r["esito"]), ("completata", "promossa"))
+
+    def test_il_fuso_alterato_cambia_le_coppie_con_lo_stesso_impegno(self):
+        # DGS-20 (requisito 15): stesso caso sintetico, fuso vero contro fuso alterato al confine dell'ora legale.
+        # L'impegno (e la sua impronta) non contiene il fuso: senza il controllo cambierebbero le coppie in silenzio
+        scheda = self.prepara()
+        a = self.esegui(scheda)
+        rec_a = RV.record_esito(self.riserva, "P1")
+        self.riserva.unlink()
+        self.registro.unlink()
+        RV.crea(self.riserva, date(2005, 1, 1), date(2023, 10, 31), 0.05, ORA)
+        S.sigilla(self.registro, "H-T127", scheda, ["V-T"], ORA, codice=EV.impronte_codice())
+        RV.prenota(self.riserva, "P1", "H-T127", LETTURA, FINE, S.impronta(scheda), ORA)
+        with mock.patch.object(EV.O, "LONDRA", LondraSpostata()), mock.patch.object(EV, "controlla_fuso", lambda *x: None):
+            b = self.esegui(scheda)
+        rec_b = RV.record_esito(self.riserva, "P1")
+        self.assertEqual(a["impronta_impegno"], b["impronta_impegno"])
+        self.assertEqual([c[0] for c in rec_a["coppie"]], [c[0] for c in rec_b["coppie"]])   # stesse sedute
+        diverse = {x[0] for x, y in zip(rec_a["coppie"], rec_b["coppie"]) if x != y}
+        attese = {c[0] for c in rec_a["coppie"] if LondraSpostata.in_ritardo(date.fromisoformat(c[0])) and c[2] > 0}
+        self.assertTrue(attese)
+        self.assertEqual(diverse, attese)                                  # proprio le sedute della settimana spostata
+
+    # (b) ambiente ricontrollato prima dell'esito e alla ripresa (#61, #91)
+    def test_ambiente_ricontrollato_prima_dell_esito(self):
+        scheda = self.prepara()
+        rapporto = self.d / "r.txt"
+        visti = []
+
+        def ambiente(codice):
+            visti.append(codice)
+            if len(visti) >= 2:
+                raise ValueError("ambiente non pulito dopo la lettura (simulato)")
+        with mock.patch.object(EV, "CONTROLLO_AMBIENTE", True), mock.patch.object(EV, "controlla_ambiente", ambiente):
+            with self.assertRaisesRegex(ValueError, "ambiente non pulito"):
+                self.esegui(scheda, rapporto=rapporto)
+        self.assertEqual(visti, [EV.impronte_codice()] * 2)
+        self.assertEqual(self.chiamate, ["sviluppo", "verifica"])
+        p = RV.prenotazione(self.riserva, "P1")
+        self.assertEqual((p["stato"], p["esito"], p["record"]), ("autorizzato", None, None))     # nessun esito
+        self.assertEqual([e["ruolo"] for e in S.leggi(self.registro)["esecuzioni"]], ["sviluppo", "verifica"])
+        self.assertFalse(rapporto.exists())
+        r = self.esegui(scheda, rapporto=rapporto)                          # ripresa in un ambiente pulito
+        self.assertEqual((r["esito_tecnico"], r["esito"]), ("completata", "promossa"))
+        self.assertEqual([(x["id"], x["j"]) for x in RV.stato(self.riserva)["aperture"]], [("P1", 1)])
+
+    def test_ambiente_ricontrollato_alla_ripresa(self):
+        scheda = self.prepara()
+        rapporto = self.d / "r.txt"
+        vero = EV._registra_una_volta
+
+        def cade_sull_esito(registro, ipotesi, voce, ora):
+            if voce["ruolo"] == "esito":
+                raise RuntimeError("caduta fra i due registri")
+            return vero(registro, ipotesi, voce, ora)
+        with mock.patch.object(EV, "_registra_una_volta", side_effect=cade_sull_esito):
+            with self.assertRaisesRegex(RuntimeError, "fra i due registri"):
+                self.esegui(scheda, rapporto=rapporto)
+        self.chiamate.clear()
+        prima = self.fotografia(rapporto)
+        visti = []
+
+        def ambiente(codice):
+            visti.append(codice)
+            raise ValueError("ambiente non pulito alla ripresa (simulato)")
+        with mock.patch.object(EV, "CONTROLLO_AMBIENTE", True), mock.patch.object(EV, "controlla_ambiente", ambiente):
+            with self.assertRaisesRegex(ValueError, "ambiente non pulito"):
+                self.esegui(scheda, rapporto=rapporto)
+        self.assertEqual(visti, [EV.impronte_codice()])
+        self.assertEqual(self.fotografia(rapporto), prima)                 # niente riconciliato, niente rapporto
+        r = self.esegui(scheda, rapporto=rapporto)                          # ripresa in un ambiente pulito
+        self.assertEqual((r["esito_tecnico"], self.chiamate), ("rapporto rigenerato", []))
+        self.assertEqual([e["ruolo"] for e in S.leggi(self.registro)["esecuzioni"]], ["sviluppo", "verifica", "esito"])
+
+    # (c) --ora validato (#51)
+    def test_ora_non_valida_rifiutata_prima_di_ogni_scrittura(self):
+        scheda = self.prepara()
+        rapporto = self.d / "r.txt"
+        prima = self.fotografia(rapporto)
+        for ora in ("NON-UNA-DATA", "", "2026-11-22 12:00:00Z", "2026-11-22T12:00:00", "2026-11-22T12:00:00+00:00",
+                    "2026-13-01T00:00:00Z", "2026-02-30T00:00:00Z", "2026-11-22T25:00:00Z", " 2026-11-22T12:00:00Z",
+                    None, 20261122):
+            with self.subTest(ora=ora):
+                with self.assertRaisesRegex(ValueError, "ora"):
+                    EV.esegui(scheda, self.registro, self.riserva, "P1", self.cache, self.cache_sv, rapporto, ora)
+                self.assertEqual(self.fotografia(rapporto), prima)
+        valida = "2026-11-26T10:20:00Z"
+        r = EV.esegui(scheda, self.registro, self.riserva, "P1", self.cache, self.cache_sv, rapporto, valida)
+        self.assertEqual((r["esito_tecnico"], r["esito"]), ("completata", "promossa"))
+        voci = [e for e in S.leggi(self.registro)["esecuzioni"]]
+        self.assertEqual({e["ora"] for e in voci}, {valida})
+
+    # (d) contratto con soglie finite, rifiutato al passo 1
+    def test_soglia_del_veto_non_finita_rifiutata_al_passo_1(self):
+        casi = {"piu_inf": float("inf"), "meno_inf": float("-inf"), "nan": float("nan"), "1e999": -1e300}
+        for i, (nome, soglia) in enumerate(casi.items()):
+            with self.subTest(soglia=nome):
+                ip = f"H-SOGLIA-{i}"
+                scheda = self.d / f"{ip}.md"
+                testo = testo_scheda(contratto(ip, veto_blocchi={"soglia": soglia, "minimo_trade": 50}))
+                if nome == "1e999":                                       # letterale che json legge come -inf
+                    testo = testo.replace("-1e+300", "-1e999")
+                    self.assertIn("-1e999", testo)
+                scheda.write_text(testo, encoding="utf-8")
+                S.sigilla(self.registro, ip, scheda, ["V-T"], ORA, codice=EV.impronte_codice())
+                RV.prenota(self.riserva, nome, ip, date(2006 + i, 1, 2), date(2006 + i, 1, 20), S.impronta(scheda), ORA)
+                prima = self.fotografia()
+                with self.assertRaisesRegex(EV.SchedaNonConforme, "veto"):
+                    self.esegui(scheda, nome)
+                self.assertEqual(self.fotografia(), prima)
+                with self.assertRaisesRegex(EV.SchedaNonConforme, "veto"):
+                    EV.leggi_contratto(scheda)
+        valida = self.d / "valida.md"
+        valida.write_text(testo_scheda(contratto("H-V", veto_blocchi={"soglia": -1e300, "minimo_trade": 50})),
+                          encoding="utf-8")
+        self.assertEqual(EV.leggi_contratto(valida)["veto_blocchi"]["soglia"], -1e300)
+
+    # (e) ipotesi non vuota
+    def test_ipotesi_vuota_o_non_testo_rifiutata_al_passo_1(self):
+        scheda = self.d / "x.md"
+        for ip in ("", " ", " H-X", "H-X ", "H-\nX", "H-\tX", 7, None, ["H-X"], True):
+            with self.subTest(ipotesi=ip):
+                scheda.write_text(testo_scheda(contratto(ip)), encoding="utf-8")
+                with self.assertRaisesRegex(EV.SchedaNonConforme, "ipotesi"):
+                    EV.leggi_contratto(scheda)
+        scheda.write_text(testo_scheda(contratto("H-X")), encoding="utf-8")
+        self.assertEqual(EV.leggi_contratto(scheda)["ipotesi"], "H-X")
+        scheda.write_text(testo_scheda(contratto("")), encoding="utf-8")         # anche dall'ingresso completo
+        RV.prenota(self.riserva, "PV", "", LETTURA, FINE, S.impronta(scheda), ORA)   # la riserva la accetta (provato)
+        prima = self.fotografia()
+        with self.assertRaisesRegex(EV.SchedaNonConforme, "ipotesi"):
+            self.esegui(scheda, "PV")
+        self.assertEqual(self.fotografia(), prima)
+
+
 if __name__ == "__main__":
     unittest.main()
