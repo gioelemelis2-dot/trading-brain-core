@@ -1,0 +1,10 @@
+
+================ 1. SONDE CRITICHE SU avvio.py E esegui_verifica ================
+  [R19-01 check] avvio.py in EH.impronte_codice: True
+  [R19-01 check] avvio.py in EV.impronte_codice: True
+  [R19-01 END-TO-END VALIDO via avvio.py verifica] rc=0
+    stderr: 
+    stdout: {"esito_tecnico": "completata", "esito": "promossa", "chiamate_caricatore": {"sviluppo": 1, "verifica": 1}, "prenotazione": "P1", "impronta_impegno": "045ea983930a2165969d2dae2f96f8d466211a085aa9f83ab
+  [R19-01b MANOMISSIONE avvio.py] RILEVATO: il codice che esegue H-R19 non è quello sigillato: ['brain/laboratorio/esecuzione/avvio.py']
+  [R19-02a --scheda=PATH] rc=2 | stderr=RIFIUTATA prima dell'autorizzazione o della lettura: brain/laboratorio/registro_prove.json ha modifiche non committate: committarlo e spingerlo prima di eseguire
+  [R19-02b BYPASS DOPPIO --scheda] rc=2 | codice_manomesso_eseguito=False | stderr=FERMO prima di importare il codice (#95): ['--scheda ripetuta 2 volte: ne serve una sola']

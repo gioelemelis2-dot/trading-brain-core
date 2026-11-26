@@ -1448,3 +1448,13 @@ Nulla di questo tocca il candidato `8e51ce9` su cui lavora R15.
   - Il pacchetto V3.3 (D-17), che contiene il nome 6 volte, resta come eccezione da decidere.
   - Test `test_pipeline` e `test_esporta_redatto` verdi su 3.13 e 3.9.
   - Dettagli in `governance/REDAZIONE-NOME-20261126.md`.
+
+## 2026-11-27 · v2.15 (#143 corretto)
+
+- **#143 (critico, R19-02):** test rossi `efc5150`, poi il codice.
+  - **Lanciatore:** una sola `--scheda`, anche nella forma `--scheda=X`; nel sigillo dell'ipotesi servono `esegui_verifica.py` e `avvio.py`; la scheda controllata viene passata all'esecutore.
+  - **Esecutore:** niente abbreviazioni delle opzioni; esegue solo la scheda controllata.
+  - **Mutanti:** AV01 e AV02 riallineati (li aveva segnalati il controllo di applicabilità); AV03–AV06, EV38 ed EV39 uccisi. AV03 sopravviveva al primo giro: il test si fermava per la regola sbagliata ed è stato rafforzato.
+  - **Moduli** `test_esegui_verifica` e `test_esegui_h002` verdi su 3.13 e 3.9.
+  - **Prova indipendente:** la sezione 1 delle sonde di Gemini, rieseguita: R19-02b `codice_manomesso_eseguito=False`; R19-01 percorso valido ancora `rc=0`.
+- **Errore di Claude, senza danno:** un calcolo lanciato senza `-B` aveva lasciato bytecode in `brain/`. Il controllo dell'ambiente l'ha rilevato (`TestAmbiente` rosso). Bytecode cancellato, test verde.

@@ -753,6 +753,7 @@ class TestAvvioVerifica(unittest.TestCase):
                        "--prenotazione", "P1", "--cache", "x", "--cache-sviluppo", "x", "--rapporto", "r", "--ora", ORA)
         self.assertEqual(r.returncode, 2, r.stderr[-400:])
         self.assertIn("FERMO prima di importare", r.stderr)
+        self.assertIn("--scheda ripetuta 2 volte", r.stderr)            # fermato dalla regola giusta (mutante AV03)
         self.assertFalse(spia.exists())                                  # il codice manomesso NON è stato eseguito
 
     def test_sigillo_senza_esegui_verifica_rifiutato_prima_degli_import(self):
@@ -806,6 +807,17 @@ class TestIdentitaDellaScheda(Percorso):
         self.assertEqual(rc, 2)
         self.assertIn("scheda diversa da quella controllata", errore.getvalue())
         self.assertEqual(self.chiamate, [])
+
+
+class TestOpzioniDellEsecutore(unittest.TestCase):
+    def test_abbreviazioni_rifiutate(self):
+        # #143: con le abbreviazioni, «--sched X» sarebbe una seconda scheda che il lanciatore non vede
+        import contextlib
+        import io
+        with contextlib.redirect_stderr(io.StringIO()), self.assertRaises(SystemExit) as e:
+            EV.main(["--sched", "x", "--registro", "x", "--riserva", "x", "--prenotazione", "P1", "--cache", "x",
+                     "--cache-sviluppo", "x", "--rapporto", "r", "--ora", ORA])
+        self.assertEqual(e.exception.code, 2)
 
 
 class TestSeduteSenzaOperazioni(Percorso):

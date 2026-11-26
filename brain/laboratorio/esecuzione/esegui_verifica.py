@@ -343,7 +343,7 @@ def esegui(scheda: Path, registro: Path, riserva: Path, id_: str, cache: Path, c
 
 
 def main(argv=None) -> int:
-    a = argparse.ArgumentParser(description=__doc__.split("\n\n")[0])
+    a = argparse.ArgumentParser(description=__doc__.split("\n\n")[0], allow_abbrev=False)      # #143
     for nome in ("--scheda", "--registro", "--riserva", "--cache", "--cache-sviluppo", "--rapporto"):
         a.add_argument(nome, required=True, type=Path)
     a.add_argument("--prenotazione", required=True)
@@ -352,6 +352,9 @@ def main(argv=None) -> int:
     if CONTROLLO_AMBIENTE and not getattr(sys, "_tb_avvio_controllato", False):        # PIANO-D51 §3.3
         print("RIFIUTATA: lanciare con python3 -I -S -B brain/laboratorio/esecuzione/avvio.py verifica …: i controlli "
               "vanno fatti prima di importare il codice", file=sys.stderr)
+        return 2
+    if CONTROLLO_AMBIENTE and getattr(sys, "_tb_scheda_controllata", None) != os.path.realpath(x.scheda):   # #143
+        print("RIFIUTATA: scheda diversa da quella controllata dal lanciatore prima degli import", file=sys.stderr)
         return 2
     try:
         r = esegui(x.scheda, x.registro, x.riserva, x.prenotazione, x.cache, x.cache_sviluppo, x.rapporto, x.ora)

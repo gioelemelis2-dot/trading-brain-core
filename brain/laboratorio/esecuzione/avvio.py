@@ -36,12 +36,31 @@ IMPORTABILI = (".py", ".pyc", ".pyo", ".so", ".pyd", ".pth", ".zip", ".egg", ".w
 COMPILATI = (".pyc", ".pyo", ".so", ".pyd", ".pth")
 
 
+def scheda_indicata(argv: list):
+    """(percorso, problema): l'UNICA --scheda, nella forma «--scheda X» o «--scheda=X» (#143, R19-02: prima si
+    leggeva la prima occorrenza mentre l'esecutore usava l'ultima)."""
+    trovate, i = [], 0
+    while i < len(argv):
+        a = argv[i]
+        if a == "--scheda":
+            if i + 1 >= len(argv):
+                return None, "manca il valore di --scheda"
+            trovate.append(argv[i + 1])
+            i += 2
+            continue
+        if a.startswith("--scheda="):
+            trovate.append(a[len("--scheda="):])
+        i += 1
+    if len(trovate) != 1:
+        return None, "manca --scheda" if not trovate else f"--scheda ripetuta {len(trovate)} volte: ne serve una sola"
+    return trovate[0], None
+
+
 def ipotesi_della_scheda(argv: list):
     """(ipotesi, problema): l'ipotesi dal blocco «json contratto-h003» della scheda indicata con --scheda."""
-    try:
-        percorso = argv[argv.index("--scheda") + 1]
-    except (ValueError, IndexError):
-        return None, "manca --scheda"
+    percorso, problema = scheda_indicata(argv)
+    if problema:
+        return None, problema
     try:
         with open(percorso, encoding="utf-8") as fh:
             blocchi = re.findall(r"```json contratto-h003\n(.*?)\n```", fh.read(), re.S)
@@ -55,7 +74,10 @@ def ipotesi_della_scheda(argv: list):
     return ipotesi, None
 
 
-def controlla(radice: str, ipotesi: str = IPOTESI) -> list:
+RICHIESTI_VERIFICA = ("brain/laboratorio/esecuzione/esegui_verifica.py", "brain/laboratorio/esecuzione/avvio.py")
+
+
+def controlla(radice: str, ipotesi: str = IPOTESI, richiesti: tuple = ()) -> list:
     problemi = []
     if not (sys.flags.isolated and sys.flags.no_site and sys.flags.dont_write_bytecode):    # R14-09: anche -B
         problemi.append("eseguire con python3 -I -S -B")
@@ -83,6 +105,9 @@ def controlla(radice: str, ipotesi: str = IPOTESI) -> list:
             codice = [s for s in json.load(fh)["sigilli"] if s.get("ipotesi") == ipotesi][0]["codice"]
         if not isinstance(codice, dict) or not codice:
             raise ValueError("codice vuoto")
+        mancanti = [f for f in richiesti if f not in codice]                 # #143: il sigillo copre ciò che si esegue
+        if mancanti:
+            return problemi + [f"{REGISTRO}: il sigillo di {ipotesi} non contiene {', '.join(mancanti)}: non si importa nulla"]
     except (OSError, ValueError, KeyError, IndexError, TypeError, AttributeError):
         return problemi + [f"{REGISTRO}: nessun sigillo di {ipotesi} con il codice: non si importa nulla"]
     for rel, impronta in sorted(codice.items()):
@@ -102,7 +127,7 @@ def principale(argv=None) -> int:
     if verifica:                                                       # D-51: percorso ordinario D-31
         argv = argv[1:]
         ipotesi, problema = ipotesi_della_scheda(argv)
-        problemi = [problema] if problema else controlla(RADICE, ipotesi)
+        problemi = [problema] if problema else controlla(RADICE, ipotesi, RICHIESTI_VERIFICA)
     else:
         problemi = controlla(RADICE)
     if problemi:
@@ -110,6 +135,8 @@ def principale(argv=None) -> int:
         return 2
     sys.path.insert(0, RADICE)
     sys._tb_avvio_controllato = True
+    if verifica:                                                       # #143: la scheda controllata è l'unica eseguibile
+        sys._tb_scheda_controllata = os.path.realpath(scheda_indicata(argv)[0])
     if verifica:
         from brain.laboratorio.esecuzione.esegui_verifica import main as main_verifica
         return main_verifica(argv)
