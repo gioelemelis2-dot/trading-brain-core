@@ -335,11 +335,22 @@ class TestRifiutiPrimaDellaLettura(Percorso):
         try:
             with self.assertRaisesRegex(ValueError, "manifesto con anomalie"):
                 self.esegui(scheda)
+            prima = self.riserva.read_bytes()
+            with self.assertRaisesRegex(ValueError, "manifesto con anomalie"):   # ritentativo identico
+                self.esegui(scheda)
+            self.assertEqual(self.riserva.read_bytes(), prima)                  # non si duplica
         finally:
             reg.write_bytes(originale)
-        self.assertEqual(RV.prenotazione(self.riserva, "P1")["stato"], "prenotato")
+        p = RV.prenotazione(self.riserva, "P1")
+        self.assertEqual(p["stato"], "prenotato")
+        # DGS-18 Q3: il tentativo rifiutato resta registrato, senza consumo, con lo snapshot dei registri
+        self.assertEqual([(t["fase"], "omesso" in t["motivo"]) for t in p["tentativi"]], [("manifesto", True)])
+        self.assertEqual(len(p["tentativi"][0]["registri"]), 2)
+        self.assertEqual(RV.stato(self.riserva)["aperture"], [])
         r = self.esegui(scheda)
         self.assertEqual((r["esito_tecnico"], r["esito"]), ("completata", "promossa"))
+        imp = RV.prenotazione(self.riserva, "P1")["autorizzazione"]["impegno"]
+        self.assertEqual(imp["tentativi_precedenti"], p["tentativi"])       # il nuovo tentativo è collegato
 
     def test_prenotazione_abbandonata_si_rilascia(self):
         # DGS-16 Q3, transizione di B: una prenotazione che non si può eseguire (scheda non conforme) si libera
@@ -350,7 +361,8 @@ class TestRifiutiPrimaDellaLettura(Percorso):
         with self.assertRaises(EV.SchedaNonConforme):
             self.esegui(vecchia)
         self.assertEqual(RV.prenotazione(self.riserva, "P1")["stato"], "prenotato")   # DGS-17: il rifiuto NON rilascia
-        RV.rilascia(self.riserva, "P1", ORA)                                         # il rilascio è un atto esplicito
+        RV.rilascia(self.riserva, "P1", ORA, "titolare", "scheda non conforme")     # il rilascio è un atto esplicito
+        self.assertEqual(RV.prenotazione(self.riserva, "P1")["rilascio"]["chi"], "titolare")   # DGS-19: di chi
         s = RV.stato(self.riserva)
         self.assertEqual((s["giorni"]["prenotato"], s["prenotazioni_attive"]), (0, []))
         self.assertEqual(RV.prenotazione(self.riserva, "P1")["stato"], "rilasciato")

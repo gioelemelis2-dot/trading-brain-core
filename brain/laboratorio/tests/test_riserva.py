@@ -82,16 +82,77 @@ class TestPrenotazione(Base):
 
     def test_rilascio_solo_prima_dell_autorizzazione(self):
         self.prenota("A", D(2005, 1, 1), D(2005, 1, 31))
-        RV.rilascia(self.reg, "A", ORA)
+        RV.rilascia(self.reg, "A", ORA, "titolare", "scheda non conforme")
         self.assertEqual(RV.stato(self.reg)["giorni"]["prenotato"], 0)
         with self.assertRaises(ValueError):
             RV.autorizza(self.reg, "A", 12, "dati", ORA)              # rilasciata: niente autorizzazione
         self.prenota("B", D(2005, 1, 1), D(2005, 1, 31))               # le date tornano libere
         RV.autorizza(self.reg, "B", 12, "dati", ORA)
         with self.assertRaises(ValueError):
-            RV.rilascia(self.reg, "B", ORA)
+            RV.rilascia(self.reg, "B", ORA, "titolare", "x")
         with self.assertRaises(ValueError):
-            RV.rilascia(self.reg, "ignota", ORA)
+            RV.rilascia(self.reg, "ignota", ORA, "titolare", "x")
+
+    def test_rilascio_attribuito_a_chi_lo_chiede(self):                # DGS-19, caso B
+        self.prenota("A", D(2005, 1, 1), D(2005, 1, 31))
+        with self.assertRaises(TypeError):
+            RV.rilascia(self.reg, "A", ORA)                            # senza autore né motivo non si rilascia
+        for chi, motivo in (("", "m"), ("titolare", ""), ("  ", "m"), ("titolare", None)):
+            with self.assertRaisesRegex(ValueError, "rilascio"):
+                RV.rilascia(self.reg, "A", ORA, chi, motivo)
+        self.assertEqual(RV.prenotazione(self.reg, "A")["stato"], "prenotato")
+        RV.rilascia(self.reg, "A", ORA, "titolare", "scheda non conforme")
+        p = RV.prenotazione(self.reg, "A")
+        self.assertEqual((p["stato"], p["rilascio"]["chi"], p["rilascio"]["motivo"]),
+                         ("rilasciato", "titolare", "scheda non conforme"))
+        dati = json.loads(self.reg.read_text(encoding="utf-8"))
+        self.prenota("B", D(2005, 3, 1), D(2005, 3, 31))
+        dati = json.loads(self.reg.read_text(encoding="utf-8"))
+        dati["eventi"].append({"tipo": "rilascio", "id": "B", "ora": ORA})          # scritto a mano, senza autore
+        self.reg.write_text(json.dumps(dati), encoding="utf-8")
+        with self.assertRaisesRegex(ValueError, "rilascio"):
+            RV.stato(self.reg)
+
+
+class TestTentativoRifiutato(Base):
+    """DGS-18 Q3 e DGS-19 (caso G): un tentativo rifiutato prima dell'autorizzazione si registra SENZA consumo,
+    collegato alla prenotazione e allo snapshot dei registri; un ritentativo identico non si duplica."""
+    REGISTRI = [["registro_scaricamento_XAUUSD_ASK.csv", "ab" * 32], ["registro_scaricamento_XAUUSD_BID.csv", "cd" * 32]]
+
+    def test_registrato_senza_consumo(self):
+        self.prenota("A", D(2005, 1, 1), D(2005, 1, 31))
+        prima = RV.stato(self.reg)
+        RV.tentativo(self.reg, "A", "manifesto", "omesso: XAUUSD ASK 2005-01-03", self.REGISTRI, ORA)
+        dopo = RV.stato(self.reg)
+        self.assertEqual((dopo["giorni"], dopo["aperture"], dopo["prenotazioni_attive"]),
+                         (prima["giorni"], prima["aperture"], prima["prenotazioni_attive"]))
+        p = RV.prenotazione(self.reg, "A")
+        self.assertEqual(p["stato"], "prenotato")
+        self.assertEqual([(t["fase"], t["motivo"], t["registri"]) for t in p["tentativi"]],
+                         [("manifesto", "omesso: XAUUSD ASK 2005-01-03", self.REGISTRI)])
+        RV.autorizza(self.reg, "A", 1, "h", ORA)                       # la prenotazione resta correggibile
+
+    def test_ritentativo_identico_non_si_duplica_uno_diverso_si(self):
+        self.prenota("A", D(2005, 1, 1), D(2005, 1, 31))
+        RV.tentativo(self.reg, "A", "manifesto", "omesso: X", self.REGISTRI, ORA)
+        prima = self.reg.read_bytes()
+        RV.tentativo(self.reg, "A", "manifesto", "omesso: X", self.REGISTRI, "2026-11-27T00:00:00Z")
+        self.assertEqual(self.reg.read_bytes(), prima)
+        altri = [["registro_scaricamento_XAUUSD_ASK.csv", "ef" * 32], self.REGISTRI[1]]
+        RV.tentativo(self.reg, "A", "manifesto", "omesso: X", altri, ORA)
+        self.assertEqual(len(RV.prenotazione(self.reg, "A")["tentativi"]), 2)
+
+    def test_rifiuti_del_tentativo(self):
+        self.prenota("A", D(2005, 1, 1), D(2005, 1, 31))
+        with self.assertRaisesRegex(ValueError, "sconosciuta"):
+            RV.tentativo(self.reg, "Z", "manifesto", "m", self.REGISTRI, ORA)
+        for fase, motivo, registri in (("", "m", self.REGISTRI), ("manifesto", "", self.REGISTRI),
+                                       ("manifesto", "m", []), ("manifesto", "m", [["x", "corta"]])):
+            with self.assertRaisesRegex(ValueError, "tentativo"):
+                RV.tentativo(self.reg, "A", fase, motivo, registri, ORA)
+        RV.autorizza(self.reg, "A", 1, "h", ORA)
+        with self.assertRaisesRegex(ValueError, "tentativo"):
+            RV.tentativo(self.reg, "A", "manifesto", "m", self.REGISTRI, ORA)  # dopo l'autorizzazione no
 
 
 class TestAutorizzazione(Base):
