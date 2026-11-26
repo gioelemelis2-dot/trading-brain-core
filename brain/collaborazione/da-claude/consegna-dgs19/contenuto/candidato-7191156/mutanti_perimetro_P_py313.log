@@ -1,0 +1,73 @@
+M00 copia non mutata: suite verde
+UCCISO PR28 protocollo: cella 10 tolta dalla potenza (M-R17-02 di Gemini)
+UCCISO PR29 protocollo: potenza zero accettata in fase 2 (M-R17-03 di Gemini)
+UCCISO PI26 pilota: distorsione senza - μ (M-R16-06 di Gemini)
+UCCISO PI21 pilota: ampiezza nulla accettata (#112)
+UCCISO PI22 pilota: limiti non finiti accettati (#112)
+UCCISO PI23 pilota: HAC fuori dal contratto
+UCCISO PI24 pilota: limiti grezzi non salvati per l'errore
+UCCISO PI25 pilota: file dei limiti senza versione
+UCCISO PR01 protocollo: Clopper–Pearson con la disuguaglianza rovesciata
+UCCISO PR02 protocollo: soglia k con un evento in più
+UCCISO PR03 protocollo: uguaglianza alla soglia come promozione
+UCCISO PR04 protocollo: uguaglianza alla soglia come bocciatura
+UCCISO PR05 protocollo: margine non simmetrico
+UCCISO PR06 protocollo: errori fuori da k⁺
+UCCISO PR07 protocollo: errori fuori da k⁻
+UCCISO PR08 protocollo: celle sotto soglia non controllate
+UCCISO PR09 protocollo: falsa bocciatura non controllata
+UCCISO PR10 protocollo: cella 11 senza veto
+UCCISO PR11 protocollo: potenza non richiesta
+UCCISO PR12 protocollo: completezza non controllata
+UCCISO PR13 protocollo: lunghezza delle liste non controllata
+UCCISO PR14 protocollo: intervalli del file non controllati
+UCCISO PR15 protocollo: classifica per somma prima del minimo
+UCCISO PR16 protocollo: margine più grande a parità
+UCCISO PR17 protocollo: bootstrap prima di HAC a parità
+UCCISO PR18 protocollo: fase 2 senza 12.000 repliche
+UCCISO PR19 protocollo: diagnostica ignorata nel verdetto
+UCCISO PR20 protocollo: banda dei flussi allargata
+UCCISO PR21 protocollo: ritardo non applicato
+UCCISO PR22 protocollo: confronti di gruppo B solo in fase 1
+UCCISO PR23 protocollo: semi duplicati non visti
+UCCISO PR24 protocollo: fase del file non controllata
+UCCISO PR25 protocollo: p-value senza il fattore 2
+UCCISO PR26 protocollo: δ della fase 2 come la fase 1
+UCCISO PR27 protocollo: inventario senza la componente
+UCCISO PI01 pilota: componente fuori dal seme
+UCCISO PI02 pilota: AR(1) che parte da zero
+UCCISO PI03 pilota: innovazioni AR(1) non scalate
+UCCISO PI04 pilota: probabilità di K = 0 sbagliata
+UCCISO PI05 pilota: conteggi senza componente comune
+UCCISO PI06 pilota: perdite rare col segno invertito
+UCCISO PI07 pilota: HAC senza pesi di Bartlett
+UCCISO PI08 pilota: HAC con un ritardo in meno
+UCCISO PI09 pilota: HAC con K medio non al quadrato
+UCCISO PI11 pilota: ritardi predefiniti sbagliati
+UCCISO PI12 pilota: bootstrap non circolare
+UCCISO PI13 pilota: ricampionamento con ΣK = 0 saltato
+UCCISO PI14 pilota: rango del quantile spostato
+UCCISO PI15 pilota: intervallo percentile al posto del basic
+UCCISO PI16 pilota: promozione con limite vicino alla soglia
+UCCISO PI17 pilota: copertura solo dal basso
+UCCISO PI18 pilota: bootstrap sul flusso dei dati
+UCCISO PI19 pilota: avviso del pilota ridotto tolto
+UCCISO PI20 pilota: z del 95% unilaterale
+UCCISO P16 potenza: sigma non controllata sotto la soglia (R14-06)
+UCCISO P01 potenza: limite senza 1,96
+UCCISO P02 potenza: stima con 1,96
+UCCISO P03 potenza: radice di n mancante
+UCCISO P04 potenza: sigma degli esiti sbagliata
+UCCISO P05 potenza: simulazione con la varianza vera
+UCCISO P06 potenza: senza ricerca del minimo
+UCCISO P07 potenza: None non restituito
+UCCISO P08 potenza: regola sconosciuta accettata
+UCCISO P14 potenza: regola non controllata con mu sotto soglia (#94)
+UCCISO P15 potenza: dominio di simula non controllato (#94)
+UCCISO P09 potenza: varianza divisa per n (MPS04 di Gemini)
+UCCISO P10 potenza: media fuori dominio
+UCCISO P11 potenza: sigma o n fuori dominio
+UCCISO P12 potenza: potenza fuori dominio
+UCCISO P13 potenza: simulazione con un trade
+
+70/70 mutanti uccisi (3.13.18)

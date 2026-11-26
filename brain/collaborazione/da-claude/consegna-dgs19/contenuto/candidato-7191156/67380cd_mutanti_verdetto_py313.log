@@ -1,0 +1,135 @@
+M00 copia non mutata: suite verde
+UCCISO VD01 soglia di promozione 0,15
+UCCISO VD02 soglia di bocciatura 0,15
+UCCISO VD03 uguaglianza promuove
+UCCISO VD04 uguaglianza boccia
+UCCISO VD05 intervallo non controllato
+UCCISO VD47 ampiezza minima 1e-10 (#119)
+UCCISO VD48 ampiezza minima non controllata (#119)
+UCCISO VD49 registri ereditati accettati
+UCCISO VD50 manca un registro ereditato
+UCCISO VD51 registro assente non rifiutato
+UCCISO VD52 cambio durante la lettura non visto
+UCCISO VD53 N contato su tutte le prove
+UCCISO VD54 quota non controllata
+UCCISO VD55 tipo della quota non controllato
+UCCISO VD56 contesto non riportato
+UCCISO VD57 quota collaudata 5%
+UCCISO VD58 media del campione come STIMA
+UCCISO VD59 vantaggio come MISURA
+UCCISO VD60 stima prima delle misure
+UCCISO VD61 intervallo assente detto esatto
+UCCISO VD62 N mancante detto esatto
+UCCISO VD63 stimabilità non controllata
+UCCISO VD64 seme non riportato
+UCCISO VD65 decisione non attribuita al titolare
+UCCISO VD66 due decimali
+UCCISO VD67 tipo assente nel testo
+UCCISO VD68 vicini non riportati nel testo
+UCCISO VD69 impronta del registro troncata
+UCCISO VD70 media dello sviluppo come STIMA
+UCCISO VD71 avvertenza sulla selezione tolta
+UCCISO VD72 potenza non riportata
+UCCISO VD73 soglia del limite tolta dal rapporto
+UCCISO VD74 non ammessa non dichiarata
+UCCISO VD75 stimabilità dello screening non controllata
+UCCISO VD76 screening presentato come prova
+UCCISO VD77 media assente detta disponibile
+UCCISO VD06 vicinanza 1e-8
+UCCISO VD07 vicinanza di U non riportata
+UCCISO VD08 K booleano accettato
+UCCISO VD09 K negativo accettato
+UCCISO VD10 S non finito accettato
+UCCISO VD11 risultato senza trade accettato
+UCCISO VD12 elenco vuoto accettato
+VIVO   VD13 coppia senza controllo di lunghezza (atteso EQUIVALENTE: l'assegnazione s, k = c solleva comunque ValueError)
+UCCISO VD14 sedute collaudate 999
+UCCISO VD15 minimo di trade 299
+UCCISO VD16 minimo di sedute attive 199
+UCCISO VD17 impronta del pilota non controllata
+UCCISO VD18 seme ignorato
+UCCISO VD19 B = 999
+UCCISO VD20 requisito fallito senza veto boccia
+UCCISO VD21 veto non valutabile boccia
+UCCISO VD22 sfavorevole non boccia
+UCCISO VD23 requisito non valutabile non blocca la promozione
+UCCISO VD24 promossa con requisiti aperti
+UCCISO VD25 vicini non riportati nel verdetto
+UCCISO VD26 media divisa per le sedute
+UCCISO VD27 minimi non applicati
+UCCISO VD28 intervallo invalido trattato come inconclusivo
+UCCISO VD29 veto come intero accettato
+UCCISO VD30 screening: media uguale alla soglia passa
+UCCISO VD31 screening: limite zero passa
+UCCISO VD32 screening: potenza 50% esclusa
+UCCISO VD33 screening: potenza sopra 1 accettata
+UCCISO VD34 screening: nessun trade non gestito
+UCCISO VD35 screening: media divisa per le sedute
+UCCISO VD36 screening: soglia di media 0,20
+UCCISO VD37 screening: intervallo invalido non segnalato
+UCCISO VD38 screening: coppie non controllate
+UCCISO VD39 blocchi: uguaglianza alla soglia fa scattare il veto
+UCCISO VD40 blocchi: minimo escluso
+UCCISO VD41 blocchi: sottile prima del veto
+UCCISO VD42 blocchi: divisibilità non controllata
+UCCISO VD43 blocchi: minimo zero accettato
+UCCISO VD44 blocchi: soglia non finita accettata
+UCCISO VD45 blocchi: minimo non intero accettato
+UCCISO VD46 verdetto: veto dopo il controllo dei dati
+UCCISO VD78 descrittivo blocca la promozione
+UCCISO VD79 veto e descrittivo insieme accettati
+UCCISO VD80 descrittivo non booleano accettato
+UCCISO VD81 ruolo descrittivo perso
+UCCISO VD82 segnale non riportato
+UCCISO VD83 intervallo calcolato senza i minimi
+UCCISO VD84 misure saltate in presenza di requisiti
+UCCISO VD85 esiti ignoti accettati nel verdetto
+UCCISO VD86 esiti ignoti rifiutati nei blocchi
+UCCISO VD87 esito ignoto senza trade accettato
+UCCISO VD88 blocco con esiti ignoti valutato
+UCCISO VD89 blocco con esiti ignoti non segnato
+UCCISO VD90 segnale tolto dal rapporto
+UCCISO VD91 segnale mancante detto calcolato
+UCCISO VD92 requisiti tolti dal rapporto
+UCCISO VD93 descrittivo detto vincolante nel rapporto
+UCCISO VD94 requisiti non registrati nel verdetto
+UCCISO VD95 seme non controllato
+UCCISO VD96 seme del verdetto non controllato
+UCCISO VD97 seme dello screening non controllato
+UCCISO VD98 contesto non controllato
+UCCISO VD99 chiavi in più nel contesto accettate
+UCCISO VD100 N negativo accettato
+UCCISO VD101 N booleano accettato
+UCCISO VD102 impronta del registro non controllata
+UCCISO VD103 impronta maiuscola accettata
+UCCISO VD104 registro vuoto accettato
+UCCISO VD105 promossa senza N
+UCCISO VD106 intervallo invalido conservato come stima
+UCCISO VD107 intervallo scartato non riportato nel verdetto
+UCCISO VD108 intervallo scartato tolto dal rapporto
+UCCISO VD109 registro collegato accettato
+UCCISO VD110 coppie come generatore accettate
+UCCISO VD111 somma non finita accettata
+UCCISO VD112 sedute non misurabili dette esatte
+UCCISO VD113 banda dei vicini senza tipo
+UCCISO VD114 S booleano accettato (M-VD-02 di Gemini)
+UCCISO VD115 potenza booleana accettata (M-VD-03 di Gemini)
+UCCISO VD116 soglia booleana accettata (M-VD-04 di Gemini)
+UCCISO VD117 ampiezza booleana accettata (M-VD-05 di Gemini)
+UCCISO VD118 id del requisito non stringa accettato (M-VD-06 di Gemini)
+UCCISO VD119 media del verdetto con sum (#124)
+UCCISO VD120 media dello screening con sum (#124)
+UCCISO VD121 media di blocco con sum (#124)
+UCCISO VD122 L vicino a zero mai segnalato (#124)
+UCCISO VD123 L vicino a zero solo se positivo (#124)
+UCCISO VD124 L vicino a zero con banda 1e-8 (#124)
+UCCISO VD125 segnalazione assente dal rapporto (#124)
+UCCISO VD126 screening deciso sulla media arrotondata (#124 V124-01)
+UCCISO VD127 veto deciso sulla media arrotondata (#124 V124-02/03)
+UCCISO VD128 finitezza sulla somma con segno (#124 V124-06)
+UCCISO VD129 banda di vicinanza a zero inclusa (M-124-01 di Gemini)
+UCCISO VD130 banda di vicinanza a zero 1e-10 (M-124-02 di Gemini)
+UCCISO VD131 vicinanza vera per difetto (M-124-03 di Gemini)
+UCCISO VD132 riga del rapporto senza spiegazione (M-124-04 di Gemini)
+
+131/132 mutanti uccisi (3.13.18); equivalenti dichiarati vivi: 1

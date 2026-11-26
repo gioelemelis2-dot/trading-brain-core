@@ -1,0 +1,131 @@
+Python: 3.13.18 (main, Oct 26 2026, 14:08:19) [Clang 23.1.3 ] | Platform: Linux-6.18.44-fc-v880-x86_64-with-glibc2.39
+
+================ 1. SONDE CRITICHE SU avvio.py E esegui_verifica ================
+  [R19-01 check] avvio.py in EH.impronte_codice: True
+  [R19-01 check] avvio.py in EV.impronte_codice: True
+  [R19-01 END-TO-END VALIDO via avvio.py verifica] rc=0
+    stderr: 
+    stdout: {"esito_tecnico": "completata", "esito": "promossa", "chiamate_caricatore": {"sviluppo": 1, "verifica": 1}, "prenotazione": "P1", "impronta_impegno": "b54012d582654baa71675bc007f5c2802d89447feffd59fa4
+  [R19-01b MANOMISSIONE avvio.py] RILEVATO: il codice che esegue H-R19 non è quello sigillato: ['brain/laboratorio/esecuzione/avvio.py']
+  [R19-02a --scheda=PATH] rc=2 | stderr=FERMO prima di importare il codice (#95): ['manca --scheda']
+  [R19-02b BYPASS DOPPIO --scheda] rc=1 | codice_manomesso_eseguito=True | stderr=Traceback (most recent call last):
+  File "/tmp/r19_avvio_62ykfdkw/repo/brain/laboratorio/esecuzione/avvio.py", line 121, in <module>
+    sys.exit(principale())
+
+================ 2. REGRESSIONI E BUG IN esegui_verifica / manifesto / riserva ================
+  [R19-03 20 feriali vuoti in verifica] esito_tecnico=completata, esito=promossa, trade=980 (attesi 1000 senza buchi; 20 feriali vuoti passati silenziosamente come 0 trade!)
+  [R19-05 caduta tra rendiconta e esito] ripresa=rapporto rigenerato, ruoli_in_registro_prove=['sviluppo', 'verifica', 'esito'] (manca 'esito'!)
+  [R19-04b float64 quota] RV.quota(0.15, 2, 1)=0.024999999999999998 (==0.025? False) | RV.quota(0.75, 2, 5)=0.025 (==0.025? True)
+  [R19-04 RAMI DIVERGENTI alfa=0.15,m=1] BYPASS §3.4! esito_tecnico=rifiutata per quota, esito=None, chiamate={'sviluppo': 0, 'verifica': 0}
+  [R19-04 RAMI DIVERGENTI alfa=0.75,m=5] BYPASS §3.4! esito_tecnico=completata, esito=promossa, chiamate={'sviluppo': 1, 'verifica': 1}
+  [R19-06d leggi_contratto soglia=-inf] ACCETTATO da leggi_contratto! soglia=-inf
+  [R19-06d esegui soglia=-inf] fallita tardi (ValueError: Out of range float values are not JSON compliant: -inf) | chiamate=['sviluppo'] | esecuzioni_scritte=1
+  [R19-06e leggi_contratto ipotesi=''] ACCETTATO da leggi_contratto!
+  [R19-06c+R19-08 --ora invalida + --rapporto cartella] eccezione=IsADirectoryError: [Errno 21] Is a directory: '/tmp/r19_reg_qkygh8yl/.rapporto_e_cartella.n6dj0vtm' -> '/tmp/r19_reg_qkygh8yl/rapporto_e_cartella' | riserva_consumata=1489 | ora_scritta='NON-UNA-DATA'
+  [R19-06a controlla_fuso in esegui_verifica.py] presente=False
+  [R19-06b chiamate controlla_ambiente in esegui_verifica.py] count=1
+  [R19-07a manifesto URL data/dominio falsi] anomalie=[]
+  [R19-07b manifesto sha256='' su dati] anomalie_manifesto=[] | esito_tecnico=file difforme | riserva_bruciata_giorni=1489
+
+================ 3. CONCORRENZA REALE MULTI-PROCESSO (2 Popen) ================
+  [CONC-1 due prenotazioni PA/PB parallele] rc=(0,0) | aperture=[('PB', 1, 'promossa')] | rifiuti=[('PA', 2, "ricontrollo all'autorizzazione")]
+  [CONC-2 stessa prenotazione P1 parallela] rc=(0,1) | aperture=[('P1', 1, 'promossa')] | esecuzioni_prove=3 | err_secondo=ValueError: esito di 'P1' già registrato
+  [CONC-3 barriera su RV.autorizza (DGS-15 p.4)] rc=(0,0) | aperture=[('PB', 1, 'promossa')] | rifiuti=[('PA', 2, "ricontrollo all'autorizzazione")]
+
+================ 4. RIESECUZIONE SONDE #124 (D1..D6) SU verdetto_d31.py (1431190) ================
+  [D1 screening 75+2^-48] ammessa=True (atteso True) | cause=[]
+  [D2 veto_blocchi -62.5-2^-49] esito=fallito (atteso fallito)
+  [D3 veto_blocchi serie costante k=3 x=-0.4] esito=superato (atteso superato)
+  [D6a perm1] ValueError: la somma dei risultati non è un numero finito
+  [D6b perm2] ValueError: la somma dei risultati non è un numero finito
+
+================ 5. MATRICE PROTEZIONI D-51 (PIANO-D51 §1, §2, §3.1-§3.5) ================
+  [D51-01] esegui_h002 --modalita verifica (D-51 §1)
+        esito=rc=2 (ERRORE: la verifica di esegui_h002 è disattivata (D-51). La verifica passa solo dal percor) | fase=prima di sigillo/registri/caricatore | caricatore=[]
+        prima: prove_sha=543974871342f29f(esec=0) | riserva=ASSENTE
+        dopo : prove_sha=543974871342f29f(esec=0) | riserva=ASSENTE
+        nota : rapporto_creato=False
+  [D51-02a] riserva non canonica (§3.1)
+        esito=ValueError: il registro deve essere quello canonico del repository (brain/laboratorio/registro_riserva.json), non /tmp/d51_git_3bww3u0e/repo/riserva_finta.json | fase=passo 2 (_ancora) | caricatore=[]
+        prima: prove_sha=9fd77f1e48b0c199(esec=0) | riserva_sha=506d22c7d8319103(ap=0,rif=0,pren=1489,cons=0)
+        dopo : prove_sha=9fd77f1e48b0c199(esec=0) | riserva_sha=506d22c7d8319103(ap=0,rif=0,pren=1489,cons=0)
+  [D51-02b] riserva non committata (§3.1)
+        esito=ValueError: brain/laboratorio/registro_riserva.json ha modifiche non committate: committarlo e spingerlo prima di eseguire | fase=passo 2 (_ancora) | caricatore=[]
+        prima: prove_sha=9fd77f1e48b0c199(esec=0) | riserva_sha=e88d267997cc47fc(ap=0,rif=0,pren=1489,cons=0)
+        dopo : prove_sha=9fd77f1e48b0c199(esec=0) | riserva_sha=e88d267997cc47fc(ap=0,rif=0,pren=1489,cons=0)
+  [D51-03] copia git parziale --filter (#125, §3.1)
+        esito=ValueError: copia parziale del repository (clone --filter): servono una copia completa e tutta la storia | fase=passo 2 (versioni_nella_storia) | caricatore=[]
+        prima: prove_sha=9fd77f1e48b0c199(esec=0) | riserva_sha=506d22c7d8319103(ap=0,rif=0,pren=1489,cons=0)
+        dopo : prove_sha=9fd77f1e48b0c199(esec=0) | riserva_sha=506d22c7d8319103(ap=0,rif=0,pren=1489,cons=0)
+  [D51-04] prenotazione consumata su altro ramo (§3.1)
+        esito=ValueError: la prenotazione 'P1' è già consumata in un'altra versione del registro della riserva | fase=passo 2 (_gia_consumata) | caricatore=[]
+        prima: prove_sha=9fd77f1e48b0c199(esec=0) | riserva_sha=506d22c7d8319103(ap=0,rif=0,pren=1489,cons=0)
+        dopo : prove_sha=9fd77f1e48b0c199(esec=0) | riserva_sha=506d22c7d8319103(ap=0,rif=0,pren=1489,cons=0)
+  [D51-05a] sviluppo con byte modificati (§3.2)
+        esito=FileDifforme: BID 2024-03-05: byte diversi dal manifesto autorizzato | fase=passo 6 (caricatore sviluppo) | caricatore=['sviluppo']
+        prima: prove_sha=53802ae235914a83(esec=0) | riserva_sha=7d5e5f6c447db789(ap=0,rif=0,pren=1489,cons=0)
+        dopo : prove_sha=53802ae235914a83(esec=0) | riserva_sha=7d5e5f6c447db789(ap=0,rif=0,pren=1489,cons=0)
+  [D51-05b] screening registrato con altro sviluppo (§3.2)
+        esito=ValueError: sviluppo di H-SV già registrata con un altro sviluppo | fase=passo 6 (_registra_una_volta) | caricatore=['sviluppo']
+        prima: prove_sha=23470454b5a4dbca(esec=1) | riserva_sha=7d5e5f6c447db789(ap=0,rif=0,pren=1489,cons=0)
+        dopo : prove_sha=23470454b5a4dbca(esec=1) | riserva_sha=7d5e5f6c447db789(ap=0,rif=0,pren=1489,cons=0)
+  [D51-06v] CASO VALIDO base (H-1 P1, senza avvio.py)
+        esito=completata / promossa | fase=completo | caricatore=['sviluppo', 'verifica']
+        prima: prove_sha=8993f8db3a9980f9(esec=0) | riserva_sha=6fae4101fa524765(ap=0,rif=0,pren=2974,cons=0)
+        dopo : prove_sha=296789e8ebc8e3cb(esec=3) | riserva_sha=4b7e36fb6b99dcb8(ap=1,rif=0,pren=1485,cons=1489)
+  [D51-06a] seconda verifica stessa ipotesi/variante (§3.4)
+        esito=ValueError: verifica di H-1 V-T già eseguita (prenotazione 'P1'): si fa una volta sola | fase=passo 3 (altre) | caricatore=[]
+        prima: prove_sha=296789e8ebc8e3cb(esec=3) | riserva_sha=4b7e36fb6b99dcb8(ap=1,rif=0,pren=1485,cons=1489)
+        dopo : prove_sha=296789e8ebc8e3cb(esec=3) | riserva_sha=4b7e36fb6b99dcb8(ap=1,rif=0,pren=1485,cons=1489)
+  [D51-06b] seconda ipotesi H-2 nello stesso registro (§3.4)
+        esito=rifiutata per quota (quota 0.008333333333333333) | fase=passo 5 (quota j=2, NON bloccata da H-1) | caricatore=[]
+        prima: prove_sha=296789e8ebc8e3cb(esec=3) | riserva_sha=6283db5da9d8c395(ap=1,rif=0,pren=1485,cons=1489)
+        dopo : prove_sha=296789e8ebc8e3cb(esec=3) | riserva_sha=1dab64e5c79603f6(ap=1,rif=1,pren=0,cons=1489)
+  [D51-07] prenotazione su date di sviluppo (§3.5)
+        esito=ValueError: 2023-11-15 → 2024-01-31 fuori dalla riserva 2005-01-01 → 2023-10-31 | fase=RV.prenota (_intervallo) | caricatore=[]
+        prima: prove_sha=ASSENTE(esec=0) | riserva_sha=83476fc2a2212884(ap=0,rif=0,pren=0,cons=0)
+        dopo : prove_sha=ASSENTE(esec=0) | riserva_sha=83476fc2a2212884(ap=0,rif=0,pren=0,cons=0)
+  [D51-07b] sviluppo su date protette della riserva (§3.5)
+        esito=SchedaNonConforme: contratto H-003 non valido: periodo di sviluppo | fase=passo 1 (leggi_contratto) | caricatore=[]
+        prima: prove_sha=b5c8a758bb72475e(esec=0) | riserva_sha=e5d2775f4603c085(ap=0,rif=0,pren=1489,cons=0)
+        dopo : prove_sha=b5c8a758bb72475e(esec=0) | riserva_sha=e5d2775f4603c085(ap=0,rif=0,pren=1489,cons=0)
+  [D51-08] esegui_verifica.main senza avvio.py (§3.3)
+        esito=rc=2 (RIFIUTATA: lanciare con python3 -I -S -B brain/laboratorio/esecuzione/avvio.py verifica …:) | fase=main() prima di esegui() | caricatore=[]
+        prima: n/d
+        dopo : n/d
+
+================ 6. MATRICE COMPLETA MANOMISSIONI (COMPITO C) ================
+  [RILEVATO]      riserva: schema riserva/1 -> ValueError: /tmp/r19_m_ris_vs4valbf/s1.json: non è un registro riserva/2
+  [RILEVATO]      riserva: j=True (bool) -> ValueError: contatore j = True, atteso 1
+  [RILEVATO]      riserva: j saltato (2 invece di 1) -> ValueError: contatore j = 2, atteso 1
+  [RILEVATO]      riserva: alfa_j alterata (0.03) -> ValueError: quota alfa_j = 0.03 diversa da α_tot/[j(j+1)]/m
+  [RILEVATO]      riserva: alfa_j NaN -> ValueError: quota alfa_j = nan diversa da α_tot/[j(j+1)]/m
+  [RILEVATO]      riserva: impegno != hash_dati -> ValueError: l'impronta dei dati non è quella dell'impegno registrato
+  [RILEVATO]      riserva: rifiuto j_previsto falsificato -> ValueError: j previsto = 2, atteso 1
+  [RILEVATO]      riserva: rifiuto motivo vuoto -> ValueError: rifiuto senza motivo
+  [RILEVATO]      riserva: autorizzazione dopo rifiuto -> ValueError: autorizzazione di 'P1' impossibile: è rifiutato
+  [RILEVATO]      riserva: record.esito != esito -> ValueError: record del verdetto incoerente con l'esito 'promossa'
+  [RILEVATO]      riserva: prenota parte protetta senza usa_protetta -> ValueError: 2005-06-01 → 2005-06-30 tocca la parte protetta 2005-01-01 → 2006-12-31: serve uno sblocco esplicito
+  [RILEVATO]      riserva: quarantena parte protetta senza usa_protetta -> ValueError: quarantena 2005-06-01 → 2005-06-30 sulla parte protetta: serve uno sblocco esplicito (#65)
+  [RILEVATO]      riserva: N globale decrescente (5 -> 4) -> ValueError: N globale = 4: serve un intero ≥ 1 e non minore di 5
+  [RILEVATO]      manifesto: giorno feriale omesso -> ['omesso: XAUUSD BID 2010-02-08']
+  [RILEVATO]      manifesto: riga duplicata -> ['voce doppia: XAUUSD BID 2010-01-04 (2 righe valide)']
+  [RILEVATO]      manifesto: lato sbagliato -> ['lato sbagliato: riga ASK nel registro BID (2010-01-04)']
+  [RILEVATO]      manifesto: esito http-403 -> ['omesso: XAUUSD BID 2010-01-04']
+  [NON RILEVATO!]      manifesto: file extra non nel registro -> []
+  [RILEVATO]      manifesto: symlink su CSV -> ValueError: registro dello scaricamento mancante o non regolare: registro_scaricamento_XAUUSD_BID.csv
+  [RILEVATO]      caricatore: symlink su file .bi5 -> ValueError: /tmp/r19_m_man_zfjh1k16/c7/XAUUSD/2010-02-08.bi5: collegamento simbolico nella cache, non un file scaricato
+  [RILEVATO]      caricatore: ASK == BID (#126) -> ValueError: BID e ASK nella stessa cartella (/tmp/r19_cache_xq2worls/cache/XAUUSD): lo spread sarebbe zero
+  [RILEVATO]      file sostituito dopo autorizzazione -> esito_tecnico=file difforme, esito=non decidibile, riserva_consumata=1489
+  [RILEVATO]      contratto: doppio blocco json contratto-h003 -> SchedaNonConforme: H-DOP.md: serve un solo blocco «json contratto-h003» (modello H-003)
+  [RILEVATO]      sigillo: variante contratto non nel sigillo (#137) -> ValueError: variante 'V-T' non dichiarata nel sigillo di H-S: ['V-B']
+  [RILEVATO]      sigillo: esito senza verifica -> ValueError: esito di H-E V-T senza verifica registrata
+  [RILEVATO]      sigillo: doppio esito -> ValueError: esito di H-E V-T già registrato: uno solo
+  [RILEVATO/OK]   ripetizione tecnica post-autorizzazione -> completata/promossa, j=1
+  [RILEVATO/OK]   ripresa valida dopo verdetto -> rapporto rigenerato, chiamate={'sviluppo': 0, 'verifica': 0}
+  [RILEVATO]      ripresa: codice diverso dal record -> ValueError: ripresa non identica: scheda, codice, variante, seme o finestra diversi dal record
+  [RILEVATO]      avvio: senza -I -S -B -> rc=2 | FERMO prima di importare il codice (#95): ['eseguire con python3 -I -S -B']
+  [RILEVATO]      avvio: -X pycache_prefix -> rc=2 | FERMO prima di importare il codice (#95): ['eseguire senza -X pycache_prefix']
+  [RILEVATO]      avvio: .py estraneo in radice -> rc=2 | FERMO prima di importare il codice (#95): ['statistics.py: file importabile nella cartella
+  [RILEVATO]      avvio: cartella importabile in radice -> rc=2 | FERMO prima di importare il codice (#95): ['statistics/: cartella con un nome importabile 
+  [RILEVATO]      avvio: __pycache__ in brain/ -> rc=2 | FERMO prima di importare il codice (#95): ['brain/laboratorio/esecuzione/__pycache__: byte

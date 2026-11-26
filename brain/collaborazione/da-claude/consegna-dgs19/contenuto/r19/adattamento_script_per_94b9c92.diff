@@ -1,0 +1,8 @@
+327c327
+<             RV.rilascia(ris, "P1", ORA)
+---
+>             RV.rilascia(ris, "P1", ORA, "sonda R19", "adattamento API punto 9")
+771c771
+<             RV.rilascia(ris, "P2", ORA)
+---
+>             RV.rilascia(ris, "P2", ORA, "sonda R19", "adattamento API punto 9")
