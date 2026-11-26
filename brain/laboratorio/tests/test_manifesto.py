@@ -136,6 +136,29 @@ class TestConfronto(Cache):
         self.assertIn("mercato sbagliato: XAUUSD BID 2024-01-03 (indirizzo di un altro mercato)", an)
         self.assertIn("omesso: XAUUSD ASK 2024-01-03", an)              # una riga http-403 non è un dato
 
+    def test_indirizzo_di_un_altro_dominio_o_di_un_altra_data(self):
+        # #147 (R19-07a): l'indirizzo deve essere ESATTAMENTE quello atteso per mercato, lato e giorno
+        giusto = self.righe["BID"][2]["url"]
+        self.righe["BID"][2]["url"] = "https://evil.invalid/" + giusto.split("/", 3)[3]
+        self.scrivi_registri()
+        self.assertEqual(self.manifesto()["anomalie"], ["indirizzo diverso da quello atteso: XAUUSD BID 2024-01-04",
+                                                        "omesso: XAUUSD BID 2024-01-04"])
+        self.rifai()
+        self.righe["BID"][2]["url"] = DK.url_giorno("XAUUSD", date(2019, 5, 5), "BID")   # un altro giorno
+        self.scrivi_registri()
+        self.assertEqual(self.manifesto()["anomalie"], ["indirizzo diverso da quello atteso: XAUUSD BID 2024-01-04",
+                                                        "omesso: XAUUSD BID 2024-01-04"])
+
+    def test_impronta_non_valida(self):
+        # #147 (R19-07b): una riga valida senza un'impronta di 64 cifre esadecimali non vale; prima l'autorizzazione
+        # consumava la finestra e solo la lettura dava «file difforme»
+        for cattiva in ("", "abc", "G" * 64, "A" * 64):
+            self.rifai()
+            self.righe["BID"][2]["sha256"] = cattiva
+            self.scrivi_registri()
+            self.assertEqual(self.manifesto()["anomalie"], ["impronta non valida: XAUUSD BID 2024-01-04",
+                                                            "omesso: XAUUSD BID 2024-01-04"], cattiva)
+
     def test_righe_rovinate_e_riscaricate(self):
         r = dict(self.righe["BID"][1], esito="rovinato-in-cache", sha256="0" * 64)
         self.righe["BID"].insert(1, r)                                 # prima rovinato, poi riscaricato: una sola valida
