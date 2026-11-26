@@ -174,6 +174,9 @@ class TestCorsaCompleta(Percorso):
                           "chiamate al caricatore", "criteri di H-002 (solo descrizione", "j = 1", "quota 0.025",
                           "requisito blocchi [veto]: superato"):
             self.assertIn(frammento, testo)
+        riga = [x for x in testo.splitlines() if x.startswith("- criteri di H-002")][0]
+        self.assertTrue(riga.endswith("[DERIVATO]"), riga[-40:])          # #141 (b): Sharpe, media, drawdown
+        self.assertNotIn("procedura congelata", testo)                     # #141 (a)
 
     def test_seconda_verifica_della_stessa_variante_rifiutata_prima_di_consumare(self):
         # PIANO-D51 §3.4: una verifica per ipotesi e variante (come nella vecchia verifica). Una seconda prenotazione

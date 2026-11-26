@@ -640,6 +640,17 @@ class TestRapportoScreening(unittest.TestCase):
     def test_potenza_riportata(self):
         self.assertEqual(self.s["potenza"], 0.62)
 
+    def test_potenza_dichiarata_non_attribuita_a_una_procedura(self):
+        # #141 (DGS-18, DGS-19): oggi la potenza è un numero DICHIARATO nella scheda e nessuna procedura la calcola;
+        # il rapporto non deve attribuirle una provenienza che non esiste
+        p = self.voce(V.voci_screening(self.s), "potenza stimata della verifica")
+        self.assertEqual(p["tipo"], "IPOTESI")
+        self.assertIn("dichiarata nella scheda", p["incertezza"])
+        self.assertIn("non ricalcolata", p["incertezza"])
+        testo = V.rapporto_screening(self.s)
+        self.assertNotIn("procedura congelata", testo)
+        self.assertIn("potenza stimata della verifica: 0.6200 probabilità [IPOTESI]", testo)
+
     def test_voci(self):
         voci = V.voci_screening(self.s)
         for x in voci:
@@ -652,7 +663,7 @@ class TestRapportoScreening(unittest.TestCase):
         self.assertEqual((r["tipo"], r["valore"]), ("REGOLA", (0.25, 0.0, 0.50)))
         self.assertIn("D-36", r["fonte"])
         p = self.voce(voci, "potenza stimata della verifica")
-        self.assertEqual((p["tipo"], p["valore"]), ("STIMA", 0.62))
+        self.assertEqual((p["tipo"], p["valore"]), ("IPOTESI", 0.62))      # #141: dichiarata, non calcolata
         st = self.voce(voci, "intervallo sullo sviluppo")
         self.assertEqual((st["tipo"], st["valore"]), ("STIMA", (self.s["L"], self.s["U"])))
         tipi = [x["tipo"] for x in voci]
