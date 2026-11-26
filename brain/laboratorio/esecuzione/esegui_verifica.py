@@ -25,11 +25,12 @@ I criteri di H-002 compaiono solo come descrizione: il verdetto è D-31.
 import argparse
 import hashlib
 import json
+import math
 import os
 import re
 import sys
 import tempfile
-from datetime import date, timedelta
+from datetime import date, datetime, timedelta
 from pathlib import Path
 from typing import Dict, List, Optional
 
@@ -39,13 +40,14 @@ from . import caricatore as C
 from . import manifesto as MF
 from . import riserva as RV
 from . import sigillo as S
-from .esegui_h002 import AVVIO, RADICE, VARIANTI, controlla_ambiente, moduli_brain
+from .esegui_h002 import AVVIO, RADICE, VARIANTI, controlla_ambiente, controlla_fuso, moduli_brain
 
 PARTENZA = "brain.laboratorio.esecuzione.esegui_verifica"
 ALFA_TOTALE = 0.05                                                     # D-38; #145: un registro con un altro α si rifiuta
 BLOCCO = re.compile(r"```json contratto-h003\n(.*?)\n```", re.S)
 DESTINAZIONI = ("test", "verifica")
 ESITI_TECNICI = ("completata", "rapporto rigenerato", "rifiutata per quota", "file difforme")
+ORA_REGISTRO = re.compile(r"[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}Z")   # #146 (c): solo cifre ASCII
 REL_REGISTRO_PROVE = "brain/laboratorio/registro_prove.json"     # i soli registri validi (#86)
 REL_RISERVA = "brain/laboratorio/registro_riserva.json"
 CONTROLLO_AMBIENTE = True      # PIANO-D51 §3.3 (#61, #95): solo dal lanciatore, ambiente ricontrollato prima di leggere
@@ -74,6 +76,9 @@ def leggi_contratto(scheda: Path) -> dict:
     if not isinstance(c, dict) or set(c) != attese:
         raise SchedaNonConforme(f"contratto H-003 con campi diversi da quelli del modello: {sorted(c) if isinstance(c, dict) else c!r}")
     problemi = []
+    ip = c["ipotesi"]
+    if type(ip) is not str or not ip or ip != ip.strip() or not ip.isprintable():     # #146 (e)
+        problemi.append("ipotesi vuota o non valida")
     if c["modello"] != "H-003":
         problemi.append("modello diverso da H-003")
     if c["destinazione"] not in DESTINAZIONI:
@@ -92,7 +97,8 @@ def leggi_contratto(scheda: Path) -> dict:
         problemi.append("date accessorie o sedute (D-37: 1.000)")
     vb = c["veto_blocchi"]
     if not isinstance(vb, dict) or set(vb) != {"soglia", "minimo_trade"} or type(vb["soglia"]) not in (int, float) \
-            or not _intero(vb["minimo_trade"], 1):
+            or not (type(vb["soglia"]) is int or math.isfinite(vb["soglia"])) \
+            or not _intero(vb["minimo_trade"], 1):                                       # #146 (d): ±∞ e NaN no
         problemi.append("veto per blocchi")
     try:
         sv = [date.fromisoformat(x) for x in c["sviluppo"]]
@@ -238,6 +244,12 @@ def esegui(scheda: Path, registro: Path, riserva: Path, id_: str, cache: Path, c
                 "prenotazione": id_, "impronta_impegno": h, "rapporto": str(percorso) if percorso else None,
                 "motivo": motivo}
 
+    if type(ora) is not str or not ORA_REGISTRO.fullmatch(ora):                         # #146 (c), come #51
+        raise ValueError(f"--ora {ora!r} non è nel formato AAAA-MM-GGThh:mm:ssZ")
+    try:
+        datetime.strptime(ora, "%Y-%m-%dT%H:%M:%SZ")
+    except ValueError:
+        raise ValueError(f"--ora {ora!r} non è una data e un'ora valide") from None
     c = leggi_contratto(scheda)                                                          # 1
     rapporto = Path(rapporto)                                          # #148 (R11-S4): prima di ogni lettura e scrittura
     if rapporto.is_dir() or (rapporto.exists() and not rapporto.is_file()):
@@ -266,6 +278,8 @@ def esegui(scheda: Path, registro: Path, riserva: Path, id_: str, cache: Path, c
     if p["record"] is not None:                                                          # ripresa dopo il verdetto
         if p["record"]["identita"] != _json(identita):
             raise ValueError("ripresa non identica: scheda, codice, variante, seme o finestra diversi dal record")
+        if CONTROLLO_AMBIENTE:                                                           # #146 (b): anche alla ripresa
+            controlla_ambiente(identita["codice"])
         rec = p["record"]                                                                # #140: riconcilia i registri
         for voce in ({"ruolo": "verifica", "variante": c["variante"], "impronta_impegno": rec["impronta_impegno"],
                       "prenotazione": id_},
@@ -285,6 +299,8 @@ def esegui(scheda: Path, registro: Path, riserva: Path, id_: str, cache: Path, c
     if altre:                                                                            # PIANO-D51 §3.4
         raise ValueError(f"verifica di {c['ipotesi']} {c['variante']} già eseguita (prenotazione {altre[0]!r}): "
                          f"si fa una volta sola")
+    sv = [date.fromisoformat(x) for x in c["sviluppo"]]
+    controlla_fuso([lettura, (sv[0], sv[1])])                                            # #146 (a), #94 (d)
     giorni_verifica = sedute(*verifica)                                                  # 4
     if len(giorni_verifica) != c["sedute"]:
         raise ValueError(f"la finestra di verifica ha {len(giorni_verifica)} sedute, la scheda ne dichiara {c['sedute']}")
@@ -298,7 +314,6 @@ def esegui(scheda: Path, registro: Path, riserva: Path, id_: str, cache: Path, c
     else:
         j, q = p["autorizzazione"]["j"], p["autorizzazione"]["alfa_j"]
     par = VARIANTI[c["variante"]]                                                         # 6
-    sv = [date.fromisoformat(x) for x in c["sviluppo"]]
     man_sv = MF.manifesto(cache_sviluppo, c["mercato"], sv[0], sv[1])                  # PIANO-D51 §3.2
     if man_sv["anomalie"]:
         raise ValueError(f"manifesto dello sviluppo con anomalie: {'; '.join(man_sv['anomalie'][:10])}")
@@ -357,6 +372,8 @@ def esegui(scheda: Path, registro: Path, riserva: Path, id_: str, cache: Path, c
                    feriali_esclusi=[g.isoformat() for g in (verifica[0] + timedelta(days=i)
                                                             for i in range((verifica[1] - verifica[0]).days + 1))
                                     if g.weekday() < 5 and g not in set(giorni_verifica)])
+    if CONTROLLO_AMBIENTE:                                                   # #146 (b), #61, #91: prima dell'esito
+        controlla_ambiente(sigillo["codice"])
     rec["chiamate_caricatore"] = dict(chiamate)
     rec = _json(rec)
     RV.rendiconta(riserva, id_, rec["esito"], ora, record=rec)                            # 11

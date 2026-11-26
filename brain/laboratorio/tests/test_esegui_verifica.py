@@ -982,6 +982,23 @@ class TestRegressioniR1906(Percorso):
             r = self.esegui(scheda, rapporto=rapporto)
         self.assertEqual((r["esito_tecnico"], r["esito"]), ("completata", "promossa"))
 
+    def test_fuso_alterato_solo_negli_anni_dello_sviluppo(self):
+        # scritto DOPO il codice, per i mutanti (periodi ignorati, solo la finestra di lettura): il controllo copre
+        # anche gli anni dello sviluppo dichiarato nella scheda, fuori dai periodi di H-002 (2005–2026)
+        class Spostata2027(LondraSpostata):
+            @staticmethod
+            def in_ritardo(g):
+                return g.year == 2027 and LondraSpostata.in_ritardo(g)
+        scheda = self.prepara(sviluppo=["2027-01-01", "2027-12-31"])
+        prima = self.fotografia()
+        with mock.patch.object(EV.O, "LONDRA", Spostata2027()):
+            with self.assertRaisesRegex(ValueError, "fuso"):
+                self.esegui(scheda)
+        self.assertEqual(self.fotografia(), prima)
+        with self.assertRaises(ValueError) as fuso_vero:                    # fuso vero: si va oltre (mancano i dati)
+            self.esegui(scheda)
+        self.assertNotIn("fuso", str(fuso_vero.exception))
+
     def test_il_fuso_alterato_cambia_le_coppie_con_lo_stesso_impegno(self):
         # DGS-20 (requisito 15): stesso caso sintetico, fuso vero contro fuso alterato al confine dell'ora legale.
         # L'impegno (e la sua impronta) non contiene il fuso: senza il controllo cambierebbero le coppie in silenzio

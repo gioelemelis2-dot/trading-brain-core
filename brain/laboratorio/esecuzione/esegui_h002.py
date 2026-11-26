@@ -229,13 +229,14 @@ def _ultima_domenica(anno: int, mese: int) -> date:
     return g - timedelta(days=(g.weekday() - 6) % 7)
 
 
-def controlla_fuso() -> None:
+def controlla_fuso(periodi=None) -> None:
     """#94 (d): i dati del fuso orario (tzdata del sistema) non sono sigillati; uno diverso sposterebbe la sessione di
-    Londra con lo stesso codice e la stessa cache. Si confronta Europe/London, a mezzogiorno UTC di ogni giorno dei
-    due periodi, con la regola europea dell'ora legale (dal 1996): dall'ultima domenica di marzo all'ultima di ottobre,
-    passaggio alle 01:00 UTC."""
-    for anno in range(min(PERIODO_VERIFICA[0], PERIODO_SVILUPPO[0]).year,
-                      max(PERIODO_VERIFICA[1], PERIODO_SVILUPPO[1]).year + 1):
+    Londra con lo stesso codice e la stessa cache. Si confronta Europe/London, a mezzogiorno UTC di ogni giorno degli
+    anni dei periodi, con la regola europea dell'ora legale (dal 1996): dall'ultima domenica di marzo all'ultima di
+    ottobre, passaggio alle 01:00 UTC. `periodi`: coppie (inizio, fine); di default i due periodi di H-002. Il percorso
+    ordinario passa la finestra di lettura e lo sviluppo della scheda (#146 a)."""
+    periodi = [PERIODO_VERIFICA, PERIODO_SVILUPPO] if periodi is None else list(periodi)
+    for anno in range(min(p[0] for p in periodi).year, max(p[1] for p in periodi).year + 1):
         estate = (_ultima_domenica(anno, 3), _ultima_domenica(anno, 10))
         g = date(anno, 1, 1)
         while g.year == anno:

@@ -1497,3 +1497,33 @@ Nulla di questo tocca il candidato `8e51ce9` su cui lavora R15.
   - **Che cosa:** ho datato **27/11** il lavoro del **26/11**. Riguarda il piano in CONTINUITA, le voci v2.15–v2.17, le date di correzione di #143, #145, #148 e #149 e lo stato dei requisiti.
   - **Prova:** le date dei commit, da `694c31a` (09:19 UTC) a `9014e93` (10:08 UTC), sono tutte del 26/11. Il 27/11 è solo il giorno della prova D2.
   - **Corretto** nei file vivi. **Non corretto** nei testi già mandati, `MANDATO-SONDE-CHIUSURA-GEMINI.txt` e `MESSAGGIO-20-DGS.md`: sono datati 27/11 ma sono stati spediti il 26/11.
+
+## 2026-11-26 · v2.19 (#146 corretto; nuovi #150 e #151)
+
+- **#146 (R19-06, a–e):** test rossi `1f683e9` e `9a3433b` (cifre a larghezza piena, trovate mentre scrivevo il codice).
+- **Codice:**
+  - `esegui_h002.controlla_fuso(periodi)` è generalizzato; senza argomenti resta com'era (N53 invariato);
+  - `esegui_verifica` controlla il fuso sulla finestra di lettura e sullo sviluppo, prima di ogni lettura e scrittura;
+  - ambiente ricontrollato prima dell'esito e alla ripresa;
+  - `--ora` controllato con `[0-9]` e `strptime`;
+  - soglia del veto finita;
+  - ipotesi testo non vuoto, senza spazi ai bordi né caratteri di controllo.
+- **Dimostrazione per (a) (DGS-20):**
+  - stesso caso sintetico, fuso vero contro un tzdata con l'ora legale spostata di una settimana;
+  - impronta dell'impegno identica (`2afcc4f2…`) e stesse sedute, ma 18 coppie diverse e sedute attive da 1.000 a 982;
+  - Europe/Lisbon, che ha la stessa regola, dà lo stesso impegno e lo stesso esito.
+
+  Ora è un test (`test_il_fuso_alterato_cambia_le_coppie_con_lo_stesso_impegno`).
+- **Test aggiunto DOPO il codice, per i mutanti:** `test_fuso_alterato_solo_negli_anni_dello_sviluppo`. I periodi di H-002 coprono 2005–2026 e nascondevano i mutanti EV48 ed EV60.
+- **Mutanti EV47–EV60:** al primo commit EV47–EV53 uccisi su 3.13; il resto e la corsa su 3.9 sono in corso e verranno registrati qui. **Errore di Claude, corretto:** il nuovo controllo prima dell'esito duplicava il testo sostituito da EV31, che non era più univoco. L'ha trovato `test_mutanti_applicabili`; EV31 ora include la sua riga `if`.
+- **Suite:** `test_esegui_verifica` e `test_esegui_h002` verdi su 3.13 e 3.9 (136 test, `-W error`).
+- **Sonde R19-06 di Gemini** rieseguite sul codice corretto:
+  - 06c, 06d e 06e sono rifiutate senza consumo e senza scritture;
+  - 06a e 06b sono statiche;
+  - lo script si ferma, come previsto, nel suo gestore su `aperture[0]` (`IndexError`), perché nessuna apertura esiste.
+- **Nuovi difetti minori, trovati scrivendo i test:**
+  - **#150:** `riserva.prenota` accetta un'ipotesi vuota;
+  - **#151:** in `esegui_h002`, usato per lo sviluppo, `\d` accetta cifre non ASCII.
+
+  Proposti come rinviabili; la classificazione D-56 va confermata.
+- **Su #144:** il fuso alterato rendeva le sedute K = 0 in silenzio; la causa comune resta di #144.
