@@ -2,6 +2,16 @@
 
 Ultimo aggiornamento: **2026-11-23, mattina** (sezione in testa); prima: 2026-11-15, dopo il mandato notturno su H-002 (programma dei criteri, strumento di sigillo, quaderno delle ipotesi; ramo `feat/esecutore-h002`, **non unito a main**). Leggere questo file per primo (vale anche per Gemini, insieme a `collaborazione/HANDOFF-GEMINI.md`).
 
+## Aggiornamento del 26/11/2026 (LEGGERE PER PRIMO)
+
+**Sempre in italiano.**
+- **Candidato `7191156` completo:** perimetro 299/299, percorso 62/63, verdetto 131/132, prova positiva dal lanciatore superata su 3.13 e 3.9.
+- **DGS-19 archiviato.** **D-56 decisa** (DA-42 c′): criterio d'uscita dal Gate 2½ con una scheda per ogni difetto, bloccanti contro rinviabili, condizione del percorso valido e stop dopo 4 giri. Decisa prima della consegna di R19.
+- **Gemini** sta finendo R19 sul candidato vecchio `1431190`, con la sonda R19-04 (testa del registro della riserva manipolabile?). Quando consegna:
+  1. verificare il rapporto e riprodurre R19-04;
+  2. il titolare gli manda `MANDATO-R19-AGGIUNTA-GEMINI.txt` per chiudere R19 su `7191156`.
+- **Prossimo lavoro di Claude:** l'ultimo lotto, `piano/REQUISITI-ULTIMO-LOTTO.md` (11 requisiti). Poi congelamento e due giri secondo D-56.
+
 ## Aggiornamento del 23/11/2026, mattina (LEGGERE PER PRIMO)
 
 **Regola fissa del titolare: Claude scrive SEMPRE in italiano** (vedi sotto).

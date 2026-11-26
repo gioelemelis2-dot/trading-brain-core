@@ -515,7 +515,7 @@ DA-13 rulebook (Q-09) ──► DA-11 G0 minimo ──► DA-12 indicatori compo
 - **Consiglio di Claude:** **(a), prima del primo accesso reale.** Va scritta in TDD, con i mutanti, e portata in un giro di revisione. Con il piano Free (DA-39) è la difesa più forte disponibile senza costi.
 - **Fonte:** revisione critica di Claude del 23/11 (`laboratorio/ricevute/2026-11-23-candidato-r19/REVISIONE-CRITICA-20261123.md`, punto B.1).
 
-### DA-42 · Criterio d'uscita dal Gate 2½ (riscrittura di D-24), da fissare PRIMA dei risultati di R19 (23/11/2026) · **da decidere dal titolare**
+### DA-42 · Criterio d'uscita dal Gate 2½ (riscrittura di D-24), da fissare PRIMA dei risultati di R19 (23/11/2026) · **DECISA: (c′), D-56 (26/11, prima della consegna di R19)**
 - **Il problema** (chat di Claude e Claude, `governance/CONVERGENZA-REVISIONI-20261123.md`):
   - D-24 chiede due giri senza critici né importanti, su un perimetro che continua a crescere;
   - ogni correzione è codice nuovo, quindi anche un «congelamento» continua a produrre materiale da rivedere;

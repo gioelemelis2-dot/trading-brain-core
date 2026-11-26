@@ -1396,3 +1396,7 @@ Nulla di questo tocca il candidato `8e51ce9` su cui lavora R15.
   - **DA-42:** aggiunta l'opzione (c′) emendata dal DGS (scheda per difetto, criterio verificabile per il rinvio, condizione del percorso valido, stop dopo 4 giri), con lo stato noto di R19 al 26/11. Consiglio di Claude: (c′), decisa prima della consegna di Gemini.
 - **`piano/REQUISITI-ULTIMO-LOTTO.md`:** gli 11 requisiti da DGS-17/18/19, D-54, D-55 e dalla sonda R19-04, in un solo posto.
 - **Aggiunta al mandato R19:** il punto 7 riprende quanto il DGS chiede a Gemini.
+
+## 2026-11-26 · v2.10 (D-56)
+
+- **D-56 (DA-42, opzione c′), decisa dal titolare prima della consegna di R19:** criterio d'uscita dal Gate 2½ (testo in `DECISIONI.md`). Vale per la chiusura di R19 sul candidato finale.
