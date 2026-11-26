@@ -731,6 +731,53 @@ class TestAvvioVerifica(unittest.TestCase):
         self.assertEqual(json.loads(r2.stdout)["esito_tecnico"], "rapporto rigenerato")
         self.assertEqual(riserva.read_bytes(), prima)
 
+    # #143 (R19-02 di Gemini): una sola identità fra lanciatore ed esecutore, prima di importare il codice
+    def esca_e_esecutore_manomesso(self):
+        """Un'esca: scheda di un'ipotesi sigillata con un codice che NON contiene esegui_verifica.py; e un
+        esegui_verifica.py manomesso che, se importato, scrive una spia."""
+        esca = self.dir / "esca.md"
+        esca.write_text(testo_scheda(contratto("H-ESCA")), encoding="utf-8")
+        vero = EV.impronte_codice(self.dir)
+        ridotto = {k: v for k, v in vero.items() if not k.endswith("esegui_verifica.py")}
+        reg = self.dir / "brain/laboratorio/registro_prove.json"
+        reg.write_text(json.dumps({"schema": S.SCHEMA, "prove": [], "esecuzioni": [], "sigilli": [
+            {"ipotesi": "H-ESCA", "codice": ridotto}, {"ipotesi": "H-T127", "codice": vero}]}), encoding="utf-8")
+        ev = self.dir / "brain/laboratorio/esecuzione/esegui_verifica.py"
+        spia = self.dir / "SPIA-ESEGUITO"
+        ev.write_text(f"open({str(spia)!r}, 'w').write('x')\n" + ev.read_text(encoding="utf-8"), encoding="utf-8")
+        return esca, spia
+
+    def test_doppia_scheda_rifiutata_prima_degli_import(self):
+        esca, spia = self.esca_e_esecutore_manomesso()
+        r = self.avvia("--scheda", str(esca), "--scheda", str(self.scheda), "--registro", "x", "--riserva", "x",
+                       "--prenotazione", "P1", "--cache", "x", "--cache-sviluppo", "x", "--rapporto", "r", "--ora", ORA)
+        self.assertEqual(r.returncode, 2, r.stderr[-400:])
+        self.assertIn("FERMO prima di importare", r.stderr)
+        self.assertFalse(spia.exists())                                  # il codice manomesso NON è stato eseguito
+
+    def test_sigillo_senza_esegui_verifica_rifiutato_prima_degli_import(self):
+        esca, spia = self.esca_e_esecutore_manomesso()
+        r = self.avvia("--scheda", str(esca), "--registro", "x", "--riserva", "x", "--prenotazione", "P1",
+                       "--cache", "x", "--cache-sviluppo", "x", "--rapporto", "r", "--ora", ORA)
+        self.assertEqual(r.returncode, 2, r.stderr[-400:])
+        self.assertIn("FERMO prima di importare", r.stderr)
+        self.assertIn("esegui_verifica.py", r.stderr)
+        self.assertFalse(spia.exists())
+
+    def test_forma_con_uguale_accettata(self):
+        self.sigilla()
+        r = self.avvia(f"--scheda={self.scheda}", "--registro", "x", "--riserva", "x", "--prenotazione", "P1",
+                       "--cache", "x", "--cache-sviluppo", "x", "--rapporto", str(self.dir / "r.txt"), "--ora", ORA)
+        self.assertNotIn("FERMO prima di importare", r.stderr)
+        self.assertIn("RIFIUTATA", r.stderr)                            # arriva all'esecutore (registri finti)
+
+    def test_abbreviazione_dell_opzione_rifiutata(self):
+        self.sigilla()
+        r = self.avvia("--sched", str(self.scheda), "--registro", "x", "--riserva", "x", "--prenotazione", "P1",
+                       "--cache", "x", "--cache-sviluppo", "x", "--rapporto", "r", "--ora", ORA)
+        self.assertEqual(r.returncode, 2)
+        self.assertIn("FERMO prima di importare", r.stderr)
+
     def test_con_i_controlli_superati_passa_all_esecutore(self):
         self.sigilla()
         r = self.avvia("--scheda", str(self.scheda), "--registro", "x", "--riserva", "x", "--prenotazione", "P1",
@@ -738,6 +785,27 @@ class TestAvvioVerifica(unittest.TestCase):
         self.assertNotIn("FERMO prima di importare", r.stderr)
         self.assertNotIn("avvio.py verifica", r.stderr)                 # l'esecutore riconosce il lanciatore
         self.assertIn("RIFIUTATA", r.stderr)                            # poi si ferma sui registri finti
+
+
+class TestIdentitaDellaScheda(Percorso):
+    def test_esecutore_rifiuta_una_scheda_diversa_da_quella_controllata(self):
+        # #143: l'esecutore esegue SOLO la scheda che il lanciatore ha controllato prima degli import
+        scheda = self.prepara()
+        altra = self.d / "altra.md"
+        altra.write_text(scheda.read_text(encoding="utf-8"), encoding="utf-8")
+        argomenti = ["--scheda", str(scheda), "--registro", str(self.registro), "--riserva", str(self.riserva),
+                     "--prenotazione", "P1", "--cache", str(self.cache), "--cache-sviluppo", str(self.cache_sv),
+                     "--rapporto", str(self.d / "r.txt"), "--ora", ORA]
+        import contextlib
+        import io
+        errore = io.StringIO()
+        with mock.patch.object(EV, "CONTROLLO_AMBIENTE", True), mock.patch.object(sys, "_tb_avvio_controllato", True, create=True), \
+                mock.patch.object(sys, "_tb_scheda_controllata", str(altra.resolve()), create=True), \
+                contextlib.redirect_stderr(errore), contextlib.redirect_stdout(io.StringIO()):
+            rc = EV.main(argomenti)
+        self.assertEqual(rc, 2)
+        self.assertIn("scheda diversa da quella controllata", errore.getvalue())
+        self.assertEqual(self.chiamate, [])
 
 
 class TestSeduteSenzaOperazioni(Percorso):
