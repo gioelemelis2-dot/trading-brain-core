@@ -1537,3 +1537,21 @@ Nulla di questo tocca il candidato `8e51ce9` su cui lavora R15.
   - La riserva rifiuta la prenotazione con ipotesi vuota.
   - L'esecutore, con scheda a ipotesi vuota e prenotazione valida, rifiuta al passo 1, prima del confronto delle ipotesi.
 - **Mutanti:** PR20–PR24 e N70 uccisi su 3.13 e 3.9. In ogni corsa la copia non mutata ha superato la suite del file (percorso: riserva, manifesto ed esegui_verifica; esecuzione: esegui_h002, riserva e le altre). Log: `ricevute/2026-11-26-verifica-r19/log/chiusura_150_151_mutanti.log`.
+
+## 2026-11-26 · v2.21 (sonde di chiusura di Gemini verificate)
+
+- **Consegna `b290348`** (ramo `rev/gemini-sonde-chiusura`): archiviata senza modifiche; esaminata prima dell'esecuzione.
+- **Riesecuzione su 3.13, in due copie:**
+  - su `7f35740` riproduce l'output consegnato: `difetto_presente` identico in 26 righe su 26;
+  - le 3 differenze di stato sono d'ambiente (traceback, messaggio di `json`, nome del file temporaneo);
+  - riprodotta anche l'inversione di S-146a: stessa impronta dell'impegno, «promossa» +0,5363 contro «bocciata» −0,2796.
+- **Sul codice attuale `0c28299`:**
+  - tutti i rilievi danno `false`, tranne **S-144** (#144 aperto);
+  - percorsi validi e sonde #124 sono `false`;
+  - ho letto lo stato riga per riga.
+- **Limite di #145 chiuso:** la parte sulla storia era «provata solo dai test di Claude». Ora è provata anche da S-145 (b): con α corretto, «date già consumate in un'altra versione», 0 letture, 0 eventi.
+- **Limiti dichiarati:**
+  - S-149 ora si ferma per α ≠ D-38 prima della quota;
+  - S-147a/b lasciano registrato lo screening di sviluppo (ordine del percorso);
+  - esecuzione solo su 3.13.
+- **Ricevuta:** `ricevute/2026-11-26-verifica-r19/VERIFICA-SONDE-CHIUSURA.md`, con i due JSONL grezzi.

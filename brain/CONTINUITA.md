@@ -2,6 +2,17 @@
 
 Ultimo aggiornamento: **2026-11-23, mattina** (sezione in testa); prima: 2026-11-15, dopo il mandato notturno su H-002 (programma dei criteri, strumento di sigillo, quaderno delle ipotesi; ramo `feat/esecutore-h002`, **non unito a main**). Leggere questo file per primo (vale anche per Gemini, insieme a `collaborazione/HANDOFF-GEMINI.md`).
 
+## Stato del 26/11/2026, fine mattina (LEGGERE PER PRIMO)
+
+**Sempre in italiano.**
+- **Chiusi in TDD, con i mutanti su 3.13 e 3.9:** #143, #145, #146 (a–e), #147, #148, #149, e i nuovi minori #150 e #151. Registro delle modifiche fino a v2.21.
+- **Sonde di chiusura di Gemini (`b290348`) verificate:**
+  - su `7f35740` riproducono il suo output (26 righe su 26);
+  - sul codice attuale tutte `false`, tranne S-144;
+  - ricevuta: `laboratorio/ricevute/2026-11-26-verifica-r19/VERIFICA-SONDE-CHIUSURA.md`.
+- **Resta del lotto R19:** solo **#144**, che attende la risposta del DGS al messaggio 20, insieme al requisito 6. Poi D-55 (testimone, risposta del DGS), D-54, la procedura di potenza (requisito 3), A1 (requisito 5) e B1 (decisione del titolare).
+- **Domani:** la D2 sulla demo; servono le tolleranze, sempre dalla risposta del DGS.
+
 ## Piano del 26/11/2026, mattina (LEGGERE PER PRIMO; scritto alle 09:19 UTC e datato 27/11 per errore, vedi registro delle modifiche v2.18)
 
 **Sempre in italiano.** Il titolare è fuori al mattino; domani fa la D2 sulla demo (D-57).
