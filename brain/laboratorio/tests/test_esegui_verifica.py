@@ -606,6 +606,46 @@ class TestAncoraEStoria(Percorso):
             self.esegui(scheda)
         self.assertEqual(self.chiamate, [])
 
+    # #145 (R19-04 di Gemini): la stessa domanda non si verifica due volte usando un ramo divergente
+    def test_verifica_registrata_in_un_altra_versione_del_registro_delle_prove(self):
+        scheda = self.scheda_nel_repo()
+        RV.prenota(self.riserva, "P2", "H-T127", B_INIZIO, B_FINE, S.impronta(scheda), ORA)   # finestra valida
+        prima = self.spingi("sigillo e due prenotazioni")
+        EV._registra_una_volta(self.registro, "H-T127", {"ruolo": "verifica", "variante": "V-T",
+                                                          "impronta_impegno": "h" * 64, "prenotazione": "P1"}, ORA)
+        self.spingi("verifica di P1 sul ramo principale")
+        self.sp.run(self.g + ["checkout", "-q", "-b", "divergente", prima], check=True)
+        self.sp.run(self.g + ["push", "-q", "-u", "origin", "divergente"], check=True, capture_output=True)
+        with self.assertRaisesRegex(ValueError, "già eseguita"):
+            self.esegui(scheda, "P2")
+        self.assertEqual(self.chiamate, [])
+
+    def test_testa_della_riserva_diversa_in_un_altra_versione(self):
+        scheda = self.scheda_nel_repo()
+        self.spingi("sigillo e prenotazione")
+        dati = json.loads(self.riserva.read_text(encoding="utf-8"))
+        dati["fine"] = "2023-09-30"                                       # confini riscritti su questo ramo
+        self.riserva.write_text(json.dumps(dati), encoding="utf-8")
+        self.spingi("testa riscritta")
+        with self.assertRaisesRegex(ValueError, "testa del registro della riserva"):
+            self.esegui(scheda)
+        self.assertEqual(self.chiamate, [])
+
+    def test_date_consumate_in_un_altra_versione(self):
+        scheda = self.scheda_nel_repo()
+        RV.prenota(self.riserva, "PX", "H-ALTRA", date(2015, 1, 5), date(2015, 3, 31), "d" * 64, ORA)
+        prima = self.spingi("sigillo e prenotazioni")
+        RV.autorizza(self.riserva, "P1", 1, "h" * 64, ORA)               # P1 consuma le sue date sul principale
+        self.spingi("P1 autorizzata")
+        self.sp.run(self.g + ["checkout", "-q", "-b", "divergente", prima], check=True)
+        RV.autorizza(self.riserva, "PX", 1, "e" * 64, ORA)               # j = 1 anche qui
+        RV.rilascia(self.riserva, "P1", ORA, "prova", "rilascio su un ramo divergente")
+        RV.prenota(self.riserva, "P2", "H-T127", LETTURA, FINE, S.impronta(scheda), ORA)   # stesse date di P1
+        self.spingi("ramo divergente", ramo="divergente")
+        with self.assertRaisesRegex(ValueError, "consumate in un'altra versione"):
+            self.esegui(scheda, "P2")
+        self.assertEqual(self.chiamate, [])
+
     def test_n_non_scende(self):
         scheda = self.scheda_nel_repo()
         prima = self.spingi("sigillo e prenotazione")                     # N = 1
@@ -803,6 +843,18 @@ class TestAvvioVerifica(unittest.TestCase):
         self.assertNotIn("FERMO prima di importare", r.stderr)
         self.assertNotIn("avvio.py verifica", r.stderr)                 # l'esecutore riconosce il lanciatore
         self.assertIn("RIFIUTATA", r.stderr)                            # poi si ferma sui registri finti
+
+
+class TestAlfaTotale(Percorso):
+    def test_alfa_totale_diverso_da_d38_rifiutato(self):
+        # #145: con α totale alterato una seconda apertura avrebbe la quota collaudata del 2,5% (R19-04)
+        self.riserva.unlink()
+        RV.crea(self.riserva, date(2005, 1, 1), date(2023, 10, 31), 0.75, ORA)
+        scheda = self.prepara()
+        prima = self.riserva.read_bytes()
+        with self.assertRaisesRegex(ValueError, "α totale"):
+            self.esegui(scheda)
+        self.assertEqual((self.chiamate, self.riserva.read_bytes()), ([], prima))
 
 
 class TestIdentitaDellaScheda(Percorso):
