@@ -1,0 +1,8 @@
+# Chiusura #147 (R19-07): sonda 2E di Gemini (r19_sonde_manomissioni_d51.py, righe del blocco '# 2E: Manifesto') eseguita SENZA modifiche al testo
+# su copia wt-c identica al codice di lavoro (cmp: esecuzione/*.py, verdetto/*.py, dati/pipeline/dukascopy.py UGUALI), Python 3.13, rete bloccata.
+# Aggiunta dichiarata: EV.esegui avvolto per leggere lo stato al momento del rifiuto (la cartella temporanea sparisce all'uscita dal with).
+  [R19-07a manifesto URL data/dominio falsi] anomalie=['indirizzo diverso da quello atteso: XAUUSD BID 2010-02-08', 'omesso: XAUUSD BID 2010-02-08']
+  [R19-07b esegui] RIFIUTATA: ValueError | manifesto con anomalie: impronta non valida: XAUUSD BID 2010-02-08; omesso: XAUUSD BID 2010-02-08
+  [R19-07b stato] giorni_consumati= 0 | tipi_eventi_riserva= ['prenotazione', 'tentativo'] | esecuzioni_nel_registro_prove= 1 | rapporto_creato= False
+  [R19-07b] fine sonda per rifiuto (atteso dopo #147)
+# Voce del registro delle prove al rifiuto: solo lo screening di ruolo 'sviluppo' (nessuna voce di verifica).

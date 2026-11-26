@@ -53,6 +53,10 @@ M = {
     "MF07 esiti http accettati come dati": [(MF, "if r.get(\"esito\") not in VALIDI:", "if not r.get(\"esito\"):")],
     "MF08 quarantena ignorata": [(MF, "\"quarantena\" if giorno in quarantena else ", "")],
     "MF09 insieme atteso senza ordinamento (atteso EQUIVALENTE: lati e giorni sono già generati in ordine)": [(MF, "return sorted((simbolo, lato, x)", "return list((simbolo, lato, x)")],
+    "MF10 indirizzo non confrontato con quello atteso (#147)": [(MF, "            if url != atteso_url:", "            if False:")],
+    "MF11 impronta della riga non controllata (#147)": [(MF, '            if not re.fullmatch(r"[0-9a-f]{64}", r.get("sha256") or ""):       # #147 (R19-07b)', '            if False:')],
+    "MF12 impronta controllata solo se non vuota (#147)": [(MF, 'if not re.fullmatch(r"[0-9a-f]{64}", r.get("sha256") or ""):', 'if r.get("sha256") and not re.fullmatch(r"[0-9a-f]{64}", r.get("sha256")):')],
+    "MF13 impronta senza distinzione di maiuscole (#147)": [(MF, 'r"[0-9a-f]{64}"', 'r"[0-9a-fA-F]{64}"')],
     # caricatore
     "CB01 byte non confrontati": [(C, "hashlib.sha256(dati).hexdigest() != atteso:", "False:")],
     "CB02 giorno fuori dal manifesto letto": [(C, "if attese is not None and atteso is None:", "if False:")],

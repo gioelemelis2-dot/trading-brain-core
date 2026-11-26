@@ -1449,7 +1449,7 @@ Nulla di questo tocca il candidato `8e51ce9` su cui lavora R15.
   - Test `test_pipeline` e `test_esporta_redatto` verdi su 3.13 e 3.9.
   - Dettagli in `governance/REDAZIONE-NOME-20261126.md`.
 
-## 2026-11-27 · v2.15 (#143 corretto)
+## 2026-11-26 · v2.15 (#143 corretto)
 
 - **#143 (critico, R19-02):** test rossi `efc5150`, poi il codice.
   - **Lanciatore:** una sola `--scheda`, anche nella forma `--scheda=X`; nel sigillo dell'ipotesi servono `esegui_verifica.py` e `avvio.py`; la scheda controllata viene passata all'esecutore.
@@ -1459,7 +1459,7 @@ Nulla di questo tocca il candidato `8e51ce9` su cui lavora R15.
   - **Prova indipendente:** la sezione 1 delle sonde di Gemini, rieseguita: R19-02b `codice_manomesso_eseguito=False`; R19-01 percorso valido ancora `rc=0`.
 - **Errore di Claude, senza danno:** un calcolo lanciato senza `-B` aveva lasciato bytecode in `brain/`. Il controllo dell'ambiente l'ha rilevato (`TestAmbiente` rosso). Bytecode cancellato, test verde.
 
-## 2026-11-27 · v2.16 (#148 e #149 corretti)
+## 2026-11-26 · v2.16 (#148 e #149 corretti)
 
 - **#148:** il rapporto (cartella, o cartella madre che è un file) si controlla al passo 1. Il controllo «non scrivibile» è stato tolto, perché come root non si può provare: un mutante lì non dimostrerebbe nulla. Mutanti EV40 ed EV41 uccisi.
 - **#149:** `RV.quota` calcola in frazioni esatte. Mutanti PR19, V11 e V12 uccisi.
@@ -1469,7 +1469,7 @@ Nulla di questo tocca il candidato `8e51ce9` su cui lavora R15.
   - R19-08 senza apertura, cioè senza consumo;
   - **R19-04 con α 0,15 ora completa la seconda verifica.** Prima la fermava per caso il falso rifiuto di #149. Il varco è #145, il prossimo.
 
-## 2026-11-27 · v2.17 (#145 corretto)
+## 2026-11-26 · v2.17 (#145 corretto)
 
 - **#145 (R19-04):** test rossi `6917109`. **Errore di Claude nei test, corretto prima del codice:** il test della testa modificava una chiave del primo livello, che il codice ignora; la testa sta in `dati["riserva"]`.
 - **Codice:**
@@ -1479,3 +1479,21 @@ Nulla di questo tocca il candidato `8e51ce9` su cui lavora R15.
   - date consumate altrove non rileggibili.
 - Mutanti EV42–EV46 uccisi. Moduli `test_esegui_verifica` e `test_riserva` verdi su 3.13 e 3.9.
 - **Sonde R19-04 di Gemini rieseguite:** rifiutate per α (0,15 e 0,75). Limite dichiarato: la parte sulla storia con α corretto è provata solo dai test di Claude.
+
+## 2026-11-26 · v2.18 (#147 corretto; date corrette)
+
+- **#147 (R19-07):** test rossi `9014e93`.
+- **Codice (`manifesto.py`):**
+  - indirizzo identico a `DK.url_giorno`;
+  - impronta di 64 cifre esadecimali minuscole su ogni riga valida.
+- Mutanti MF10–MF13 uccisi su 3.13 e 3.9. Moduli `test_manifesto`, `test_diagnosi_manifesto` e `test_esegui_verifica` verdi su 3.13 e 3.9 (71 test).
+- **Sonda 2E di Gemini** rieseguita senza modifiche al testo (l'involucro per leggere lo stato al rifiuto è dichiarato nel log): 07a dà un'anomalia; 07b viene rifiutata prima dell'autorizzazione, con 0 giorni consumati.
+- **Compatibilità con i registri scritti dallo scaricatore**, provata sul codice storico:
+  - le stesse 14.000 URL in tutte le versioni di `url_giorno` da quando esiste il registro;
+  - `hexdigest()` su tutti gli esiti validi.
+- **Limite:** i registri veri non sono stati letti. La diagnosi con soli conteggi sul Mac lo confermerebbe; la decisione spetta al titolare.
+- Log: `ricevute/2026-11-26-verifica-r19/log/chiusura_147_*.log`.
+- **Errore di Claude, corretto:**
+  - **Che cosa:** ho datato **27/11** il lavoro del **26/11**. Riguarda il piano in CONTINUITA, le voci v2.15–v2.17, le date di correzione di #143, #145, #148 e #149 e lo stato dei requisiti.
+  - **Prova:** le date dei commit, da `694c31a` (09:19 UTC) a `9014e93` (10:08 UTC), sono tutte del 26/11. Il 27/11 è solo il giorno della prova D2.
+  - **Corretto** nei file vivi. **Non corretto** nei testi già mandati, `MANDATO-SONDE-CHIUSURA-GEMINI.txt` e `MESSAGGIO-20-DGS.md`: sono datati 27/11 ma sono stati spediti il 26/11.

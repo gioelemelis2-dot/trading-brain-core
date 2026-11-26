@@ -2,7 +2,7 @@
 
 Ultimo aggiornamento: **2026-11-23, mattina** (sezione in testa); prima: 2026-11-15, dopo il mandato notturno su H-002 (programma dei criteri, strumento di sigillo, quaderno delle ipotesi; ramo `feat/esecutore-h002`, **non unito a main**). Leggere questo file per primo (vale anche per Gemini, insieme a `collaborazione/HANDOFF-GEMINI.md`).
 
-## Piano del 27/11/2026, mattina (LEGGERE PER PRIMO)
+## Piano del 26/11/2026, mattina (LEGGERE PER PRIMO; scritto alle 09:19 UTC e datato 27/11 per errore, vedi registro delle modifiche v2.18)
 
 **Sempre in italiano.** Il titolare è fuori al mattino; domani fa la D2 sulla demo (D-57).
 - **Al DGS:** `collaborazione/da-claude/MESSAGGIO-20-DGS.md` con `consegna-dgs20.zip`. Chiede i casi d'accettazione per i requisiti 1 e 12–18 e una convenzione di tolleranza per la D2: in DA-25 le tolleranze **non esistono**, contrariamente a quanto scritto in DGS-20.

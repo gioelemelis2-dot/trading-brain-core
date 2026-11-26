@@ -22,9 +22,12 @@ import csv
 import hashlib
 import io
 import json
+import re
 from datetime import date, timedelta
 from pathlib import Path
 from typing import Dict, List, Optional, Tuple
+
+from ...dati.pipeline import dukascopy as DK
 
 LATI = ("ASK", "BID")
 VALIDI = ("dati", "in-cache-non-registrato", "404", "vuoto-200", "vuoto-204")
@@ -85,6 +88,16 @@ def manifesto(cache: Path, simbolo: str, inizio: date, fine: date, accessorie: i
                 continue
             if _lato_dell_indirizzo(url) != lato:
                 anomalie.append(f"lato sbagliato: {simbolo} {lato} {giorno} (indirizzo {_lato_dell_indirizzo(url)})")
+                continue
+            try:                                                       # #147 (R19-07a): dominio, data, mercato, lato
+                atteso_url = DK.url_giorno(simbolo, date.fromisoformat(giorno), lato)
+            except ValueError:
+                atteso_url = None
+            if url != atteso_url:
+                anomalie.append(f"indirizzo diverso da quello atteso: {simbolo} {lato} {giorno}")
+                continue
+            if not re.fullmatch(r"[0-9a-f]{64}", r.get("sha256") or ""):       # #147 (R19-07b)
+                anomalie.append(f"impronta non valida: {simbolo} {lato} {giorno}")
                 continue
             valide.setdefault((lato, giorno), []).append(r)
     elenco = []

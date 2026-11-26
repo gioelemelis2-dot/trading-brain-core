@@ -1,0 +1,25 @@
+== python3.13
+----------------------------------------------------------------------
+Ran 71 tests in 152.327s
+
+OK
+== python3.9
+----------------------------------------------------------------------
+Ran 71 tests in 163.807s
+
+OK
+
+== mutanti 3.13
+UCCISO MF10 indirizzo non confrontato con quello atteso (#147)
+UCCISO MF11 impronta della riga non controllata (#147)
+UCCISO MF12 impronta controllata solo se non vuota (#147)
+UCCISO MF13 impronta senza distinzione di maiuscole (#147)
+
+4/4 mutanti uccisi (3.13.18); equivalenti dichiarati vivi: 0
+== mutanti 3.9
+UCCISO MF10 indirizzo non confrontato con quello atteso (#147)
+UCCISO MF11 impronta della riga non controllata (#147)
+UCCISO MF12 impronta controllata solo se non vuota (#147)
+UCCISO MF13 impronta senza distinzione di maiuscole (#147)
+
+4/4 mutanti uccisi (3.9.25); equivalenti dichiarati vivi: 0
