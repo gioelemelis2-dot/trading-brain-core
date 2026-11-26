@@ -1400,3 +1400,12 @@ Nulla di questo tocca il candidato `8e51ce9` su cui lavora R15.
 ## 2026-11-26 · v2.10 (D-56)
 
 - **D-56 (DA-42, opzione c′), decisa dal titolare prima della consegna di R19:** criterio d'uscita dal Gate 2½ (testo in `DECISIONI.md`). Vale per la chiusura di R19 sul candidato finale.
+
+## 2026-11-26 · v2.11 (ultimo lotto: punti 4, 8, 9)
+
+- **Punto 4, #141:** la potenza dichiarata è IPOTESI («dichiarata nella scheda, non ricalcolata»), le metriche di H-002 sono DERIVATO. Test rossi, codice `7ca55ae`; mutanti VD133, VD134, EV35 uccisi.
+- **Punti 8 e 9:** test rossi `3b87b0d`, poi il codice.
+  - **Tentativo rifiutato:** nuovo evento `tentativo` della riserva, solo prima dell'autorizzazione, senza consumo, con fase, motivo e snapshot dei registri. Un ritentativo identico non si duplica. L'esecutore lo registra quando il manifesto della finestra ha anomalie e mette i tentativi precedenti nell'impegno (DGS-18 Q3).
+  - **Rilascio con autore:** il rilascio esige chi lo chiede e il motivo; un evento scritto a mano senza autore rende il registro illeggibile (DGS-19).
+  - Mutanti PR15–PR18, EV36, EV37: 6/6 uccisi su 3.13.
+  - Il test del giorno omesso ora si aspetta un solo evento nuovo, il tentativo; aggiornato anche l'atteso di G in `ricevuta_127.py`.

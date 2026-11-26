@@ -35,6 +35,7 @@ Schema `riserva/2` (22/11/2026; D-50, DGS-14 Q1-Q2, DGS-15 punto 4):
 import hashlib
 import json
 import math
+import re
 from datetime import date, timedelta
 from pathlib import Path
 from typing import Optional, Tuple
@@ -43,7 +44,7 @@ from .sigillo import _bloccato, _scrivi, ancora_git
 
 SCHEMA = "riserva/2"
 ESITI = ("promossa", "bocciata", "non decidibile")
-TIPI = ("prenotazione", "rilascio", "autorizzazione", "quarantena", "esito", "rifiuto")
+TIPI = ("prenotazione", "rilascio", "autorizzazione", "quarantena", "esito", "rifiuto", "tentativo")
 
 
 def _d(x) -> date:
@@ -125,7 +126,8 @@ class _Stato:
                                  f"serve uno sblocco esplicito")
             for g in _giorni(a, b):
                 self.giorni[g] = "prenotato"
-            self.prenotazioni[id_] = {"evento": e, "stato": "prenotato", "autorizzazione": None, "esito": None}
+            self.prenotazioni[id_] = {"evento": e, "stato": "prenotato", "autorizzazione": None, "esito": None,
+                                      "tentativi": [], "rilascio": None}
             return
         if p is None:
             raise ValueError(f"{tipo}: identità {id_!r} sconosciuta")
@@ -133,9 +135,22 @@ class _Stato:
         if tipo == "rilascio":
             if p["stato"] != "prenotato":
                 raise ValueError(f"rilascio di {id_!r} impossibile: è {p['stato']}")
+            if not all(isinstance(e.get(k), str) and e[k].strip() for k in ("chi", "motivo")):   # DGS-19, caso B
+                raise ValueError(f"rilascio di {id_!r} senza autore o motivo: va attribuito a chi lo chiede")
             for g in _giorni(a, b):
                 del self.giorni[g]
             p["stato"] = "rilasciato"
+            p["rilascio"] = {"chi": e["chi"], "motivo": e["motivo"], "ora": e.get("ora")}
+        elif tipo == "tentativo":                                      # DGS-18 Q3: rifiuto prima, senza consumo
+            if p["stato"] != "prenotato":
+                raise ValueError(f"tentativo di {id_!r} impossibile: è {p['stato']} (solo prima dell'autorizzazione)")
+            reg = e.get("registri")
+            if not (isinstance(e.get("fase"), str) and e["fase"].strip() and isinstance(e.get("motivo"), str)
+                    and e["motivo"].strip() and isinstance(reg, list) and reg
+                    and all(isinstance(r, list) and len(r) == 2 and isinstance(r[0], str)
+                            and isinstance(r[1], str) and re.fullmatch(r"[0-9a-f]{64}", r[1]) for r in reg)):
+                raise ValueError(f"tentativo di {id_!r} non valido: servono fase, motivo e lo snapshot dei registri")
+            p["tentativi"].append({"fase": e["fase"], "motivo": e["motivo"], "registri": reg, "ora": e.get("ora")})
         elif tipo == "autorizzazione":
             if p["stato"] != "prenotato":
                 raise ValueError(f"autorizzazione di {id_!r} impossibile: è {p['stato']}")   # anche «rifiutato»
@@ -241,8 +256,29 @@ def prenota(registro: Path, id_: str, ipotesi: str, inizio: date, fine: date, ha
                                 "usa_protetta": bool(usa_protetta), "ora": ora})
 
 
-def rilascia(registro: Path, id_: str, ora: str) -> dict:
-    return _aggiungi(registro, {"tipo": "rilascio", "id": id_, "ora": ora})
+def rilascia(registro: Path, id_: str, ora: str, chi: str, motivo: str) -> dict:
+    """Rilascio esplicito di una prenotazione non autorizzata, attribuito a chi lo chiede (DGS-19, caso B)."""
+    return _aggiungi(registro, {"tipo": "rilascio", "id": id_, "ora": ora, "chi": chi, "motivo": motivo})
+
+
+def tentativo(registro: Path, id_: str, fase: str, motivo: str, registri: list, ora: str) -> Optional[dict]:
+    """Un tentativo rifiutato PRIMA dell'autorizzazione (per esempio il manifesto con anomalie, caso G): si registra
+    senza consumo, con lo snapshot dei registri. Un ritentativo identico (stessa fase, motivo e registri dell'ultimo)
+    non si duplica: restituisce None senza scrivere (DGS-18 Q3)."""
+    registri = [list(r) for r in registri]
+    with _bloccato(registro):
+        dati = _leggi(registro)
+        s = _ricostruisci(dati)
+        p = s.prenotazioni.get(id_)
+        if p is not None and p["tentativi"]:
+            u = p["tentativi"][-1]
+            if (u["fase"], u["motivo"], u["registri"]) == (fase, motivo, registri) and p["stato"] == "prenotato":
+                return None
+        e = {"tipo": "tentativo", "id": id_, "fase": fase, "motivo": motivo, "registri": registri, "ora": ora}
+        s.applica(e)
+        dati["eventi"].append(e)
+        _scrivi(registro, dati)
+    return e
 
 
 def autorizza(registro: Path, id_: str, n_globale: int, hash_dati: str, ora: str, m: int = 1,
@@ -312,7 +348,8 @@ def prenotazione(registro: Path, id_: str) -> dict:
     if p is None:
         raise ValueError(f"prenotazione {id_!r} sconosciuta")
     return {"evento": dict(p["evento"]), "stato": p["stato"], "autorizzazione": p["autorizzazione"],
-            "esito": p["esito"], "record": p.get("record"), "rifiuto": p.get("rifiuto")}
+            "esito": p["esito"], "record": p.get("record"), "rifiuto": p.get("rifiuto"),
+            "tentativi": [dict(t) for t in p.get("tentativi", [])], "rilascio": p.get("rilascio")}
 
 
 def record_esito(registro: Path, id_: str) -> Optional[dict]:

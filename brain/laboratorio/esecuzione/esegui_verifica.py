@@ -289,6 +289,8 @@ def esegui(scheda: Path, registro: Path, riserva: Path, id_: str, cache: Path, c
                                                 "impronta_sviluppo": man_sv["impronta_elenco"]}, ora)
     man = MF.manifesto(cache, c["mercato"], lettura[0], lettura[1])                       # 7
     if man["anomalie"]:
+        if not autorizzata:                                    # DGS-18 Q3: traccia del tentativo, senza consumo
+            RV.tentativo(riserva, id_, "manifesto", "; ".join(man["anomalie"][:10]), man["registri"], ora)
         raise ValueError(f"manifesto con anomalie: {'; '.join(man['anomalie'][:10])}")
     ctx = n_globale(registro, RADICE)                                                     # #86: N non scende
     impegno = {"scheda_sha256": sha_scheda, "codice": identita["codice"],                    # 8
@@ -298,7 +300,8 @@ def esegui(scheda: Path, registro: Path, riserva: Path, id_: str, cache: Path, c
                "variante": c["variante"], "seme": c["seme"], "contratto": c,
                "sedute": [g.isoformat() for g in giorni_verifica],             # DGS-16: fissate prima di aprire
                "sviluppo": {"finestra": c["sviluppo"], "registri": man_sv["registri"],
-                            "impronta_elenco": man_sv["impronta_elenco"]}}
+                            "impronta_elenco": man_sv["impronta_elenco"]},
+               "tentativi_precedenti": p["tentativi"]}                             # DGS-18 Q3: collegati
     h = RV.impronta_impegno(impegno)
     try:
         RV.autorizza(riserva, id_, ctx["n_prove"], h, ora, c["m"], impegno=impegno, quota_attesa=q)

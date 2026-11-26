@@ -322,7 +322,13 @@ class TestRifiutiPrimaDellaLettura(Percorso):
                 self.esegui(scheda)
         finally:
             reg.write_bytes(originale)
-        self.assertEqual((self.chiamate, self.riserva.read_bytes()), (["sviluppo"], prima))   # nessuna autorizzazione
+        self.assertEqual(self.chiamate, ["sviluppo"])                                         # nessuna lettura
+        prima_ev = json.loads(prima.decode("utf-8"))["eventi"]
+        dopo_ev = json.loads(self.riserva.read_text(encoding="utf-8"))["eventi"]
+        # DGS-18 Q3: l'unico evento nuovo è il tentativo rifiutato, senza consumo né autorizzazione
+        self.assertEqual(dopo_ev[:len(prima_ev)], prima_ev)
+        self.assertEqual([e["tipo"] for e in dopo_ev[len(prima_ev):]], ["tentativo"])
+        self.assertEqual(RV.stato(self.riserva)["aperture"], [])
 
     def test_dopo_l_anomalia_corretta_la_stessa_prenotazione_riprende(self):
         # DGS-16 Q3: G lascia la prenotazione aperta (nessuna autorizzazione); corretto il registro dello scaricamento,

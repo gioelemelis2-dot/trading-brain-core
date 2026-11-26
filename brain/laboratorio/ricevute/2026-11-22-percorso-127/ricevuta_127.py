@@ -272,7 +272,7 @@ if __name__ == "__main__":
             prova("E_file_difforme", "esito tecnico «file difforme», non decidibile; consumo mantenuto", e_difforme),
             prova("F_ripresa_dopo_il_verdetto", "rapporto rigenerato dal record senza letture; codice diverso rifiutato",
                   f_ripresa),
-            prova("G_giorno_omesso_nel_registro", "rifiutata prima dell'autorizzazione (manifesto con anomalie)",
+            prova("G_giorno_omesso_nel_registro", "rifiutata prima dell'autorizzazione (manifesto con anomalie); tentativo registrato senza consumo (DGS-18 Q3)",
                   g_omesso)]
     print(json.dumps({"candidato": candidato(), "finestra": {"lettura": [LETTURA.isoformat(), FINE.isoformat()],
                       "accessorie_giorni": ACCESSORIE, "verifica": [INIZIO.isoformat(), FINE.isoformat()]},
