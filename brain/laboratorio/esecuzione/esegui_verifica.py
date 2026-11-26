@@ -42,6 +42,7 @@ from . import sigillo as S
 from .esegui_h002 import AVVIO, RADICE, VARIANTI, controlla_ambiente, moduli_brain
 
 PARTENZA = "brain.laboratorio.esecuzione.esegui_verifica"
+ALFA_TOTALE = 0.05                                                     # D-38; #145: un registro con un altro α si rifiuta
 BLOCCO = re.compile(r"```json contratto-h003\n(.*?)\n```", re.S)
 DESTINAZIONI = ("test", "verifica")
 ESITI_TECNICI = ("completata", "rapporto rigenerato", "rifiutata per quota", "file difforme")
@@ -186,23 +187,36 @@ def n_globale(registro: Path, radice: Path) -> dict:
     return ctx
 
 
-def _ancora(registro: Path, riserva: Path) -> List[dict]:
+def _ancora(registro: Path, riserva: Path):
     """PIANO-D51 §3.1: i due registri sono quelli canonici, identici alla versione spinta su GitHub, in una copia
-    completa del repository; restituisce le versioni del registro della riserva in tutta la storia."""
+    completa del repository; restituisce (versioni del registro delle prove, versioni del registro della riserva) in
+    tutta la storia (#145: prima le versioni del registro delle prove si calcolavano e si scartavano)."""
     for f, rel in ((registro, REL_REGISTRO_PROVE), (riserva, REL_RISERVA)):
         if Path(f).resolve() != (Path(RADICE) / rel).resolve():
             raise ValueError(f"il registro deve essere quello canonico del repository ({rel}), non {f}")
     S.controlla_ancora(registro, RADICE)
     RV.controlla_ancora(riserva, RADICE)
-    S.versioni_nella_storia(RADICE, REL_REGISTRO_PROVE)
-    return S.versioni_nella_storia(RADICE, REL_RISERVA)
+    return S.versioni_nella_storia(RADICE, REL_REGISTRO_PROVE), S.versioni_nella_storia(RADICE, REL_RISERVA)
 
 
-def _gia_consumata(versioni: List[dict], id_: str, stato_attuale: str, j_attuale: int) -> None:
+def _gia_consumata(versioni: List[dict], id_: str, stato_attuale: str, j_attuale: int, testa: Optional[dict] = None,
+                   finestra: Optional[tuple] = None) -> None:
     """Una prenotazione autorizzata in un'altra versione del registro (altro ramo, reflog) non si riusa; e il
-    registro attuale non può avere meno aperture di un'altra versione (j non scende)."""
+    registro attuale non può avere meno aperture di un'altra versione (j non scende). #145 (R19-04): la testa del
+    registro (confini, α totale, data di creazione) è la stessa in tutte le versioni, e le date consumate da un'ALTRA
+    prenotazione in un'altra versione non si leggono di nuovo."""
     for dati in versioni:
+        if testa is not None and dati.get("riserva") != testa:
+            raise ValueError("la testa del registro della riserva (confini, α totale, creazione) è diversa in un'altra "
+                             "versione della storia: registro ricreato o riscritto")
         s = RV._ricostruisci(dati)
+        if finestra is not None:
+            for i, q in s.prenotazioni.items():
+                if i != id_ and q["stato"] == "autorizzato" and \
+                        date.fromisoformat(q["evento"]["inizio"]) <= finestra[1] and \
+                        date.fromisoformat(q["evento"]["fine"]) >= finestra[0]:
+                    raise ValueError(f"le date di {id_!r} sono già consumate in un'altra versione del registro della "
+                                     f"riserva (prenotazione {i!r})")
         q = s.prenotazioni.get(id_)
         if q is not None and q["stato"] == "autorizzato" and stato_attuale != "autorizzato":
             raise ValueError(f"la prenotazione {id_!r} è già consumata in un'altra versione del registro della riserva")
@@ -231,9 +245,13 @@ def esegui(scheda: Path, registro: Path, riserva: Path, id_: str, cache: Path, c
     if rapporto.parent.exists() and not rapporto.parent.is_dir():
         raise ValueError(f"la cartella del rapporto {rapporto.parent} è un file")
     sha_scheda = S.impronta(scheda)
-    versioni_riserva = _ancora(registro, riserva) if ANCORA_GIT else []                  # PIANO-D51 §3.1
+    versioni_prove, versioni_riserva = _ancora(registro, riserva) if ANCORA_GIT else ([], [])   # PIANO-D51 §3.1
     p = RV.prenotazione(riserva, id_)                                                    # 2
-    _gia_consumata(versioni_riserva, id_, p["stato"], RV.quota_prevista(riserva, 1)[0] - 1)
+    testa = json.loads(Path(riserva).read_text(encoding="utf-8"))["riserva"]
+    if testa.get("alfa_tot") != ALFA_TOTALE:                                             # #145: α fissato da D-38
+        raise ValueError(f"α totale del registro della riserva {testa.get('alfa_tot')!r} diverso da D-38 ({ALFA_TOTALE})")
+    _gia_consumata(versioni_riserva, id_, p["stato"], RV.quota_prevista(riserva, 1)[0] - 1, testa,
+                   (date.fromisoformat(p["evento"]["inizio"]), date.fromisoformat(p["evento"]["fine"])))
     if p["evento"]["ipotesi"] != c["ipotesi"] or p["evento"]["hash_domanda"] != sha_scheda:
         raise ValueError(f"la prenotazione {id_!r} è di un'altra ipotesi o di un'altra scheda")
     if p["stato"] == "rifiutato":
@@ -259,8 +277,9 @@ def esegui(scheda: Path, registro: Path, riserva: Path, id_: str, cache: Path, c
     sigillo = S.controlla_sigillo(registro, c["ipotesi"], scheda, codice=identita["codice"])   # 3
     if c["variante"] not in sigillo["varianti"]:                                         # #137: prima di leggere
         raise ValueError(f"variante {c['variante']!r} non dichiarata nel sigillo di {c['ipotesi']}: {sigillo['varianti']}")
-    altre = [e.get("prenotazione") for e in S.leggi(registro)["esecuzioni"] if e["ipotesi"] == c["ipotesi"]
-             and e["ruolo"] == "verifica" and e.get("variante") == c["variante"] and e.get("prenotazione") != id_]
+    altre = [e.get("prenotazione") for d in [S.leggi(registro)] + versioni_prove for e in d["esecuzioni"]   # #145
+             if e["ipotesi"] == c["ipotesi"] and e["ruolo"] == "verifica" and e.get("variante") == c["variante"]
+             and e.get("prenotazione") != id_]
     if CONTROLLO_AMBIENTE:                                                               # PIANO-D51 §3.3
         controlla_ambiente(sigillo["codice"])
     if altre:                                                                            # PIANO-D51 §3.4

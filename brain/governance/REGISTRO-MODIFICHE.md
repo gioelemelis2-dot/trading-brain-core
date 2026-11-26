@@ -1468,3 +1468,14 @@ Nulla di questo tocca il candidato `8e51ce9` su cui lavora R15.
   - quota esatta;
   - R19-08 senza apertura, cioè senza consumo;
   - **R19-04 con α 0,15 ora completa la seconda verifica.** Prima la fermava per caso il falso rifiuto di #149. Il varco è #145, il prossimo.
+
+## 2026-11-27 · v2.17 (#145 corretto)
+
+- **#145 (R19-04):** test rossi `6917109`. **Errore di Claude nei test, corretto prima del codice:** il test della testa modificava una chiave del primo livello, che il codice ignora; la testa sta in `dati["riserva"]`.
+- **Codice:**
+  - unicità della verifica su tutte le versioni del registro delle prove;
+  - α fissato a D-38;
+  - testa del registro della riserva identica fra le versioni;
+  - date consumate altrove non rileggibili.
+- Mutanti EV42–EV46 uccisi. Moduli `test_esegui_verifica` e `test_riserva` verdi su 3.13 e 3.9.
+- **Sonde R19-04 di Gemini rieseguite:** rifiutate per α (0,15 e 0,75). Limite dichiarato: la parte sulla storia con α corretto è provata solo dai test di Claude.
