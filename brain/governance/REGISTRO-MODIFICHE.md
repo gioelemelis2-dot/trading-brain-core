@@ -1409,3 +1409,17 @@ Nulla di questo tocca il candidato `8e51ce9` su cui lavora R15.
   - **Rilascio con autore:** il rilascio esige chi lo chiede e il motivo; un evento scritto a mano senza autore rende il registro illeggibile (DGS-19).
   - Mutanti PR15–PR18, EV36, EV37: 6/6 uccisi su 3.13.
   - Il test del giorno omesso ora si aspetta un solo evento nuovo, il tentativo; aggiornato anche l'atteso di G in `ricevuta_127.py`.
+
+## 2026-11-26 · v2.12 (R19 di Gemini verificato)
+
+- **R19 di Gemini** (`G-20261126-R19.md`, sul candidato `1431190`, ramo `rev/gemini-r19`, `c3c434d`) archiviato invariato e verificato.
+  - Script di Gemini rieseguito su `7191156` (invariato) e su `94b9c92` (adattate solo le due chiamate a `rilascia`).
+  - Le due corse sono identiche, tranne il vincitore nella gara CONC-2, con lo stesso esito.
+  - Ricevuta: `laboratorio/ricevute/2026-11-26-verifica-r19/`.
+- **Esito:**
+  - 7 rilievi su 9 riprodotti sul codice attuale; R19-01 (#142) e R19-05 (#140) sono chiusi, con la prova nel log.
+  - Nuovi difetti **#143** (critico), **#144–#148** (importanti, bloccanti per D-56) e **#149** (minore, latente).
+  - **#142 riclassificato critico**, d'accordo con Gemini.
+  - Tre scritte dello script non corrispondono al dato (r.17, r.19, sezione 6): vanno segnalate a Gemini.
+- **Calcolo per #149:** `RV.quota(0.05, 1, 1) == 0.025` è True con l'α di D-38. Il falso rifiuto si raggiunge solo con α alterato.
+- **Ultimo lotto:** aggiunti i requisiti 12–18; il requisito 10 è assorbito dal 14. R19 non avanza il contatore. Il prossimo giro di Gemini sarà sul candidato congelato dopo il lotto.
