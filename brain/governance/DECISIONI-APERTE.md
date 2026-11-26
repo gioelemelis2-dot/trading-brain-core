@@ -540,4 +540,32 @@ DA-13 rulebook (Q-09) ──► DA-11 G0 minimo ──► DA-12 indicatori compo
     5. **Limite vincolante:** dopo 4 giri dal congelamento senza uscita, ci si ferma. Il titolare decide se dichiarare i limiti con l'elenco o cambiare approccio, senza un quinto giro automatico.
     6. **Classificazione:** chi trova il difetto propone gravità e direzione; Claude non classifica da solo i propri difetti; nei casi contestati sente il DGS e decide il titolare (come in D-24).
     7. **Fissato adesso**, prima dei risultati di R19: la stessa disciplina delle ipotesi.
-- **Consiglio di Claude:** (c). Prende dalla chat il punto giusto (l'uscita deve dipendere dal rischio di un risultato falso, non dalla qualità del codice), ma non tratta come innocui difetti che per definizione possono cambiare un verdetto. Prima di decidere conviene il parere di metodo del DGS (messaggio 18).
+- **Parere del DGS (DGS-19, 25/11):**
+  - (a) è applicabile su un perimetro congelato;
+  - (b) dipende troppo da chi assegna l'etichetta «critico»;
+  - (c) è sostenibile **con un criterio verificabile per il rinvio**.
+
+  Il DGS contesta anche la mia etichetta «prudenti» per #122 e #123: trasformare una bocciatura in un esito riprovabile, o far bloccare un requisito descrittivo, **cambia una decisione**. E #140 riguarda la coerenza dell'esito e del consumo, che è una condizione d'uscita.
+- **(c′) Opzione (c) emendata dal DGS, oggi la proposta di Claude:**
+  1. **Scheda per ogni difetto:**
+     - caso concreto;
+     - esito atteso e osservato;
+     - conseguenza sul verdetto o su un nuovo tentativo;
+     - effetto su autorizzazione e consumo;
+     - riconciliazione dei registri;
+     - disponibilità del percorso valido;
+     - prova associata al candidato.
+  2. **Bloccante:** ogni difetto che viola una di queste proprietà nel perimetro del gate. **Rinviabile** solo un rifiuto prudenziale circoscritto che conserva lo stato corretto, il cui recupero è provato e che lascia esercitabile il percorso valido. Se l'impatto è incerto, il giudizio resta aperto.
+  3. **Condizione d'uscita in più:** una richiesta valida deve poter completare il percorso ordinario, e ogni esito deve produrre il seguito previsto dalle regole. Lo prova un test positivo completo; #142 mostra perché serve.
+  4. **Perimetro congelato**, esplicitato prima del giro a cui si applica. Servono 2 giri puliti consecutivi, di cui uno su tutte le manomissioni.
+     - La correzione di un bloccante riavvia il contatore.
+     - Ogni modifica successiva all'ultima prova ha una verifica d'impatto sul candidato finale.
+     - **Stop dopo 4 giri** senza uscita, con decisione del titolare.
+  5. **Classificazione:** chi trova il difetto propone gravità e conseguenze; il revisore indipendente verifica la prova, non solo l'etichetta. Se concordano basta la loro traccia. Se il dissenso incide sull'uscita, il DGS esplicita l'interpretazione e il titolare decide.
+  6. **Nessun credito retroattivo al contatore** da questo parere.
+- **Che cosa si sapeva di R19 al momento della scelta** (DGS-19 chiede di registrarlo), al 26/11. Gemini lavora sul candidato **`1431190`**. Dai suoi messaggi di avanzamento, riportati dal titolare:
+  - mutanti 57/58 (percorso), 131/132 (verdetto), 95/96 (N,K: N63 vivo sul Python di Apple, caso #106 noto), 71/71, 62/62;
+  - una sonda **R19-04** su una «doppia verifica completa su un ramo divergente», con α totale e m manipolati. Il contenuto non è consegnato né riprodotto.
+
+  **L'esito di R19 non è noto.** Se il titolare decide prima della consegna di Gemini, il criterio vale per la chiusura di R19 sul candidato finale. Se decide dopo, vale dal giro successivo (DGS-19).
+- **Consiglio di Claude (aggiornato al 26/11): (c′),** decisa **prima** che Gemini consegni R19. Versione originale del consiglio: (c). Prende dalla chat il punto giusto (l'uscita deve dipendere dal rischio di un risultato falso, non dalla qualità del codice), ma non tratta come innocui difetti che per definizione possono cambiare un verdetto. Prima di decidere conviene il parere di metodo del DGS (messaggio 18).

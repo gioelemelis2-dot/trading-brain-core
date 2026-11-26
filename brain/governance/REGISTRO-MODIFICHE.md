@@ -1384,3 +1384,15 @@ Nulla di questo tocca il candidato `8e51ce9` su cui lavora R15.
   - Autocritica: le gravità le assegnano Claude e Gemini; #126 era critico alla lettera.
   - Consiglio di Claude: (c).
 - **Bozza del messaggio 18 al DGS:** #142 e nuovo candidato, potenza (Q1–Q4, con la domanda bootstrap contro approssimazione normale), DA-42 (Q5–Q6).
+
+## 2026-11-26 · v2.09 (DGS-19; candidato 7191156 completo; requisiti dell'ultimo lotto)
+
+- **Candidato `7191156` completo** su 3.13 e 3.9: perimetro 299/299, percorso 62/63, verdetto 131/132 (MF09 e VD13 equivalenti); prova positiva dal lanciatore superata. Ricevuta chiusa.
+- **DGS-19 archiviato.**
+  - Parere favorevole sulla prova sintetica positiva (D-34 punto 5).
+  - Il perimetro nell'archivio era parziale (167/299 e 62/299): ora è completo. Il log del verdetto su 3.13 va allegato alla prossima consegna.
+  - Corretto il §6 del progetto generale: «quota collaudata» al posto di «disponibile»; ipotesi esplicite per la colonna «almeno una»; l'effetto della dipendenza non ha un verso fisso; potenza dello screening simulata con lo stesso esecutore.
+  - **#126:** riesame motivato registrato; l'etichetta storica resta «importante».
+  - **DA-42:** aggiunta l'opzione (c′) emendata dal DGS (scheda per difetto, criterio verificabile per il rinvio, condizione del percorso valido, stop dopo 4 giri), con lo stato noto di R19 al 26/11. Consiglio di Claude: (c′), decisa prima della consegna di Gemini.
+- **`piano/REQUISITI-ULTIMO-LOTTO.md`:** gli 11 requisiti da DGS-17/18/19, D-54, D-55 e dalla sonda R19-04, in un solo posto.
+- **Aggiunta al mandato R19:** il punto 7 riprende quanto il DGS chiede a Gemini.

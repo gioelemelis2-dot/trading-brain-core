@@ -142,10 +142,10 @@ Ogni stato qui sotto rimanda a un documento del repository. Dove non è verifica
 - **Una verifica** usa 1.000 sedute (circa 4 anni) e richiede almeno 300 trade e 200 sedute con trade (D-37).
 - **Quante verifiche: capacità e disponibilità sono diverse.**
   - **Capacità** [DERIVATO]: con circa 4.400–4.800 sedute ammissibili le finestre disgiunte sono **al massimo 4**, prima dell'embargo e delle date accessorie (consuntivo del 22/11). Sono **3** se il BID dal 2005 al 07/06/2009 restasse senza registro (DGS-18: 1.155 feriali in meno).
-  - **Disponibilità oggi: 1.** Il metro è collaudato solo alla quota del 2,5%, e il codice rifiuta le altre (D-31, D-50). Le aperture successive (0,83%, 0,42%…, D-38) richiedono un collaudo a quelle quote, che oggi non è né nel Gate 2½ né nei prossimi passi.
+  - **Quota collaudata oggi: una sola**, quella della prima apertura a una variante (DGS-19: «disponibile» era impreciso, perché l'accesso reale ha anche altri prerequisiti). Il metro è collaudato solo alla quota del 2,5% e il codice rifiuta le altre (D-31, D-50). Le aperture successive (0,83%, 0,42%…, D-38) richiedono un collaudo a quelle quote, che oggi non è né nel Gate 2½ né nei prossimi passi.
 - **Potenza** del metro per una strategia vera da **+0,25 R** a trade. La probabilità di promozione dipende soprattutto da **quanti trade** cadono nella finestra: 1.000 sedute danno 1.000 trade solo se la strategia fa un trade per seduta; il minimo ammesso è 300 (D-37).
 
-  | Trade nella finestra | Deviazione per trade | 1ª apertura (2,5%) | 2ª (0,83%) | 3ª (0,42%) | 4ª (0,25%) | Almeno una, se tutte e 4 le candidate sono vere |
+  | Trade nella finestra | Deviazione per trade | 1ª apertura (2,5%) | 2ª (0,83%) | 3ª (0,42%) | 4ª (0,25%) | Almeno una: esempio didattico con 4 candidate vere con l'effetto della riga, 4 aperture eseguibili, esiti indipendenti; NON è la probabilità del progetto di trovare una strategia valida |
   |---|---|---|---|---|---|---|
   | 1.000 | 0,80 R | 50,7% | 33,8% | 25,4% | 20,3% | 80,6% |
   | 1.000 | 1,25 R | 24,4% | 12,9% | 8,5% | 6,2% | 43,4% |
@@ -156,7 +156,7 @@ Ogni stato qui sotto rimanda a un documento del repository. Dove non è verifica
 
   - [DERIVATO] La tabella usa l'approssimazione normale, con trade indipendenti e promozione se il limite inferiore supera +0,20 R alla quota dell'apertura.
   - [MISURA, simulazione] Per la prima apertura con 1.000 trade, la simulazione del metro vero dà **24,75%** (σ = 1,25) e **51,15%** (σ = 0,80) su 2.000 repliche (RICEVUTA-127, controlli aperti). ChatGPT l'ha ricontrollata in DGS-16, con i riferimenti normali 24,35% e 50,66%.
-  - Con dipendenza fra i trade, la potenza sarebbe più bassa.
+  - Con dipendenza fra i trade la potenza **cambia**, ma il verso dipende dal segno della dipendenza, dalla concentrazione e dalla regola decisionale (DGS-19). Per lo screening (D-36) la potenza va calcolata simulando finestre complete e applicando **lo stesso esecutore del verdetto**. L'approssimazione normale resta solo un controllo aritmetico.
   - **Le aperture dopo la prima oggi non sono possibili:** il metro è collaudato solo alla quota del 2,5%, e il codice rifiuta le altre (D-31, D-50). Le colonne dalla 2ª alla 4ª richiedono prima un collaudo a quelle quote.
   - **Da dove viene 605:** 605 = 1.000 sedute × 0,605. Il valore 0,605 = 456/754 è [MISURA, H-002 V-T sullo sviluppo]: la frequenza di trade per seduta ammissibile di **una sola strategia**, quella parcheggiata (`collaborazione/da-revisori-esterni/2026-11-15-nucleo-statistico-e-incidente.md`). **Non è un parametro generale.** La procedura di potenza deve stimare la frequenza dallo screening della scheda stessa, con la sua incertezza.
   - Da 300 a 1.000 trade la potenza cambia anche di 2–5 volte. Quindi **la frequenza della strategia conta quanto il suo vantaggio**, e va stimata nella scheda (procedura di potenza, DGS-17 Q9).

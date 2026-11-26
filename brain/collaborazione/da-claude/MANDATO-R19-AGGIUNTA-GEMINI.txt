@@ -66,4 +66,15 @@ COMPITI
       procedura congelata», ed è sbagliato;
    c. per ogni caduta del punto 4a indica la stessa autorizzazione, il consumo unico e al massimo un esito.
 
+7. DAL RISCONTRO DEL DGS (DGS-19, rivolto anche a te): nella consegna indica
+   - il commit effettivamente provato e le campagne completate per ambiente;
+   - le prove trasferite da 1431190, con la motivazione (identità, dipendenze, versione dei test, assenza d'impatto
+     sui chiamanti e sui due registri: non basta la lista dei file uguali);
+   - l'esito INDIPENDENTE del lanciatore;
+   - l'unicità sotto concorrenza: QUALE invariante ferma davvero il duplicato. Il caso D si ferma per quota e non
+     lo dimostra;
+   - la ripresa fra i due registri: dopo una caduta convergono sullo stesso esito e consumo;
+   - per il caso B, chi esegue il rilascio.
+   Per R19-04 consegna la prova riproducibile (comandi e file), perché Claude la deve riprodurre.
+
 CONSEGNA: aggiungi una sezione «Aggiunta su 7191156» al tuo G-<data>-R19.md, con le stesse regole di consegna.
