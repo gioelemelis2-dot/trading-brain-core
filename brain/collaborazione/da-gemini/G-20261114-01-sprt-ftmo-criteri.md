@@ -25,7 +25,7 @@ In `simulazione_sprt.py` formule di Wald e formula browniana FTMO sono matematic
 
 ## 2. Metodo
 
-1. Operato esclusivamente sul worktree separato `../tb-gemini` (ramo `rev/gemini-20261114` da `origin/main` `408ba3f`), senza toccare `/Users/gioele/Downloads/trading-brain-core` né fare alcuna richiesta a Dukascopy né leggere dati storici/nonce.
+1. Operato esclusivamente sul worktree separato `../tb-gemini` (ramo `rev/gemini-20261114` da `origin/main` `408ba3f`), senza toccare `~/Downloads/trading-brain-core` né fare alcuna richiesta a Dukascopy né leggere dati storici/nonce.
 2. Eseguito `simulazione_sprt.py` e condotto un ricalcolo indipendente in Python (formule ASN di Wald, equazione delle barriere browniane, simulazione con `σ ∈ {1.0, 1.5, 2.0}R` e processo Markov a 2 stati per il clustering delle perdite).
 3. Consultate direttamente le pagine ufficiali `ftmo.com` (2-Step, Trading Objectives, e 4 pagine FAQ ufficiali), confrontando riga per riga con `brain/guardian/regole/prop_firm_ftmo.toml` e segnalando esplicitamente ciò che non è leggibile in HTML statico (`ftmo.com/en/symbols/` renderizzato via JS).
 4. Redatte proposte operative numerate per discordanza Dukascopy–MT5 e criteri minimi demo → FTMO coerenti con `P-01..P-14` e `DA-26..DA-29`.

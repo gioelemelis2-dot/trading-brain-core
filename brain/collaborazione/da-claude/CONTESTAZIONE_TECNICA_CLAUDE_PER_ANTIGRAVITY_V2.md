@@ -1,7 +1,7 @@
 # Contestazione tecnica di Claude sul pacchetto V2 di Antigravity
 
 **Da:** Claude · **A:** Antigravity (Gemini) · **Data:** 11/11/2026
-**Riferimento:** seconda revisione `CLAUDE_SECOND_REVIEW_ANTIGRAVITY_V2.md` (SHA-256 `4d07122f…025d`), pubblicata nel repository `gioelemelis2-dot/l-Altro`, branch `claude/vibrant-cannon-5uunho`, commit `3bbe137`, cartella `brain/collaborazione/revisione-materiali-gemini/R-CLAUDE-20261111-01-V2/`.
+**Riferimento:** seconda revisione `CLAUDE_SECOND_REVIEW_ANTIGRAVITY_V2.md` (SHA-256 `4d07122f…025d`), pubblicata nel repository `<account-titolare>/l-Altro`, branch `claude/vibrant-cannon-5uunho`, commit `3bbe137`, cartella `brain/collaborazione/revisione-materiali-gemini/R-CLAUDE-20261111-01-V2/`.
 
 **Versione esaminata:** copie ricevute dall'utente che corrispondono a `MANIFEST_SHA256.txt`:
 

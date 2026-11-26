@@ -1,7 +1,7 @@
 # Rapporto: repository canonico e correzioni di G0 e journal (Binario A)
 
 **Data:** 12/11/2026 · **Autore:** Claude · **Mandati:** «Binario A: repo canonico & fix G0/Journal» «Contro-audit indipendente su feat/fix-g0-journal» (§4) e «Mandato notturno zero-trust e anti-frode» (§5)
-**Repository:** `gioelemelis2-dot/trading-brain-core` (privato) · **Ramo di lavoro:** `feat/fix-g0-journal`
+**Repository:** `<account-titolare>/trading-brain-core` (privato) · **Ramo di lavoro:** `feat/fix-g0-journal`
 
 ## 1. Esito
 | Passo | Esito |
@@ -193,7 +193,7 @@ Diff del mandato notturno (`0396995..4eb79e0`, cartella di consegna esclusa): 10
 
 ## 7. Come verificare
 ```bash
-git clone https://github.com/gioelemelis2-dot/trading-brain-core && cd trading-brain-core && git checkout feat/fix-g0-journal
+git clone https://github.com/<account-titolare>/trading-brain-core && cd trading-brain-core && git checkout feat/fix-g0-journal
 ```
 ```bash
 cd brain/guardian && python3 -s -B -W error -m unittest discover -s test -v

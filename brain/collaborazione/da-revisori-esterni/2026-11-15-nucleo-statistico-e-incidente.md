@@ -2,7 +2,7 @@
 
 # Rapporto a Claude Code — incidente del sigillo e stato del nucleo statistico
 
-Nov 15, 2026 · da una revisione esterna del nucleo statistico, commissionata da Gioele
+Nov 15, 2026 · da una revisione esterna del nucleo statistico, commissionata da il titolare
 
 ## Cosa è questo documento
 
@@ -14,7 +14,7 @@ Viene da una revisione esterna del nucleo statistico di H-002, fatta il 14/11/20
 
 Questo documento **contiene i risultati misurati di H-002 sui dati di sviluppo** (15/11/2023 – 12/11/2026): medie per regime, ripartizione delle uscite, quote di vincita, intervalli di confidenza.
 
-Gioele ha autorizzato esplicitamente la versione completa, dopo che gli è stata proposta una versione cieca. La ragione: per l'incidente del sigillo i risultati sullo sviluppo sono **già** compromessi, quindi la cecità residua su quel fronte protegge poco.
+il titolare ha autorizzato esplicitamente la versione completa, dopo che gli è stata proposta una versione cieca. La ragione: per l'incidente del sigillo i risultati sullo sviluppo sono **già** compromessi, quindi la cecità residua su quel fronte protegge poco.
 
 **Cosa questo documento non tocca:** la finestra di verifica 2005–2023. Nessun risultato di quel periodo compare qui, perché nessuno ne ha. Quella resta l'unica prova intatta, e questo rapporto non la intacca.
 
@@ -40,7 +40,7 @@ e il commento finale era: *«non ho elementi per giudicare se la specifica sia s
 
 Non è più un a priori. È accertato, e N va contato. La sezione sul fabbisogno campionario, più avanti, quantifica cosa comporta.
 
-**La tua proposta numero 2 è il modo giusto di contarlo.** Chiedere a Gioele la relazione DGS-01 e l'elenco di cosa è stato girato a Gemini non è solo ricostruzione dell'incidente: è letteralmente il censimento che serve per fissare N. Quel numero entra in ogni calcolo di potenza da qui in avanti.
+**La tua proposta numero 2 è il modo giusto di contarlo.** Chiedere a il titolare la relazione DGS-01 e l'elenco di cosa è stato girato a Gemini non è solo ricostruzione dell'incidente: è letteralmente il censimento che serve per fissare N. Quel numero entra in ogni calcolo di potenza da qui in avanti.
 
 ## Stato verificato del nucleo statistico
 
@@ -135,7 +135,7 @@ Capacità 2.971 trade equivalenti secondo §3.9 — valore già ottimistico per 
 | 20 | 1,47 | 3,30 | 5,86 |
 | 50 | 1,28 | 2,89 | 5,13 |
 
-### Alla soglia che Gioele ha sigillato
+### Alla soglia che il titolare ha sigillato
 
 Il numero sigillato il 14/11, prima di vedere il banco di taratura, è **r = 0,15 R per trade**. A quella soglia:
 
@@ -227,7 +227,7 @@ Il 7% a n = 1.211 è vero, ma n = 1.211 **per prova** contro circa 2.900 trade i
 
 Questo è successo dopo il tuo rapporto e non puoi saperlo.
 
-**Il 15/11 il computer di Gioele si è spento mentre un download di dati girava nel suo terminale.** Non in un ambiente gestito, non con un gestore di ripresa noto: un comando nel terminale, interrotto a metà.
+**Il 15/11 il computer di il titolare si è spento mentre un download di dati girava nel suo terminale.** Non in un ambiente gestito, non con un gestore di ripresa noto: un comando nel terminale, interrotto a metà.
 
 Incrociandolo con la tua tabella di stato — *«storico BID scaricato fino al 2008 circa (secondo Gemini); ASK storici non ancora scaricati»* — ci sono due cose da verificare prima di fidarsi di quei file.
 
@@ -281,7 +281,7 @@ Le voci in grassetto sono quelle che bloccano una decisione, non solo quelle che
 
 Da leggere prima di citarlo come fonte.
 
-**Il revisore non ha visto il repository.** Niente rami, niente commit, niente codice oltre alla firma di `screening()` riportata nel documento. Tutto quello che questo rapporto dice sull'incidente viene dal tuo rapporto a Gioele del 15/11, preso per quello che dichiara. Non è stato verificato indipendentemente.
+**Il revisore non ha visto il repository.** Niente rami, niente commit, niente codice oltre alla firma di `screening()` riportata nel documento. Tutto quello che questo rapporto dice sull'incidente viene dal tuo rapporto a il titolare del 15/11, preso per quello che dichiara. Non è stato verificato indipendentemente.
 
 **Le dichiarazioni di Gemini non sono state controllate.** Che il periodo di verifica 2005–2023 sia intatto resta una dichiarazione, non un accertamento, esattamente come lo è nel tuo rapporto. Tutte le tabelle di capacità qui presupponono che sia vera. Se non lo fosse, la riserva è zero e nessuno di quei numeri vale.
 

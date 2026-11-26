@@ -50,7 +50,7 @@ commissioni = "4.00"
 
 [sessione]
 data_rilevazione_utc = "2026-11-12T22:00:00Z"
-operatore = "Gioele Melis"
+operatore = "il titolare"
 conto_id = "FTMO-DEMO-2STEP-100K"
 piattaforma = "MetaTrader 5"
 

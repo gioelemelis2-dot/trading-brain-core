@@ -9,7 +9,7 @@ index 0000000..2fe1263
 +
 +**Data:** 12 Novembre 2026  
 +**Autore:** Gemini Antigravity (Quantitative Research Lab)  
-+**Destinatario:** Gioele Melis / Claude Code  
++**Destinatario:** il titolare / Claude Code  
 +**Target dell'Audit:** Commit `0396995` (`origin/feat/fix-g0-journal`) nel repository `trading-brain-core`  
 +**Modalità:** Zero-Trust / Stress-Test Avversariale Indipendente  
 +
@@ -662,7 +662,7 @@ index 0000000..e7a0430
 +**Versione:** 2.0 (Revisione Integrativa e Scientifica)  
 +**Data:** 12 Novembre 2026  
 +**Autore:** Gemini Antigravity (Quantitative Research Lab)  
-+**Destinatario:** Gioele Melis  
++**Destinatario:** il titolare  
 +**Stato Operativo:** Analisi, Governance e Pianificazione Strategica (Bounded Autonomy). Nessuna implementazione di codice, nessun commit Git, nessuna migrazione, nessuna alterazione delle versioni congelate (V2, V3, V3.1, V3.2, V3.3).
 +
 +---
@@ -674,7 +674,7 @@ index 0000000..e7a0430
 +> **Un ecosistema di ricerca quantitativa disciplinato, ad autonomia bounded, dotato di due cervelli quantitativi indipendenti e simmetrici, finalizzato alla comprensione dei mercati e al supporto metodologico delle decisioni umane.**
 +
 +L'obiettivo fondamentale non è creare un bot di trading o un sistema algoritmico a "scatola nera" che operi sui mercati al posto dell'uomo. È la costruzione pluriennale di un **patrimonio scientifico e computazionale condiviso**, fondato sulla falsificabilità popperiana, nel quale:
-+1. **L'autonomia è rigidamente circoscritta (Bounded):** Le AI dispongono di piena autonomia esplorativa, analitica e critica (studio della letteratura, formulazione di ipotesi, modellistica matematica, simulazione Monte Carlo, audit dei dati, backtesting e stress testing). Qualsiasi decisione che modifichi l'architettura di base, promuova una teoria nel patrimonio validato, allochi capitale o generi ordini su conti reali appartiene **in via esclusiva e sovrana all'utente umano (Gioele Melis)**.
++1. **L'autonomia è rigidamente circoscritta (Bounded):** Le AI dispongono di piena autonomia esplorativa, analitica e critica (studio della letteratura, formulazione di ipotesi, modellistica matematica, simulazione Monte Carlo, audit dei dati, backtesting e stress testing). Qualsiasi decisione che modifichi l'architettura di base, promuova una teoria nel patrimonio validato, allochi capitale o generi ordini su conti reali appartiene **in via esclusiva e sovrana all'utente umano (il titolare)**.
 +2. **Indipendenza dai singoli modelli:** L'architettura software, le banche dati, le ontologie concettuali e i log di tracciabilità sono completamente disaccoppiati dagli specifici Large Language Models (LLM). L'eventuale sostituzione, aggiornamento o rimozione di Claude o Gemini non deve in alcun modo corrompere o disperdere la continuità della memoria scientifica.
 +3. **Assenza di finalità esecutiva immediata:** Il sistema è progettato per operare primariamente come un centro di ricerca e come uno strumento di supervisione del rischio; l'operatività finanziaria a mercato reale costituisce solo l'ultimo anello di una catena di validazione pluriennale.
 +
@@ -1217,11 +1217,11 @@ index 0000000..e7a0430
 +
 +## 14. REGISTRO DELLE DECISIONI ANCORA APERTE
 +
-+La seguente tabella sottopone all'utente Gioele Melis i bivi operativi che richiedono una scelta sovrana prima di avviare le rispettive fasi.
++La seguente tabella sottopone all'utente il titolare i bivi operativi che richiedono una scelta sovrana prima di avviare le rispettive fasi.
 +
 +| ID | Decisione Aperta | Contesto e Alternative | Conseguenze Tecniche | Raccomandazione Tecnica di Gemini |
 +| :--- | :--- | :--- | :--- | :--- |
-+| **D-01** | **Ambiente Canonico: Istituzione Repository Git Dedicato** | Attualmente i file risiedono untracked nella directory `/Users/gioele/Downloads/l-Altro-personaggio-3d`.<br>**Alt A:** Istituire all'inizio della Fase 1 un repository dedicato pulito `trading-brain-core`.<br>**Alt B:** Continuare a lavorare in una sottocartella isolata all'interno del workspace esistente. | L'Alt A garantisce totale tracciabilità storica, protezione dei commit e pulizia da codice estraneo (TypeScript/Node). L'Alt B evita la creazione di un nuovo repository ma mantiene il rischio di confusione del workspace. | **Raccomandazione: Alt A.** La separazione fisica del repository è uno standard essenziale per un progetto scientifico pluriennale. |
++| **D-01** | **Ambiente Canonico: Istituzione Repository Git Dedicato** | Attualmente i file risiedono untracked nella directory `~/Downloads/l-Altro-personaggio-3d`.<br>**Alt A:** Istituire all'inizio della Fase 1 un repository dedicato pulito `trading-brain-core`.<br>**Alt B:** Continuare a lavorare in una sottocartella isolata all'interno del workspace esistente. | L'Alt A garantisce totale tracciabilità storica, protezione dei commit e pulizia da codice estraneo (TypeScript/Node). L'Alt B evita la creazione di un nuovo repository ma mantiene il rischio di confusione del workspace. | **Raccomandazione: Alt A.** La separazione fisica del repository è uno standard essenziale per un progetto scientifico pluriennale. |
 +| **D-02** | **Testo Fondativo: Reperimento o Riformulazione della Master Mission** | Il testo fisico originario della Master Mission (§§0–25) è assente nel filesystem.<br>**Alt A:** L'utente fornisce il file o testo originale authenticato.<br>**Alt B:** Le AI, sotto supervisione dell'utente, redigono una nuova Carta Costituzionale del Trading Brain formalizzata nella Fase 1. | L'Alt A assicura continuità con le citazioni storiche delle lezioni 0.8–0.22. L'Alt B sana l'assenza documentale ma richiede un ciclo formale di stesura e approvazione umana. | **Raccomandazione: Alt A se il file esiste; Alt B subordinato solo in caso di indisponibilità accertata.** |
 +| **D-03** | **Gestione dell'Errata V3.3 (T-01…T-05) nel Percorso della Roadmap** | La V3.3 è congelata con riserve e i risultati numerici sono stabili.<br>**Alt A:** Applicare T-01…T-05 come gate d'ingresso della Fase 5 (quando il motore Monte Carlo verrà integrato nel Laboratorio Sperimentale).<br>**Alt B:** Applicare T-01…T-05 prima di qualsiasi altra fase concettuale. | L'Alt A rispetta pienamente la roadmap (prima governance e dati, poi codice computazionale), evitando di perdere tempo ora su dettagli di un simulatore che non verrà toccato fino alla Fase 5. L'Alt B toglie subito il debito tecnico ma posticipa le fondamenta di Fase 1. | **Raccomandazione: Alt A.** Integrare T-01…T-05 come prerequisito vincolante (Gate In) all'apertura della Fase 5. |
 +| **D-04** | **Strutturazione del Rulebook del Guardian (Q-09)** | Il file storico `rulebook.yaml` mischia limiti FTMO rigidi e buffer soggettivi dell'utente.<br>**Alt A:** Scindere in due file formalizzati (`prop_rules_contractual.yaml` e `user_risk_policy.yaml`).<br>**Alt B:** Mantenere un unico schema YAML aggiungendo campi di classificazione interna (`origin: contractual` vs `origin: personal_discretionary`). | L'Alt A garantisce una barriera architettonica invalicabile tra obblighi contrattuali esterni e scelte soggettive. L'Alt B mantiene tutto in un unico file ma richiede un parser più complesso. | **Raccomandazione: Alt A.** Massima pulizia epistemologica tra vincoli esterni rigidi e policy interna. |
@@ -1270,7 +1270,7 @@ index 0000000..e7a0430
 +In conformità con il mandato di onestà epistemologica:
 +- **Cosa È questo documento:** È una revisione architetturale, epistemologica e scientifica che corregge gli errori del rapporto precedente, declassa le affermazioni prive di prova a ipotesi/proposte, istituisce il modello a 5 tipi di informazione, formalizza la simmetria dei due cervelli quantitativi, riconfigura il Guardian a G0 consultivo e struttura una roadmap pluriennale coerente.
 +- **Cosa NON È questo documento:** Non è la dichiarazione che il Trading Brain sia "completo", "scientificamente impeccabile" o "operativo". L'ecosistema è all'inizio del suo percorso pluriennale: le fondamenta di Fase 1 devono essere ancora formalizzate, i dati storici devono essere ancora acquisiti e l'infrastruttura di backtesting deve essere ancora costruita.
-+- **Prossimo passo:** Nessuna attività implementativa verrà avviata senza l'esplicita autorizzazione e l'indicazione delle decisioni aperte da parte dell'utente Gioele Melis.
++- **Prossimo passo:** Nessuna attività implementativa verrà avviata senza l'esplicita autorizzazione e l'indicazione delle decisioni aperte da parte dell'utente il titolare.
 diff --git a/brain/collaborazione/da-gemini/consegne/TRADING_BRAIN_DOSSIER_CONSOLIDATO_GEMINI_V1.md b/brain/collaborazione/da-gemini/consegne/TRADING_BRAIN_DOSSIER_CONSOLIDATO_GEMINI_V1.md
 new file mode 100644
 index 0000000..ccae9c1
@@ -1283,7 +1283,7 @@ index 0000000..ccae9c1
 +**Versione:** 1.0  
 +**Data:** 12 Novembre 2026  
 +**Autore:** Gemini Antigravity (Quantitative Research Lab)  
-+**Destinatario:** Gioele Melis  
++**Destinatario:** il titolare  
 +**Classificazione:** Documento Unico di Riferimento Strategico, Architetturale e Tecnico  
 +**Stato Operativo:** Bounded Autonomy. Baseline storica V3.3 congelata; zero codice implementato in produzione; repository `trading-brain` e `l-Altro` rigorosamente separati.
 +
@@ -2332,7 +2332,7 @@ index 0000000..8e49430
 +
 +[sessione]
 +data_rilevazione_utc = "2026-11-12T22:00:00Z"
-+operatore = "Gioele Melis"
++operatore = "il titolare"
 +conto_id = "FTMO-DEMO-2STEP-100K"
 +piattaforma = "MetaTrader 5"
 +

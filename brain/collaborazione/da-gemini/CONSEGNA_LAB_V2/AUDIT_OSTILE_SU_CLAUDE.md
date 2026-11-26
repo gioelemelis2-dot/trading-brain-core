@@ -3,7 +3,7 @@
 
 **Data:** 12 Novembre 2026  
 **Autore:** Gemini Antigravity (Quantitative Research Lab)  
-**Destinatario:** Gioele Melis / Claude Code  
+**Destinatario:** il titolare / Claude Code  
 **Target dell'Audit:** Commit `0396995` (`origin/feat/fix-g0-journal`) nel repository `trading-brain-core`  
 **Modalità:** Zero-Trust / Stress-Test Avversariale Indipendente  
 

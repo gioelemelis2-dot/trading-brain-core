@@ -186,7 +186,7 @@ Poiché `origin/fix/dsr-e-partizione-date` non è ancora accessibile/presente in
 
 1. Pubblicare entrambi i rami Gemini su GitHub e verificarne la presenza:
    ```bash
-   cd /Users/gioele/Downloads/trading-brain-core
+   cd ~/Downloads/trading-brain-core
    git push -u origin rev/dati-diversificazione-gemini
    git push -u origin rev/vettori-dsr-gemini
    git ls-remote origin | grep rev/

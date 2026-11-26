@@ -30,7 +30,7 @@ Sulle 708 chiamate run_command di 6ad631ed (step < 3014), 254 sono esecuzioni Py
 
 ## 2. Censimento integrale delle esecuzioni su dati reali (cache_dukascopy, XAUUSD)
 
-Tutte e sole le 16 esecuzioni che toccano /Users/gioele/Downloads/trading-brain-core/brain/dati/reali/cache_dukascopy avvengono tra il 2026-11-14T11:29:42Z e il 2026-11-14T16:41:56Z.
+Tutte e sole le 16 esecuzioni che toccano ~/Downloads/trading-brain-core/brain/dati/reali/cache_dukascopy avvengono tra il 2026-11-14T11:29:42Z e il 2026-11-14T16:41:56Z.
 
 Esito anti-leakage su PERIODO_VERIFICA:
 
@@ -68,11 +68,11 @@ Nota per il conteggio N del DSR: tutti i test effettivi di strategia su dati rea
 
 ## 4. Autorevisione di Gemini (passo ≥ 3014)
 
-Revisione completata incrociando tutti e 4 i log JSONL sotto /Users/gioele/.gemini/antigravity/brain/, i log dei task in .system_generated/tasks/ e il codice dei repository/worktree. Sì, c'è tutto, con queste verifiche aggiuntive e una precisazione numerica:
+Revisione completata incrociando tutti e 4 i log JSONL sotto ~/.gemini/antigravity/brain/, i log dei task in .system_generated/tasks/ e il codice dei repository/worktree. Sì, c'è tutto, con queste verifiche aggiuntive e una precisazione numerica:
 
 1. Controlli di completezza superati. Nessuna cartella né subagente nascosto: le directory JSONL esistenti sono esattamente 4 (6ad631ed, 18d44761, a8fdbf81, b10d8f70, più tempmediaStorage); in transcript_full.jsonl risultano 0 chiamate invoke_subagent, send_message o swarm. Copertura 708 / 708 run_command pre-audit (step < 3014): 0 comandi fuori indice contenenti parole chiave su Python, pytest, dukascopy, cache, orb, esegui, h002, verifica, sviluppo, bi5, csv o date 2005/2023. Nessun accesso occulto nei test: un grep su brain/laboratorio, brain/dati e tb-proposte/brain/laboratorio conferma che nessuna suite unittest/mutazioni legge cache_dukascopy o dati/reali/ (mutazioni_orb.py, mutazioni_esecuzione.py e mutazioni_dsr_partizione.py li escludono esplicitamente con shutil.ignore_patterns); gli unici script di codice che puntano a cache_dukascopy/XAUUSD oltre a esegui_h002.py sono studio_sessioni.py e studio_range.py, mai eseguiti direttamente da Gemini nei log.
 2. Unica precisazione sul censimento già fornito. Nel rigo del passo 2655 (task-2658.log), il campione no-slip a filtro allargato (comm = 0.07, senza slittamento/stress) ha stampato direttamente n=629 per V-T e V-S, quindi è un dato osservato direttamente nel log (non solo dedotto da 456 + 173).
-3. Stato attuale su disco. Artefatti del censimento già pronti: l'indice JSON censimento_buckets.json e il dump grezzo all_py_runs_dump.txt. Worktree con lavoro interrotto (non toccato durante il censimento): /Users/gioele/Downloads/tb-proposte ha 5 file modificati non committati (criteri.py, esegui_h002.py, sigillo.py, test_esecuzione.py, test_esegui_h002.py), relativi alla bozza di verdetto a 3 stati lasciata in sospeso prima del censimento (mentre il banco di taratura completo non era ancora stato costruito/eseguito). /Users/gioele/Downloads/tb-analisi risulta invece pulito (git status vuoto).
+3. Stato attuale su disco. Artefatti del censimento già pronti: l'indice JSON censimento_buckets.json e il dump grezzo all_py_runs_dump.txt. Worktree con lavoro interrotto (non toccato durante il censimento): ~/Downloads/tb-proposte ha 5 file modificati non committati (criteri.py, esegui_h002.py, sigillo.py, test_esecuzione.py, test_esegui_h002.py), relativi alla bozza di verdetto a 3 stati lasciata in sospeso prima del censimento (mentre il banco di taratura completo non era ancora stato costruito/eseguito). ~/Downloads/tb-analisi risulta invece pulito (git status vuoto).
 
 ## 5. Lettura di Claude (15/11/2026)
 

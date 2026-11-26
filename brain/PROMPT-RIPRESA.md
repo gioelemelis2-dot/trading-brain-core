@@ -7,7 +7,7 @@ Da usare quando una sessione riparte dopo un'interruzione (limite di utilizzo, n
 ```
 Riprendi il lavoro sul Trading Brain senza chiedere conferme intermedie per le attività già autorizzate.
 
-1. Repository gioelemelis2-dot/l-Altro, branch claude/vibrant-cannon-5uunho, cartella brain/.
+1. Repository <account-titolare>/l-Altro, branch claude/vibrant-cannon-5uunho, cartella brain/.
    Esegui git fetch e verifica di essere allineato; se trovi modifiche non tue, fermati e segnalale.
 2. Leggi brain/CONTINUITA.md, poi brain/collaborazione/LOCK.md e governance/DECISIONI.md.
 3. Se esiste un checkpoint di un'attività in corso (es. audit/*/00-CHECKPOINT.md con tappe non ✅),

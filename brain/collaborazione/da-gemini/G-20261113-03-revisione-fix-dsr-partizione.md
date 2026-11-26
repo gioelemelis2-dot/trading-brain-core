@@ -91,7 +91,7 @@ Le correzioni richieste sono piccole e isolate (nessuna modifica architetturale)
 
 ## 6. Fonti consultate
 
-1. Worktree `origin/fix/dsr-e-partizione-date` al commit `2d16a46` (`/Users/gioele/Downloads/tb-revisione-claude`), lettura diretta di tutti i file elencati in `file_esaminati`.
+1. Worktree `origin/fix/dsr-e-partizione-date` al commit `2d16a46` (`~/Downloads/tb-revisione-claude`), lettura diretta di tutti i file elencati in `file_esaminati`.
 2. Risposte di Claude in `brain/collaborazione/da-claude/ESITI.md` (`2d16a46`).
 3. Output diretti di `unittest`, `mutazioni_dsr_partizione.py` e script di probe riproduttivi eseguiti il 2026-11-13 su Python `3.9.6`.
 

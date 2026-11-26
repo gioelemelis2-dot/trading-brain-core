@@ -499,14 +499,14 @@ Se un punto ti è indifferente o lo ritieni corretto, non citarlo.
 
 ## Fonti
 
-Tutto viene dal repository privato `gioelemelis2-dot/trading-brain-core`, ramo `main`, commit `7154e1c` (13/11/2026). I gate 3–7 e il criterio della tabella dei gate sono proposte di Claude, non decisioni.
+Tutto viene dal repository privato `<account-titolare>/trading-brain-core`, ramo `main`, commit `7154e1c` (13/11/2026). I gate 3–7 e il criterio della tabella dei gate sono proposte di Claude, non decisioni.
 
-- [CONTINUITA.md](https://github.com/gioelemelis2-dot/trading-brain-core/blob/main/brain/CONTINUITA.md): stato e gate
-- [DECISIONI.md](https://github.com/gioelemelis2-dot/trading-brain-core/blob/main/brain/governance/DECISIONI.md): decisioni D-01…D-23
-- [DECISIONI-APERTE.md](https://github.com/gioelemelis2-dot/trading-brain-core/blob/main/brain/governance/DECISIONI-APERTE.md): DA-01…DA-25
-- [REGISTRO-MODIFICHE.md](https://github.com/gioelemelis2-dot/trading-brain-core/blob/main/brain/governance/REGISTRO-MODIFICHE.md): storia v1.12…v1.19
-- [guardian/LEGGIMI.md](https://github.com/gioelemelis2-dot/trading-brain-core/blob/main/brain/guardian/LEGGIMI.md): Guardian G0, test e mutazioni
-- [regole\_personali.toml](https://github.com/gioelemelis2-dot/trading-brain-core/blob/main/brain/guardian/regole/regole_personali.toml): P-01…P-15
-- [demo\_broker\_mt5\_50k\_xauusd.toml](https://github.com/gioelemelis2-dot/trading-brain-core/blob/main/brain/dati/reali/demo_broker_mt5_50k_xauusd.toml): scheda del Gate 1
-- [dukascopy.py](https://github.com/gioelemelis2-dot/trading-brain-core/blob/main/brain/dati/pipeline/dukascopy.py): scaricamento del Gate 2
-- [Roadmap V2 di Gemini](https://github.com/gioelemelis2-dot/trading-brain-core/blob/main/brain/collaborazione/da-gemini/consegne/TRADING_BRAIN_ARCHITECTURE_AND_ROADMAP_REVISED_V2.md): fasi 0–10 e criteri di passaggio
+- [CONTINUITA.md](https://github.com/<account-titolare>/trading-brain-core/blob/main/brain/CONTINUITA.md): stato e gate
+- [DECISIONI.md](https://github.com/<account-titolare>/trading-brain-core/blob/main/brain/governance/DECISIONI.md): decisioni D-01…D-23
+- [DECISIONI-APERTE.md](https://github.com/<account-titolare>/trading-brain-core/blob/main/brain/governance/DECISIONI-APERTE.md): DA-01…DA-25
+- [REGISTRO-MODIFICHE.md](https://github.com/<account-titolare>/trading-brain-core/blob/main/brain/governance/REGISTRO-MODIFICHE.md): storia v1.12…v1.19
+- [guardian/LEGGIMI.md](https://github.com/<account-titolare>/trading-brain-core/blob/main/brain/guardian/LEGGIMI.md): Guardian G0, test e mutazioni
+- [regole\_personali.toml](https://github.com/<account-titolare>/trading-brain-core/blob/main/brain/guardian/regole/regole_personali.toml): P-01…P-15
+- [demo\_broker\_mt5\_50k\_xauusd.toml](https://github.com/<account-titolare>/trading-brain-core/blob/main/brain/dati/reali/demo_broker_mt5_50k_xauusd.toml): scheda del Gate 1
+- [dukascopy.py](https://github.com/<account-titolare>/trading-brain-core/blob/main/brain/dati/pipeline/dukascopy.py): scaricamento del Gate 2
+- [Roadmap V2 di Gemini](https://github.com/<account-titolare>/trading-brain-core/blob/main/brain/collaborazione/da-gemini/consegne/TRADING_BRAIN_ARCHITECTURE_AND_ROADMAP_REVISED_V2.md): fasi 0–10 e criteri di passaggio

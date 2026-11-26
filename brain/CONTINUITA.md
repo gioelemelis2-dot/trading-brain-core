@@ -306,7 +306,7 @@ Il titolare ha deciso di **non registrarle ora**: prima Claude legge il material
 Il G0 **non** è ancora utilizzabile per decidere: serve la riconciliazione con un estratto conto (DA-25).
 
 **Migrazione al repository canonico (D-19): eseguita il 12/11/2026.**
-- Il Brain vive ora in `gioelemelis2-dot/trading-brain-core` (privato).
+- Il Brain vive ora in `<account-titolare>/trading-brain-core` (privato).
 - `main` contiene la storia della sola `brain/` (23 commit, albero identico all'origine: `7422e1fc…`) più la configurazione del repository.
 - Il ramo `claude/vibrant-cannon-5uunho` di `l-Altro` resta come copia storica, non più aggiornata.
 - Da fare: archiviare le consegne di Gemini nel nuovo repository.
@@ -439,5 +439,5 @@ Prompt pronto in [`PROMPT-RIPRESA.md`](PROMPT-RIPRESA.md). Regola: prima di un l
 
 ## Convenzioni da mantenere
 - Lingua: italiano. Mai segnare una fonte come V senza averla letta; mai una padronanza senza cancello superato dichiarato dall'utente; mai dati simulati presentati come reali.
-- Repository: `gioelemelis2-dot/trading-brain-core` (D-19), ramo `main` più rami di lavoro dedicati (per esempio `feat/fix-g0-journal`); il vecchio ramo di `l-Altro` è solo storico.
+- Repository: `<account-titolare>/trading-brain-core` (D-19), ramo `main` più rami di lavoro dedicati (per esempio `feat/fix-g0-journal`); il vecchio ramo di `l-Altro` è solo storico.
 - Gemini scrive solo in `collaborazione/da-gemini/`; Claude non modifica mai i materiali di Gemini.

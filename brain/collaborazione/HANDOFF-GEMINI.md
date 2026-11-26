@@ -13,7 +13,7 @@ Il Trading Brain è **una** base di conoscenza modulare, versionata e verificabi
 ## 1. Dove si trova
 | Elemento | Valore |
 |---|---|
-| Repository | GitHub `gioelemelis2-dot/l-Altro`, cartella `brain/` |
+| Repository | GitHub `<account-titolare>/l-Altro`, cartella `brain/` |
 | Branch di lavoro di Claude | `claude/vibrant-cannon-5uunho` (non unito al branch principale di l-Altro) |
 | Migrazione | È previsto lo spostamento in un repository autonomo ([`../piano/PIANO-MIGRAZIONE.md`](../piano/PIANO-MIGRAZIONE.md)), **non ancora approvato**. Tutti i percorsi in questo documento sono **relativi a `brain/`**: restano validi dopo la migrazione |
 | Manuale originale | artifact `https://claude.ai/artifact/T4xESphh3BmonZPoprQBtb`; copia identica in `originale/manuale-v1.html` (sha256 `931685e6…6634`) + testo estratto `originale/manuale-v1.txt` |

@@ -7,7 +7,7 @@ Nulla di quanto descritto qui è stato eseguito.
 
 | Elemento | Valore |
 |---|---|
-| Repository attuale | `gioelemelis2-dot/l-Altro` |
+| Repository attuale | `<account-titolare>/l-Altro` |
 | Branch del Brain | `claude/vibrant-cannon-5uunho` (pubblicato su GitHub) |
 | Branch principale di l-Altro | contiene solo il commit iniziale `4c180bf`: **il Brain non è mai stato unito a l-Altro** |
 | Cartella | `brain/` (tutto il Brain sta qui; nessun file del Brain fuori da questa cartella) |

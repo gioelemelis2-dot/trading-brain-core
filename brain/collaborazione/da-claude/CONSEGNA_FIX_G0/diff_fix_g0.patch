@@ -10,7 +10,7 @@ index 015d79c..2649ff6 100644
 +Il G0 **non** è ancora utilizzabile per decidere: serve la riconciliazione con un estratto conto (DA-25).
 +
 +**Migrazione al repository canonico (D-19): eseguita il 12/11/2026.**
-+- Il Brain vive ora in `gioelemelis2-dot/trading-brain-core` (privato).
++- Il Brain vive ora in `<account-titolare>/trading-brain-core` (privato).
 +- `main` contiene la storia della sola `brain/` (23 commit, albero identico all'origine: `7422e1fc…`) più la configurazione del repository.
 +- Il ramo `claude/vibrant-cannon-5uunho` di `l-Altro` resta come copia storica, non più aggiornata.
 +- Da fare: archiviare le consegne di Gemini nel nuovo repository.
@@ -31,7 +31,7 @@ index 015d79c..2649ff6 100644
  ## Convenzioni da mantenere
  - Lingua: italiano. Mai segnare una fonte come V senza averla letta; mai una padronanza senza cancello superato dichiarato dall'utente; mai dati simulati presentati come reali.
 -- Branch di lavoro: `claude/vibrant-cannon-5uunho` del repository `l-Altro`, cartella `brain/` (migrazione sospesa).
-+- Repository: `gioelemelis2-dot/trading-brain-core` (D-19), ramo `main` più rami di lavoro dedicati (per esempio `feat/fix-g0-journal`); il vecchio ramo di `l-Altro` è solo storico.
++- Repository: `<account-titolare>/trading-brain-core` (D-19), ramo `main` più rami di lavoro dedicati (per esempio `feat/fix-g0-journal`); il vecchio ramo di `l-Altro` è solo storico.
  - Gemini scrive solo in `collaborazione/da-gemini/`; Claude non modifica mai i materiali di Gemini.
 diff --git a/brain/governance/DECISIONI-APERTE.md b/brain/governance/DECISIONI-APERTE.md
 index 609b9c1..038919b 100644
@@ -42,7 +42,7 @@ index 609b9c1..038919b 100644
  
  ### DA-01 · Fonte di verità unica, sincronizzazione e archivio delle consegne · **bloccante**
 -**Decisa il 12/11/2026 → D-19.** Il testo sotto resta come storia.
-+**Decisa il 12/11/2026 → D-19. Eseguita il 12/11/2026:** repository privato `gioelemelis2-dot/trading-brain-core`; storia della sola `brain/` migrata su `main` (albero identico, `7422e1fc…`). Restano da fare: test di scrittura di Gemini sul nuovo repository e archivio delle sue consegne. Il testo sotto resta come storia.
++**Decisa il 12/11/2026 → D-19. Eseguita il 12/11/2026:** repository privato `<account-titolare>/trading-brain-core`; storia della sola `brain/` migrata su `main` (albero identico, `7422e1fc…`). Restano da fare: test di scrittura di Gemini sul nuovo repository e archivio delle sue consegne. Il testo sotto resta come storia.
  - **Situazione verificata:**
    - il Brain versionato è sul ramo GitHub `claude/vibrant-cannon-5uunho` del repository `l-Altro`, che sugli altri rami contiene un'applicazione TypeScript estranea;
    - Gemini lavora su una copia locale (dichiarato da Gemini; non verificabile da Claude);
@@ -57,7 +57,7 @@ index 69e512e..4adbab9 100644
 +
 +## 2026-11-12 · v1.12 (repository canonico, correzioni G0 e journal)
 +
-+- **Migrazione (D-19)** a `gioelemelis2-dot/trading-brain-core` (privato). Storia della sola `brain/` dal ramo `claude/vibrant-cannon-5uunho` di `l-Altro` (commit `f6a2824`), filtrata con `git filter-branch`: 23 commit, albero `brain/` identico (`7422e1fc…`). Su `main` anche il commit di configurazione (`README.md` e `.gitignore` alla radice).
++- **Migrazione (D-19)** a `<account-titolare>/trading-brain-core` (privato). Storia della sola `brain/` dal ramo `claude/vibrant-cannon-5uunho` di `l-Altro` (commit `f6a2824`), filtrata con `git filter-branch`: 23 commit, albero `brain/` identico (`7422e1fc…`). Su `main` anche il commit di configurazione (`README.md` e `.gitignore` alla radice).
 +- **Ramo `feat/fix-g0-journal`**, in TDD:
 +  - mandato «Binario A»: stress contro il limite totale; futures senza dimensione fittizia; regole personali confermate applicate; ancora di integrità del journal; Decimal e orari ISO-8601 negli indicatori;
 +  - contro-audit: P-05 confrontato con il limite giornaliero della prop firm e avvisi non soppressi; seconda parte di P-01 (size dopo una perdita); validazione di numeri e orari all'ingresso del journal e riferimenti `corregge`/`chiude` esistenti; correzioni applicate in `brier()` e negli indicatori (`versioni_finali`); `verifica --impronta`; positività in G0;

@@ -166,7 +166,7 @@ Formato: data · versione della base · cosa · perché · file.
 
 ## 2026-11-12 · v1.12 (repository canonico, correzioni G0 e journal)
 
-- **Migrazione (D-19)** a `gioelemelis2-dot/trading-brain-core` (privato). Storia della sola `brain/` dal ramo `claude/vibrant-cannon-5uunho` di `l-Altro` (commit `f6a2824`), filtrata con `git filter-branch`: 23 commit, albero `brain/` identico (`7422e1fc…`). Su `main` anche il commit di configurazione (`README.md` e `.gitignore` alla radice).
+- **Migrazione (D-19)** a `<account-titolare>/trading-brain-core` (privato). Storia della sola `brain/` dal ramo `claude/vibrant-cannon-5uunho` di `l-Altro` (commit `f6a2824`), filtrata con `git filter-branch`: 23 commit, albero `brain/` identico (`7422e1fc…`). Su `main` anche il commit di configurazione (`README.md` e `.gitignore` alla radice).
 - **Ramo `feat/fix-g0-journal`**, in TDD:
   - mandato «Binario A»: stress contro il limite totale; futures senza dimensione fittizia; regole personali confermate applicate; ancora di integrità del journal; Decimal e orari ISO-8601 negli indicatori;
   - contro-audit: P-05 confrontato con il limite giornaliero della prop firm e avvisi non soppressi; seconda parte di P-01 (size dopo una perdita); validazione di numeri e orari all'ingresso del journal e riferimenti `corregge`/`chiude` esistenti; correzioni applicate in `brier()` e negli indicatori (`versioni_finali`); `verifica --impronta`; positività in G0;
@@ -1438,3 +1438,13 @@ Nulla di questo tocca il candidato `8e51ce9` su cui lavora R15.
   - requisiti 15–17: criteri di chiusura più stretti; indice unico al congelamento.
 - **Nuovo `guardian/PROCEDURA-D2-RICONCILIAZIONE-DEMO.md`:** procedura e prospetto per operazione. La demo è MT4 Raw e le specifiche sono MT5: il profilo va identificato prima di interpretare gli scarti. La decisione è del titolare.
 - **Trovato:** il nome e il cognome del titolare compaiono in 28 file del repository (205 occorrenze), fra cui `TEMPLATE_RICONCILIAZIONE_DA25.toml` alla voce `operatore`, quasi tutti consegnati prima del 18/11. Non modificati (D-28: i documenti consegnati non si toccano). Portato al titolare come decisione.
+
+## 2026-11-26 · v2.14 (D-57, D-58)
+
+- **D-57:** il titolare sceglie la prova D2 (riconciliazione del Guardian sulla demo).
+- **D-58:** nome del titolare sostituito in 27 file di `brain/` (166 sostituzioni, nessun residuo).
+  - **Errore evitato:** la prima sostituzione aveva fatto fallire due righe del manifest delle consegne di Gemini.
+  - I manifest non sono stati toccati. Gli originali sono verificabili al commit `636583b`: 9 file su 5 manifest, tutti uguali.
+  - Il pacchetto V3.3 (D-17), che contiene il nome 6 volte, resta come eccezione da decidere.
+  - Test `test_pipeline` e `test_esporta_redatto` verdi su 3.13 e 3.9.
+  - Dettagli in `governance/REDAZIONE-NOME-20261126.md`.

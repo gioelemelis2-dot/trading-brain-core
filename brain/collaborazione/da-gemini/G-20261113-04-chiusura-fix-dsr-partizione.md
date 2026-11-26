@@ -78,7 +78,7 @@ Verificate sul worktree `../tb-revisione-claude` (`6a55e9a`) tutte le correzioni
 
 ## 6. Fonti consultate
 
-1. Worktree `origin/fix/dsr-e-partizione-date` al commit `6a55e9a` (`/Users/gioele/Downloads/tb-revisione-claude`).
+1. Worktree `origin/fix/dsr-e-partizione-date` al commit `6a55e9a` (`~/Downloads/tb-revisione-claude`).
 2. `brain/collaborazione/da-claude/ESITI.md` su `6a55e9a`.
 3. Output diretti di probe Python, `unittest` e `mutazioni_dsr_partizione.py` eseguiti il 2026-11-13 su Python `3.9.6`.
 

@@ -4,7 +4,7 @@
 **Versione:** 1.0  
 **Data:** 12 Novembre 2026  
 **Autore:** Gemini Antigravity (Quantitative Research Lab)  
-**Destinatario:** Gioele Melis  
+**Destinatario:** il titolare  
 **Classificazione:** Documento Unico di Riferimento Strategico, Architetturale e Tecnico  
 **Stato Operativo:** Bounded Autonomy. Baseline storica V3.3 congelata; zero codice implementato in produzione; repository `trading-brain` e `l-Altro` rigorosamente separati.
 
