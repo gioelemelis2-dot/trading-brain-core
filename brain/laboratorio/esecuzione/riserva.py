@@ -123,6 +123,9 @@ class _Stato:
         if tipo == "prenotazione":
             if p is not None:
                 raise ValueError(f"identità {id_!r} già usata")
+            ip = e.get("ipotesi")
+            if type(ip) is not str or not ip or ip != ip.strip() or not ip.isprintable():   # #150 (come #146 e)
+                raise ValueError(f"prenotazione {id_!r} con ipotesi vuota o non valida: {ip!r}")
             a, b = self._intervallo(e)
             if self.protetta and a <= self.protetta[1] and b >= self.protetta[0] and not e.get("usa_protetta"):
                 raise ValueError(f"{a} → {b} tocca la parte protetta {self.protetta[0]} → {self.protetta[1]}: "

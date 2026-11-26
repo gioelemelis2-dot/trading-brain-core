@@ -1125,7 +1125,9 @@ class TestRegressioniR1906(Percorso):
         scheda.write_text(testo_scheda(contratto("H-X")), encoding="utf-8")
         self.assertEqual(EV.leggi_contratto(scheda)["ipotesi"], "H-X")
         scheda.write_text(testo_scheda(contratto("")), encoding="utf-8")         # anche dall'ingresso completo
-        RV.prenota(self.riserva, "PV", "", LETTURA, FINE, S.impronta(scheda), ORA)   # la riserva la accetta (provato)
+        with self.assertRaisesRegex(ValueError, "ipotesi"):                  # #150: la riserva non la accetta più
+            RV.prenota(self.riserva, "PV", "", LETTURA, FINE, S.impronta(scheda), ORA)
+        RV.prenota(self.riserva, "PV", "H-VUOTA", LETTURA, FINE, S.impronta(scheda), ORA)   # il passo 1 viene prima
         prima = self.fotografia()
         with self.assertRaisesRegex(EV.SchedaNonConforme, "ipotesi"):
             self.esegui(scheda, "PV")

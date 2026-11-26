@@ -185,6 +185,7 @@ M = {
     'P16 potenza: sigma non controllata sotto la soglia (R14-06)': [(PS, '    if sigma <= 0:                                                     # R14-06: anche sotto la soglia\n', '    if False:                                                     # R14-06: anche sotto la soglia\n')],
     'N68 lanciatore: archivi nella radice ammessi (M-R14-01 di Gemini)': [(AV, 'IMPORTABILI = (".py", ".pyc", ".pyo", ".so", ".pyd", ".pth", ".zip", ".egg", ".whl")', 'IMPORTABILI = (".py", ".pyc", ".pyo", ".so", ".pyd", ".pth")')],
     'N69 lanciatore: cartella esterna del bytecode ammessa (M-R14-02 di Gemini)': [(AV, '    if getattr(sys, "pycache_prefix", None):\n        problemi.append("eseguire senza -X pycache_prefix")', '    if False:\n        problemi.append("eseguire senza -X pycache_prefix")')],
+    'N70 orario con cifre non ASCII (#151)': [(E, 'r"[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}Z")   # #151', 'r"\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}Z")   # #151')],
     'N37 registro non canonico accettato (#86)': [(E, '            if x.registro.resolve() != (RADICE / REL_REGISTRO).resolve():', '            if False:')],
     'N38 storia git non controllata (#86, #125)': [(E, '            S.versioni_nella_storia(RADICE, REL_REGISTRO)                      # #125: storia completa e leggibile', '            pass')],
     'N41 storia del solo ramo corrente (#86)': [(SG, '_git(radice, "rev-list", "--all", "--reflog", "--", rel)', '_git(radice, "rev-list", "HEAD", "--", rel)')],

@@ -49,7 +49,7 @@ ANCORA_GIT = True              # il registro deve continuare la versione su git 
                                # la spengono. Cambiarla nel codice vero cambia le impronte del codice sigillato.
 CONTROLLO_AMBIENTE = True      # #61: python3 -I -S e solo moduli della libreria standard o sigillati; i test che
                                # chiamano main nello stesso processo lo spengono (le prove vere sono in processi a parte)
-_ORA_ISO = re.compile(r"\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z")
+_ORA_ISO = re.compile(r"[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}Z")   # #151: solo cifre ASCII
 
 
 def _file_modulo(radice: Path, modulo: str) -> Optional[Path]:
