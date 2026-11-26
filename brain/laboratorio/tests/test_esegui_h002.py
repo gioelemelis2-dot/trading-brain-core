@@ -521,6 +521,19 @@ class TestRigaDiComandoR12bis(BaseRiga):
         self.assertEqual(rc, 2)
         self.assertEqual(self.esecuzioni("sviluppo"), [])
 
+    def test_ora_con_cifre_non_ascii_rifiutata(self):
+        # #151: \\d accetta le cifre a larghezza piena, e strptime anche; il registro vuole solo cifre ASCII
+        self.cache_di(date(2024, 1, 1), 60)
+        self.sigilla()
+        with contextlib.redirect_stdout(io.StringIO()), contextlib.redirect_stderr(io.StringIO()):
+            rc = E.main(["--registro", str(self.registro), "--scheda", str(self.scheda), "--cache", str(self.cache),
+                         "--rapporto", str(self.uscita), "--ora", "\uff12\uff10\uff12\uff16-11-22T12:00:00Z",
+                         "--modalita", "sviluppo"])
+        self.assertEqual(rc, 2)
+        self.assertEqual(self.esecuzioni("sviluppo"), [])
+        self.assertIsNone(E._ORA_ISO.fullmatch("\uff12\uff10\uff12\uff16-11-22T12:00:00Z"))
+        self.assertIsNotNone(E._ORA_ISO.fullmatch("2026-11-22T12:00:00Z"))       # caso valido
+
     def test_ancora_git_attiva_rifiuta_un_registro_fuori_dal_repository(self):
         from unittest import mock
         self.cache_di(date(2024, 1, 1), 60)

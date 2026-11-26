@@ -114,6 +114,29 @@ class TestPrenotazione(Base):
             RV.stato(self.reg)
 
 
+class TestIpotesiDellaPrenotazione(Base):
+    """#150: la prenotazione esige un'ipotesi testo non vuoto, senza spazi ai bordi né caratteri di controllo (la stessa
+    regola del contratto H-003, #146 e), alla scrittura e alla ricostruzione di un registro manomesso."""
+
+    def test_ipotesi_vuota_o_non_testo_rifiutata_senza_scrivere(self):
+        prima = self.reg.read_bytes()
+        for ip in ("", " ", " H-X", "H-X ", "H-\nX", "H-\tX", 7, None, ["H-X"], True):
+            with self.subTest(ipotesi=ip):
+                with self.assertRaisesRegex(ValueError, "ipotesi"):
+                    RV.prenota(self.reg, "A", ip, D(2005, 1, 1), D(2005, 1, 5), "domanda-A", ORA)
+                self.assertEqual(self.reg.read_bytes(), prima)
+        RV.prenota(self.reg, "A", "H-X", D(2005, 1, 1), D(2005, 1, 5), "domanda-A", ORA)    # caso valido
+        self.assertEqual(RV.prenotazione(self.reg, "A")["evento"]["ipotesi"], "H-X")
+
+    def test_registro_manomesso_con_ipotesi_vuota_rifiutato(self):
+        dati = json.loads(self.reg.read_text())
+        dati["eventi"].append({"tipo": "prenotazione", "id": "X", "ipotesi": "", "inizio": "2005-01-01",
+                               "fine": "2005-01-05", "hash_domanda": "d", "usa_protetta": False, "ora": ORA})
+        self.reg.write_text(json.dumps(dati))
+        with self.assertRaisesRegex(ValueError, "ipotesi"):
+            RV.stato(self.reg)
+
+
 class TestQuotaEsatta(unittest.TestCase):
     def test_quota_calcolata_in_frazioni_esatte(self):
         # #149 (R19-09): 0,15/(2·3)/1 vale esattamente 1/40; in virgola mobile dava 0,024999999999999998
