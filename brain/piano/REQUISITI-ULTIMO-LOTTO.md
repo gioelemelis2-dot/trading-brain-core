@@ -1,7 +1,7 @@
 # Requisiti dell'ultimo lotto prima del primo accesso reale (26/11/2026)
 
 **Scopo.** Riunire in un solo posto ciò che va costruito prima di congelare il perimetro e fare i due giri finali (DA-42). Le fonti sono sparse fra DGS-17, DGS-18, DGS-19, le decisioni D-54 e D-55 e la revisione critica del 23/11.
-**Stato al 27/11:** fatti i punti **4** (#141, `7ca55ae`), **8** e **9** (tentativo rifiutato e rilascio con autore) e **12** (#143). Gli altri sono da fare.
+**Stato al 27/11:** fatti i punti **4** (#141, `7ca55ae`), **8** e **9** (tentativo rifiutato e rilascio con autore) **12** (#143), **17** (#148) e **18** (#149). Gli altri sono da fare. **Prossimo: 14 (#145)**, perché la correzione di #149 ha tolto il falso rifiuto che per caso fermava una delle sue sonde.
 
 **Regola:** ogni punto si fa in TDD (test rossi, codice, mutanti su 3.13 e 3.9). Poi una ricevuta con una prova positiva completa dal lanciatore sul candidato.
 

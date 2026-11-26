@@ -277,6 +277,11 @@ class TestRifiutiPrimaDellaLettura(Percorso):
             self.esegui(scheda, rapporto=cartella)
         self.assertEqual((self.chiamate, self.riserva.read_bytes()), ([], prima))
         self.assertEqual(S.leggi(self.registro)["esecuzioni"], [])
+        un_file = self.d / "un_file"
+        un_file.write_text("x", encoding="utf-8")
+        with self.assertRaisesRegex(ValueError, "cartella del rapporto .* è un file"):
+            self.esegui(scheda, rapporto=un_file / "r.txt")
+        self.assertEqual((self.chiamate, self.riserva.read_bytes()), ([], prima))
 
     def test_vecchia_scheda_h002_rifiutata(self):
         vecchia = self.d / "H-002-ORB-v3.md"

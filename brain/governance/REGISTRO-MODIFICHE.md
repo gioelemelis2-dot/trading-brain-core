@@ -1458,3 +1458,13 @@ Nulla di questo tocca il candidato `8e51ce9` su cui lavora R15.
   - **Moduli** `test_esegui_verifica` e `test_esegui_h002` verdi su 3.13 e 3.9.
   - **Prova indipendente:** la sezione 1 delle sonde di Gemini, rieseguita: R19-02b `codice_manomesso_eseguito=False`; R19-01 percorso valido ancora `rc=0`.
 - **Errore di Claude, senza danno:** un calcolo lanciato senza `-B` aveva lasciato bytecode in `brain/`. Il controllo dell'ambiente l'ha rilevato (`TestAmbiente` rosso). Bytecode cancellato, test verde.
+
+## 2026-11-27 · v2.16 (#148 e #149 corretti)
+
+- **#148:** il rapporto (cartella, o cartella madre che è un file) si controlla al passo 1. Il controllo «non scrivibile» è stato tolto, perché come root non si può provare: un mutante lì non dimostrerebbe nulla. Mutanti EV40 ed EV41 uccisi.
+- **#149:** `RV.quota` calcola in frazioni esatte. Mutanti PR19, V11 e V12 uccisi.
+- Test della riserva e dei rifiuti verdi su 3.13 e 3.9.
+- **Sonde di Gemini, sezione 2, rieseguite** (`ricevute/2026-11-26-verifica-r19/log/chiusura_148_149_sonda_gemini_sezione2_py313.log`):
+  - quota esatta;
+  - R19-08 senza apertura, cioè senza consumo;
+  - **R19-04 con α 0,15 ora completa la seconda verifica.** Prima la fermava per caso il falso rifiuto di #149. Il varco è #145, il prossimo.

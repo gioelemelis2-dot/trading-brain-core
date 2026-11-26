@@ -36,6 +36,7 @@ import hashlib
 import json
 import math
 import re
+from fractions import Fraction
 from datetime import date, timedelta
 from pathlib import Path
 from typing import Optional, Tuple
@@ -59,7 +60,9 @@ def _giorni(a: date, b: date):
 
 
 def quota(alfa_tot: float, j: int, m: int = 1) -> float:
-    return alfa_tot / (j * (j + 1)) / m
+    """α_j = α/[j(j+1)]/m calcolata in frazioni esatte dal valore decimale di α (#149, R19-09: in virgola mobile
+    0,15/6 dava 0,024999999999999998 invece di 1/40)."""
+    return float(Fraction(repr(alfa_tot)) / (j * (j + 1)) / m)
 
 
 def impronta_impegno(impegno: dict) -> str:

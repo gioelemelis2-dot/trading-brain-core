@@ -225,6 +225,11 @@ def esegui(scheda: Path, registro: Path, riserva: Path, id_: str, cache: Path, c
                 "motivo": motivo}
 
     c = leggi_contratto(scheda)                                                          # 1
+    rapporto = Path(rapporto)                                          # #148 (R11-S4): prima di ogni lettura e scrittura
+    if rapporto.is_dir() or (rapporto.exists() and not rapporto.is_file()):
+        raise ValueError(f"--rapporto {rapporto} è una cartella o non è un file regolare")
+    if rapporto.parent.exists() and not rapporto.parent.is_dir():
+        raise ValueError(f"la cartella del rapporto {rapporto.parent} è un file")
     sha_scheda = S.impronta(scheda)
     versioni_riserva = _ancora(registro, riserva) if ANCORA_GIT else []                  # PIANO-D51 §3.1
     p = RV.prenotazione(riserva, id_)                                                    # 2

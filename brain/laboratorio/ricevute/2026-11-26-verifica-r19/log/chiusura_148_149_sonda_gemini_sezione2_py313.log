@@ -1,0 +1,28 @@
+
+================ 2. REGRESSIONI E BUG IN esegui_verifica / manifesto / riserva ================
+  [R19-03 20 feriali vuoti in verifica] esito_tecnico=completata, esito=promossa, trade=980 (attesi 1000 senza buchi; 20 feriali vuoti passati silenziosamente come 0 trade!)
+  [R19-05 caduta tra rendiconta e esito] ripresa=rapporto rigenerato, ruoli_in_registro_prove=['sviluppo', 'verifica', 'esito'] (manca 'esito'!)
+  [R19-04b float64 quota] RV.quota(0.15, 2, 1)=0.025 (==0.025? True) | RV.quota(0.75, 2, 5)=0.025 (==0.025? True)
+  [R19-04 RAMI DIVERGENTI alfa=0.15,m=1] BYPASS §3.4! esito_tecnico=completata, esito=promossa, chiamate={'sviluppo': 1, 'verifica': 1}
+  [R19-04 RAMI DIVERGENTI alfa=0.75,m=5] BYPASS §3.4! esito_tecnico=completata, esito=promossa, chiamate={'sviluppo': 1, 'verifica': 1}
+  [R19-06d leggi_contratto soglia=-inf] ACCETTATO da leggi_contratto! soglia=-inf
+  [R19-06d esegui soglia=-inf] fallita tardi (ValueError: Out of range float values are not JSON compliant: -inf) | chiamate=['sviluppo'] | esecuzioni_scritte=1
+  [R19-06e leggi_contratto ipotesi=''] ACCETTATO da leggi_contratto!
+Traceback (most recent call last):
+  File "<tmp>", line 399, in sezione_2_regressioni_e_bug
+    EV.esegui(s_ok, reg2, ris2, "P1", cache, cache_sv, rap_dir, "NON-UNA-DATA")
+    ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<tmp>", line 230, in esegui
+    raise ValueError(f"--rapporto {rapporto} è una cartella o non è un file regolare")
+ValueError: --rapporto <tmp> è una cartella o non è un file regolare
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "<string>", line 9, in <module>
+    m.sezione_2_regressioni_e_bug(c,cs)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^
+  File "<tmp>", line 405, in sezione_2_regressioni_e_bug
+    f"riserva_consumata={st['giorni']['consumato']} | ora_scritta={st['aperture'][0]['ora']!r}"
+                                                                   ~~~~~~~~~~~~~~^^^
+IndexError: list index out of range
