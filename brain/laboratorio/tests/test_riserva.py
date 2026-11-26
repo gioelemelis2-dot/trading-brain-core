@@ -114,6 +114,15 @@ class TestPrenotazione(Base):
             RV.stato(self.reg)
 
 
+class TestQuotaEsatta(unittest.TestCase):
+    def test_quota_calcolata_in_frazioni_esatte(self):
+        # #149 (R19-09): 0,15/(2·3)/1 vale esattamente 1/40; in virgola mobile dava 0,024999999999999998
+        self.assertEqual(RV.quota(0.15, 2, 1), 0.025)
+        self.assertEqual(RV.quota(0.30, 2, 2), 0.025)
+        self.assertEqual(RV.quota(0.05, 1, 1), 0.025)
+        self.assertEqual(RV.quota(0.05, 2, 1), 1 / 120)
+
+
 class TestTentativoRifiutato(Base):
     """DGS-18 Q3 e DGS-19 (caso G): un tentativo rifiutato prima dell'autorizzazione si registra SENZA consumo,
     collegato alla prenotazione e allo snapshot dei registri; un ritentativo identico non si duplica."""

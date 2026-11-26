@@ -266,6 +266,18 @@ class TestCorsaCompleta(Percorso):
 
 
 class TestRifiutiPrimaDellaLettura(Percorso):
+    def test_rapporto_cartella_rifiutato_prima_di_ogni_lettura(self):
+        # #148 (R19-08, regressione di R11-S4): una destinazione del rapporto invalida si rifiuta PRIMA
+        # dell'autorizzazione, senza consumo; nessuna voce nel registro delle prove
+        scheda = self.prepara()
+        cartella = self.d / "rapporto_e_cartella"
+        cartella.mkdir()
+        prima = self.riserva.read_bytes()
+        with self.assertRaisesRegex(ValueError, "rapporto.*cartella"):
+            self.esegui(scheda, rapporto=cartella)
+        self.assertEqual((self.chiamate, self.riserva.read_bytes()), ([], prima))
+        self.assertEqual(S.leggi(self.registro)["esecuzioni"], [])
+
     def test_vecchia_scheda_h002_rifiutata(self):
         vecchia = self.d / "H-002-ORB-v3.md"
         shutil.copy(repo_root / "brain" / "laboratorio" / "ipotesi" / "H-002-ORB-v3.md", vecchia)
