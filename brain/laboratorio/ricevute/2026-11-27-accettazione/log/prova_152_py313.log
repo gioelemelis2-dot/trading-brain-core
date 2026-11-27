@@ -1,0 +1,3 @@
+{"rc_main": null, "eccezione_non_catturata": "OSError: [Errno 28] No space left on device (simulato)", "esito_riserva": "promossa", "voci": ["sviluppo", "verifica", "esito"], "rapporto": false, "orfani": [".r.txt.l657pblu"]}
+{"esito_tecnico": "rapporto rigenerato", "esito": "promossa", "chiamate_caricatore": {"sviluppo": 0, "verifica": 0}, "prenotazione": "P1", "impronta_impegno": "ff97d76ff470a20493a906567629aa54e84ba2584a90e4d4fb656c0653c53b4c", "rapporto": "<tmp>/r.txt", "motivo": ""}
+dopo la riparazione: rc 0 | rapporto identico al record: True

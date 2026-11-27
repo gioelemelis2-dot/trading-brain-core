@@ -1570,3 +1570,23 @@ Nulla di questo tocca il candidato `8e51ce9` su cui lavora R15.
 - **Da fare:**
   - confermare al DGS la classe comune di «in-cache-non-registrato»;
   - sui registri veri, la diagnosi sul Mac dirà se i 236 doppioni BID sono identici anche in esito e byte (il 23/11 era stata confrontata solo l'impronta).
+
+## 2026-11-27 · v2.23 (DGS-21 e DGS-22: tabella d'accettazione e scheda D2)
+
+- **Archiviati senza modifiche:** DGS-21 (casi e tolleranze) e DGS-22 (riscontro su Gemini). La revisione preparatoria di Gemini, a cui DGS-22 risponde, non è nel repository.
+- **`piano/ACCETTAZIONE-ULTIMO-LOTTO.md`:** i casi di DGS-21 con le rettifiche di DGS-22, ciascuno con il commit e la prova sul codice attuale.
+  - La rettifica 0,025 = 1/40 è ricalcolata: 1.489 giorni.
+  - Codici d'uscita attuali letti nel codice: I e Q danno 3, da congelare.
+  - L'inversione del verdetto di S-146a, [NON VERIFICATO] per il DGS, è riprodotta da Claude (`b906018`).
+- **Due scarti nuovi, provati:**
+  - **#152:** errore tardivo di consegna del rapporto → codice 1 e file temporaneo orfano;
+  - **#153:** un'opzione ripetuta vale l'ultima.
+- **Prove da aggiungere:** una sola data in comune, l'oracolo del fuso, la provenienza nel catalogo di sviluppo, gli argomenti dal processo, la concorrenza a turni fissati.
+- **Guardian, verificato nel codice** (DGS-22 lo riferiva da Gemini come [NON VERIFICATO]):
+  - `limiti.margine` è la distanza dell'equity dal limite di drawdown, non il margine del broker;
+  - `perdita_allo_stop` somma le commissioni solo se le si passano, e usa il valore assoluto;
+  - le commissioni sono un dato d'ingresso, non un calcolo.
+
+  Esempio illustrativo eseguito: 0,01 lotti, 5 USD → 5,0000 USD lordi.
+- **`guardian/SCHEDA-D2-PER-IL-TITOLARE.md`:** che cosa prevede il Guardian, le foto da fare a posizione aperta, le tolleranze da approvare.
+- **`PROCEDURA-D2`** corretta: D-57 è già decisa; le tolleranze non sono in DA-25; il margine non ha una previsione del Guardian.

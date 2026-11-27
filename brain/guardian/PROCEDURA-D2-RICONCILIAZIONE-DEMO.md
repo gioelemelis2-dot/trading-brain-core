@@ -5,7 +5,7 @@
 - Risponde a una domanda sola: i numeri del Guardian (perdita allo stop, commissione, margine) coincidono con quelli del broker sul conto demo?
 - Non tocca la riserva né il lavoro sulla macchina, e non usa denaro reale.
 
-**Decisione del titolare:** fare D2 adesso, mettendo a disposizione la demo e il suo estratto, oppure lasciare il Guardian consultivo e non riconciliato.
+**Decisione del titolare: presa (D-57, 26/11).** Restano da approvare le tolleranze (DGS-21 §B). Scheda operativa: `SCHEDA-D2-PER-IL-TITOLARE.md`.
 
 ## Stato documentale verificato (26/11)
 - `dati/reali/demo_broker_mt5_50k_xauusd.toml`: `riconciliato = false`; il broker di quel conto da 50.000 USD non è noto.
@@ -26,9 +26,9 @@
 | volume, stop, prezzi effettivi | | | | | concorde / discordante / non osservabile |
 | perdita prevista allo stop | | risultato **riconciliato al prezzo eseguito** (la differenza di esecuzione si mostra a parte) | | | |
 | commissione, per lato o totale | | | | | |
-| margine all'apertura | | screenshot del momento, altrimenti «non osservabile» | | | |
+| margine all'apertura | **nessuna previsione del Guardian** (verificato: `limiti.margine` è la distanza dal limite di drawdown); al più un calcolo esterno attribuito al profilo demo | screenshot prima e subito dopo, altrimenti «non osservabile» | | | |
 
-- Si usano le tolleranze di DA-25, dopo aver chiarito prima se sono assolute o relative.
+- Le tolleranze **non** sono in DA-25 (DGS-21 §B, rettifica). Si usa la convenzione che il titolare approverà prima delle operazioni (proposta di DGS-21, confermata da DGS-22).
 - Ogni voce ha un esito: concorde, discordante o non osservabile.
 
 6. **Registrazione.** La prova si scrive nel diario. Il risultato vale **per quel profilo** (demo MT4 Raw). I parametri del profilo di destinazione (MT5, FTMO) restano da verificare.
