@@ -10,7 +10,7 @@ Le previsioni stanno in `PIANO-ORDINI-D2-20261127.md`, commit `57d2e2e` (16:00 U
 - **Prezzi:** apertura **3.621,35**; **S/L 3.657,86**, cioè **+36,51** sopra l'apertura; T/P nessuno; prezzo corrente 3.622,19.
 - **Conto:** saldo 100.000,00, equità 99.999,16, **margine 181,07**, margine libero 99.818,09, profitto −0,84.
 
-**Scostamento dal piano.** Il piano prevedeva come primo ordine O1: **acquisto** con stop a −2,00. La vendita di O2 aveva lo stop a +3,00. Quest'ordine è una vendita con lo stop a +36,51: **non corrisponde a nessun ordine del piano**. Lo registro come **S1, fuori piano**.
+**Scostamento dal piano.** Il piano prevedeva come primo ordine O1: **acquisto** con stop a −2,00. La vendita di O2 aveva lo stop a +3,00. Quest'ordine è una vendita con lo stop a +36,51: **non corrisponde a nessun ordine del piano**. Lo registro come **S1, fuori piano**. **Chi l'ha aperto:** il titolare, a mano, «secondo una mia idea» (sua risposta delle 16:3x UTC), non Claude chat. **Concausa di Claude:** in chat avevo scritto che le operazioni si potevano fare «a caso», intendendo il momento dell'ingresso, e subito dopo una tabella di parametri da rispettare esattamente. Il messaggio era ambiguo.
 
 | Voce | Previsione congelata | Osservato | Scarto | Esito provvisorio |
 |---|---|---|---|---|
