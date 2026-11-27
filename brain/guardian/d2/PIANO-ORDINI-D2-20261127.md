@@ -20,6 +20,13 @@
   Le previsioni sono **confermate senza modifiche**: contratto 100 e margine al 5%, come ipotizzato. **La commissione non compare nella finestra di MT4**, quindi resta valida l'ipotesi congelata H-a e si verifica sul primo ordine. Biglietto osservato prima di O1: Bid 3.622,52, Ask 3.622,71 (spread 0,19); conto piatto;
 - 4: osservato.
 
+## Versione ridotta (27/11, 16:4x UTC, su richiesta del titolare che ha poco tempo)
+
+- **S1**, la vendita fuori piano aperta dal titolare: si chiude a mano entro la chiusura di venerdì, **senza modificare lo stop**; poi la foto dello Storico. Serve per la commissione.
+- **O1** si fa quando il titolare ha tempo, anche nei giorni successivi, in modalità «imposta e dimentica»: Buy 0,01, S/L = Ask − 2,00, nessun T/P. Lo stop la chiude da solo; se non scatta, chiusura manuale quando capita. Le foto sono tre: biglietto, riga subito dopo l'apertura, Storico.
+- **O2 e O3 sono annullati.** La vendita è coperta da S1, per P&L e margine. Le previsioni di O1 restano quelle del commit `57d2e2e`.
+- Il limite «entro le 19:30» vale solo per S1. Per O1 basta non lasciarla aperta nel weekend.
+
 ## Gli ordini
 
 Uno alla volta, **XAUUSD, 0,01 lotti**, a mercato, nessun take profit. Lo stop si inserisce nel biglietto prima di inviare l'ordine.
