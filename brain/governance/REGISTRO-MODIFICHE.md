@@ -1555,3 +1555,18 @@ Nulla di questo tocca il candidato `8e51ce9` su cui lavora R15.
   - S-147a/b lasciano registrato lo screening di sviluppo (ordine del percorso);
   - esecuzione solo su 3.13.
 - **Ricevuta:** `ricevute/2026-11-26-verifica-r19/VERIFICA-SONDE-CHIUSURA.md`, con i due JSONL grezzi.
+
+## 2026-11-27 · v2.22 (A1, D-59)
+
+- **Decisione del titolare (D-59).** **Errore di Claude:** avevo presentato A1 come lavoro che non richiedeva decisioni, mentre `STATO-PROGETTO` la elencava fra le decisioni aperte. Ho chiesto prima di scrivere codice.
+- **Test rossi:** `7e731f1`. Il vecchio `test_voce_doppia` è stato sostituito: dichiarava proprio il comportamento che D-59 cambia.
+- **Codice:**
+  - `manifesto.py`: identità = indirizzo, classe del contenuto, byte, impronta; traccia `doppioni`; messaggi bloccanti con il prefisso «voce doppia:», così la diagnosi continua a classificarli;
+  - `esegui_verifica.py`: `doppioni` nell'impegno, per la lettura e per lo sviluppo;
+  - `diagnosi_manifesto.py`: `doppioni_unificati` contati a parte, senza cambiare «pulito».
+- **Test del percorso ordinario adeguato** alla nuova chiave del blocco sviluppo dell'impegno (dichiarato).
+- **Suite:** prima dell'adeguamento, in `test_manifesto`, `test_diagnosi_manifesto`, `test_esegui_verifica`, `test_riserva` e `test_mutanti_applicabili` (128 test) falliva solo quel test, su 3.13 e su 3.9. Dopo l'adeguamento l'ho rieseguito e passa su entrambe le versioni.
+- **Mutanti:** MF02 ricontrollato, più MF14–MF21, EV61 ed EV62: in corso. Un mutante senza l'indirizzo nell'identità sarebbe **equivalente** (le righe con un indirizzo diverso da quello atteso sono già scartate da #147), quindi non è stato aggiunto.
+- **Da fare:**
+  - confermare al DGS la classe comune di «in-cache-non-registrato»;
+  - sui registri veri, la diagnosi sul Mac dirà se i 236 doppioni BID sono identici anche in esito e byte (il 23/11 era stata confrontata solo l'impronta).

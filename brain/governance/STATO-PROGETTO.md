@@ -18,7 +18,7 @@ Una pagina: dove siamo, i contatori, cosa manca. La versione precedente, del 17�
 | Giri di revisione | R18 (21/11) e **R19 (26/11) non puliti**. Il prossimo giro sarà sul candidato congelato dopo il lotto, il primo dei due che contano per D-56 | `da-gemini/G-20261126-R19.md`; `ricevute/2026-11-26-verifica-r19/` |
 | Riserva di verifica | 2005 → 31/10/2023, **mai letta**. Regole di spesa D-38 (α 5%). Una sola quota collaudata (2,5%, prima apertura). Date esatte, embargo e quarantena da fissare | D-38; DGS-19 Q2 |
 | Dati | BID e ASK completi; copia finale su due cloud con impronta verificata (D-39, 23/11). **Registri dello scaricamento incompleti:** BID fino al 07/06/2009 e tutto lo sviluppo senza riga; 236 doppioni identici. Oggi lo screening si fermerebbe | `ricevute/2026-11-23-diagnosi-manifesto/` |
-| Decisioni | D-01…D-56; aperte: A1/B1 (registri), DA-39 (GitHub Pro), D-38 (parametri), DA-25, DA-32, DA-33 | `DECISIONI.md`, `DECISIONI-APERTE.md` |
+| Decisioni | D-01…D-59 (D-59 = A1, 27/11); aperte: B1 (registri), DA-39 (GitHub Pro), D-38 (parametri), DA-25, DA-32, DA-33 | `DECISIONI.md`, `DECISIONI-APERTE.md` |
 
 ## Cosa manca per il primo accesso reale, in ordine
 1. Ultimo lotto (`piano/REQUISITI-ULTIMO-LOTTO.md`, 18 requisiti, fatti 4, 8, 9): prima #143 (critico), poi #144–#149 da R19; D-55, D-54, procedura di potenza, A1, stati dei file, B1 (decisione del titolare).
