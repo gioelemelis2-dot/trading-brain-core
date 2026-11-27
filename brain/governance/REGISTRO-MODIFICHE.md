@@ -1566,7 +1566,7 @@ Nulla di questo tocca il candidato `8e51ce9` su cui lavora R15.
   - `diagnosi_manifesto.py`: `doppioni_unificati` contati a parte, senza cambiare «pulito».
 - **Test del percorso ordinario adeguato** alla nuova chiave del blocco sviluppo dell'impegno (dichiarato).
 - **Suite:** prima dell'adeguamento, in `test_manifesto`, `test_diagnosi_manifesto`, `test_esegui_verifica`, `test_riserva` e `test_mutanti_applicabili` (128 test) falliva solo quel test, su 3.13 e su 3.9. Dopo l'adeguamento l'ho rieseguito e passa su entrambe le versioni.
-- **Mutanti:** MF02 ricontrollato, più MF14–MF21, EV61 ed EV62: in corso. Un mutante senza l'indirizzo nell'identità sarebbe **equivalente** (le righe con un indirizzo diverso da quello atteso sono già scartate da #147), quindi non è stato aggiunto.
+- **Mutanti:** MF02 ricontrollato, più MF14–MF21, EV61 ed EV62: **11/11 uccisi su 3.13 e su 3.9**, con la copia non mutata verde (log `ricevute/2026-11-27-accettazione/log/a1_d59_mutanti.log`). Un mutante senza l'indirizzo nell'identità sarebbe **equivalente** (le righe con un indirizzo diverso da quello atteso sono già scartate da #147), quindi non è stato aggiunto.
 - **Da fare:**
   - confermare al DGS la classe comune di «in-cache-non-registrato»;
   - sui registri veri, la diagnosi sul Mac dirà se i 236 doppioni BID sono identici anche in esito e byte (il 23/11 era stata confrontata solo l'impronta).

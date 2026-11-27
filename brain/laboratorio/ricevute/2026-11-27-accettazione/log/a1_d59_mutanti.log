@@ -1,0 +1,30 @@
+== python3.13
+M00 copia non mutata: suite verde
+UCCISO MF02 voce doppia non vista
+UCCISO MF14 doppioni discordanti accettati (D-59)
+UCCISO MF15 identità senza impronta (D-59)
+UCCISO MF16 identità senza byte (D-59)
+UCCISO MF17 identità senza classe del contenuto (D-59)
+UCCISO MF18 identità con l'esito esatto invece della classe (D-59)
+UCCISO MF19 ora del tentativo nell'identità (D-59)
+UCCISO MF20 passaggio vuoto → dati senza il suo motivo (D-59)
+UCCISO MF21 doppioni non tracciati (D-59)
+UCCISO EV61 doppioni della lettura fuori dall'impegno (D-59)
+UCCISO EV62 doppioni dello sviluppo fuori dall'impegno (D-59)
+11/11 mutanti uccisi (3.13.18); equivalenti dichiarati vivi: 0
+
+== python3.9
+M00 copia non mutata: suite verde
+UCCISO MF02 voce doppia non vista
+UCCISO MF14 doppioni discordanti accettati (D-59)
+UCCISO MF15 identità senza impronta (D-59)
+UCCISO MF16 identità senza byte (D-59)
+UCCISO MF17 identità senza classe del contenuto (D-59)
+UCCISO MF18 identità con l'esito esatto invece della classe (D-59)
+UCCISO MF19 ora del tentativo nell'identità (D-59)
+UCCISO MF20 passaggio vuoto → dati senza il suo motivo (D-59)
+UCCISO MF21 doppioni non tracciati (D-59)
+UCCISO EV61 doppioni della lettura fuori dall'impegno (D-59)
+UCCISO EV62 doppioni dello sviluppo fuori dall'impegno (D-59)
+11/11 mutanti uccisi (3.9.25); equivalenti dichiarati vivi: 0
+
