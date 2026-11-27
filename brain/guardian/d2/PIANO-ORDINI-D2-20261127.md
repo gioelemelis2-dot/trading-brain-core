@@ -9,6 +9,12 @@
 3. **Specifiche MT4 di XAUUSD lette e mandate a Claude.** Se la dimensione del contratto non è 100, o se la commissione è descritta diversamente da qui sotto, **Claude rifà le previsioni con un nuovo commit, prima di operare**.
 4. Conto piatto: margine usato 0,00 (osservato alle 16:5x italiane: saldo ed equity 100.000,00 USD).
 
+**Stato dei cancelli (27/11, dopo il commit delle previsioni):**
+- 1: dichiarato dal titolare, da confermare con la foto dell'elenco dei conti;
+- 2: approvato (D-60);
+- 3: in attesa delle specifiche MT4;
+- 4: osservato.
+
 ## Gli ordini
 
 Uno alla volta, **XAUUSD, 0,01 lotti**, a mercato, nessun take profit. Lo stop si inserisce nel biglietto prima di inviare l'ordine.
