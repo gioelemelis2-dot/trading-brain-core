@@ -347,6 +347,25 @@ class TestRifiutiPrimaDellaLettura(Percorso):
         self.assertEqual([e["tipo"] for e in dopo_ev[len(prima_ev):]], ["tentativo"])
         self.assertEqual(RV.stato(self.riserva)["aperture"], [])
 
+    def test_doppione_identico_unificato_con_traccia_nell_impegno(self):
+        # D-59 (A1): un doppione identico non blocca; la corsa completa e il doppione resta nell'impegno
+        scheda = self.prepara()
+        reg = self.cache / "registro_scaricamento_XAUUSD_BID.csv"
+        originale = reg.read_bytes()
+        righe = originale.decode("utf-8").splitlines(keepends=True)
+        riga = next(x for x in righe if x.split(",")[1:2] == [INIZIO.isoformat()])
+        copia = "2026-11-16T03:00:00Z," + riga.split(",", 1)[1]
+        try:
+            reg.write_text("".join(righe) + copia, encoding="utf-8")
+            r = self.esegui(scheda)
+        finally:
+            reg.write_bytes(originale)
+        self.assertEqual((r["esito_tecnico"], r["esito"]), ("completata", "promossa"))
+        imp = RV._ricostruisci(RV._leggi(self.riserva)).prenotazioni["P1"]["autorizzazione"]["impegno"]
+        self.assertEqual(imp["doppioni"], [{"lato": "BID", "giorno": INIZIO.isoformat(), "righe": 2,
+                                            "sha256": riga.split(",")[7], "esiti": ["dati"]}])
+        self.assertEqual(imp["sviluppo"]["doppioni"], [])
+
     def test_dopo_l_anomalia_corretta_la_stessa_prenotazione_riprende(self):
         # DGS-16 Q3: G lascia la prenotazione aperta (nessuna autorizzazione); corretto il registro dello scaricamento,
         # la STESSA richiesta, con scheda e identità invariate, si esegue

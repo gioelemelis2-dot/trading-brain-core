@@ -110,10 +110,59 @@ class TestConfronto(Cache):
         self.scrivi_registri()
         self.assertEqual(self.manifesto()["anomalie"], ["omesso: XAUUSD ASK 2024-01-05"])
 
-    def test_voce_doppia(self):
-        self.righe["BID"].append(dict(self.righe["BID"][1]))
+    # D-59 (A1, DGS-18 Q2): le righe restano tutte; il manifesto unifica solo i doppioni IDENTICI (indirizzo, classe del
+    # contenuto, byte, impronta) e li conta come anomalia di processo nella traccia «doppioni»; i discordanti bloccano.
+    # Prima di D-59 ogni doppione bloccava (test sostituito: test_voce_doppia).
+    def test_doppione_identico_unificato_con_traccia(self):
+        pulito = self.manifesto()
+        copia = dict(self.righe["BID"][1], ora_utc="2026-11-16T03:00:00Z", tentativi=2)   # differenze amministrative
+        self.righe["BID"].append(copia)
         self.scrivi_registri()
-        self.assertEqual(self.manifesto()["anomalie"], ["voce doppia: XAUUSD BID 2024-01-03 (2 righe valide)"])
+        m = self.manifesto()
+        self.assertEqual(m["anomalie"], [])
+        self.assertEqual((m["elenco"], m["impronta_elenco"]), (pulito["elenco"], pulito["impronta_elenco"]))
+        self.assertEqual(m["doppioni"], [{"lato": "BID", "giorno": "2024-01-03", "righe": 2,
+                                          "sha256": self.righe["BID"][1]["sha256"], "esiti": ["dati"]}])
+        self.assertEqual(pulito["doppioni"], [])
+
+    def test_tre_righe_identiche_e_osservazione_dalla_cache(self):
+        # «in-cache-non-registrato» dice COME è stato osservato il file, non che cosa contiene (DGS-18 Q2): stessa classe
+        r = self.righe["ASK"][2]
+        self.righe["ASK"] += [dict(r, esito="in-cache-non-registrato", http=""), dict(r, ora_utc="2026-11-16T04:00:00Z")]
+        self.scrivi_registri()
+        m = self.manifesto()
+        self.assertEqual(m["anomalie"], [])
+        self.assertEqual(m["doppioni"], [{"lato": "ASK", "giorno": "2024-01-04", "righe": 3, "sha256": r["sha256"],
+                                          "esiti": ["dati", "in-cache-non-registrato"]}])
+        self.assertEqual([x for x in m["elenco"] if x[1] == "ASK" and x[2] == "2024-01-04"][0][3], "dati")
+
+    def test_voce_doppia_discordante_blocca(self):
+        r = self.righe["BID"][1]
+        altra = sha(b"altro")
+        for nome, diversa in (("impronta", dict(r, sha256=altra)), ("byte", dict(r, byte=int(r["byte"]) + 1)),
+                              ("impronta e byte", dict(r, sha256=altra, byte=5))):
+            with self.subTest(diversa=nome):
+                self.rifai()
+                self.righe["BID"].append(diversa)
+                self.scrivi_registri()
+                m = self.manifesto()
+                self.assertEqual(m["anomalie"], ["voce doppia: XAUUSD BID 2024-01-03 (2 righe valide, discordanti)"])
+                self.assertEqual(m["doppioni"], [])
+        self.rifai()
+        sab = self.righe["BID"][4]                                       # sabato: «vuoto-200»; un 404 è un'altra classe
+        self.righe["BID"].append(dict(sab, esito="404", http=404))
+        self.scrivi_registri()
+        self.assertEqual(self.manifesto()["anomalie"], ["voce doppia: XAUUSD BID 2024-01-06 (2 righe valide, discordanti)"])
+
+    def test_passaggio_vuoto_dati_blocca_con_regola_di_revisione(self):
+        # come dopo --riprova-vuoti: prima «vuoto-200», poi «dati» per lo stesso giorno: nuova osservazione discordante
+        sab = self.righe["BID"][4]
+        corpo = bi5(2000006)
+        self.righe["BID"].append(dict(sab, esito="dati", byte=len(corpo), sha256=sha(corpo)))
+        self.scrivi_registri()
+        self.assertEqual(self.manifesto()["anomalie"],
+                         ["voce doppia: XAUUSD BID 2024-01-06 (2 righe valide, passaggio vuoto → dati: serve una "
+                          "regola di revisione esplicita)"])
 
     def test_lato_sbagliato_nel_registro_o_nell_indirizzo(self):
         self.righe["BID"][2]["url"] = DK.url_giorno("XAUUSD", date(2024, 1, 4), "ASK")

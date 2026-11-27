@@ -76,6 +76,17 @@ class TestDiagnosi(unittest.TestCase):
         self.assertEqual(d["per_tipo"], {"voce doppia": {"ASK": {"2023": 1}}, "lato sbagliato": {"ASK": {"2023": 1}}})
         self.assertEqual(d["voci_doppie_esiti"], {"vuoto-200+dati": 1})
 
+    def test_doppioni_identici_contati_a_parte_senza_sporcare(self):
+        # D-59 (A1): un doppione identico non è più un'anomalia che blocca, ma la diagnosi lo conta come anomalia di
+        # processo, per lato e anno
+        rr = self.righe("BID")
+        doppia = dict(next(r for r in rr if r["giorno"] == "2024-01-03"), ora_utc="2026-11-16T03:00:00Z")
+        self.riscrivi("BID", rr + [doppia])
+        d = DM.diagnosi(self.cache, "XAUUSD", INIZIO, FINE)
+        self.assertTrue(d["pulito"])
+        self.assertEqual(d["doppioni_unificati"], {"BID": {"2024": 1}})
+        self.assertIn("doppioni identici unificati", DM.tabella(d))
+
     def test_righe_non_valide_ignorate_come_nel_manifesto(self):
         rr = self.righe("BID")
         self.riscrivi("BID", [dict(rr[1], esito="http-503", byte="0")] + rr)
