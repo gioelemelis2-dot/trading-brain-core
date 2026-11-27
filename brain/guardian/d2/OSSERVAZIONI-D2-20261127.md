@@ -26,3 +26,24 @@ Nel commit `57d2e2e` l'**esempio numerico** del margine è sbagliato di un fatto
 - in chat ho scritto «circa 18,11 USD»: il valore giusto è **181,14**.
 
 La **formula** congelata (apertura × 100 × 0,01 × 5%) era giusta, ed è quella che si confronta. Il numero detto al titolare era sbagliato e lo registro come tale.
+
+## Chiusura di S1
+
+**Fonte:** foto della scheda Storico e dell'orologio del Mac, ricevuta alle 16:3x UTC.
+
+- Chiuso alle **18:33 ora del server**. Il Mac segna «Ven 27 nov 17:33» nella stessa foto: **server a UTC+2 confermato**.
+- Prezzo di chiusura **3.625,00**; swap vuoto; profitto **−3,65**.
+- Saldo **99.996,35**. Nel riepilogo: deposito 100.000,00, credito 0,00, prelievo 0,00.
+- **Lo Storico mostra T/P 3.574,98.** Nella foto della scheda Trade delle 18:21 il T/P era vuoto: **il take profit è stato aggiunto dopo l'apertura**, ed è una modifica dell'ordine. Lo S/L è rimasto 3.657,86.
+
+| Voce | Previsione congelata | Osservato | Scarto | Esito (D-60) |
+|---|---|---|---|---|
+| P&L lordo alla chiusura (formula congelata, con il segno della vendita) | (3.621,35 − 3.625,00) × 100 × 0,01 = **−3,65** | **−3,65** | 0,00 | **concorde** |
+| Commissione totale (H-a: 0,06 all'apertura; alternative H-b 0,12 e H-c 0,06) | 0,06 | **0,00**: saldo = 100.000 − 3,65, al centesimo | −0,06 | **discordante** con la previsione congelata. **Spiegazione da verificare, registrata dopo l'osservazione:** il conto potrebbe essere **Standard** e non Raw, perché il cancello A2 non era stato verificato; oppure la demo non applica commissioni. Per D-60, una spiegazione trovata dopo non cambia l'esito |
+| Margine (dall'osservazione all'apertura) | 181,07 | 181,07 | 0,00 | **concorde**. Formula esterna, **non del Guardian** |
+| Perdita lorda allo stop | non pre-registrata (stop fuori piano) | stop non scattato | — | **non osservabile** su S1 |
+
+**Stato della prova dopo S1:**
+- concordi: la formula del P&L con il segno, all'apertura e alla chiusura, e il margine esterno;
+- discordante: la commissione;
+- da osservare: **la perdita allo stop (O1)**, cioè l'unica voce che il Guardian prevede davvero.
