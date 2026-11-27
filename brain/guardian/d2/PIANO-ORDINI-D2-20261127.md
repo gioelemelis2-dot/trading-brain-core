@@ -12,7 +12,12 @@
 **Stato dei cancelli (27/11, dopo il commit delle previsioni):**
 - 1: dichiarato dal titolare, da confermare con la foto dell'elenco dei conti;
 - 2: approvato (D-60);
-- 3: in attesa delle specifiche MT4;
+- 3: **chiuso** con le specifiche MT4 di **XAUUSD.cy** lette dal titolare (foto delle 17:1x):
+  - cifre 2; livello degli stop 0; dimensione del contratto **100**;
+  - calcolo del profitto CFD; calcolo del margine «Contracts»; margine hedge 0,00; **percentuale del margine 5,0%**;
+  - swap in punti: long −54,02, short 32,30; spread fluttuante.
+
+  Le previsioni sono **confermate senza modifiche**: contratto 100 e margine al 5%, come ipotizzato. **La commissione non compare nella finestra di MT4**, quindi resta valida l'ipotesi congelata H-a e si verifica sul primo ordine. Biglietto osservato prima di O1: Bid 3.622,52, Ask 3.622,71 (spread 0,19); conto piatto;
 - 4: osservato.
 
 ## Gli ordini
