@@ -9,7 +9,9 @@ Prima dell'autorizzazione, SENZA aprire i file della finestra:
    SHA-256 di ogni file scaricato o trovato in cache. Emergono come ANOMALIE, anche se i file presenti hanno
    l'impronta giusta:
    - un giorno atteso senza una riga valida («omesso»);
-   - più righe valide per lo stesso giorno e lato («voce doppia»);
+   - più righe valide DISCORDANTI per lo stesso giorno e lato («voce doppia»; D-59, A1: le righe identiche in
+     indirizzo, classe del contenuto, byte e impronta si unificano e restano nella traccia «doppioni», anomalia di
+     processo che non blocca; un passaggio vuoto → dati blocca finché non c'è una regola di revisione esplicita);
    - una riga del lato opposto nel registro di un lato, o un indirizzo del lato opposto («lato sbagliato»);
    - un indirizzo di un altro mercato («mercato sbagliato»);
 3. i giorni in quarantena (regola di qualità del consuntivo) restano nell'elenco, con lo stato «quarantena».
@@ -32,6 +34,7 @@ from ...dati.pipeline import dukascopy as DK
 LATI = ("ASK", "BID")
 VALIDI = ("dati", "in-cache-non-registrato", "404", "vuoto-200", "vuoto-204")
 SENZA_DATI = ("404", "vuoto-200", "vuoto-204")
+CONTENUTO = ("dati", "in-cache-non-registrato")      # D-59: come è stato osservato il file, non che cosa contiene
 CARTELLA = {"BID": "{simbolo}", "ASK": "{simbolo}_ASK"}
 
 
@@ -56,6 +59,16 @@ def _lato_dell_indirizzo(url: str) -> Optional[str]:
 
 def _righe(corpo: bytes) -> List[dict]:
     return list(csv.DictReader(io.StringIO(corpo.decode("utf-8"), newline="")))
+
+
+def _classe(esito: str) -> str:
+    return "contenuto" if esito in CONTENUTO else esito
+
+
+def _identita(r: dict) -> tuple:
+    """D-59 (A1, DGS-18 Q2): fonte, mercato, lato e data (l'indirizzo), classe del contenuto, byte e impronta. Ora,
+    tentativi, codice HTTP ed esito dentro la stessa classe sono provenienza, non identità."""
+    return r.get("url"), _classe(r.get("esito")), str(r.get("byte")), r.get("sha256")
 
 
 def impronta_elenco(elenco: list) -> str:
@@ -100,12 +113,18 @@ def manifesto(cache: Path, simbolo: str, inizio: date, fine: date, accessorie: i
                 anomalie.append(f"impronta non valida: {simbolo} {lato} {giorno}")
                 continue
             valide.setdefault((lato, giorno), []).append(r)
-    elenco = []
+    elenco, doppioni = [], []
     for s, lato, giorno in atteso:
         righe = valide.get((lato, giorno), [])
         if len(righe) > 1:
-            anomalie.append(f"voce doppia: {s} {lato} {giorno} ({len(righe)} righe valide)")
-            continue
+            if len({_identita(r) for r in righe}) > 1:
+                classi = {_classe(r["esito"]) for r in righe}
+                motivo = ("passaggio vuoto → dati: serve una regola di revisione esplicita"
+                          if "contenuto" in classi and classi & set(SENZA_DATI) else "discordanti")
+                anomalie.append(f"voce doppia: {s} {lato} {giorno} ({len(righe)} righe valide, {motivo})")
+                continue
+            doppioni.append({"lato": lato, "giorno": giorno, "righe": len(righe), "sha256": righe[0]["sha256"],
+                             "esiti": sorted({r["esito"] for r in righe})})   # D-59: traccia, non blocco
         if not righe:
             anomalie.append(f"omesso: {s} {lato} {giorno}")
             continue
@@ -114,6 +133,7 @@ def manifesto(cache: Path, simbolo: str, inizio: date, fine: date, accessorie: i
         elenco.append([s, lato, giorno, stato, r.get("sha256") or ""])
     return {"simbolo": simbolo, "inizio": inizio.isoformat(), "fine": fine.isoformat(), "accessorie": accessorie,
             "registri": registri, "quarantena": quarantena, "elenco": elenco, "anomalie": anomalie,
+            "doppioni": doppioni,
             "impronta_elenco": impronta_elenco(elenco)}
 
 

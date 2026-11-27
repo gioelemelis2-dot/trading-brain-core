@@ -44,7 +44,7 @@ def diagnosi(cache: Path, simbolo: str, inizio: date, fine: date, byte: bool = T
     cache = Path(cache)
     m = MF.manifesto(cache, simbolo, inizio, fine)
     d = {"simbolo": simbolo, "inizio": inizio.isoformat(), "fine": fine.isoformat(), "giorni_attesi": {},
-         "per_tipo": {}, "voci_doppie_esiti": {}, "date": {}, "byte_controllati": {}}
+         "per_tipo": {}, "voci_doppie_esiti": {}, "date": {}, "byte_controllati": {}, "doppioni_unificati": {}}
     for _, lato, _ in MF.insieme_atteso(simbolo, inizio, fine):
         d["giorni_attesi"][lato] = d["giorni_attesi"].get(lato, 0) + 1
     esiti = {}
@@ -60,6 +60,9 @@ def diagnosi(cache: Path, simbolo: str, inizio: date, fine: date, byte: bool = T
         if tipo == "voce doppia":
             chiave = "+".join(esiti.get((lato, giorno), []))
             d["voci_doppie_esiti"][chiave] = d["voci_doppie_esiti"].get(chiave, 0) + 1
+    for x in m["doppioni"]:                                  # D-59: anomalia di processo, contata a parte
+        anni = d["doppioni_unificati"].setdefault(x["lato"], {})
+        anni[x["giorno"][:4]] = anni.get(x["giorno"][:4], 0) + 1
     if byte:
         for _, lato, giorno, _, impronta in m["elenco"]:
             f = cache / MF.CARTELLA[lato].format(simbolo=simbolo) / f"{giorno}.bi5"
@@ -83,6 +86,9 @@ def tabella(d: dict) -> str:
             righe.append(f"{tipo:17} {lato}: " + ", ".join(f"{a} {n}" for a, n in sorted(anni.items())))
     for chiave, n in sorted(d["voci_doppie_esiti"].items()):
         righe.append(f"voci doppie con esiti {chiave}: {n}")
+    for lato, anni in sorted(d["doppioni_unificati"].items()):
+        righe.append(f"doppioni identici unificati (anomalia di processo, D-59) {lato}: "
+                     + ", ".join(f"{a} {n}" for a, n in sorted(anni.items())))
     return "\n".join(righe)
 
 

@@ -335,11 +335,12 @@ def esegui(scheda: Path, registro: Path, riserva: Path, id_: str, cache: Path, c
     impegno = {"scheda_sha256": sha_scheda, "codice": identita["codice"],                    # 8
                "metro": {"modulo": "D-31", "pilota": V.IMPRONTA_PILOTA, "quota": V.QUOTA},
                "finestra": identita["finestra"], "registri": man["registri"], "elenco": man["elenco"],
-               "impronta_elenco": man["impronta_elenco"], "n_globale": ctx["n_prove"], "quota": q, "j": j,
+               "impronta_elenco": man["impronta_elenco"], "doppioni": man["doppioni"],          # D-59: traccia
+               "n_globale": ctx["n_prove"], "quota": q, "j": j,
                "variante": c["variante"], "seme": c["seme"], "contratto": c,
                "sedute": [g.isoformat() for g in giorni_verifica],             # DGS-16: fissate prima di aprire
                "sviluppo": {"finestra": c["sviluppo"], "registri": man_sv["registri"],
-                            "impronta_elenco": man_sv["impronta_elenco"]},
+                            "impronta_elenco": man_sv["impronta_elenco"], "doppioni": man_sv["doppioni"]},
                "tentativi_precedenti": p["tentativi"]}                             # DGS-18 Q3: collegati
     h = RV.impronta_impegno(impegno)
     try:

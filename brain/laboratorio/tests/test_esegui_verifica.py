@@ -153,7 +153,9 @@ class TestCorsaCompleta(Percorso):
         self.assertEqual(imp["sedute"], attese)
         sv = MF.manifesto(self.cache_sv, "XAUUSD", *SVILUPPO)                # PIANO-D51 §3.2
         self.assertEqual(imp["sviluppo"], {"finestra": [SVILUPPO[0].isoformat(), SVILUPPO[1].isoformat()],
-                                           "registri": sv["registri"], "impronta_elenco": sv["impronta_elenco"]})
+                                           "registri": sv["registri"], "impronta_elenco": sv["impronta_elenco"],
+                                           "doppioni": []})                     # D-59: la traccia c'è anche vuota
+        self.assertEqual(imp["doppioni"], [])
         self.assertEqual(S.leggi(self.registro)["esecuzioni"][0]["impronta_sviluppo"], sv["impronta_elenco"])
         self.assertEqual(len(attese), 1000)
         self.assertEqual([x[0] for x in rec["coppie"]], attese)
